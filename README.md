@@ -10,6 +10,7 @@ Unified repository for the rescued [ i ] product archive, navigation launcher, i
 | **Prototype launcher** | `prototype-app/index.html` | Premium dark UI to open every rescued file + integrations |
 | **Eye-tracking import** | `integrations/eye-tracking/` | Copy of `~/eye_tracking_app` (source left untouched on disk) |
 | **Technical docs** | `docs/technical/` | Integration maps and cross-project notes |
+| **Masterbrain** | `masterbrain/` | Chat inventory, ingestion templates, category memory (markdown only) |
 | **Future app workspace** | *(not created yet)* | Planned home for React/Vite or Flutter MVP wired to archive + gaze |
 
 ## Start here
@@ -17,6 +18,7 @@ Unified repository for the rescued [ i ] product archive, navigation launcher, i
 1. Open **`prototype-app/index.html`** in a browser (or `python3 -m http.server` from repo root).
 2. Read **`00_README/README_FIRST.md`** for migration context.
 3. For eye-tracking: **`docs/technical/EYE_TRACKING_INTEGRATION_MAP.md`**.
+4. For chat history index: **`masterbrain/00_INDEX.md`** → **`masterbrain/01_chat_inventory/CHAT_LEDGER.md`**.
 
 ## Eye-tracking source of truth
 
