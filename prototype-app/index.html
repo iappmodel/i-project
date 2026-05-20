@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] Project — Rescued Archive Launcher</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-void:        #070709;
+    --bg-deep:        #0a0a0f;
+    --bg-surface:     #111118;
+    --bg-panel:       #16161f;
+    --bg-raised:      #1c1c28;
+    --border-subtle:  rgba(255,255,255,0.05);
+    --border-mid:     rgba(255,255,255,0.09);
+    --border-active:  rgba(255,255,255,0.18);
+    --text-primary:   #f0ede8;
+    --text-secondary: #9997a0;
+    --text-muted:     #4a4858;
+    --icoin-primary:  #4ade80;
+    --accent-rose:    #ff4d6d;
+    --accent-amber:   #f59e0b;
+    --font-display:   'Syne', sans-serif;
+    --font-body:      'DM Sans', sans-serif;
+    --font-mono:      'JetBrains Mono', monospace;
+    --sidebar-w:      220px;
+    --header-h:       64px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-void);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* subtle grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .layout {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: var(--sidebar-w) 1fr;
+    min-height: 100vh;
+  }
+
+  /* ── sidebar ── */
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    border-right: 1px solid var(--border-subtle);
+    background: var(--bg-deep);
+    padding: 24px 0 32px;
+  }
+
+  .brand {
+    padding: 0 20px 28px;
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 20px;
+  }
+
+  .brand-mark {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+
+  .brand-mark span {
+    color: var(--icoin-primary);
+  }
+
+  .brand-sub {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--text-muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+
+  .nav-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 0 20px;
+    margin-bottom: 8px;
+  }
+
+  .nav-list { list-style: none; }
+
+  .nav-list a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 20px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 12px;
+    transition: color 0.15s, background 0.15s;
+    border-left: 2px solid transparent;
+  }
+
+  .nav-list a:hover,
+  .nav-list a.active {
+    color: var(--text-primary);
+    background: rgba(255,255,255,0.03);
+    border-left-color: var(--icoin-primary);
+  }
+
+  .nav-count {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
+    border-radius: 4px;
+    padding: 1px 5px;
+    min-width: 20px;
+    text-align: center;
+  }
+
+  /* ── main ── */
+  .main {
+    min-width: 0;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 40px;
+    background: rgba(7,7,9,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .search-wrap {
+    flex: 1;
+    max-width: 480px;
+    position: relative;
+  }
+
+  .search-wrap svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  #search {
+    width: 100%;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-mid);
+    border-radius: 8px;
+    padding: 9px 12px 9px 36px;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  #search::placeholder { color: var(--text-muted); }
+
+  #search:focus {
+    border-color: var(--border-active);
+  }
+
+  .stats {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .stats strong {
+    color: var(--icoin-primary);
+    font-weight: 500;
+  }
+
+  .content {
+    padding: 40px 40px 80px;
+    max-width: 960px;
+  }
+
+  .hero {
+    margin-bottom: 48px;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--icoin-primary);
+    margin-bottom: 12px;
+  }
+
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+
+  .hero-lead {
+    font-size: 15px;
+    color: var(--text-secondary);
+    max-width: 640px;
+    line-height: 1.65;
+    border-left: 2px solid var(--icoin-primary);
+    padding-left: 16px;
+  }
+
+  /* ── sections ── */
+  .section {
+    margin-bottom: 40px;
+    scroll-margin-top: calc(var(--header-h) + 24px);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .section-id {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--icoin-primary);
+    letter-spacing: 0.06em;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .section-desc {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: right;
+    max-width: 280px;
+  }
+
+  .file-grid {
+    display: grid;
+    gap: 8px;
+  }
+
+  .file-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  }
+
+  .file-link:hover {
+    border-color: var(--border-mid);
+    background: var(--bg-panel);
+    transform: translateX(2px);
+  }
+
+  .file-link.hidden { display: none; }
+
+  .file-ext {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 6px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    min-width: 36px;
+    text-align: center;
+  }
+
+  .ext-html {
+    color: var(--icoin-primary);
+    background: rgba(74,222,128,0.08);
+    border: 1px solid rgba(74,222,128,0.15);
+  }
+
+  .ext-md {
+    color: var(--accent-amber);
+    background: rgba(245,158,11,0.08);
+    border: 1px solid rgba(245,158,11,0.15);
+  }
+
+  .ext-json {
+    color: #60a5fa;
+    background: rgba(96,165,250,0.08);
+    border: 1px solid rgba(96,165,250,0.15);
+  }
+
+  .file-name {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 400;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .file-arrow {
+    color: var(--text-muted);
+    font-size: 14px;
+    flex-shrink: 0;
+    transition: color 0.15s, transform 0.15s;
+  }
+
+  .file-link:hover .file-arrow {
+    color: var(--icoin-primary);
+    transform: translate(2px, -2px);
+  }
+
+  .no-results {
+    display: none;
+    padding: 32px;
+    text-align: center;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    border: 1px dashed var(--border-mid);
+    border-radius: 10px;
+    margin-top: 24px;
+  }
+
+  .no-results.visible { display: block; }
+
+  .footer {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-subtle);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+  }
+
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar {
+      position: relative;
+      height: auto;
+      border-right: none;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .nav-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 0 12px 12px;
+    }
+    .nav-list a { border-left: none; border-radius: 6px; padding: 6px 10px; }
+    .nav-label, .brand-sub { display: none; }
+    .content { padding: 24px 20px 60px; }
+    .topbar { padding: 0 20px; }
+    .section-desc { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">[<span>i</span>]</div>
+      <div class="brand-sub">Migration Archive</div>
+    </div>
+    <div class="nav-label">Sections</div>
+    <ul class="nav-list" id="nav"></ul>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="search-wrap">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="search" id="search" placeholder="Filter rescued files…" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="stats" id="stats"></div>
+    </header>
+
+    <div class="content">
+      <header class="hero">
+        <div class="hero-eyebrow">Rescued Archive · Source of Truth</div>
+        <h1>Project Launcher</h1>
+        <p class="hero-lead">This is the rescued source-of-truth launcher for the [ i ] project. Every file in the migration archive is linked below — open any screen, doc, or original export directly from here.</p>
+      </header>
+
+      <div id="sections"></div>
+
+      <p class="no-results" id="no-results">No files match your search.</p>
+
+      <footer class="footer">
+        prototype-app/index.html · plain HTML/CSS/JS · do not modify archived originals from this page
+      </footer>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  var SECTIONS = [
+    {
+      id: '00_README',
+      title: 'README & Bootstrap',
+      desc: 'Start here — migration plan, timeline, manifest',
+      files: [
+        { name: 'README_FIRST.md', ext: 'md' },
+        { name: 'MIGRATION_PLAN.md', ext: 'md' },
+        { name: 'PROJECT_TIMELINE_RECONSTRUCTED.md', ext: 'md' },
+        { name: 'CURSOR_BOOTSTRAP_PROMPT.md', ext: 'md' },
+        { name: 'MANIFEST.md', ext: 'md' },
+        { name: 'MANIFEST.json', ext: 'json' }
+      ]
+    },
+    {
+      id: '01_strategy_docs',
+      title: 'Strategy Docs',
+      desc: 'Product masterplan and build strategy',
+      files: [
+        { name: 'i-app-masterplan.md', ext: 'md' }
+      ]
+    },
+    {
+      id: '02_clickable_prototypes',
+      title: 'Clickable Prototypes',
+      desc: 'Interactive HTML flows and hub screens',
+      files: [
+        { name: 'index4.html', ext: 'html' },
+        { name: 'iapp_connect_platforms.html', ext: 'html' }
+      ]
+    },
+    {
+      id: '03_pitch_pages',
+      title: 'Pitch Pages',
+      desc: 'User and creator investor narratives',
+      files: [
+        { name: 'i-user-pitch.html', ext: 'html' },
+        { name: 'i-creator-pitch_1.html', ext: 'html' }
+      ]
+    },
+    {
+      id: '04_wallet_payments',
+      title: 'Wallet & Payments',
+      desc: 'Wallet UI, pay flows, tips, withdrawals',
+      files: [
+        { name: 'iapp_wallet_dashboard.html', ext: 'html' },
+        { name: 'iapp_wallet_ui (1).html', ext: 'html' },
+        { name: 'wallet_pending_tab.html', ext: 'html' },
+        { name: 'iapp_pay_screen (1).html', ext: 'html' },
+        { name: 'iapp_payment_confirmation.html', ext: 'html' },
+        { name: 'iapp_payment_architecture.html', ext: 'html' },
+        { name: 'iapp_tip_screen (1).html', ext: 'html' },
+        { name: 'iapp_convert_screen.html', ext: 'html' },
+        { name: 'iapp_conversion_confirmation (1).html', ext: 'html' },
+        { name: 'iapp_withdraw_screen (1).html', ext: 'html' }
+      ]
+    },
+    {
+      id: '05_creator_campaigns',
+      title: 'Creator Campaigns',
+      desc: 'Campaign builder, studio editor, creator economy',
+      files: [
+        { name: 'campaign_builder_owner.html', ext: 'html' },
+        { name: 'studio_video_editor.html', ext: 'html' },
+        { name: 'iapp_creator_economy.html', ext: 'html' }
+      ]
+    },
+    {
+      id: '06_feed_earning_loops',
+      title: 'Feed & Earning Loops',
+      desc: 'Feed screens, watch-verify-earn, click-to-earn',
+      files: [
+        { name: 'iapp_immersive_feed.html', ext: 'html' },
+        { name: 'iapp_feed_screen.html', ext: 'html' },
+        { name: 'iapp_loop1_watch_verify_earn.html', ext: 'html' },
+        { name: 'iapp_three_loops.html', ext: 'html' },
+        { name: 'click_and_earn_prototype.html', ext: 'html' }
+      ]
+    },
+    {
+      id: '07_currency_system',
+      title: 'Currency System',
+      desc: 'Alphabet currency and A-coins earning model',
+      files: [
+        { name: 'alphabet-currency.html', ext: 'html' },
+        { name: 'acoins_earning_system.html', ext: 'html' }
+      ]
+    },
+    {
+      id: '08_raw_originals',
+      title: 'Raw Originals',
+      desc: 'Unmodified ChatGPT export copies — read-only reference',
+      files: [
+        { name: 'index4.html', ext: 'html' },
+        { name: 'iapp_connect_platforms.html', ext: 'html' },
+        { name: 'i-user-pitch.html', ext: 'html' },
+        { name: 'i-creator-pitch_1.html', ext: 'html' },
+        { name: 'i-app-masterplan.md', ext: 'md' },
+        { name: 'iapp_wallet_dashboard.html', ext: 'html' },
+        { name: 'iapp_wallet_ui (1).html', ext: 'html' },
+        { name: 'wallet_pending_tab.html', ext: 'html' },
+        { name: 'iapp_pay_screen (1).html', ext: 'html' },
+        { name: 'iapp_payment_confirmation.html', ext: 'html' },
+        { name: 'iapp_payment_architecture.html', ext: 'html' },
+        { name: 'iapp_tip_screen (1).html', ext: 'html' },
+        { name: 'iapp_convert_screen.html', ext: 'html' },
+        { name: 'iapp_conversion_confirmation (1).html', ext: 'html' },
+        { name: 'iapp_withdraw_screen (1).html', ext: 'html' },
+        { name: 'campaign_builder_owner.html', ext: 'html' },
+        { name: 'studio_video_editor.html', ext: 'html' },
+        { name: 'iapp_creator_economy.html', ext: 'html' },
+        { name: 'iapp_immersive_feed.html', ext: 'html' },
+        { name: 'iapp_feed_screen.html', ext: 'html' },
+        { name: 'iapp_loop1_watch_verify_earn.html', ext: 'html' },
+        { name: 'iapp_three_loops.html', ext: 'html' },
+        { name: 'click_and_earn_prototype.html', ext: 'html' },
+        { name: 'alphabet-currency.html', ext: 'html' },
+        { name: 'acoins_earning_system.html', ext: 'html' }
+      ]
+    }
+  ];
+
+  var totalFiles = SECTIONS.reduce(function (n, s) { return n + s.files.length; }, 0);
+  var navEl = document.getElementById('nav');
+  var sectionsEl = document.getElementById('sections');
+  var statsEl = document.getElementById('stats');
+  var searchEl = document.getElementById('search');
+  var noResultsEl = document.getElementById('no-results');
+
+  function href(folder, filename) {
+    return '../' + encodeURI(folder) + '/' + encodeURI(filename);
+  }
+
+  function buildNav() {
+    SECTIONS.forEach(function (sec) {
+      var li = document.createElement('li');
+      var a = document.createElement('a');
+      a.href = '#' + sec.id;
+      a.innerHTML = sec.title + ' <span class="nav-count">' + sec.files.length + '</span>';
+      li.appendChild(a);
+      navEl.appendChild(li);
+    });
+  }
+
+  function buildSections() {
+    SECTIONS.forEach(function (sec) {
+      var section = document.createElement('section');
+      section.className = 'section';
+      section.id = sec.id;
+
+      var header = document.createElement('div');
+      header.className = 'section-header';
+      header.innerHTML =
+        '<span class="section-id">' + sec.id + '</span>' +
+        '<h2 class="section-title">' + sec.title + '</h2>' +
+        '<span class="section-desc">' + sec.desc + '</span>';
+      section.appendChild(header);
+
+      var grid = document.createElement('div');
+      grid.className = 'file-grid';
+
+      sec.files.forEach(function (file) {
+        var a = document.createElement('a');
+        a.className = 'file-link';
+        a.href = href(sec.id, file.name);
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.setAttribute('data-search', (sec.id + ' ' + file.name + ' ' + sec.title).toLowerCase());
+
+        a.innerHTML =
+          '<span class="file-ext ext-' + file.ext + '">' + file.ext + '</span>' +
+          '<span class="file-name">' + file.name + '</span>' +
+          '<span class="file-arrow" aria-hidden="true">↗</span>';
+
+        grid.appendChild(a);
+      });
+
+      section.appendChild(grid);
+      sectionsEl.appendChild(section);
+    });
+  }
+
+  function updateStats(visible, total) {
+    statsEl.innerHTML = '<strong>' + visible + '</strong> / ' + total + ' files';
+  }
+
+  function filterFiles(query) {
+    var q = query.trim().toLowerCase();
+    var visible = 0;
+    var links = document.querySelectorAll('.file-link');
+
+    links.forEach(function (link) {
+      var match = !q || link.getAttribute('data-search').indexOf(q) !== -1;
+      link.classList.toggle('hidden', !match);
+      if (match) visible++;
+    });
+
+    document.querySelectorAll('.section').forEach(function (sec) {
+      var anyVisible = sec.querySelector('.file-link:not(.hidden)');
+      sec.style.display = anyVisible ? '' : 'none';
+    });
+
+    noResultsEl.classList.toggle('visible', visible === 0 && q.length > 0);
+    updateStats(visible, totalFiles);
+  }
+
+  buildNav();
+  buildSections();
+  updateStats(totalFiles, totalFiles);
+
+  searchEl.addEventListener('input', function () {
+    filterFiles(searchEl.value);
+  });
+
+  /* highlight active nav on scroll */
+  var navLinks = document.querySelectorAll('.nav-list a');
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        var id = entry.target.id;
+        navLinks.forEach(function (a) {
+          a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-40% 0px -50% 0px', threshold: 0 });
+
+  document.querySelectorAll('.section').forEach(function (s) { observer.observe(s); });
+})();
+</script>
+
+</body>
+</html>
