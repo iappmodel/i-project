@@ -161,10 +161,19 @@ flutter run -d R5CX2137BEB
 
 ---
 
+## Follow-up: Y-plane transport experiment
+
+Encode/channel dominance on SM-S928U motivated a guarded **Y-plane / grayscale** transport path (no JPEG on YUV420 when enabled). Instrumentation labels still report the `encode` stage for pack time; compare sessions with the flag off vs on.
+
+**See:** [`Y_PLANE_TRANSPORT_EXPERIMENT.md`](Y_PLANE_TRANSPORT_EXPERIMENT.md) — flag `useExperimentalYPlaneTransport` in `runtime_transport_config.dart` (default `false`).
+
+---
+
 ## References
 
 | Doc | Path |
 |-----|------|
+| Y-plane experiment | [`Y_PLANE_TRANSPORT_EXPERIMENT.md`](Y_PLANE_TRANSPORT_EXPERIMENT.md) |
 | Smoke test result | [`ANDROID_EYE_TRACKING_SMOKE_TEST_RESULT.md`](ANDROID_EYE_TRACKING_SMOKE_TEST_RESULT.md) |
 | Verification stability v1 | [`VERIFICATION_STABILITY_LAYER_V1.md`](VERIFICATION_STABILITY_LAYER_V1.md) |
 | Frame perf metrics | [`frame_perf_metrics.dart`](../../integrations/eye-tracking/flutter-runtime/lib/features/vision/frame_perf_metrics.dart) |

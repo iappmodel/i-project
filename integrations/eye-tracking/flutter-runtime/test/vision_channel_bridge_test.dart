@@ -199,6 +199,33 @@ void main() {
       expect(frame, isNull);
     });
 
+    test('processFramePayload sends map to channel', () async {
+      Object? capturedArgs;
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (MethodCall call) async {
+        if (call.method == 'processFrame') {
+          capturedArgs = call.arguments;
+          return _validRaw();
+        }
+        return null;
+      });
+
+      final bridge = VisionChannelBridge();
+      final payload = <String, Object>{
+        'format': 'y8',
+        'width': 4,
+        'height': 4,
+        'rowStride': 4,
+        'pixelStride': 1,
+        'bytes': Uint8List(16),
+      };
+      final frame = await bridge.processFramePayload(payload);
+
+      expect(frame, isNotNull);
+      expect(capturedArgs, isA<Map>());
+      expect((capturedArgs! as Map)['format'], 'y8');
+    });
+
     test('propagates PlatformException (caller sets _visionChannelError)', () {
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (MethodCall call) async {

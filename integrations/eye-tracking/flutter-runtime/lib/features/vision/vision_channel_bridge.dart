@@ -23,7 +23,18 @@ final class VisionChannelBridge {
   /// Throws [PlatformException] on channel errors — callers are responsible
   /// for setting error state.
   Future<VisionFrame?> processFrame(Uint8List bytes) async {
-    final result = await _channel.invokeMethod<dynamic>('processFrame', bytes);
+    return _invokeProcessFrame(bytes);
+  }
+
+  /// Experimental map payload (`y8` or `jpeg` format). Legacy [processFrame]
+  /// with [Uint8List] remains the default production path.
+  Future<VisionFrame?> processFramePayload(Map<String, Object> payload) async {
+    return _invokeProcessFrame(payload);
+  }
+
+  Future<VisionFrame?> _invokeProcessFrame(Object arguments) async {
+    final result =
+        await _channel.invokeMethod<dynamic>('processFrame', arguments);
     if (result is! Map) return null;
     return VisionFrame.fromMap(result);
   }

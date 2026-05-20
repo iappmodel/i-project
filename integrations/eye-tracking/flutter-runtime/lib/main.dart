@@ -12,6 +12,7 @@ import 'features/vision/frame_codec.dart';
 import 'features/vision/frame_perf_metrics.dart';
 import 'features/vision/vision_channel_bridge.dart';
 import 'features/vision/vision_frame.dart';
+import 'features/vision/y_plane_frame_codec.dart';
 import 'features/gaze/drift_adjusted_gaze.dart';
 import 'features/gaze/held_face_policy.dart';
 import 'features/gaze/pipeline_frame_confidence.dart';
@@ -1184,15 +1185,33 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
         ? (encodeStartMs - _frameArrivalMs).toDouble()
         : 0;
     final encodeSw = Stopwatch()..start();
-    final bytes = cameraImageToJpegBytes(image);
-    encodeSw.stop();
-    _lastPipelineEncodeMs = encodeSw.elapsedMicroseconds / 1000.0;
-    _framePerf.encodeTotalMs += _lastPipelineEncodeMs;
-    _framePerf.encodeSamples++;
-    final channelSw = Stopwatch()..start();
-    final face = await _bridge.processFrame(bytes);
-    channelSw.stop();
-    _lastPipelineChannelMs = channelSw.elapsedMicroseconds / 1000.0;
+    final VisionFrame? face;
+    if (shouldUseExperimentalYPlaneTransport()) {
+      final rotation =
+          widget.cameraSession.controller.description.sensorOrientation;
+      final payload = cameraImageToVisionChannelPayload(
+        image,
+        rotationDegrees: rotation,
+      );
+      encodeSw.stop();
+      _lastPipelineEncodeMs = encodeSw.elapsedMicroseconds / 1000.0;
+      _framePerf.encodeTotalMs += _lastPipelineEncodeMs;
+      _framePerf.encodeSamples++;
+      final channelSw = Stopwatch()..start();
+      face = await _bridge.processFramePayload(payload);
+      channelSw.stop();
+      _lastPipelineChannelMs = channelSw.elapsedMicroseconds / 1000.0;
+    } else {
+      final bytes = cameraImageToJpegBytes(image);
+      encodeSw.stop();
+      _lastPipelineEncodeMs = encodeSw.elapsedMicroseconds / 1000.0;
+      _framePerf.encodeTotalMs += _lastPipelineEncodeMs;
+      _framePerf.encodeSamples++;
+      final channelSw = Stopwatch()..start();
+      face = await _bridge.processFrame(bytes);
+      channelSw.stop();
+      _lastPipelineChannelMs = channelSw.elapsedMicroseconds / 1000.0;
+    }
     _framePerf.channelTotalMs += _lastPipelineChannelMs;
     _framePerf.channelSamples++;
     _lastFacePipelineTimed = true;
