@@ -1,266 +1,247 @@
-# Calibration tuning plan — Android eye-tracking runtime
+# Calibration tuning plan — practical device guide
 
 **Date:** 2026-05-20  
 **Runtime:** [`integrations/eye-tracking/flutter-runtime/`](../../integrations/eye-tracking/flutter-runtime/)  
-**Device baseline:** Samsung Galaxy S24 Ultra (SM-S928U), Android 15 — see [`ANDROID_EYE_TRACKING_SMOKE_TEST_RESULT.md`](ANDROID_EYE_TRACKING_SMOKE_TEST_RESULT.md)  
-**Scope:** Calibration, operator HUD, and verification quality. Does **not** rewrite architecture, React app, `source-runtime-candidates`, or native MediaPipe pipeline in this pass.
+**Adaptive design:** [`ADAPTIVE_CALIBRATION_SYSTEM.md`](ADAPTIVE_CALIBRATION_SYSTEM.md)  
+**Device baseline:** Samsung SM-S928U (Android 15) — [`ANDROID_EYE_TRACKING_SMOKE_TEST_RESULT.md`](ANDROID_EYE_TRACKING_SMOKE_TEST_RESULT.md)
+
+This document is the **operator playbook** for the next physical device session. Run these procedures before changing thresholds or wiring adaptive calibration.
 
 ---
 
-## 1. Current validated state
-
-Physical smoke test on SM-S928U (2026-05-20) confirmed:
-
-| Layer | Status |
-|-------|--------|
-| APK build / install | Pass |
-| Front camera open + image stream | Pass |
-| Native `VisionProcessor.process` loop | Pass — non-zero processed FPS, `frame_perf` logs |
-| Gaze zone overlay | Pass — after commit `d24a440` (LayoutBuilder fix in `gaze_zone_buttons.dart`) |
-| Dart telemetry HUD | Partial — metrics update live but layout/operator quality raw |
-| Host unit tests | 185 tests pass (pre-device baseline) |
-
-**Not yet validated:** reliable left/center/right zone selection, production attention gates, 60-second stability run, face-loss/recovery cycle, operator-grade calibration UX.
-
----
-
-## 2. Current calibration problems
-
-| Problem | Symptom on device | Likely cause |
-|---------|-------------------|--------------|
-| Gaze zone selection unreliable | LEFT/CENTER/RIGHT highlight lags or mis-assigns | `getZone` uses **raw pipeline gazeX** with fixed ±0.10 deadband; user calibration (`normalizeGazeX`) is computed but **not wired into zone classification** in the live dwell path |
-| Single-frame gaze capture | Cal L/R stores one instantaneous sample | `_normalize` captures first frame after button press — no stability gate or multi-frame median |
-| Population vs local blend | Zones feel wrong early in session | `effectiveGazeCalibrationBounds` ramps local weight over 200 samples; until then population defaults dominate |
-| EAR blink vs zone select mismatch | Blink select uses mean EAR `< 0.08` edge in `_trySelectZoneOnMeanEarClosedEdge`; FSM uses dynamic/normalized thresholds in `BlinkDetector` | Two parallel blink paths with different thresholds |
-| Attention score stays 0 | HUD shows `native 0` frequently | Native `computeAttentionScore` starts at 1.0 then subtracts penalties; without stable head + open eyes + neutral gaze, score collapses; no Flutter-side production mapping |
-| Debug HUD overflow | Text clips on 1080×2340 | Unconstrained multi-line `Text` at bottom-left |
-| Operator controls noisy | 10+ debug buttons overlap preview | Dev/lab panel not grouped or collapsible |
-| Calibration FSM under-instrumented | Operator cannot tell if sample was accepted | Phase label only; no success/fail feedback per capture |
-
----
-
-## 3. Existing signals available
-
-### Native (`VisionProcessor.kt` → `VisionFrame`)
-
-| Field | Type | Use |
-|-------|------|-----|
-| `gazeX`, `gazeY` | float | Raw horizontal/vertical gaze (smoothed in native) |
-| `headYawRaw` | float | Pre-neutral-subtraction yaw — captured on Cal N |
-| `headYaw`, `headPitch`, `headStable` | float/bool | Head pose penalties, attention score |
-| `leftEAR`, `rightEAR` | float | Blink, fatigue, open-EAR calibration |
-| `attentionScore` | 0–100 | Native attention aggregate |
-| `likelyFake`, `fakeStaticGaze`, `fakePerfectStability`, `fakeNoBlink` | bool | Anti-spoof heuristics |
-| `faceConfidence` | 0–1 | Segmentation mask fraction |
-| `nativeDecodeMs`, `nativeProcessMs`, `nativeTotalMs` | float | Perf telemetry |
-| `landmarks`, `leftEye`, `rightEye` | lists | Landmark count / quality checks |
-
-### Flutter pipeline
-
-| Signal | Source | Use |
-|--------|--------|-----|
-| Pipeline gaze `(x, y)` | `GazePipeline` + `runPipelineAndTrackingTick` | Pointer dot, zone dwell (`getZone(smoothGazeX)`) |
-| Fixation state | `GazeFixation` | Dwell gate, blink select |
-| Normalized gaze X | `normalizeGazeX` + `effectiveGazeCalibrationBounds` | Computed in `_normalize`; available for tuning |
-| Cal samples | `_gazeMeasuredLeft/Right`, `_neutralHeadYaw` | User calibration captures |
-| Open EAR baselines | `OpenEarCalibrator` → `_leftOpenEar`, `_rightOpenEar` | Dynamic blink thresholds, fatigue |
-| EAR norm / fatigue | `normalizedEarPair`, `earFatigueLevel` | Engagement state, attention bonus |
-| Blink FSM | `BlinkDetector` | Count, dominance, dynamic thresholds |
-| Attention kernel | `AttentionKernel.telemetryNotifier` | CONF/STAB/HEAD/VEL/FIX/PASS/REASON |
-| Frame perf | `FramePerfMetrics` / `[frame_perf]` logs | Camera vs processed FPS, drops |
-| Calibration FSM | `CalibrationPhase` | idle → sampling-* → ready |
-
----
-
-## 4. What must be measured next
-
-Record on SM-S928U (or equivalent) **before** changing thresholds:
-
-1. **Raw gazeX range** — neutral, look-left extreme, look-right extreme (10+ frames each, note median + stddev).
-2. **Pipeline gazeX range** — same poses after `GazePipeline` filter (what `getZone` actually sees).
-3. **Zone boundary sweep** — slow left→right sweep; log zone transitions vs subjective gaze direction.
-4. **Cal L/R/N capture values** — HUD `min`/`max`/`yaw₀` after operator calibration sequence.
-5. **Open EAR baselines** — `leftOpenEAR` / `rightOpenEAR` after Cal EAR (eyes open, neutral lighting).
-6. **Blink closure depth** — mean EAR at closed vs dynamic `closeTh` (0.7× baseline).
-7. **Native attention components** — correlate `attentionScore` with headStable, avgEAR, gazeX variance, blink rate (logcat or HUD).
-8. **Anti-spoof flags** — when `likelyFake` fires on real user vs photo/video.
-9. **Dwell timing** — time to zone lock at default `_zoneDwellMs` (behavior profile dependent).
-10. **Processed FPS under calibration** — ensure tuning session stays ≥4 processed FPS.
-
-**Artifact:** dated folder e.g. `docs/technical/smoke-runs/2026-05-20-sm-s928u-calibration/` with CSV or markdown table of samples.
-
----
-
-## 5. Left / center / right calibration strategy
-
-### Current flow
-
-1. Operator taps **Cal L** → `_pendingCaptureLeft` → next valid `gazeX` stored as `_gazeMeasuredLeft`.
-2. **Cal R** → `_gazeMeasuredRight`.
-3. **Cal N** → native `calibrateHeadPose` + `_neutralHeadYaw` from `headYawRaw`.
-4. `effectiveGazeCalibrationBounds` blends measured L/R with population defaults (`populationGazeXLeft/Right`) weighted by `_gazeSessionSamples`.
-5. Live zone classification uses **`getZone(smoothGazeX)` on raw pipeline X** with ±0.10 deadband — **not** normalized or calibrated bounds.
-
-### Tuning targets (measure first, then adjust)
-
-| Knob | File | Current | Tuning action |
-|------|------|---------|---------------|
-| Raw zone deadband | `lib/gaze_zone.dart` → `getZone` | ±0.10 | Widen/narrow based on measured pipeline X spread on SM-S928U |
-| Normalized zone bands | `lib/gaze_zone.dart` → `getGazeZone` | 0.33 / 0.66 | Use **after** wiring normalized gaze into dwell path (future pass) |
-| Gaze X offset | `lib/gaze_normalize.dart` → `gazeXCalibrationOffset` | 0.09 | Re-evaluate vs neutral capture |
-| Population defaults | `populationGazeXLeft/Right` | 0.076 / 0.132 | Update from device cohort if local cal skipped |
-| Local weight ramp | `lib/trust_merge.dart` → `computeLocalWeight` | 200 samples | Consider faster ramp for lab sessions |
-| Capture quality | `lib/main.dart` → `_normalize` | single frame | **Future:** require fixation + N-frame median before accepting sample |
-
-### Recommended operator sequence (device)
-
-1. Face center, good lighting → **Cal N** (head neutral).
-2. Fixate physical left target → **Cal L** (hold 1 s, verify HUD `min=` updates).
-3. Fixate physical right target → **Cal R** (verify HUD `max=` updates).
-4. Return neutral → confirm zone = CENTER stable for ≥2 s.
-5. Sweep L→R → log false transitions.
-
----
-
-## 6. Blink / EAR calibration strategy
-
-### Current flow
-
-1. **Cal EAR** → `OpenEarCalibrator` averages 30 frames → `_leftOpenEar`, `_rightOpenEar`.
-2. Slow EMA drift: `openEarBaselineEmaAlpha = 0.01` during non-blink frames.
-3. `BlinkDetector` uses dynamic raw thresholds when `rawMeanBaseline` set: close ≈ 0.7× mean open, open ≈ 0.9×.
-4. Parallel path `_trySelectZoneOnMeanEarClosedEdge` uses fixed `0.08` close threshold for zone **select** blink.
-
-### Tuning targets
-
-| Knob | File | Current | Notes |
-|------|------|---------|-------|
-| Sample count | `OpenEarCalibrator.sampleCount` | 30 | Increase if lighting noisy |
-| Close fraction | `rawDynamicCloseFraction` | 0.7 | Lower → more sensitive blink |
-| Open fraction | `rawDynamicOpenFraction` | 0.9 | Hysteresis band |
-| Fixed select threshold | `main.dart` `_blinkCloseThreshold` | 0.08 | Align with dynamic close or gate on calibrated baseline |
-| Blink duration | `BlinkDetector.min/maxBlinkDurationMs` | 80–400 ms | Reject noise vs slow blinks |
-| Cooldown | `BLINK_COOLDOWN_MS` | 250 ms | Triple-blink cancel timing |
-
-### Recommended operator sequence
-
-1. **Cal EAR** with eyes open, neutral expression (~1 s).
-2. Verify HUD: `leftOpenEAR`, `rightOpenEAR`, dynamic close threshold line.
-3. Deliberate blink → `Blink: true`, count increments.
-4. Dwell zone → close eyes → zone select (heavy haptic).
-5. 2 blinks confirm / 3+ cancel — verify FSM resets.
-
----
-
-## 7. Attention scoring strategy
-
-**Do not invent production scoring in this pass.** Document wiring only.
-
-### Native score (`VisionProcessor.computeAttentionScore`)
-
-Starts at 1.0, applies fractional penalties/bonuses, clamps, ×100:
-
-| Condition | Effect |
-|-----------|--------|
-| `!headStable` | −30% |
-| `avgEAR < EAR_THRESHOLD` | −40% |
-| `\|gazeX\| > ATTENTION_GAZE_X_THRESHOLD` | −20% |
-| Low gaze variance (steady) | +bonus |
-| Neutral head yaw/pitch | +bonus |
-| Micro-saccades detected | +bonus |
-| Blink rate in expected band (60 s window) | +bonus |
-
-Score 0 common when: eyes closed, head moving, gaze off-center, or no face.
-
-### Flutter overlay
-
-- `attentionWithFatigueBonus` adds +0.1 display bump when EAR fatigue < 0.05 (not a production gate).
-- `AttentionKernel` produces separate CONF/STAB telemetry for pointer smoothing — not mapped to native 0–100.
-
-### Production path (future, out of scope here)
-
-1. Log native score + component flags during 60 s sessions.
-2. Define MVP cutoff (e.g. median ≥ X over window Y) from measured distribution — **not** guessed.
-3. Wire to `VerificationResultScreen` / Step 4 gates in integration track.
-4. Keep anti-spoof (`likelyFake`) as hard fail or review flag.
-
----
-
-## 8. Anti-spoof / authenticity strategy
-
-Native flags (already on HUD):
-
-| Flag | Meaning (heuristic) |
-|------|---------------------|
-| `likelyFake` | OR of below |
-| `fakeStaticGaze` | Gaze unnaturally static |
-| `fakePerfectStability` | Variance too low for too long |
-| `fakeNoBlink` | No blinks in auth window |
-
-**Tuning approach:** measure false positive rate on real user (normal movement, talking, reading) vs photo/screen replay. Do **not** tighten native heuristics until FP rate is logged. Flutter side: surface flags clearly; use `faceConfidence` alongside for segmentation quality.
-
----
-
-## 9. Operator HUD cleanup plan
-
-### Done (first pass)
-
-- Bottom-left lab HUD: bounded width/height + scroll — prevents overflow on 1080×2340; all metrics retained.
-
-### Next passes (UI only, no gaze math)
-
-| Item | Proposal |
-|------|----------|
-| Collapsible lab panel | Single “Lab” toggle; default collapsed on non-debug builds |
-| Calibration strip | Group Cal L/R/N/EAR with phase indicator + ✓ on capture |
-| Dev controls | Move Lock/Explore/AO kill to overflow menu |
-| Attention kernel panel | Anchor above dwell ring; truncate long REASON |
-| Typography | 12 px monospace for numeric blocks; 14 px for labels |
-| Product summary row | One line: `Zone · Attention · Cal ready` for operator glance |
-
----
-
-## 10. Next device-test checklist
-
-Run from `integrations/eye-tracking/flutter-runtime/`:
+## Quick start — commands
 
 ```bash
+cd integrations/eye-tracking/flutter-runtime
 flutter pub get
 flutter analyze
 flutter run -d R5CX2137BEB
 ```
 
-Optional logcat:
+Logcat (second terminal):
 
 ```bash
-adb logcat -s VisionProcessor flutter IRIS
+adb logcat -s VisionProcessor flutter IRIS > docs/technical/smoke-runs/$(date +%Y-%m-%d)-sm-s928u-calibration.logcat
 ```
 
-### Session checklist
+Create artifact folder before the session:
 
-- [ ] HUD scrolls without clipping; all metric lines visible
-- [ ] Cal N → Cal L → Cal R → Cal EAR sequence completes; FSM → `ready`
-- [ ] Record `min`/`max`/`yaw₀`/open EAR values in run notes
-- [ ] Neutral gaze holds CENTER ≥5 s
-- [ ] Look left/right: zone matches ≥80% subjective (log mismatches)
-- [ ] Dwell + blink selects zone; haptic fires
-- [ ] 2-blink confirm / 3-blink cancel works
-- [ ] Native `attentionScore` non-zero during stable neutral + open eyes (note value range)
-- [ ] `likelyFake` false during normal use
-- [ ] `frame_perf`: processed FPS ≥4 sustained 60 s
-- [ ] One face-loss/recovery cycle (cover camera 3 s, uncover)
-- [ ] No layout assertion spam
-- [ ] Save screenshot + metric snapshot to smoke-runs folder
+```bash
+mkdir -p docs/technical/smoke-runs/$(date +%Y-%m-%d)-sm-s928u-calibration
+```
 
-### Pass criteria for calibration pass
+---
 
-| Criterion | Target |
-|-----------|--------|
-| Cal FSM reaches `ready` | 4/4 operator attempts |
-| Zone accuracy (subjective) | ≥80% after calibration |
-| Blink select success | ≥3/5 dwell+blink attempts |
-| HUD readable | No overflow on SM-S928U |
-| 60 s stability | No crash; processed FPS stable |
+## Practical device run (60–90 min)
+
+### A. Pre-flight (5 min)
+
+| Step | Action | Pass | Fail |
+|------|--------|------|------|
+| A1 | App installs and camera opens | Preview visible ≤10 s | Black screen / crash |
+| A2 | LEFT/CENTER/RIGHT overlay visible | Three targets, no layout error | FlutterError / red screen |
+| A3 | Lab HUD scrolls (bottom-left) | All lines readable | Text clipped off-screen |
+| A4 | `[frame_perf]` in terminal | processed FPS > 0 with face in frame | processed=0 for >15 s |
+
+**Capture:** screenshot `01-preflight-overlay.png`
+
+---
+
+### B. Manual calibration sequence (10 min)
+
+Use lab buttons (top-right). Good lighting, arm’s-length phone, portrait.
+
+| Step | Action | Record in notes | Pass | Fail |
+|------|--------|-----------------|------|------|
+| B1 | **Cal N** — look center, head level | HUD `yaw₀=` | Value updates | Stays `—` |
+| B2 | **Cal L** — look at physical left target 1 s | HUD `min=` | Value updates | Stays `—` |
+| B3 | **Cal R** — look at physical right target 1 s | HUD `max=` | Value updates | Stays `—` |
+| B4 | **Cal EAR** — eyes open, neutral ~1 s | `leftOpenEAR`, `rightOpenEAR` | Both numeric after 30/30 | Stays `—` |
+| B5 | Check FSM line | `Calibration FSM:` | `ready` | Stuck in `sampling-*` |
+
+**Capture:** screenshot `02-cal-complete-hud.png`  
+**Log:** copy HUD block into `calibration-notes.md`:
+
+```markdown
+## Cal capture
+- min (left): ___
+- max (right): ___
+- yaw₀: ___
+- leftOpenEAR: ___
+- rightOpenEAR: ___
+- dynamic close threshold: ___
+- FSM: ___
+```
+
+---
+
+### C. Left / center / right zone test (15 min)
+
+**Setup:** After B sequence. Hold phone steady. Use on-screen zones as reference.
+
+| Trial | Instruction | Expected zone highlight | Duration | Pass criterion |
+|-------|-------------|----------------------|----------|----------------|
+| C1 | Look **center** (nose at camera) | CENTER | 5 s hold | CENTER ≥4 s |
+| C2 | Look **left** (eyes only, minimal head turn) | LEFT | 5 s hold | LEFT ≥4 s |
+| C3 | Look **right** | RIGHT | 5 s hold | RIGHT ≥4 s |
+| C4 | Slow sweep L → R → L | L → C → R → C | ~20 s | ≤2 wrong-zone flips |
+| C5 | Return center after each extreme | CENTER between | 2 s each | Recovers to CENTER |
+
+**Score:** 5 trials × pass/fail → **≥4/5 = zone pass**, **≤3/5 = zone fail**
+
+**Record per trial:**
+
+| Trial | Subjective direction | HUD `Zone:` | Match? (Y/N) |
+|-------|---------------------|-------------|--------------|
+| C1 | center | | |
+| C2 | left | | |
+| C3 | right | | |
+| C4 | sweep | (note mis-assigns) | |
+| C5 | center recovery | | |
+
+**Capture:** screenshots `03-zone-left.png`, `04-zone-center.png`, `05-zone-right.png`
+
+**If zone fail:** note whether `min`/`max` spread is narrow (<0.02) or `Zone:` disagrees with highlighted button — feeds adaptive plan.
+
+---
+
+### D. Blink / EAR test (15 min)
+
+| Trial | Instruction | Expected HUD | Pass | Fail |
+|-------|-------------|--------------|------|------|
+| D1 | Normal blink ×3 | `Blink: true` briefly; count increments | 3/3 detected | <2/3 |
+| D2 | Dwell CENTER until ring fills → **close eyes** | Haptic; zone selected | Select fires | No haptic |
+| D3 | Dwell LEFT → close eyes | SELECTED: LEFT | Amber border LEFT | Wrong zone |
+| D4 | After select: **2 quick blinks** | Confirm path (heavy haptic) | Confirm fires | No response |
+| D5 | Dwell → select → **3+ blinks** | Cancel path | Selection clears | Stuck selected |
+
+**Score:** **≥3/5 = blink pass**, **≤2/5 = blink fail**
+
+**Record:**
+
+| Trial | mean EAR at close (if visible) | dynamic closeTh | Blink count | Pass |
+|-------|-------------------------------|-----------------|-------------|------|
+| D1 | | | | |
+| D2 | | | | |
+| D3 | | | | |
+
+**Capture:** screenshot `06-blink-select.png` (moment of selection)
+
+---
+
+### E. Attention & authenticity spot-check (10 min)
+
+Hold neutral pose: center gaze, eyes open, head still, 30 s.
+
+| Metric | Record min / max / median | Pass | Fail |
+|--------|---------------------------|------|------|
+| `Attention: … (native …)` | native: ___ | native > 0 for ≥20 s | native 0 entire window |
+| `likelyFake` | true/false | false entire window | true ≥5 s on real face |
+| CONF/STAB panel | STAB typical: ___ | STAB > 0.25 sometimes | always low_stability |
+
+**Capture:** screenshot `07-attention-neutral.png`
+
+---
+
+### F. Stability run (60 s)
+
+| Check | Pass | Fail |
+|-------|------|------|
+| No crash / ANR | 60 s continuous | Crash |
+| `frame_perf` processed FPS | ≥4 avg | <2 sustained |
+| Face-loss recovery | Cover lens 3 s → uncover → face returns ≤5 s | Stuck noFace |
+| Layout assertions | None in logcat | Stack/constraint errors |
+
+**Capture:** last 3 `[frame_perf]` lines pasted into `calibration-notes.md`
+
+---
+
+## Pass / fail summary (session verdict)
+
+| Area | Pass threshold | Result |
+|------|----------------|--------|
+| Pre-flight | A1–A4 all pass | |
+| Manual cal | B1–B5 all pass | |
+| Zones | ≥4/5 trials (section C) | |
+| Blink | ≥3/5 trials (section D) | |
+| Attention | native > 0 ≥20 s, likelyFake false | |
+| Stability | 60 s no crash, FPS ≥4 | |
+
+**Overall calibration session pass:** all six rows pass.  
+**Partial pass:** pre-flight + stability pass; zones or blink fail (expected before adaptive wiring).  
+**Fail:** crash, no camera, or processed FPS = 0.
+
+---
+
+## What to measure (numbers for adaptive system)
+
+Copy into `calibration-notes.md` or CSV:
+
+| Measurement | How | Used for |
+|-------------|-----|----------|
+| Raw `gazeX` at neutral / left / right | HUD + logcat during C1–C3 | `GazeThresholds` |
+| Pipeline zone vs subjective | C table | deadband tuning |
+| Cal L/R/N captured values | B5 HUD block | session vs population merge |
+| Open EAR L/R | After Cal EAR | `EarBaseline` |
+| Dynamic close threshold | HUD line | blink select alignment |
+| Blink closure depth | D trials | close fraction |
+| Native attention range | E 30 s window | future gate (observe only) |
+| `likelyFake` FP rate | E + normal use | anti-spoof baseline |
+| Processed FPS | F log excerpt | perf budget |
+
+---
+
+## Artifacts checklist
+
+Save under `docs/technical/smoke-runs/YYYY-MM-DD-sm-s928u-calibration/`:
+
+- [ ] `calibration-notes.md` (tables above filled)
+- [ ] `01-preflight-overlay.png` … `07-attention-neutral.png`
+- [ ] `session.logcat` (adb logcat capture)
+- [ ] Last 10 `[frame_perf]` lines (paste or `grep frame_perf session.logcat`)
+
+Redact face if sharing externally.
+
+---
+
+## Current validated state
+
+| Layer | Status |
+|-------|--------|
+| APK / camera / stream | Pass (2026-05-20 smoke) |
+| Native processing + frame_perf | Pass |
+| Gaze overlay | Pass (post d24a440) |
+| Lab HUD layout | Pass (bounded + scroll) |
+| Zone accuracy | **Not validated** — measure in section C |
+| Blink select reliability | **Not validated** — measure in section D |
+| Adaptive profile | Scaffold only — [`adaptive_calibration_profile.dart`](../../integrations/eye-tracking/flutter-runtime/lib/calibration/adaptive_calibration_profile.dart) |
+
+---
+
+## Known issues (do not fix in measurement pass)
+
+| Issue | Notes |
+|-------|-------|
+| `getZone` uses raw ±0.10 deadband | Not using Cal L/R normalized bounds yet |
+| Single-frame Cal L/R capture | First frame after button — noisy |
+| Blink select uses fixed 0.08 | May disagree with dynamic EAR path |
+| Attention not productionized | Observe only; no invented cutoffs |
+| Lab Cal buttons | Dev-only; product uses adaptive micro-cal (future) |
+
+---
+
+## Tuning knobs (after measurement)
+
+| Knob | File | Current |
+|------|------|---------|
+| Zone deadband | `lib/gaze_zone.dart` | ±0.10 |
+| Normalized bands | `lib/gaze_zone.dart` `getGazeZone` | 0.33 / 0.66 |
+| Gaze offset | `lib/gaze_normalize.dart` | 0.09 |
+| Population L/R | `lib/gaze_normalize.dart` | 0.076 / 0.132 |
+| EAR close fraction | `lib/ear_calibration.dart` | 0.7 |
+| Open EAR sample count | `OpenEarCalibrator` | 30 |
+
+Adjust only with section C/D data — see [`ADAPTIVE_CALIBRATION_SYSTEM.md`](ADAPTIVE_CALIBRATION_SYSTEM.md) for adaptive loop.
 
 ---
 
@@ -268,20 +249,19 @@ adb logcat -s VisionProcessor flutter IRIS
 
 | Doc | Path |
 |-----|------|
+| Adaptive calibration design | [`ADAPTIVE_CALIBRATION_SYSTEM.md`](ADAPTIVE_CALIBRATION_SYSTEM.md) |
 | Smoke test result | [`ANDROID_EYE_TRACKING_SMOKE_TEST_RESULT.md`](ANDROID_EYE_TRACKING_SMOKE_TEST_RESULT.md) |
 | Smoke test plan | [`ANDROID_EYE_TRACKING_SMOKE_TEST_PLAN.md`](ANDROID_EYE_TRACKING_SMOKE_TEST_PLAN.md) |
-| Runtime README | [`integrations/eye-tracking/flutter-runtime/README.md`](../../integrations/eye-tracking/flutter-runtime/README.md) |
+| Profile scaffold | [`lib/calibration/adaptive_calibration_profile.dart`](../../integrations/eye-tracking/flutter-runtime/lib/calibration/adaptive_calibration_profile.dart) |
 
-### Key source files
+### Key runtime files
 
 | Area | Path |
 |------|------|
 | Main loop + HUD | `lib/main.dart` |
+| Adaptive profile | `lib/calibration/adaptive_calibration_profile.dart` |
 | Zone UI | `lib/gaze_zone_buttons.dart` |
 | Zone thresholds | `lib/gaze_zone.dart` |
 | Gaze normalize | `lib/gaze_normalize.dart` |
 | Calibration FSM | `lib/features/calibration/calibration_phase.dart` |
-| EAR calibrate | `lib/ear_calibration.dart` |
-| Blink FSM | `lib/blink_detector.dart` |
-| Attention kernel | `lib/attention_kernel.dart` |
-| Native attention | `android/.../VisionProcessor.kt` |
+| EAR / blink | `lib/ear_calibration.dart`, `lib/blink_detector.dart` |

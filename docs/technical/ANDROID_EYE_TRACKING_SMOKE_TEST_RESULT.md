@@ -231,9 +231,10 @@ Redact faces if sharing externally.
 
 **2026-05-20:** First-pass instrumentation cleanup and calibration tuning plan added after partial smoke pass.
 
-- **Plan:** [`CALIBRATION_TUNING_PLAN.md`](CALIBRATION_TUNING_PLAN.md) — validated state, zone/EAR/attention/anti-spoof strategy, device checklist.
-- **Code (safe HUD only):** Lab telemetry panel bounded + scrollable; attention kernel panel width-capped; calibration tuning comments in `gaze_zone.dart`, `gaze_normalize.dart`, `ear_calibration.dart`, `calibration_phase.dart`, `main.dart`. No gaze math or native pipeline changes.
-- **Next device run:** `flutter run -d R5CX2137BEB` → Cal N → Cal L → Cal R → Cal EAR → zone sweep (see plan §10).
+- **Tuning plan:** [`CALIBRATION_TUNING_PLAN.md`](CALIBRATION_TUNING_PLAN.md) — practical device run, pass/fail tables, artifacts to capture.
+- **Adaptive system:** [`ADAPTIVE_CALIBRATION_SYSTEM.md`](ADAPTIVE_CALIBRATION_SYSTEM.md) — invisible UX, local profile model, adaptive loop, MVP phasing.
+- **Code (safe HUD + scaffold):** Lab telemetry panel bounded + scrollable; `lib/calibration/adaptive_calibration_profile.dart` (observe-only stubs, not wired). No gaze math or native pipeline changes.
+- **Next device run:** `flutter run -d R5CX2137BEB` → follow CALIBRATION_TUNING_PLAN § Practical device run (sections A–F).
 
 ---
 
@@ -243,6 +244,7 @@ Redact faces if sharing externally.
 |-----|------|
 | Smoke test plan | [`ANDROID_EYE_TRACKING_SMOKE_TEST_PLAN.md`](ANDROID_EYE_TRACKING_SMOKE_TEST_PLAN.md) |
 | Calibration tuning plan | [`CALIBRATION_TUNING_PLAN.md`](CALIBRATION_TUNING_PLAN.md) |
+| Adaptive calibration system | [`ADAPTIVE_CALIBRATION_SYSTEM.md`](ADAPTIVE_CALIBRATION_SYSTEM.md) |
 | Runtime README | [`integrations/eye-tracking/flutter-runtime/README.md`](../../integrations/eye-tracking/flutter-runtime/README.md) |
 | iTrack layout review | [`ITRACK_DIRTY_RUNTIME_REVIEW.md`](ITRACK_DIRTY_RUNTIME_REVIEW.md) |
 | MVP canonical flow | [`docs/MVP_CANONICAL_FLOW.md`](../MVP_CANONICAL_FLOW.md) |
