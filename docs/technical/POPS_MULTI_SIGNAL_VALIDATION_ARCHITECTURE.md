@@ -3,7 +3,7 @@
 **Date:** 2026-05-20  
 **Status:** Architecture / product decision — docs only  
 **Runtime (signal source, not sole validator):** [`integrations/eye-tracking/flutter-runtime/`](../../integrations/eye-tracking/flutter-runtime/)  
-**Related:** [`VERIFICATION_STABILITY_LAYER_V1.md`](VERIFICATION_STABILITY_LAYER_V1.md), [`Y_PLANE_TRANSPORT_EXPERIMENT.md`](Y_PLANE_TRANSPORT_EXPERIMENT.md), [`MVP_CANONICAL_FLOW.md`](../MVP_CANONICAL_FLOW.md)
+**Related:** [`PROOF_PACKET_SCHEMA_V0.md`](PROOF_PACKET_SCHEMA_V0.md), [`VERIFICATION_STABILITY_LAYER_V1.md`](VERIFICATION_STABILITY_LAYER_V1.md), [`Y_PLANE_TRANSPORT_EXPERIMENT.md`](Y_PLANE_TRANSPORT_EXPERIMENT.md), [`MVP_CANONICAL_FLOW.md`](../MVP_CANONICAL_FLOW.md)
 
 ---
 
@@ -90,7 +90,7 @@ sequenceDiagram
 | Stage | Responsibility |
 |-------|----------------|
 | **Capture** | Local runtime aggregates frames/events into summaries (dwell windows, blink events, stability confidence, completion) |
-| **Packetize** | Runtime exports a **proof packet** (JSON or signed blob) — no raw video by default |
+| **Packetize** | Runtime exports a **proof packet** (JSON or signed blob) — no raw video by default; field layout in [`PROOF_PACKET_SCHEMA_V0.md`](PROOF_PACKET_SCHEMA_V0.md) |
 | **Transmit** | Packet queued to backend or held for local/offline review |
 | **Review** | Validation engine scores layers; human admin optional in MVP |
 | **Settle** | Ledger moves reward from pending to final state |
@@ -180,7 +180,7 @@ Minimum viable POPS path for the promoted Android runtime + demo spine:
 
 | Component | MVP scope |
 |-----------|-----------|
-| Proof packet | Simple JSON: `sessionId`, `offerId`, `startedAt`, `endedAt`, dwell summaries, blink events, stability snapshot, `contentCompleted` |
+| Proof packet | [`PROOF_PACKET_SCHEMA_V0.md`](PROOF_PACKET_SCHEMA_V0.md) — MVP subset: session/offer ids, timestamps, `eyeTracking` + `interaction`, `signals` layer stubs, `review.status: pending` |
 | Signals | Local eye-tracking (zone, dwell), blink, content completion flag |
 | Validation | Client shows provisional earn; server or **manual/admin review** accepts packet → approve/reject |
 | UX | Reward **pending validation** screen; wallet pending tab |
@@ -217,7 +217,7 @@ Wire [`verification_stability_layer.dart`](../../integrations/eye-tracking/flutt
 
 Concrete next engineering items (ordered):
 
-1. Define proof packet schema v0 and emit on session end from Flutter runtime.
+1. ~~Define proof packet schema v0~~ — done: [`PROOF_PACKET_SCHEMA_V0.md`](PROOF_PACKET_SCHEMA_V0.md); next: emit on session end from Flutter runtime.
 2. Add `pending_validation` to demo wallet + reward reveal copy.
 3. Plumb stability layer snapshot into packet.
 4. Stub review API (accept packet → return approved/rejected/partial).
@@ -243,6 +243,7 @@ This framing supports fraud resistance, remote and second-screen scenarios, and 
 
 | Doc | Role |
 |-----|------|
+| [`PROOF_PACKET_SCHEMA_V0.md`](PROOF_PACKET_SCHEMA_V0.md) | JSON contract: runtime → POPS → pending reward |
 | [`VERIFICATION_STABILITY_LAYER_V1.md`](VERIFICATION_STABILITY_LAYER_V1.md) | Local proof confidence bands |
 | [`Y_PLANE_TRANSPORT_EXPERIMENT.md`](Y_PLANE_TRANSPORT_EXPERIMENT.md) | Signal throughput optimization |
 | [`EYE_TRACKING_INTEGRATION_MAP.md`](EYE_TRACKING_INTEGRATION_MAP.md) | Runtime placement in [ i ] |

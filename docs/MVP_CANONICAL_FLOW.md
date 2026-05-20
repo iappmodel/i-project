@@ -96,6 +96,8 @@ flowchart LR
 | **Missing implementation** | Gates are cosmetic — no backend `process-earning`; no fraud engine; no live gaze signal feeding gates; Flutter `governance_kernel.dart` not connected to demo. |
 | **MVP priority** | **Required** |
 
+**POPS / proof packet (target flow):** After verification completes, the device should emit [**Proof Packet v0**](technical/PROOF_PACKET_SCHEMA_V0.md) (derived signals only; schema defined, runtime emission not wired yet). The wallet should show **Pending Validation** until POPS review settles the reward — not instant available balance. See [`POPS_MULTI_SIGNAL_VALIDATION_ARCHITECTURE.md`](technical/POPS_MULTI_SIGNAL_VALIDATION_ARCHITECTURE.md).
+
 ---
 
 ### Step 5 — User earns
