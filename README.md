@@ -11,7 +11,7 @@ Unified repository for the rescued [ i ] product archive, navigation launcher, i
 | **Eye-tracking import** | `integrations/eye-tracking/` | Copy of `~/eye_tracking_app` (source left untouched on disk) |
 | **Technical docs** | `docs/technical/` | Integration maps and cross-project notes |
 | **Masterbrain** | `masterbrain/` | Chat inventory, ingestion templates, category memory (markdown only) |
-| **Future app workspace** | *(not created yet)* | Planned home for React/Vite or Flutter MVP wired to archive + gaze |
+| **Canonical app workspace** | `app/` | Vite + React investor MVP demo shell — `cd app && npm run dev` |
 
 ## Start here
 
@@ -19,6 +19,11 @@ Unified repository for the rescued [ i ] product archive, navigation launcher, i
 2. Read **`00_README/README_FIRST.md`** for migration context.
 3. For eye-tracking: **`docs/technical/EYE_TRACKING_INTEGRATION_MAP.md`**.
 4. For chat history index: **`masterbrain/00_INDEX.md`** → **`masterbrain/01_chat_inventory/CHAT_LEDGER.md`**.
+5. For the canonical investor demo app: **`app/`** — see **`docs/APP_WORKSPACE_BOOTSTRAP.md`**.
+
+## Canonical app workspace
+
+The first real application workspace lives at **`app/`** (Vite + React + TypeScript). It runs the investor MVP flow from **`docs/MVP_CANONICAL_FLOW.md`** with mocked gaze and wallet state. Bootstrap notes: **`docs/APP_WORKSPACE_BOOTSTRAP.md`**. Archive navigation: **`prototype-app/index.html`**.
 
 ## Eye-tracking source of truth
 
