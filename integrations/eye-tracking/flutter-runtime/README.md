@@ -1,6 +1,6 @@
 # Eye-tracking Flutter runtime (promoted)
 
-**Status:** Promoted working copy for Android device verification (2026-05-20).  
+**Status:** Promoted working copy; physical Android smoke test **partial pass** on 2026-05-20 ([result doc](../../../docs/technical/ANDROID_EYE_TRACKING_SMOKE_TEST_RESULT.md)).  
 **Recovery layer:** [`../source-runtime-candidates/`](../source-runtime-candidates/) (unchanged originals)
 
 ## Source base
@@ -12,6 +12,17 @@
 | **Provenance** | [`PROMOTION_MANIFEST.md`](PROMOTION_MANIFEST.md), [`DELTA_NOTES.md`](DELTA_NOTES.md) |
 | **Technical report** | [`../../../docs/technical/FLUTTER_RUNTIME_PROMOTION_REPORT.md`](../../../docs/technical/FLUTTER_RUNTIME_PROMOTION_REPORT.md) |
 | **Android smoke test** | [`../../../docs/technical/ANDROID_EYE_TRACKING_SMOKE_TEST_PLAN.md`](../../../docs/technical/ANDROID_EYE_TRACKING_SMOKE_TEST_PLAN.md) |
+| **Android smoke test result** | [`../../../docs/technical/ANDROID_EYE_TRACKING_SMOKE_TEST_RESULT.md`](../../../docs/technical/ANDROID_EYE_TRACKING_SMOKE_TEST_RESULT.md) |
+
+## Physical Android smoke test result
+
+**Date:** 2026-05-20 · **Device:** Samsung Galaxy S24 Ultra (`R5CX2137BEB` / SM-S928U)
+
+First on-device proof on promoted runtime: debug APK built and installed, front camera **1** opened and reached **ACTIVE**, image stream started, `vision_channel` / native `frame_perf` metrics emitted (processed FPS ~4–8 under load). Initial run hit an unbounded `Stack` layout crash in `gaze_zone_buttons.dart`; fixed in commit `d24a440` (LayoutBuilder + Column overlay). Post-fix: LEFT / CENTER / RIGHT gaze-zone overlay and live telemetry rendered without layout assertions.
+
+**Verdict:** real camera runtime **PASS**; overlay after fix **PASS**; full production verification (calibration, HUD, 60s stability) **not yet**.
+
+Full log excerpts, remaining issues, and next tasks: [`../../../docs/technical/ANDROID_EYE_TRACKING_SMOKE_TEST_RESULT.md`](../../../docs/technical/ANDROID_EYE_TRACKING_SMOKE_TEST_RESULT.md).
 
 ## What this runtime does
 

@@ -2,6 +2,7 @@
 
 **Date:** 2026-05-20  
 **Runtime:** [`integrations/eye-tracking/flutter-runtime/`](../../integrations/eye-tracking/flutter-runtime/)  
+**Result:** [`ANDROID_EYE_TRACKING_SMOKE_TEST_RESULT.md`](ANDROID_EYE_TRACKING_SMOKE_TEST_RESULT.md) (2026-05-20 — Samsung SM-S928U, partial pass)  
 **Related:** [`FLUTTER_RUNTIME_PROMOTION_REPORT.md`](FLUTTER_RUNTIME_PROMOTION_REPORT.md), [`MVP_CANONICAL_FLOW.md`](../MVP_CANONICAL_FLOW.md)
 
 ---
@@ -251,6 +252,7 @@ Next integration steps (documented elsewhere, not part of this smoke): map `Visi
 
 | Doc | Path |
 |-----|------|
+| **Smoke test result (2026-05-20)** | [`ANDROID_EYE_TRACKING_SMOKE_TEST_RESULT.md`](ANDROID_EYE_TRACKING_SMOKE_TEST_RESULT.md) |
 | Runtime README | [`integrations/eye-tracking/flutter-runtime/README.md`](../../integrations/eye-tracking/flutter-runtime/README.md) |
 | Promotion report | [`FLUTTER_RUNTIME_PROMOTION_REPORT.md`](FLUTTER_RUNTIME_PROMOTION_REPORT.md) |
 | Repo hygiene | [`FLUTTER_RUNTIME_REPO_HYGIENE.md`](FLUTTER_RUNTIME_REPO_HYGIENE.md) |
