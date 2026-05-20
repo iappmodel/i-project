@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@supabase/supabase-js": ["../../../services/api/node_modules/@supabase/supabase-js"]
+    },
+    "typeRoots": [
+      "../../../services/api/node_modules/@types",
+      "../../../node_modules/@types",
+      "../../pops/node_modules/@types"
+    ]
+  },
+  "include": ["./**/*.ts", "./**/*.tsx", "../../lib/supabase/**/*.ts"]
+}

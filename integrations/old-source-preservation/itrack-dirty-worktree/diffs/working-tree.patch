@@ -1,0 +1,904 @@
+diff --git a/android/app/src/main/kotlin/com/example/eye_tracking_app/MainActivity.kt b/android/app/src/main/kotlin/com/example/eye_tracking_app/MainActivity.kt
+index 5e2c016..6cad722 100644
+--- a/android/app/src/main/kotlin/com/example/eye_tracking_app/MainActivity.kt
++++ b/android/app/src/main/kotlin/com/example/eye_tracking_app/MainActivity.kt
+@@ -1,5 +1,6 @@
+ package com.example.eye_tracking_app
+ 
++import android.graphics.Bitmap
+ import android.graphics.BitmapFactory
+ import android.os.Bundle
+ import io.flutter.embedding.android.FlutterActivity
+@@ -25,34 +26,23 @@ class MainActivity : FlutterActivity() {
+                     }
+                     METHOD_PROCESS_FRAME -> {
+                         val totalStartNs = System.nanoTime()
+-                        val bytes = call.arguments as? ByteArray
+-                        if (bytes == null) {
+-                            result.error(
++                        when (val args = call.arguments) {
++                            is Map<*, *> -> {
++                                @Suppress("UNCHECKED_CAST")
++                                processFrameFromMap(
++                                    args as Map<String, Any?>,
++                                    totalStartNs,
++                                    result,
++                                )
++                            }
++                            is ByteArray -> {
++                                processFrameFromJpegBytes(args, totalStartNs, result)
++                            }
++                            else -> result.error(
+                                 "INVALID_ARGUMENT",
+-                                "processFrame expects Uint8List (JPEG/PNG image bytes)",
+-                                null
++                                "processFrame expects Map (y8/jpeg) or legacy ByteArray (JPEG)",
++                                null,
+                             )
+-                            return@setMethodCallHandler
+-                        }
+-                        var decodeNs = 0L
+-                        var bitmap = null as android.graphics.Bitmap?
+-                        decodeNs = measureNanoTime {
+-                            bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+-                        }
+-                        if (bitmap == null) {
+-                            val payload = HashMap<String, Any>(VisionProcessor.emptyPayload())
+-                            payload["nativeDecodeMs"] = decodeNs / 1_000_000.0
+-                            payload["nativeTotalMs"] = (System.nanoTime() - totalStartNs) / 1_000_000.0
+-                            result.success(payload)
+-                            return@setMethodCallHandler
+-                        }
+-                        try {
+-                            val landmarks = HashMap<String, Any>(VisionProcessor.process(bitmap))
+-                            landmarks["nativeDecodeMs"] = decodeNs / 1_000_000.0
+-                            landmarks["nativeTotalMs"] = (System.nanoTime() - totalStartNs) / 1_000_000.0
+-                            result.success(landmarks)
+-                        } finally {
+-                            bitmap.recycle()
+                         }
+                     }
+                     else -> result.notImplemented()
+@@ -60,6 +50,129 @@ class MainActivity : FlutterActivity() {
+             }
+     }
+ 
++    private fun processFrameFromMap(
++        map: Map<String, Any?>,
++        totalStartNs: Long,
++        result: MethodChannel.Result,
++    ) {
++        when (map["format"] as? String) {
++            "y8" -> {
++                val w = (map["width"] as? Number)?.toInt() ?: 0
++                val h = (map["height"] as? Number)?.toInt() ?: 0
++                val rowStride = (map["rowStride"] as? Number)?.toInt() ?: w
++                val yBytes = map["bytes"] as? ByteArray
++                if (yBytes == null || w <= 0 || h <= 0 || yBytes.size < w * h) {
++                    val payload = HashMap<String, Any>(VisionProcessor.emptyPayload())
++                    payload["nativeDecodeMs"] = 0.0
++                    payload["nativeTotalMs"] =
++                        (System.nanoTime() - totalStartNs) / 1_000_000.0
++                    result.success(payload)
++                    return
++                }
++                var decodeNs = 0L
++                var bitmap: Bitmap? = null
++                decodeNs = measureNanoTime {
++                    bitmap = y8ToArgbBitmap(yBytes, w, h, rowStride)
++                }
++                if (bitmap == null) {
++                    val payload = HashMap<String, Any>(VisionProcessor.emptyPayload())
++                    payload["nativeDecodeMs"] = decodeNs / 1_000_000.0
++                    payload["nativeTotalMs"] =
++                        (System.nanoTime() - totalStartNs) / 1_000_000.0
++                    result.success(payload)
++                    return
++                }
++                try {
++                    val landmarks = HashMap<String, Any>(VisionProcessor.process(bitmap))
++                    landmarks["nativeDecodeMs"] = decodeNs / 1_000_000.0
++                    landmarks["nativeTotalMs"] =
++                        (System.nanoTime() - totalStartNs) / 1_000_000.0
++                    result.success(landmarks)
++                } finally {
++                    bitmap.recycle()
++                }
++            }
++            "jpeg" -> {
++                val bytes = map["bytes"] as? ByteArray
++                if (bytes == null) {
++                    result.error(
++                        "INVALID_ARGUMENT",
++                        "processFrame jpeg map missing bytes",
++                        null,
++                    )
++                    return
++                }
++                processFrameFromJpegBytes(bytes, totalStartNs, result)
++            }
++            else -> result.error(
++                "INVALID_ARGUMENT",
++                "processFrame map missing or unknown format: ${map["format"]}",
++                null,
++            )
++        }
++    }
++
++    private fun processFrameFromJpegBytes(
++        bytes: ByteArray,
++        totalStartNs: Long,
++        result: MethodChannel.Result,
++    ) {
++        var decodeNs = 0L
++        var bitmap: Bitmap? = null
++        decodeNs = measureNanoTime {
++            bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
++        }
++        if (bitmap == null) {
++            val payload = HashMap<String, Any>(VisionProcessor.emptyPayload())
++            payload["nativeDecodeMs"] = decodeNs / 1_000_000.0
++            payload["nativeTotalMs"] = (System.nanoTime() - totalStartNs) / 1_000_000.0
++            result.success(payload)
++            return
++        }
++        try {
++            val landmarks = HashMap<String, Any>(VisionProcessor.process(bitmap))
++            landmarks["nativeDecodeMs"] = decodeNs / 1_000_000.0
++            landmarks["nativeTotalMs"] = (System.nanoTime() - totalStartNs) / 1_000_000.0
++            result.success(landmarks)
++        } finally {
++            bitmap.recycle()
++        }
++    }
++
++    /** Luma-only buffer → ARGB_8888 for MediaPipe (no JPEG decode). */
++    private fun y8ToArgbBitmap(
++        yBytes: ByteArray,
++        width: Int,
++        height: Int,
++        rowStride: Int,
++    ): Bitmap {
++        val pixels = IntArray(width * height)
++        if (rowStride == width) {
++            var i = 0
++            while (i < width * height) {
++                val lum = yBytes[i].toInt() and 0xff
++                pixels[i] = -0x1000000 or (lum shl 16) or (lum shl 8) or lum
++                i++
++            }
++        } else {
++            var out = 0
++            var y = 0
++            while (y < height) {
++                val rowBase = y * rowStride
++                var x = 0
++                while (x < width) {
++                    val lum = yBytes[rowBase + x].toInt() and 0xff
++                    pixels[out++] = -0x1000000 or (lum shl 16) or (lum shl 8) or lum
++                    x++
++                }
++                y++
++            }
++        }
++        return Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).also {
++            it.setPixels(pixels, 0, width, 0, 0, width, height)
++        }
++    }
++
+     companion object {
+         private const val VISION_CHANNEL = "vision_channel"
+         private const val METHOD_PROCESS_FRAME = "processFrame"
+diff --git a/android/build/reports/problems/problems-report.html b/android/build/reports/problems/problems-report.html
+index d386b5b..4008c83 100644
+--- a/android/build/reports/problems/problems-report.html
++++ b/android/build/reports/problems/problems-report.html
+@@ -650,7 +650,7 @@ code + .copy-button {
+ <script type="text/javascript">
+ function configurationCacheProblems() { return (
+ // begin-report-data
+-{"diagnostics":[{"problem":[{"text":"Executing Gradle on JVM versions 16 and lower has been deprecated."}],"severity":"WARNING","problemDetails":[{"text":"This will fail with an error in Gradle 9.0."}],"contextualLabel":"Executing Gradle on JVM versions 16 and lower has been deprecated.","documentationLink":"https://docs.gradle.org/8.12/userguide/upgrading_version_8.html#minimum_daemon_jvm_version","problemId":[{"name":"deprecation","displayName":"Deprecation"},{"name":"executing-gradle-on-jvm-versions-and-lower","displayName":"Executing Gradle on JVM versions 16 and lower has been deprecated."}],"solutions":[[{"text":"Use JVM 17 or greater to execute Gradle. Projects can continue to use older JVM versions via toolchains."}]]},{"problem":[{"text":"No variants exist that would match the request"}],"severity":"ERROR","contextualLabel":"Dependency requires at least JVM runtime version 11. This build uses a Java 8 JVM.","documentationLink":"https://docs.gradle.org/8.12/userguide/variant_model.html#sec:variant-select-errors","problemId":[{"name":"dependency-variant-resolution","displayName":"Variant resolution"},{"name":"no-compatible-variants","displayName":"No variants exist that would match the request"}]}],"problemsReport":{"totalProblemCount":2,"requestedTasks":":app:compileDebugKotlin","documentationLink":"https://docs.gradle.org/8.12/userguide/problems-report.html","documentationLinkCaption":"Problem report","summaries":[]}}
++{"diagnostics":[{"problem":[{"text":"Executing Gradle on JVM versions 16 and lower has been deprecated."}],"severity":"WARNING","problemDetails":[{"text":"This will fail with an error in Gradle 9.0."}],"contextualLabel":"Executing Gradle on JVM versions 16 and lower has been deprecated.","documentationLink":"https://docs.gradle.org/8.12/userguide/upgrading_version_8.html#minimum_daemon_jvm_version","problemId":[{"name":"deprecation","displayName":"Deprecation"},{"name":"executing-gradle-on-jvm-versions-and-lower","displayName":"Executing Gradle on JVM versions 16 and lower has been deprecated."}],"solutions":[[{"text":"Use JVM 17 or greater to execute Gradle. Projects can continue to use older JVM versions via toolchains."}]]},{"problem":[{"text":"No variants exist that would match the request"}],"severity":"ERROR","contextualLabel":"Dependency requires at least JVM runtime version 11. This build uses a Java 8 JVM.","documentationLink":"https://docs.gradle.org/8.12/userguide/variant_model.html#sec:variant-select-errors","problemId":[{"name":"dependency-variant-resolution","displayName":"Variant resolution"},{"name":"no-compatible-variants","displayName":"No variants exist that would match the request"}]}],"problemsReport":{"totalProblemCount":2,"requestedTasks":"clean","documentationLink":"https://docs.gradle.org/8.12/userguide/problems-report.html","documentationLinkCaption":"Problem report","summaries":[]}}
+ // end-report-data
+ );}
+ </script>
+diff --git a/lib/gaze_zone_buttons.dart b/lib/gaze_zone_buttons.dart
+index b02bb3d..b8962ef 100644
+--- a/lib/gaze_zone_buttons.dart
++++ b/lib/gaze_zone_buttons.dart
+@@ -7,8 +7,9 @@ import 'intent_influence_ui.dart';
+ /// Three gaze targets (LEFT / CENTER / RIGHT) with animated focus and optional
+ /// selection highlight — intended as a dwell+blink calibration or demo UI.
+ ///
+-/// Layout matches a full-height [Stack]: [Row] of targets at the top and an
+-/// optional bottom banner `SELECTED: …` when [showSelectionLabel] is true.
++/// Layout: [Row] of targets at the top and an optional bottom banner
++/// `SELECTED: …` when [showSelectionLabel] is true (column + spacer when height
++/// is bounded; compact column when height is unbounded).
+ ///
+ /// When [influenceListenable] is set, the predicted target zone uses
+ /// [expandHitbox] / [opacityFromWeight] from [intent_influence_ui] (presentation only).
+@@ -66,31 +67,44 @@ class GazeZoneButtons extends StatelessWidget {
+ 
+       final selectedLine = selected.isEmpty ? '—' : selected;
+       final bannerSize = compact ? 22.0 : 28.0;
+-
+-      return Stack(
+-        fit: StackFit.expand,
+-        children: [
+-          Positioned(
+-            top: 0,
+-            left: 0,
+-            right: 0,
+-            child: row,
++      final banner = Center(
++        child: Text(
++          'SELECTED: $selectedLine',
++          style: TextStyle(
++            color: Colors.white,
++            fontSize: bannerSize,
+           ),
+-          Positioned(
+-            bottom: selectionBannerBottom,
+-            left: 0,
+-            right: 0,
+-            child: Center(
+-              child: Text(
+-                'SELECTED: $selectedLine',
+-                style: TextStyle(
+-                  color: Colors.white,
+-                  fontSize: bannerSize,
+-                ),
++        ),
++      );
++
++      // Avoid [Stack] + [Positioned] top/bottom here: that path requires a finite
++      // max height; some ancestors still pass unbounded height. [Column] + [Spacer]
++      // pins the banner when height is bounded; a tight [Column] is used otherwise.
++      return LayoutBuilder(
++        builder: (context, constraints) {
++          if (!constraints.hasBoundedHeight) {
++            return Column(
++              mainAxisSize: MainAxisSize.min,
++              crossAxisAlignment: CrossAxisAlignment.stretch,
++              children: [
++                row,
++                SizedBox(height: selectionBannerBottom),
++                banner,
++              ],
++            );
++          }
++          return Column(
++            crossAxisAlignment: CrossAxisAlignment.stretch,
++            children: [
++              row,
++              const Spacer(),
++              Padding(
++                padding: const EdgeInsets.only(bottom: selectionBannerBottom),
++                child: banner,
+               ),
+-            ),
+-          ),
+-        ],
++            ],
++          );
++        },
+       );
+     }
+ 
+diff --git a/lib/main.dart b/lib/main.dart
+index 46bfd90..ae4deaf 100644
+--- a/lib/main.dart
++++ b/lib/main.dart
+@@ -4,6 +4,7 @@ import 'dart:math';
+ import 'package:camera/camera.dart';
+ import 'package:flutter/foundation.dart';
+ import 'package:flutter/material.dart';
++import 'package:flutter/scheduler.dart';
+ import 'package:flutter/services.dart';
+ import 'package:image/image.dart' as img;
+ import 'package:permission_handler/permission_handler.dart';
+@@ -101,49 +102,153 @@ bool matchesPrediction(IntentAction action, List<PredictedIntent> predictions) {
+   });
+ }
+ 
++/// Wider edge cap for frames sent to Android vision (MediaPipe). Landmarks are
++/// normalized; smaller bitmaps cut Dart encode, channel transfer, and native work.
++const int _kVisionPipelineMaxEdge = 512;
++
+ /// JPEG bytes for Android `vision_channel` / [BitmapFactory.decodeByteArray].
+ Uint8List cameraImageToJpegBytes(CameraImage image) {
+   final img.Image bitmap;
+   switch (image.format.group) {
+     case ImageFormatGroup.bgra8888:
+-      bitmap = _bgraCameraImageToImage(image);
++      bitmap = _bgraCameraImageToImage(image, maxEdge: _kVisionPipelineMaxEdge);
+       break;
+     case ImageFormatGroup.yuv420:
+     default:
+-      bitmap = _yuv420LumaGrayscaleImage(image);
++      bitmap = _yuv420LumaGrayscaleImage(image, maxEdge: _kVisionPipelineMaxEdge);
+       break;
+   }
+   return Uint8List.fromList(img.encodeJpg(bitmap, quality: 75));
+ }
+ 
+-img.Image _bgraCameraImageToImage(CameraImage image) {
++/// Y-plane bytes for vision (same footprint as [_yuv420LumaGrayscaleImage]).
++(int outW, int outH, Uint8List bytes) _yuv420Y8PlaneForVision(
++  CameraImage image, {
++  required int maxEdge,
++}) {
++  final yPlane = image.planes[0];
++  final w = image.width;
++  final h = image.height;
++  final row = yPlane.bytesPerRow;
++  final outW = w <= maxEdge && h <= maxEdge
++      ? w
++      : (w >= h ? maxEdge : (maxEdge * w / h).round());
++  final outH = w <= maxEdge && h <= maxEdge
++      ? h
++      : (h >= w ? maxEdge : (maxEdge * h / w).round());
++  final out = Uint8List(outW * outH);
++  if (w <= maxEdge && h <= maxEdge) {
++    if (row == w) {
++      out.setRange(0, w * h, yPlane.bytes, 0);
++    } else {
++      for (var y = 0; y < h; y++) {
++        out.setRange(y * w, y * w + w, yPlane.bytes, y * row);
++      }
++    }
++    return (outW, outH, out);
++  }
++  final sx = w / outW;
++  final sy = h / outH;
++  var oi = 0;
++  for (var oy = 0; oy < outH; oy++) {
++    final ySrc = ((oy + 0.5) * sy).floor().clamp(0, h - 1);
++    for (var ox = 0; ox < outW; ox++) {
++      final xSrc = ((ox + 0.5) * sx).floor().clamp(0, w - 1);
++      out[oi++] = yPlane.bytes[ySrc * row + xSrc];
++    }
++  }
++  return (outW, outH, out);
++}
++
++/// Argument map for `vision_channel` `processFrame`: `y8` on YUV420 (no JPEG),
++/// `jpeg` on BGRA8888 (encode path unchanged).
++Map<String, Object> cameraImageToVisionChannelPayload(CameraImage image) {
++  switch (image.format.group) {
++    case ImageFormatGroup.yuv420:
++      final packed = _yuv420Y8PlaneForVision(
++        image,
++        maxEdge: _kVisionPipelineMaxEdge,
++      );
++      return {
++        'format': 'y8',
++        'width': packed.$1,
++        'height': packed.$2,
++        'rowStride': packed.$1,
++        'bytes': packed.$3,
++      };
++    case ImageFormatGroup.bgra8888:
++    default:
++      return {
++        'format': 'jpeg',
++        'bytes': cameraImageToJpegBytes(image),
++      };
++  }
++}
++
++img.Image _bgraCameraImageToImage(CameraImage image, {required int maxEdge}) {
+   final plane = image.planes[0];
+   final w = image.width;
+   final h = image.height;
+   final rowStride = plane.bytesPerRow;
+-  final out = img.Image(width: w, height: h);
+-  for (var y = 0; y < h; y++) {
+-    for (var x = 0; x < w; x++) {
+-      final i = y * rowStride + x * 4;
++  if (w <= maxEdge && h <= maxEdge) {
++    final out = img.Image(width: w, height: h);
++    for (var y = 0; y < h; y++) {
++      for (var x = 0; x < w; x++) {
++        final i = y * rowStride + x * 4;
++        final b = plane.bytes[i];
++        final g = plane.bytes[i + 1];
++        final r = plane.bytes[i + 2];
++        out.setPixelRgb(x, y, r, g, b);
++      }
++    }
++    return out;
++  }
++  final outW = w >= h ? maxEdge : (maxEdge * w / h).round();
++  final outH = h >= w ? maxEdge : (maxEdge * h / w).round();
++  final sx = w / outW;
++  final sy = h / outH;
++  final out = img.Image(width: outW, height: outH);
++  for (var oy = 0; oy < outH; oy++) {
++    final ySrc = ((oy + 0.5) * sy).floor().clamp(0, h - 1);
++    for (var ox = 0; ox < outW; ox++) {
++      final xSrc = ((ox + 0.5) * sx).floor().clamp(0, w - 1);
++      final i = ySrc * rowStride + xSrc * 4;
+       final b = plane.bytes[i];
+       final g = plane.bytes[i + 1];
+       final r = plane.bytes[i + 2];
+-      out.setPixelRgb(x, y, r, g, b);
++      out.setPixelRgb(ox, oy, r, g, b);
+     }
+   }
+   return out;
+ }
+ 
+-/// Simple Y-plane–only grayscale (full resolution, respects row stride).
+-img.Image _yuv420LumaGrayscaleImage(CameraImage image) {
++/// Y-plane–only grayscale (nearest-neighbor downscale when wider than [maxEdge]).
++img.Image _yuv420LumaGrayscaleImage(CameraImage image, {required int maxEdge}) {
+   final yPlane = image.planes[0];
+   final w = image.width;
+   final h = image.height;
+-  final out = img.Image(width: w, height: h);
+-  for (var y = 0; y < h; y++) {
+-    for (var x = 0; x < w; x++) {
+-      final v = yPlane.bytes[y * yPlane.bytesPerRow + x];
+-      out.setPixelRgb(x, y, v, v, v);
++  final row = yPlane.bytesPerRow;
++  if (w <= maxEdge && h <= maxEdge) {
++    final out = img.Image(width: w, height: h);
++    for (var y = 0; y < h; y++) {
++      for (var x = 0; x < w; x++) {
++        final v = yPlane.bytes[y * row + x];
++        out.setPixelRgb(x, y, v, v, v);
++      }
++    }
++    return out;
++  }
++  final outW = w >= h ? maxEdge : (maxEdge * w / h).round();
++  final outH = h >= w ? maxEdge : (maxEdge * h / w).round();
++  final sx = w / outW;
++  final sy = h / outH;
++  final out = img.Image(width: outW, height: outH);
++  for (var oy = 0; oy < outH; oy++) {
++    final ySrc = ((oy + 0.5) * sy).floor().clamp(0, h - 1);
++    for (var ox = 0; ox < outW; ox++) {
++      final xSrc = ((ox + 0.5) * sx).floor().clamp(0, w - 1);
++      final v = yPlane.bytes[ySrc * row + xSrc];
++      out.setPixelRgb(ox, oy, v, v, v);
+     }
+   }
+   return out;
+@@ -264,7 +369,10 @@ final class _FramePerfMetrics {
+   int processedCount = 0;
+   int droppedThrottle = 0;
+   int droppedBusy = 0;
+-  int droppedInvalid = 0;
++  /// Hard no-face / hold expired (`!isValidFrame` in [_updateFrame]).
++  int droppedInvalidNoFace = 0;
++  /// Face held but gaze X/Y null or non-finite after drift adjustment.
++  int droppedInvalidGaze = 0;
+ 
+   double encodeTotalMs = 0;
+   int encodeSamples = 0;
+@@ -283,7 +391,8 @@ final class _FramePerfMetrics {
+     processedCount = 0;
+     droppedThrottle = 0;
+     droppedBusy = 0;
+-    droppedInvalid = 0;
++    droppedInvalidNoFace = 0;
++    droppedInvalidGaze = 0;
+     encodeTotalMs = 0;
+     encodeSamples = 0;
+     channelTotalMs = 0;
+@@ -474,6 +583,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+   /// does not affect dwell/select logic. UI may listen for hitbox / opacity / magnetism.
+   final ValueNotifier<IntentInfluence?> _influenceNotifier =
+       ValueNotifier<IntentInfluence?>(null);
++  IntentInfluence? _latestInfluence;
+ 
+   final EvolutionSignalBuffer _evolutionSignalBuffer = EvolutionSignalBuffer();
+   final UIEvolutionEngine _uiEvolutionEngine = UIEvolutionEngine();
+@@ -524,6 +634,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+   int _lastFrameMs = 0;
+   int _lastLogTime = 0;
+   int _lastPerfSummaryMs = 0;
++  int _lastInvalidFrameDebugMs = 0;
+   final _FramePerfMetrics _framePerf = _FramePerfMetrics();
+ 
+   /// Reuse last good native frame for this long when detection drops (reduces flicker).
+@@ -551,7 +662,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+       ValueNotifier<Offset>(const Offset(200, 400));
+ 
+   final PointerController _pointerController = PointerController();
+-  final AttentionKernel _attentionKernel = AttentionKernel();
++  late final AttentionKernel _attentionKernel;
+ 
+   final ValueNotifier<DebugState> _debugNotifier = ValueNotifier<DebugState>(
+     const DebugState(
+@@ -593,7 +704,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+   final List<ActionMemory> _actionHistory = [];
+   static const int _kMaxActionHistory = 32;
+   final TrajectoryBuffer trajectoryBuffer = TrajectoryBuffer();
+-  final UIPreloader uiPreloader = UIPreloader();
++  late final UIPreloader uiPreloader;
+   final TemporalPredictor _predictor = TemporalPredictor();
+   final predictive_preloader.UIPreloader _preloader =
+       predictive_preloader.UIPreloader();
+@@ -711,7 +822,11 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+   void _setCalibrationPhase(CalibrationPhase phase) {
+     if (_calibrationPhase == phase) return;
+     if (!mounted) return;
+-    setState(() => _calibrationPhase = phase);
++    _calibrationPhase = phase;
++    _safeUiUpdate(() {
++      if (!mounted) return;
++      setState(() {});
++    });
+   }
+ 
+   void _refreshCalibrationStateMachine() {
+@@ -745,15 +860,96 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+   /// Animates to 1.0 via [AnimatedScale] after first frame.
+   double _previewScale = _kPreviewScaleRevealStart;
+ 
++  final List<VoidCallback> _pendingUiUpdates = <VoidCallback>[];
++  bool _uiUpdateScheduled = false;
++
++  bool get _shouldDeferUiUpdate {
++    switch (SchedulerBinding.instance.schedulerPhase) {
++      case SchedulerPhase.transientCallbacks:
++      case SchedulerPhase.midFrameMicrotasks:
++      case SchedulerPhase.persistentCallbacks:
++      case SchedulerPhase.postFrameCallbacks:
++        return true;
++      case SchedulerPhase.idle:
++        return false;
++    }
++  }
++
++  void _safeUiUpdate(VoidCallback fn) {
++    if (!mounted) return;
++    if (_shouldDeferUiUpdate) {
++      _pendingUiUpdates.add(fn);
++      if (_uiUpdateScheduled) return;
++      _uiUpdateScheduled = true;
++      WidgetsBinding.instance.addPostFrameCallback((_) {
++        _uiUpdateScheduled = false;
++        if (!mounted) return;
++        final updates = List<VoidCallback>.of(_pendingUiUpdates);
++        _pendingUiUpdates.clear();
++        for (final update in updates) {
++          if (!mounted) return;
++          update();
++        }
++      });
++      SchedulerBinding.instance.ensureVisualUpdate();
++      return;
++    }
++    fn();
++  }
++
++  void _safeDebugUiUpdate(DebugState Function(DebugState current) update) {
++    _safeUiUpdate(() {
++      _debugNotifier.value = update(_debugNotifier.value);
++    });
++  }
++
++  void _safeInfluenceUiUpdate(IntentInfluence? value) {
++    _safeUiUpdate(() {
++      if (_influenceNotifier.value != value) {
++        _influenceNotifier.value = value;
++      }
++    });
++  }
++
++  void _safePointerUiUpdate(Offset value) {
++    _safeUiUpdate(() {
++      if (_pointerNotifier.value != value) {
++        _pointerNotifier.value = value;
++      }
++    });
++  }
++
++  void _safeBlinkCountUiUpdate(int value) {
++    _safeUiUpdate(() {
++      if (_blinkCountNotifier.value != value) {
++        _blinkCountNotifier.value = value;
++      }
++    });
++  }
++
++  void _updateViewportSnapshot(Size nextViewSize, double nextSafeTop) {
++    if (_viewSize == nextViewSize && _overlaySafeTop == nextSafeTop) return;
++    _safeUiUpdate(() {
++      _viewSize = nextViewSize;
++      _overlaySafeTop = nextSafeTop;
++    });
++  }
++
+   @override
+   void initState() {
+     super.initState();
++    _attentionKernel = AttentionKernel();
++    uiPreloader = UIPreloader();
+     _intentEngine = IntentEngine(LearningStore(), System.bus);
+     _intentPredictor =
+         GazeCollectiveIntentPredictor(_intentEngine.learningStore.collectiveZones);
+     WidgetsBinding.instance.addPostFrameCallback((_) {
+       if (!mounted) return;
+-      setState(() => _previewScale = 1.0);
++      _previewScale = 1.0;
++      _safeUiUpdate(() {
++        if (!mounted) return;
++        setState(() {});
++      });
+       if (_canStreamImages) {
+         unawaited(_startImageStream());
+       }
+@@ -892,7 +1088,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+     _dwellSatisfiedForStint = true;
+     _dwellProgress = 1;
+     _displaySelectedZone = zone;
+-    _debugNotifier.value = _debugNotifier.value.copyWith(selected: zone);
++    _safeDebugUiUpdate((debug) => debug.copyWith(selected: zone));
+     _selectedAnnouncedForStint = true;
+     _intentEngine.syncDwellReady(true);
+     debugPrint('DWELL_READY: $zone');
+@@ -904,9 +1100,9 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+     if (!_isTrackingState) return false;
+     _selectedAnnouncedForStint = true;
+     _displaySelectedZone = zone;
+-    _debugNotifier.value = _debugNotifier.value.copyWith(selected: zone);
++    _safeDebugUiUpdate((debug) => debug.copyWith(selected: zone));
+     _intentEngine.learningStore.collectiveZones.recordSelection(zone);
+-    final IntentInfluence? inf = _influenceNotifier.value;
++    final IntentInfluence? inf = _latestInfluence;
+     if (inf != null) {
+       final int now = DateTime.now().millisecondsSinceEpoch;
+       recordEvolutionSignal(
+@@ -980,7 +1176,19 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+       final faceDetected = face != null;
+ 
+       if (!isValidFrame) {
+-        _framePerf.droppedInvalid++;
++        _framePerf.droppedInvalidNoFace++;
++        if (kDebugMode && now - _lastInvalidFrameDebugMs >= 1000) {
++          _lastInvalidFrameDebugMs = now;
++          if (fresh == null) {
++            debugPrint(
++              '[vision_frame] no valid face: native result null or non-map',
++            );
++          } else {
++            debugPrint(
++              '[vision_frame] no valid face: landmarks=${fresh.landmarks.length} hasFace=${fresh.hasFace}',
++            );
++          }
++        }
+         _faceLocked = false;
+         _lastHeldFace = null;
+         if (fresh == null && _kVerbosePerFrameLogs) {
+@@ -998,7 +1206,9 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+         smoothGazeY = 0;
+         final d = _debugNotifier.value;
+         if (d.motion != EyeMotionState.noFace) {
+-          _debugNotifier.value = d.copyWith(motion: EyeMotionState.noFace);
++          _safeDebugUiUpdate(
++            (debug) => debug.copyWith(motion: EyeMotionState.noFace),
++          );
+         }
+         return;
+       }
+@@ -1014,11 +1224,11 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+       final rawX = effectiveGazeX;
+       final rawY = effectiveGazeY;
+       if (rawX == null || rawY == null) {
+-        _framePerf.droppedInvalid++;
++        _framePerf.droppedInvalidGaze++;
+         return;
+       }
+       if (!rawX.isFinite || !rawY.isFinite) {
+-        _framePerf.droppedInvalid++;
++        _framePerf.droppedInvalidGaze++;
+         return;
+       }
+ 
+@@ -1076,7 +1286,8 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+       if (!isValid) {
+         zoneOverlayDirty |= _clearZoneTracking();
+         _pointerController.reset(); // important
+-        _influenceNotifier.value = null;
++        _latestInfluence = null;
++        _safeInfluenceUiUpdate(null);
+         _influenceWeightDisplay = 0.0;
+         _influenceZoneDisplay = null;
+       } else {
+@@ -1187,7 +1398,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+           _influenceWeightDisplay = 0.0;
+           _influenceZoneDisplay = null;
+         }
+-        _influenceNotifier.value = _influenceZoneDisplay != null
++        _latestInfluence = _influenceZoneDisplay != null
+             ? IntentInfluence(
+                 zone: _influenceZoneDisplay!,
+                 weight: _influenceWeightDisplay.clamp(0.0, 1.0),
+@@ -1198,6 +1409,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+                 ),
+               )
+             : null;
++        _safeInfluenceUiUpdate(_latestInfluence);
+ 
+         if (prediction != null) {
+           final action = _autonomousAgent.decide(
+@@ -1254,7 +1466,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+               _pointerController.update(attention.gaze, attention.stability);
+           if (pointerPosition != null) {
+             var pointer = pointerPosition;
+-            final inf = _influenceNotifier.value;
++            final inf = _latestInfluence;
+             final view = _viewSize;
+             if (inf != null && view != null) {
+               final zoneCenters =
+@@ -1268,7 +1480,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+                 );
+               }
+             }
+-            _pointerNotifier.value = pointer;
++            _safePointerUiUpdate(pointer);
+           }
+         }
+       }
+@@ -1329,12 +1541,12 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+   Future<_VisionFrame?> _processFace(CameraImage image) async {
+     if (!mounted) return null;
+     final encodeSw = Stopwatch()..start();
+-    final bytes = cameraImageToJpegBytes(image);
++    final payload = cameraImageToVisionChannelPayload(image);
+     encodeSw.stop();
+     _framePerf.encodeTotalMs += encodeSw.elapsedMicroseconds / 1000.0;
+     _framePerf.encodeSamples++;
+     final channelSw = Stopwatch()..start();
+-    final result = await _visionChannel.invokeMethod('processFrame', bytes);
++    final result = await _visionChannel.invokeMethod('processFrame', payload);
+     channelSw.stop();
+     _framePerf.channelTotalMs += channelSw.elapsedMicroseconds / 1000.0;
+     _framePerf.channelSamples++;
+@@ -1502,7 +1714,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+     _dwellProgress = 0;
+     _selectedAnnouncedForStint = false;
+     _displaySelectedZone = '';
+-    _debugNotifier.value = _debugNotifier.value.copyWith(selected: '');
++    _safeDebugUiUpdate((debug) => debug.copyWith(selected: ''));
+     _wasBlinking = false;
+     return zoneOverlayDirty;
+   }
+@@ -1525,7 +1737,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+   bool _advanceZoneDwell(String zone) {
+     var zoneOverlayDirty = false;
+     if (_debugNotifier.value.zone != zone) {
+-      _debugNotifier.value = _debugNotifier.value.copyWith(zone: zone);
++      _safeDebugUiUpdate((debug) => debug.copyWith(zone: zone));
+     }
+     if (zone != _currentZone) {
+       _currentZone = zone;
+@@ -1535,7 +1747,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+       _dwellProgress = 0;
+       _selectedAnnouncedForStint = false;
+       _displaySelectedZone = '';
+-      _debugNotifier.value = _debugNotifier.value.copyWith(selected: '');
++      _safeDebugUiUpdate((debug) => debug.copyWith(selected: ''));
+       _wasBlinking = false;
+       zoneOverlayDirty = true;
+     } else {
+@@ -1754,15 +1966,19 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+     _autonomousConfirmTimer = Timer(const Duration(seconds: 15), () {
+       if (!mounted) return;
+       if (_pendingAutonomousConfirm != null) {
+-        setState(() {
+-          _pendingAutonomousConfirm = null;
+-          _autonomousConfirmTimer = null;
++        _pendingAutonomousConfirm = null;
++        _autonomousConfirmTimer = null;
++        _safeUiUpdate(() {
++          if (!mounted) return;
++          setState(() {});
+         });
+         debugPrint('AUTONOMOUS_CONFIRM: timeout');
+       }
+     });
+-    setState(() {
+-      _pendingAutonomousConfirm = r;
++    _pendingAutonomousConfirm = r;
++    _safeUiUpdate(() {
++      if (!mounted) return;
++      setState(() {});
+     });
+     debugPrint('AUTONOMOUS_CONFIRM: queued ${r.action.type.name} ${r.action.targetZone}');
+   }
+@@ -1771,6 +1987,10 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+     _autonomousConfirmTimer?.cancel();
+     _autonomousConfirmTimer = null;
+     _pendingAutonomousConfirm = null;
++    _safeUiUpdate(() {
++      if (!mounted) return;
++      setState(() {});
++    });
+   }
+ 
+   int _recentAutonomousCommitsLast1s(int nowMs) {
+@@ -2057,7 +2277,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+         nextCount = 0;
+         _selectedAnnouncedForStint = false;
+         _displaySelectedZone = '';
+-        _debugNotifier.value = _debugNotifier.value.copyWith(selected: '');
++        _safeDebugUiUpdate((debug) => debug.copyWith(selected: ''));
+         _dwellSatisfiedForStint = false;
+         _intentEngine.syncDwellReady(false);
+         _dwellProgress = 0;
+@@ -2077,7 +2297,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+         nextCount = 0;
+         _selectedAnnouncedForStint = false;
+         _displaySelectedZone = '';
+-        _debugNotifier.value = _debugNotifier.value.copyWith(selected: '');
++        _safeDebugUiUpdate((debug) => debug.copyWith(selected: ''));
+         _dwellSatisfiedForStint = false;
+         _intentEngine.syncDwellReady(false);
+         _dwellProgress = 0;
+@@ -2112,7 +2332,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+     );
+     final dbg = _debugNotifier.value;
+     if (dbg.motion != nextMotion) {
+-      _debugNotifier.value = dbg.copyWith(motion: nextMotion);
++      _safeDebugUiUpdate((debug) => debug.copyWith(motion: nextMotion));
+     }
+ 
+     if (_kVerbosePerFrameLogs) {
+@@ -2133,7 +2353,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+       _isBlinking = nextBlinking;
+       _blinkCount = nextCount;
+       if (_blinkCountNotifier.value != nextCount) {
+-        _blinkCountNotifier.value = nextCount;
++        _safeBlinkCountUiUpdate(nextCount);
+       }
+       _blinkIsRightDominant = nextBlinkDom;
+       _blinkLeftDrop = nextBlinkLeftDrop;
+@@ -2174,9 +2394,12 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+     final avgPostprocessMs = _framePerf.postprocessSamples == 0
+         ? 0.0
+         : _framePerf.postprocessTotalMs / _framePerf.postprocessSamples;
++    final invSum =
++        _framePerf.droppedInvalidNoFace + _framePerf.droppedInvalidGaze;
+     debugPrint(
+       '[frame_perf] fps(camera=${cameraFps.toStringAsFixed(1)}, processed=${processedFps.toStringAsFixed(1)}) '
+-      'drop(throttle=${_framePerf.droppedThrottle}, busy=${_framePerf.droppedBusy}, invalid=${_framePerf.droppedInvalid}) '
++      'drop(throttle=${_framePerf.droppedThrottle}, busy=${_framePerf.droppedBusy}, '
++      'invalid(sum=$invSum, noFace=${_framePerf.droppedInvalidNoFace}, gaze=${_framePerf.droppedInvalidGaze}) '
+       'ms(avg encode=${avgEncodeMs.toStringAsFixed(2)}, channel=${avgChannelMs.toStringAsFixed(2)}, post=${avgPostprocessMs.toStringAsFixed(2)}) '
+       'native(last decode=${_framePerf.lastNativeDecodeMs.toStringAsFixed(2)}, process=${_framePerf.lastNativeProcessMs.toStringAsFixed(2)}, total=${_framePerf.lastNativeTotalMs.toStringAsFixed(2)})',
+     );
+@@ -2185,8 +2408,9 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+ 
+   @override
+   Widget build(BuildContext context) {
+-    _viewSize = MediaQuery.sizeOf(context);
+-    _overlaySafeTop = MediaQuery.paddingOf(context).top;
++    final nextViewSize = MediaQuery.sizeOf(context);
++    final nextSafeTop = MediaQuery.paddingOf(context).top;
++    _updateViewportSnapshot(nextViewSize, nextSafeTop);
+     final preview = widget.controller.value.previewSize;
+     if (preview == null) {
+       return const ColoredBox(color: Colors.black);
+@@ -2249,11 +2473,12 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+             top: 0,
+             left: 0,
+             right: 0,
++            bottom: 0,
+             child: SafeArea(
+               bottom: false,
+-                child: Padding(
+-                  padding: const EdgeInsets.only(top: 4),
+-                  child: ValueListenableBuilder<String?>(
++              child: Padding(
++                padding: const EdgeInsets.only(top: 4),
++                child: ValueListenableBuilder<String?>(
+                   valueListenable: uiPreloader.warmHint,
+                   builder: (context, warm, _) {
+                     return ValueListenableBuilder<DebugState>(

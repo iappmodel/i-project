@@ -1,0 +1,119 @@
+.popsDemoRoot {
+  max-width: 760px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 12px;
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+  background: #070709;
+  color: #f0ede8;
+}
+
+.popsPhone {
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  padding: 12px;
+  background: #111118;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.popsHeader {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.popsOfferCard {
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 10px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.popsMetricGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  color: #9997a0;
+}
+
+.popsButton {
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: #f0ede8;
+  padding: 8px 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.popsButton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.popsButtonPrimary {
+  border-color: rgba(74, 222, 128, 0.45);
+  background: rgba(74, 222, 128, 0.12);
+  color: #4ade80;
+}
+
+.popsButtonDanger {
+  border-color: rgba(255, 77, 109, 0.45);
+  background: rgba(255, 77, 109, 0.1);
+  color: #ff4d6d;
+}
+
+.popsButtonMuted {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: transparent;
+  color: #9997a0;
+}
+
+.popsProgressTrack {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.popsProgressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #4ade80, #22c55e);
+  transition: width 180ms ease;
+}
+
+.popsResultCard {
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 10px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.popsReceiptCard {
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 10px;
+  padding: 12px;
+  background: #111118;
+}
+
+.popsDebugPanel {
+  border: 1px dashed rgba(245, 158, 11, 0.35);
+  border-radius: 10px;
+  padding: 10px;
+  background: rgba(245, 158, 11, 0.06);
+  font-size: 12px;
+}
+
+.popsMuted {
+  color: #9997a0;
+}
+
+.popsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}

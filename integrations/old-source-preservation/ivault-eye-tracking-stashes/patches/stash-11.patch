@@ -1,0 +1,1076 @@
+# Merge stash: exported via git show -p stash@{11}^3 (untracked/WIP tree commit)
+# git stash show -p returns empty for merge-format stashes
+#
+commit a79f5537a897467f167d82b47c15dbdf2adfef79
+Author: iappmodel <iappmailbox@gmail.com>
+Date:   Thu Apr 30 21:10:45 2026 -0400
+
+    untracked files on feature/evidence-vault-v2-hardening: 7a1de91 Protect sealed evidence objects from register mutation
+
+diff --git a/src/lib/i/i-command-copy.ts b/src/lib/i/i-command-copy.ts
+new file mode 100644
+index 0000000..b6daec9
+--- /dev/null
++++ b/src/lib/i/i-command-copy.ts
+@@ -0,0 +1,16 @@
++export const I_COPY = {
++  emptyInput: "Ask anything to i",
++  focusedInput: "Start with i...",
++  listening: "i is listening",
++  understanding: "i is understanding",
++  doing: "i is doing it",
++  privateMode: "between you and i",
++  memoryQuestion: "Should i remember this?",
++  remembered: "i remembered this for you",
++  forgot: "i forgot this",
++  done: "done by i",
++  failed: "i couldn't complete that yet",
++  notSearch: "When you begin with i, you are not searching. You are commanding.",
++  core: "i knows me. i works for me.",
++};
++
+diff --git a/src/lib/i/i-command-engine.ts b/src/lib/i/i-command-engine.ts
+new file mode 100644
+index 0000000..e8ddb01
+--- /dev/null
++++ b/src/lib/i/i-command-engine.ts
+@@ -0,0 +1,23 @@
++import { createICommandEvent } from "./i-command-events";
++import { parseICommand } from "./i-command-parser";
++import { routeICommand } from "./i-command-router";
++
++export function runICommand(input) {
++  const parse = parseICommand(input.raw);
++  const route = routeICommand(parse);
++
++  const event = createICommandEvent({
++    userId: input.userId,
++    parse,
++    route,
++  });
++
++  console.log("[i-command:event]", event);
++
++  return {
++    parse,
++    route,
++    event,
++  };
++}
++
+diff --git a/src/lib/i/i-command-events.ts b/src/lib/i/i-command-events.ts
+new file mode 100644
+index 0000000..41a4fe1
+--- /dev/null
++++ b/src/lib/i/i-command-events.ts
+@@ -0,0 +1,16 @@
++export function createICommandEvent(input) {
++  return {
++    id: typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
++    userId: input.userId,
++    raw: input.parse.raw,
++    verb: input.parse.verb,
++    domain: input.parse.domain,
++    privacyLevel: input.parse.privacyLevel,
++    memoryClass: input.parse.memoryClass,
++    actionType: input.route.actionType,
++    safetyFlags: input.parse.safetyFlags,
++    confidence: input.parse.confidence,
++    createdAt: new Date().toISOString(),
++  };
++}
++
+diff --git a/src/lib/i/i-command-grammar.ts b/src/lib/i/i-command-grammar.ts
+new file mode 100644
+index 0000000..93398a6
+--- /dev/null
++++ b/src/lib/i/i-command-grammar.ts
+@@ -0,0 +1,187 @@
++import type { ICommandDomain, ICommandVerb } from "./i-command.types";
++
++export const I_COMMAND_PREFIXES = [
++  "i ",
++  "i,",
++  "i.",
++  "i:",
++  "i;",
++  "i\n",
++];
++
++export const VERB_PATTERNS: Record<ICommandVerb, RegExp[]> = {
++  want: [/^want\b/i, /^wanna\b/i],
++  need: [/^need\b/i],
++  feel: [/^feel\b/i, /^am feeling\b/i],
++  think: [/^think\b/i],
++  remember: [/^remember\b/i],
++  forgot: [/^forgot\b/i, /^forget\b/i, /^lost\b/i],
++  pay: [/^pay\b/i, /^send\b/i],
++  earn: [/^earn\b/i, /^make money\b/i],
++  post: [/^post\b/i, /^publish\b/i],
++  make: [/^make\b/i, /^create\b/i, /^edit\b/i],
++  protect: [/^protect\b/i, /^prove\b/i, /^copyright\b/i],
++  go: [/^go\b/i, /^open\b/i, /^take me\b/i],
++  plan: [/^plan\b/i, /^organize\b/i, /^schedule\b/i],
++  confess: [/^confess\b/i, /^tell you something\b/i],
++  save: [/^save\b/i, /^keep\b/i],
++  withdraw: [/^withdraw\b/i, /^cash out\b/i, /^cashout\b/i],
++  convert: [/^convert\b/i, /^exchange\b/i],
++  help: [/^help\b/i],
++  unknown: [],
++};
++
++export const DOMAIN_KEYWORDS: Record<ICommandDomain, string[]> = {
++  private_self: [
++    "feel",
++    "lost",
++    "sad",
++    "calm",
++    "calm down",
++    "scared",
++    "afraid",
++    "confess",
++    "secret",
++    "private",
++    "trauma",
++    "pain",
++    "dream",
++    "desire",
++    "regret",
++    "ashamed",
++    "anxious",
++    "overwhelmed",
++    "alone",
++    "purpose",
++    "become better",
++    "clear my head",
++  ],
++
++  wallet_economy: [
++    "wallet",
++    "pay",
++    "send",
++    "tip",
++    "withdraw",
++    "cash out",
++    "convert",
++    "balance",
++    "coins",
++    "icoin",
++    "icoins",
++    "money",
++    "earn",
++    "earnings",
++  ],
++
++  feed_content: [
++    "feed",
++    "watch",
++    "content",
++    "video",
++    "discover",
++    "save this",
++    "like",
++    "share",
++  ],
++
++  studio_creation: [
++    "studio",
++    "edit",
++    "make this video",
++    "create",
++    "caption",
++    "cut",
++    "filter",
++    "export",
++    "post this",
++    "post",
++  ],
++
++  originality_protection: [
++    "protect",
++    "original",
++    "mine",
++    "copyright",
++    "prove",
++    "stolen",
++    "ownership",
++    "fingerprint",
++    "shazam",
++  ],
++
++  health: [
++    "health",
++    "doctor",
++    "sleep",
++    "workout",
++    "trainer",
++    "nutrition",
++    "diet",
++    "food",
++    "weight",
++    "exercise",
++  ],
++
++  career: [
++    "job",
++    "career",
++    "resume",
++    "interview",
++    "apply",
++    "work",
++    "skills",
++    "hiring",
++  ],
++
++  finance: [
++    "budget",
++    "debt",
++    "financial",
++    "invest",
++    "save money",
++    "bills",
++    "rent",
++    "expenses",
++  ],
++
++  relationships: [
++    "relationship",
++    "girlfriend",
++    "boyfriend",
++    "wife",
++    "husband",
++    "friend",
++    "family",
++    "mother",
++    "father",
++    "breakup",
++    "argument",
++  ],
++
++  navigation: [
++    "open",
++    "go to",
++    "show me",
++    "take me",
++    "settings",
++    "profile",
++    "home",
++  ],
++
++  emergency_safety: [
++    "kill myself",
++    "suicide",
++    "hurt myself",
++    "hurt someone",
++    "emergency",
++    "danger",
++    "abuse",
++    "blood",
++    "overdose",
++    "can't go on",
++  ],
++
++  unknown: [],
++};
++
+diff --git a/src/lib/i/i-command-memory.ts b/src/lib/i/i-command-memory.ts
+new file mode 100644
+index 0000000..bf2aac5
+--- /dev/null
++++ b/src/lib/i/i-command-memory.ts
+@@ -0,0 +1,32 @@
++export function requiresMemoryConsent(parse: { memoryClass: string }) {
++  if (parse.memoryClass === "none") return false;
++  if (parse.memoryClass === "temporary") return false;
++
++  return [
++    "preference",
++    "goal",
++    "pattern",
++    "sensitive",
++    "restricted",
++  ].includes(parse.memoryClass);
++}
++
++export function memoryConsentCopy(memoryClass: string): string {
++  switch (memoryClass) {
++    case "preference":
++      return "Should i remember this preference for you?";
++    case "goal":
++      return "Should i remember this goal for you?";
++    case "pattern":
++      return "Should i remember this pattern to help you better?";
++    case "sensitive":
++      return "Should i keep this between us?";
++    case "restricted":
++      return "This is sensitive. i can help now, but saving it requires explicit consent.";
++    case "temporary":
++    case "none":
++    default:
++      return "i will use this only for this moment.";
++  }
++}
++
+diff --git a/src/lib/i/i-command-parser.ts b/src/lib/i/i-command-parser.ts
+new file mode 100644
+index 0000000..73daecf
+--- /dev/null
++++ b/src/lib/i/i-command-parser.ts
+@@ -0,0 +1,301 @@
++import {
++  DOMAIN_KEYWORDS,
++  I_COMMAND_PREFIXES,
++  VERB_PATTERNS,
++} from "./i-command-grammar";
++
++import type {
++  ICommandDomain,
++  ICommandEntities,
++  ICommandParseResult,
++  ICommandVerb,
++  IMemoryClass,
++  IPrivacyLevel,
++  ISafetyFlag,
++} from "./i-command.types";
++
++export function parseICommand(raw: string): ICommandParseResult {
++  const normalized = normalize(raw);
++  const isICommand = startsWithICommand(normalized);
++  const body = isICommand ? stripIPrefix(normalized) : normalized;
++
++  const verb = detectVerb(body);
++  const domain = detectDomain(body, verb);
++  const safetyFlags = detectSafetyFlags(body);
++  const privacyLevel = detectPrivacyLevel(domain, body, safetyFlags);
++  const memoryClass = detectMemoryClass(domain, body, safetyFlags);
++  const entities = extractEntities(body);
++  const confidence = computeConfidence({
++    isICommand,
++    verb,
++    domain,
++    safetyFlags,
++  });
++
++  return {
++    isICommand,
++    raw,
++    normalized,
++    body,
++    verb,
++    domain,
++    privacyLevel,
++    memoryClass,
++    confidence,
++    entities,
++    safetyFlags,
++  };
++}
++
++function normalize(raw: string): string {
++  return raw.trim().replace(/\s+/g, " ");
++}
++
++function startsWithICommand(input: string): boolean {
++  const lower = input.toLowerCase();
++
++  if (lower === "i") return true;
++
++  return I_COMMAND_PREFIXES.some((prefix) => lower.startsWith(prefix));
++}
++
++function stripIPrefix(input: string): string {
++  return input
++    .replace(/^i[\s,.:;\n]+/i, "")
++    .trim();
++}
++
++function detectVerb(body: string): ICommandVerb {
++  for (const [verb, patterns] of Object.entries(VERB_PATTERNS)) {
++    if (verb === "unknown") continue;
++
++    if (patterns.some((pattern) => pattern.test(body))) {
++      return verb as ICommandVerb;
++    }
++  }
++
++  // fallback: look for explicit keywords
++  if (/\bearn\b/i.test(body)) return "earn";
++  if (/\bpost\b/i.test(body)) return "post";
++
++  return "unknown";
++}
++
++function detectDomain(body: string, verb: ICommandVerb): ICommandDomain {
++  const lower = body.toLowerCase();
++
++  if (["pay", "withdraw", "convert"].includes(verb)) {
++    return "wallet_economy";
++  }
++
++  if (verb === "earn" || /\bearn\b/i.test(body)) {
++    return "wallet_economy";
++  }
++
++  if (["post", "make"].includes(verb) || /\bpost\b/i.test(body)) {
++    return "studio_creation";
++  }
++
++  if (verb === "protect") {
++    return "originality_protection";
++  }
++
++  if (verb === "confess" || verb === "feel") {
++    return "private_self";
++  }
++
++  let bestDomain: ICommandDomain = "unknown";
++  let bestScore = 0;
++
++  for (const [domain, keywords] of Object.entries(DOMAIN_KEYWORDS)) {
++    if (domain === "unknown") continue;
++
++    const score = keywords.reduce((count, keyword) => {
++      return lower.includes(keyword) ? count + 1 : count;
++    }, 0);
++
++    if (score > bestScore) {
++      bestScore = score;
++      bestDomain = domain as ICommandDomain;
++    }
++  }
++
++  return bestDomain;
++}
++
++function detectSafetyFlags(body: string): ISafetyFlag[] {
++  const lower = body.toLowerCase();
++  const flags: ISafetyFlag[] = [];
++
++  if (
++    lower.includes("kill myself") ||
++    lower.includes("suicide") ||
++    lower.includes("hurt myself") ||
++    lower.includes("can't go on")
++  ) {
++    flags.push("self_harm");
++  }
++
++  if (
++    lower.includes("hurt someone") ||
++    lower.includes("kill someone") ||
++    lower.includes("violence")
++  ) {
++    flags.push("violence");
++  }
++
++  if (
++    lower.includes("overdose") ||
++    lower.includes("heart attack") ||
++    lower.includes("can't breathe") ||
++    lower.includes("medical emergency")
++  ) {
++    flags.push("medical_emergency");
++  }
++
++  if (
++    lower.includes("abuse") ||
++    lower.includes("being hit") ||
++    lower.includes("unsafe at home")
++  ) {
++    flags.push("abuse");
++  }
++
++  if (
++    lower.includes("minor") ||
++    lower.includes("child") ||
++    lower.includes("underage")
++  ) {
++    flags.push("minor_safety");
++  }
++
++  if (
++    lower.includes("panic") ||
++    lower.includes("overwhelmed") ||
++    lower.includes("breaking down")
++  ) {
++    flags.push("severe_distress");
++  }
++
++  return flags.length > 0 ? flags : ["none"];
++}
++
++function detectPrivacyLevel(
++  domain: ICommandDomain,
++  body: string,
++  safetyFlags: ISafetyFlag[],
++): IPrivacyLevel {
++  if (safetyFlags.some((flag) => flag !== "none")) {
++    return "restricted";
++  }
++
++  const lower = body.toLowerCase();
++
++  if (
++    domain === "private_self" ||
++    lower.includes("secret") ||
++    lower.includes("confess") ||
++    lower.includes("between us") ||
++    lower.includes("private")
++  ) {
++    return "deep_private";
++  }
++
++  if (
++    domain === "health" ||
++    domain === "finance" ||
++    domain === "relationships" ||
++    domain === "career"
++  ) {
++    return "private";
++  }
++
++  if (domain === "wallet_economy") {
++    return "personal";
++  }
++
++  return "public_safe";
++}
++
++function detectMemoryClass(
++  domain: ICommandDomain,
++  body: string,
++  safetyFlags: ISafetyFlag[],
++): IMemoryClass {
++  if (safetyFlags.includes("self_harm") || safetyFlags.includes("abuse")) {
++    return "restricted";
++  }
++
++  const lower = body.toLowerCase();
++
++  if (
++    lower.includes("remember this") ||
++    lower.includes("save this") ||
++    lower.includes("keep this")
++  ) {
++    return "sensitive";
++  }
++
++  if (domain === "private_self" || domain === "relationships") {
++    return "sensitive";
++  }
++
++  if (domain === "health" || domain === "finance") {
++    return "sensitive";
++  }
++
++  if (domain === "career") {
++    return "goal";
++  }
++
++  if (lower.includes("i want to") || lower.includes("my goal")) {
++    return "goal";
++  }
++
++  return "temporary";
++}
++
++function extractEntities(body: string): ICommandEntities {
++  const amountMatch = body.match(/\$?(\d+(?:\.\d{1,2})?)/);
++  const currencyMatch = body.match(/\b(icoin|icoins|vcoin|vcoins|usd|dollar|dollars)\b/i);
++
++  return {
++    amount: amountMatch ? Number(amountMatch[1]) : undefined,
++    currency: currencyMatch?.[1]?.toLowerCase(),
++    personName: extractPersonName(body),
++    timeframe: extractTimeframe(body),
++  };
++}
++
++function extractPersonName(body: string): string | undefined {
++  const payMatch = body.match(/(?:pay|send|tip)\s+([A-Z][a-z]+|\w+)/i);
++  return payMatch?.[1];
++}
++
++function extractTimeframe(body: string): string | undefined {
++  const lower = body.toLowerCase();
++
++  if (lower.includes("today")) return "today";
++  if (lower.includes("tomorrow")) return "tomorrow";
++  if (lower.includes("this week")) return "this_week";
++  if (lower.includes("this month")) return "this_month";
++
++  return undefined;
++}
++
++function computeConfidence(input: {
++  isICommand: boolean;
++  verb: ICommandVerb;
++  domain: ICommandDomain;
++  safetyFlags: ISafetyFlag[];
++}): number {
++  let score = 0;
++
++  if (input.isICommand) score += 0.35;
++  if (input.verb !== "unknown") score += 0.25;
++  if (input.domain !== "unknown") score += 0.3;
++  if (input.safetyFlags.some((flag) => flag !== "none")) score += 0.1;
++
++  return Math.min(1, Number(score.toFixed(2)));
++}
++
+diff --git a/src/lib/i/i-command-privacy.ts b/src/lib/i/i-command-privacy.ts
+new file mode 100644
+index 0000000..ccc7aa8
+--- /dev/null
++++ b/src/lib/i/i-command-privacy.ts
+@@ -0,0 +1,34 @@
++export function shouldEnterPrivateMode(parse: { privacyLevel: string }) {
++  return (
++    parse.privacyLevel === "deep_private" ||
++    parse.privacyLevel === "restricted"
++  );
++}
++
++export function privacyLabel(level: string): string {
++  switch (level) {
++    case "public_safe":
++      return "normal";
++    case "personal":
++      return "personal";
++    case "private":
++      return "private";
++    case "deep_private":
++      return "between you and i";
++    case "restricted":
++      return "safety protected";
++    default:
++      return "normal";
++  }
++}
++
++export function domainRequiresIsolation(domain: string): boolean {
++  return [
++    "private_self",
++    "health",
++    "finance",
++    "relationships",
++    "emergency_safety",
++  ].includes(domain);
++}
++
+diff --git a/src/lib/i/i-command-router.ts b/src/lib/i/i-command-router.ts
+new file mode 100644
+index 0000000..6c9f843
+--- /dev/null
++++ b/src/lib/i/i-command-router.ts
+@@ -0,0 +1,253 @@
++import { requiresMemoryConsent } from "./i-command-memory";
++import { privacyLabel, shouldEnterPrivateMode } from "./i-command-privacy";
++
++import type {
++  ICommandActionType,
++  ICommandParseResult,
++  ICommandRouteResult,
++} from "./i-command.types";
++
++export function routeICommand(parse: ICommandParseResult): ICommandRouteResult {
++  if (!parse.isICommand) {
++    return {
++      actionType: "none",
++      uxState: "idle",
++      title: "Ask anything to i",
++      message: "Begin with i to command the platform.",
++      requiresConfirmation: false,
++      requiresMemoryConsent: false,
++    };
++  }
++
++  if (parse.safetyFlags.some((flag) => flag !== "none")) {
++    return routeSafety(parse);
++  }
++
++  const actionType = detectActionType(parse);
++  const requiresMemory = requiresMemoryConsent(parse);
++  const privateMode = shouldEnterPrivateMode(parse);
++
++  return {
++    actionType,
++    uxState: privateMode ? "private_mode" : "understanding",
++    title: titleForAction(actionType),
++    message: messageForAction(actionType, parse),
++    requiresConfirmation: requiresConfirmation(actionType),
++    requiresMemoryConsent: requiresMemory,
++    suggestedActionLabel: labelForAction(actionType),
++    nextRoute: routeForAction(actionType),
++    payload: {
++      body: parse.body,
++      entities: parse.entities,
++      privacy: privacyLabel(parse.privacyLevel),
++    },
++  };
++}
++
++function routeSafety(parse: ICommandParseResult): ICommandRouteResult {
++  return {
++    actionType: "safety_escalation",
++    uxState: "blocked",
++    title: "i is here with you",
++    message:
++      "This sounds serious. i can help you stabilize and connect you to immediate support.",
++    requiresConfirmation: false,
++    requiresMemoryConsent: false,
++    suggestedActionLabel: "Get support now",
++    nextRoute: "/i/safety",
++    payload: {
++      safetyFlags: parse.safetyFlags,
++      body: parse.body,
++    },
++  };
++}
++
++function detectActionType(parse: ICommandParseResult): ICommandActionType {
++  switch (parse.domain) {
++    case "private_self":
++      return "open_private_session";
++
++    case "wallet_economy":
++      if (parse.verb === "pay") return "prepare_payment";
++      // If the body contains the word 'earn' treat as open_earn even if verb matched 'want'
++      if (parse.verb === "earn" || /\\bearn\\b/i.test(parse.body)) return "open_earn";
++      return "open_wallet";
++
++    case "studio_creation":
++      if (parse.verb === "post") return "prepare_post";
++      return "open_studio";
++
++    case "originality_protection":
++      return "protect_media";
++
++    case "health":
++      return "open_health_plan";
++
++    case "career":
++      return "open_career_plan";
++
++    case "finance":
++      return "open_finance_plan";
++
++    case "relationships":
++      return "open_relationship_reflection";
++
++    case "navigation":
++      return "open_navigation";
++
++    default:
++      return "ask_clarifying_question";
++  }
++}
++
++function requiresConfirmation(actionType: ICommandActionType): boolean {
++  return [
++    "prepare_payment",
++    "prepare_post",
++    "protect_media",
++  ].includes(actionType);
++}
++
++function titleForAction(actionType: ICommandActionType): string {
++  switch (actionType) {
++    case "open_private_session":
++      return "between you and i";
++    case "prepare_payment":
++      return "i can prepare that payment";
++    case "open_earn":
++      return "i found your earning path";
++    case "open_wallet":
++      return "i opened your wallet";
++    case "open_studio":
++      return "i opened Studio";
++    case "prepare_post":
++      return "i can prepare this post";
++    case "protect_media":
++      return "i can protect this";
++    case "open_health_plan":
++      return "i can help with your health";
++    case "open_career_plan":
++      return "i can help with your career";
++    case "open_finance_plan":
++      return "i can help with your money";
++    case "open_relationship_reflection":
++      return "i can help you think this through";
++    case "open_navigation":
++      return "i can take you there";
++    case "ask_clarifying_question":
++      return "i needs one detail";
++    default:
++      return "i understands";
++  }
++}
++
++function messageForAction(
++  actionType: ICommandActionType,
++  parse: ICommandParseResult,
++): string {
++  switch (actionType) {
++    case "open_private_session":
++      return "This stays between you and i unless you choose to save something.";
++
++    case "prepare_payment":
++      return parse.entities.amount && parse.entities.personName
++        ? `i will prepare ${formatAmount(parse.entities.amount)} for ${parse.entities.personName}.`
++        : "Tell i who and how much.";
++
++    case "open_earn":
++      return "i will show the best ways to earn from your available offers.";
++
++    case "open_wallet":
++      return "i will open your balance, payments, conversions, and withdrawals.";
++
++    case "open_studio":
++      return "i will help create, edit, and prepare your media.";
++
++    case "prepare_post":
++      return "i will prepare the post, caption, rights, and originality checks.";
++
++    case "protect_media":
++      return "i will generate proof, fingerprint the media, and prepare originality protection.";
++
++    case "open_health_plan":
++      return "i can help organize a realistic health path. Medical issues may require a professional.";
++
++    case "open_career_plan":
++      return "i can help map your next career move and turn it into steps.";
++
++    case "open_finance_plan":
++      return "i can help organize your money situation. Financial decisions require caution.";
++
++    case "open_relationship_reflection":
++      return "i can help you see the pattern, decide what matters, and prepare what to say.";
++
++    case "ask_clarifying_question":
++      return "i understood the signal, but needs a clearer command.";
++
++    default:
++      return "i is understanding.";
++  }
++}
++
++function labelForAction(actionType: ICommandActionType): string {
++  switch (actionType) {
++    case "open_private_session":
++      return "Start private session";
++    case "prepare_payment":
++      return "Review payment";
++    case "open_earn":
++      return "Open Earn";
++    case "open_wallet":
++      return "Open Wallet";
++    case "open_studio":
++      return "Open Studio";
++    case "prepare_post":
++      return "Prepare post";
++    case "protect_media":
++      return "Protect this";
++    case "open_health_plan":
++      return "Build health plan";
++    case "open_career_plan":
++      return "Build career plan";
++    case "open_finance_plan":
++      return "Build money plan";
++    case "open_relationship_reflection":
++      return "Reflect privately";
++    case "ask_clarifying_question":
++      return "Clarify";
++    default:
++      return "Continue";
++  }
++}
++
++function routeForAction(actionType: ICommandActionType): string | undefined {
++  switch (actionType) {
++    case "open_private_session":
++      return "/i/private";
++    case "open_wallet":
++    case "prepare_payment":
++      return "/wallet";
++    case "open_earn":
++      return "/earn";
++    case "open_studio":
++    case "prepare_post":
++      return "/studio";
++    case "protect_media":
++      return "/originality";
++    case "open_health_plan":
++      return "/i/health";
++    case "open_career_plan":
++      return "/i/career";
++    case "open_finance_plan":
++      return "/i/finance";
++    case "open_relationship_reflection":
++      return "/i/private";
++    default:
++      return undefined;
++  }
++}
++
++function formatAmount(amount: number): string {
++  return `$${amount.toFixed(2)}`;
++}
++
+diff --git a/src/lib/i/i-command.types.ts b/src/lib/i/i-command.types.ts
+new file mode 100644
+index 0000000..db58c7f
+--- /dev/null
++++ b/src/lib/i/i-command.types.ts
+@@ -0,0 +1,151 @@
++export type ICommandDomain =
++  | "private_self"
++  | "wallet_economy"
++  | "feed_content"
++  | "studio_creation"
++  | "originality_protection"
++  | "health"
++  | "career"
++  | "finance"
++  | "relationships"
++  | "navigation"
++  | "emergency_safety"
++  | "unknown";
++
++export type ICommandVerb =
++  | "want"
++  | "need"
++  | "feel"
++  | "think"
++  | "remember"
++  | "forgot"
++  | "pay"
++  | "earn"
++  | "post"
++  | "make"
++  | "protect"
++  | "go"
++  | "plan"
++  | "confess"
++  | "save"
++  | "withdraw"
++  | "convert"
++  | "help"
++  | "unknown";
++
++export type IPrivacyLevel =
++  | "public_safe"
++  | "personal"
++  | "private"
++  | "deep_private"
++  | "restricted";
++
++export type IMemoryClass =
++  | "none"
++  | "temporary"
++  | "preference"
++  | "goal"
++  | "pattern"
++  | "sensitive"
++  | "restricted";
++
++export type ICommandUxState =
++  | "idle"
++  | "listening"
++  | "understanding"
++  | "needs_consent"
++  | "doing"
++  | "done"
++  | "private_mode"
++  | "blocked"
++  | "error";
++
++export type ICommandActionType =
++  | "open_private_session"
++  | "open_wallet"
++  | "prepare_payment"
++  | "open_earn"
++  | "open_studio"
++  | "prepare_post"
++  | "protect_media"
++  | "open_health_plan"
++  | "open_career_plan"
++  | "open_finance_plan"
++  | "open_relationship_reflection"
++  | "open_navigation"
++  | "safety_escalation"
++  | "ask_clarifying_question"
++  | "none";
++
++export interface ICommandInput {
++  raw: string;
++  userId: string;
++  source: "text" | "voice" | "shortcut" | "system";
++  timestamp: string;
++}
++
++export interface ICommandParseResult {
++  isICommand: boolean;
++  raw: string;
++  normalized: string;
++  body: string;
++  verb: ICommandVerb;
++  domain: ICommandDomain;
++  privacyLevel: IPrivacyLevel;
++  memoryClass: IMemoryClass;
++  confidence: number;
++  entities: ICommandEntities;
++  safetyFlags: ISafetyFlag[];
++}
++
++export interface ICommandEntities {
++  amount?: number;
++  currency?: string;
++  personName?: string;
++  topic?: string;
++  object?: string;
++  platform?: string;
++  timeframe?: string;
++}
++
++export type ISafetyFlag =
++  | "self_harm"
++  | "violence"
++  | "medical_emergency"
++  | "abuse"
++  | "minor_safety"
++  | "severe_distress"
++  | "none";
++
++export interface ICommandRouteResult {
++  actionType: ICommandActionType;
++  uxState: ICommandUxState;
++  title: string;
++  message: string;
++  requiresConfirmation: boolean;
++  requiresMemoryConsent: boolean;
++  suggestedActionLabel?: string;
++  nextRoute?: string;
++  payload?: Record<string, unknown>;
++}
++
++export interface ICommandEngineResult {
++  parse: ICommandParseResult;
++  route: ICommandRouteResult;
++  event: ICommandEvent;
++}
++
++export interface ICommandEvent {
++  id: string;
++  userId: string;
++  raw: string;
++  verb: ICommandVerb;
++  domain: ICommandDomain;
++  privacyLevel: IPrivacyLevel;
++  memoryClass: IMemoryClass;
++  actionType: ICommandActionType;
++  safetyFlags: ISafetyFlag[];
++  confidence: number;
++  createdAt: string;
++}
++

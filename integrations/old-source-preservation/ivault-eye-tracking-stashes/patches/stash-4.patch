@@ -1,0 +1,1217 @@
+diff --git a/services/api/src/app.ts b/services/api/src/app.ts
+index 1b84ebe..d4fe294 100644
+--- a/services/api/src/app.ts
++++ b/services/api/src/app.ts
+@@ -83,6 +83,7 @@ import { adminSystemTimelineRouter } from "./modules/admin-system-timeline/admin
+ import { cronAlphabetRouter } from "./modules/cron-alphabet/cron-alphabet.routes";
+ import { adminScheduledJobsRouter } from "./modules/admin-scheduled-jobs/admin-scheduled-jobs.routes";
+ import { adminTrustFraudReviewRouter } from "./modules/admin-trust-fraud-review/admin-trust-fraud-review.routes";
++import { adminSecurityEvidenceVaultRouter } from "./modules/admin-security-evidence-vault/admin-security-evidence-vault.routes";
+ 
+ export function createApp() {
+   const app = express();
+@@ -157,6 +158,7 @@ export function createApp() {
+   app.use("/v1/admin/security-trust-ai-analyst", adminSecurityTrustAiAnalystRouter);
+   app.use("/v1/admin/security-trust-command-center", adminSecurityTrustCommandCenterRouter);
+   app.use("/v1/admin/security-trust-alerts", adminSecurityTrustAlertsRouter);
++  app.use("/v1/admin/security-evidence-vault", adminSecurityEvidenceVaultRouter);
+   app.use("/v1/public", publicComplianceVerificationRouter);
+   app.use("/v1/public", publicTrustTimelineRouter);
+   app.use("/v1/public/trust-center", publicTrustCenterRouter);
+diff --git a/services/api/src/modules/worker/worker.service.ts b/services/api/src/modules/worker/worker.service.ts
+index 60485c3..85a4f7f 100644
+--- a/services/api/src/modules/worker/worker.service.ts
++++ b/services/api/src/modules/worker/worker.service.ts
+@@ -116,6 +116,17 @@ export async function runWorkerJob(input: {
+     };
+   }
+ 
++  if (input.jobKey === "admin_security_evidence_sync_trust_systems_every_15m") {
++    const { data, error } = await supabaseAdmin.rpc("sync_admin_security_evidence_from_trust_systems", {
++      p_batch_size: 500
++    });
++    if (error) throw error;
++    return {
++      scheduledJobRunId: typeof data === "string" ? data : "evidence-sync",
++      result: data
++    };
++  }
++
+   if (input.jobKey === "admin_security_audit_period_exports_expire_hourly") {
+     const { data, error } = await supabaseAdmin.rpc(
+       "expire_admin_security_audit_period_exports",
+diff --git a/services/api/src/modules/worker/worker.validation.ts b/services/api/src/modules/worker/worker.validation.ts
+index 0cdc65d..8a71a5c 100644
+--- a/services/api/src/modules/worker/worker.validation.ts
++++ b/services/api/src/modules/worker/worker.validation.ts
+@@ -80,7 +80,8 @@ export const runWorkerJobSchema = z.object({
+     "admin_security_trust_alert_sync_every_minute",
+     "admin_security_trust_alert_build_notifications_every_minute",
+     "admin_security_trust_alert_lease_notifications_every_minute",
+-    "admin_security_trust_alert_escalate_every_5m"
++    "admin_security_trust_alert_escalate_every_5m",
++    "admin_security_evidence_sync_trust_systems_every_15m"
+   ]),
+   lockedBy: z.string().min(1).max(128).optional(),
+   metadata: boundedMetadataSchema
+diff --git a/src/admin/pops/PopsAdminDashboard.tsx b/src/admin/pops/PopsAdminDashboard.tsx
+index 71a6449..9db3f85 100644
+--- a/src/admin/pops/PopsAdminDashboard.tsx
++++ b/src/admin/pops/PopsAdminDashboard.tsx
+@@ -6,6 +6,7 @@ import { PopsTrustImpactPanel } from "./PopsTrustImpactPanel";
+ import { PopsTrustAiAnalyst } from "./trust-ai-analyst/PopsTrustAiAnalyst";
+ import { PopsTrustCommandCenter } from "./trust-command-center/PopsTrustCommandCenter";
+ import { PopsTrustAlerts } from "./trust-alerts/PopsTrustAlerts";
++import { PopsEvidenceVault } from "./evidence-vault/PopsEvidenceVault";
+ import {
+   popsDashboardMetrics,
+   popsTopCampaignsByHoldRate,
+@@ -79,6 +80,7 @@ export function PopsAdminDashboard() {
+         <PopsTrustImpactPanel />
+         <PopsTrustCommandCenter />
+         <PopsTrustAlerts />
++        <PopsEvidenceVault />
+         <PopsTrustAiAnalyst />
+         <PopsPrivacyReceiptViewer />
+       </section>
+diff --git a/src/components/studio/StudioCommandPanel.tsx b/src/components/studio/StudioCommandPanel.tsx
+index f367170..d3e4671 100644
+--- a/src/components/studio/StudioCommandPanel.tsx
++++ b/src/components/studio/StudioCommandPanel.tsx
+@@ -31,6 +31,15 @@ const CLEANUP_COMMANDS = [
+   { label: "PROTECT MARKED", command: "i-protect marked moments" },
+ ] as const;
+ 
++const PUBLISH_COMMANDS = [
++  { label: "POST FEED", command: "i-post to feed" },
++  { label: "POST STORIES", command: "i-post to stories" },
++  { label: "FEED + STORIES", command: "i-post to feed and stories" },
++  { label: "CAMPAIGN VERSION", command: "i-make campaign version" },
++  { label: "SAVE DRAFT", command: "i-save draft" },
++  { label: "SCHEDULE", command: "i-schedule this tomorrow" },
++] as const;
++
+ const StudioCommandPanel: React.FC<Props> = ({ open, session, effectPreviews, onSubmit }) => {
+   const [value, setValue] = useState("");
+   if (!open) return null;
+@@ -100,7 +109,7 @@ const StudioCommandPanel: React.FC<Props> = ({ open, session, effectPreviews, on
+ 
+       {/* Cleanup quick buttons */}
+       <div style={{ fontSize: 11, color: "#748099", marginBottom: 4 }}>Storage cleanup</div>
+-      <div style={{ display: "flex", gap: 6, marginBottom: 12, flexWrap: "wrap" }}>
++      <div style={{ display: "flex", gap: 6, marginBottom: 10, flexWrap: "wrap" }}>
+         {CLEANUP_COMMANDS.map(({ label, command }) => (
+           <button
+             key={command}
+@@ -121,12 +130,35 @@ const StudioCommandPanel: React.FC<Props> = ({ open, session, effectPreviews, on
+         ))}
+       </div>
+ 
++      {/* Publish quick buttons */}
++      <div style={{ fontSize: 11, color: "#748099", marginBottom: 4 }}>Publish</div>
++      <div style={{ display: "flex", gap: 6, marginBottom: 12, flexWrap: "wrap" }}>
++        {PUBLISH_COMMANDS.map(({ label, command }) => (
++          <button
++            key={command}
++            onClick={() => onSubmit(command)}
++            style={{
++              padding: "4px 10px",
++              borderRadius: 6,
++              fontSize: 11,
++              fontWeight: 600,
++              background: "rgba(167,139,250,0.1)",
++              color: "#a78bfa",
++              border: "1px solid rgba(167,139,250,0.2)",
++              cursor: "pointer",
++            }}
++          >
++            {label}
++          </button>
++        ))}
++      </div>
++
+       {/* Text input */}
+       <input
+         value={value}
+         onChange={(e) => setValue(e.target.value)}
+         onKeyDown={(e) => { if (e.key === "Enter") { onSubmit(value); setValue(""); } }}
+-        placeholder="Try: i-cleanup storage"
++        placeholder="Try: i-post to feed"
+         style={{
+           width: "100%",
+           padding: 8,
+diff --git a/src/components/studio/StudioExportPanel.tsx b/src/components/studio/StudioExportPanel.tsx
+index 61ab1fa..193cb62 100644
+--- a/src/components/studio/StudioExportPanel.tsx
++++ b/src/components/studio/StudioExportPanel.tsx
+@@ -1,11 +1,17 @@
+ import React from "react";
+-import type { StudioSession, StudioCleanupPlan } from "../../lib/studio/studio.types";
++import type {
++  StudioSession,
++  StudioCleanupPlan,
++  StudioPublishPlan,
++  StudioPublishReadinessGateStatus,
++} from "../../lib/studio/studio.types";
+ 
+ type Props = {
+   open: boolean;
+   session: StudioSession;
+   selectedExportTargets?: string[];
+   latestCleanupPlan?: StudioCleanupPlan | null;
++  latestPublishPlan?: StudioPublishPlan | null;
+   onClose: () => void;
+ };
+ 
+@@ -16,11 +22,27 @@ const cleanupStatusColor: Record<StudioCleanupPlan["status"], string> = {
+   rejected: "#f87171",
+ };
+ 
++const publishStatusColor: Record<StudioPublishPlan["status"], string> = {
++  draft: "#748099",
++  previewed: "#5ebcff",
++  ready: "#34d399",
++  published_mock: "#a78bfa",
++  rejected: "#f87171",
++};
++
++const gateStatusColor: Record<StudioPublishReadinessGateStatus, string> = {
++  passed: "#34d399",
++  warning: "#f59e0b",
++  blocked: "#f87171",
++  pending: "#748099",
++};
++
+ const StudioExportPanel: React.FC<Props> = ({
+   open,
+   session,
+   selectedExportTargets = [],
+   latestCleanupPlan = null,
++  latestPublishPlan = null,
+   onClose,
+ }) => {
+   if (!open) return null;
+@@ -104,6 +126,62 @@ const StudioExportPanel: React.FC<Props> = ({
+         )}
+       </div>
+ 
++      {/* Publish plan readiness */}
++      <div
++        style={{
++          marginTop: 12,
++          padding: "8px 10px",
++          background: "rgba(255,255,255,0.02)",
++          borderRadius: 8,
++          border: "1px solid rgba(167,139,250,0.12)",
++        }}
++      >
++        <div style={{ fontSize: 12, fontWeight: 700, color: "#a78bfa", marginBottom: 6 }}>
++          Publish plan readiness
++        </div>
++        {latestPublishPlan ? (
++          (() => {
++            const gates = latestPublishPlan.readinessGates;
++            const counts: Record<StudioPublishReadinessGateStatus, number> = {
++              passed: gates.filter((g) => g.status === "passed").length,
++              warning: gates.filter((g) => g.status === "warning").length,
++              blocked: gates.filter((g) => g.status === "blocked").length,
++              pending: gates.filter((g) => g.status === "pending").length,
++            };
++            return (
++              <div style={{ fontSize: 12, display: "flex", flexDirection: "column", gap: 4 }}>
++                <div style={{ display: "flex", justifyContent: "space-between" }}>
++                  <span style={{ color: "#9aa4b2" }}>Status</span>
++                  <span style={{ color: publishStatusColor[latestPublishPlan.status], fontWeight: 600 }}>
++                    {latestPublishPlan.status}
++                  </span>
++                </div>
++                <div style={{ display: "flex", justifyContent: "space-between" }}>
++                  <span style={{ color: "#9aa4b2" }}>Destinations</span>
++                  <span style={{ color: "#a78bfa" }}>{latestPublishPlan.destinations.join(", ")}</span>
++                </div>
++                <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 2 }}>
++                  {(Object.keys(counts) as StudioPublishReadinessGateStatus[]).map((k) => (
++                    <span key={k} style={{ color: gateStatusColor[k], fontSize: 11 }}>
++                      {k}: {counts[k]}
++                    </span>
++                  ))}
++                </div>
++                {latestPublishPlan.status === "published_mock" && (
++                  <div style={{ color: "#a78bfa", fontSize: 11, fontStyle: "italic" }}>
++                    Mock published locally. No external post sent.
++                  </div>
++                )}
++              </div>
++            );
++          })()
++        ) : (
++          <div style={{ fontSize: 12, color: "#748099", fontStyle: "italic" }}>
++            No publish plan yet. Try "i-post to feed".
++          </div>
++        )}
++      </div>
++
+       {/* Actions */}
+       <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
+         <button style={{ padding: "8px 10px", borderRadius: 6 }}>Generate Preview</button>
+diff --git a/src/components/studio/StudioPreview.tsx b/src/components/studio/StudioPreview.tsx
+index d035b9e..3fe5318 100644
+--- a/src/components/studio/StudioPreview.tsx
++++ b/src/components/studio/StudioPreview.tsx
+@@ -1,5 +1,5 @@
+ import React from "react";
+-import type { StudioSession, StudioClip, StudioRecordingState, StudioEditPlan } from "../../lib/studio/studio.types";
++import type { StudioSession, StudioClip, StudioRecordingState, StudioEditPlan, StudioPublishPlan } from "../../lib/studio/studio.types";
+ import { formatRecordingElapsed } from "../../lib/studio/studio-copy";
+ 
+ type Props = {
+@@ -8,6 +8,7 @@ type Props = {
+   isPlaying: boolean;
+   recording: StudioRecordingState;
+   selectedEditPlan: StudioEditPlan | null;
++  selectedPublishPlan: StudioPublishPlan | null;
+   onPlayPause?: () => void;
+ };
+ 
+@@ -24,7 +25,7 @@ function overlayColor(status: StudioRecordingState["status"]): string {
+   return "#9fa8c0";
+ }
+ 
+-const StudioPreview: React.FC<Props> = ({ session, selectedClip, isPlaying, recording, selectedEditPlan, onPlayPause }) => {
++const StudioPreview: React.FC<Props> = ({ session, selectedClip, isPlaying, recording, selectedEditPlan, selectedPublishPlan, onPlayPause }) => {
+   const title = selectedClip ? selectedClip.title : session.title;
+   const overlayLabel = recordingOverlayLabel(recording.status);
+ 
+@@ -45,6 +46,11 @@ const StudioPreview: React.FC<Props> = ({ session, selectedClip, isPlaying, reco
+             AUTO-CUT PREVIEW · {selectedEditPlan.estimatedDurationSeconds.toFixed(1)}s
+           </div>
+         ) : null}
++        {selectedPublishPlan ? (
++          <div style={{ background: "rgba(167,139,250,0.12)", padding: "3px 8px", borderRadius: 6, fontSize: 12, color: "#a78bfa", fontWeight: 700 }}>
++            PUBLISH PLAN · {selectedPublishPlan.destinations.join(", ")}
++          </div>
++        ) : null}
+       </div>
+ 
+       {/* Recording overlay */}
+diff --git a/src/components/studio/StudioSessionPanel.tsx b/src/components/studio/StudioSessionPanel.tsx
+index 4d81116..ba1195e 100644
+--- a/src/components/studio/StudioSessionPanel.tsx
++++ b/src/components/studio/StudioSessionPanel.tsx
+@@ -5,6 +5,7 @@ import type {
+   StudioRecordingState,
+   StudioEditPlan,
+   StudioCleanupPlan,
++  StudioPublishPlan,
+ } from "../../lib/studio/studio.types";
+ import { formatRecordingElapsed } from "../../lib/studio/studio-copy";
+ 
+@@ -16,6 +17,8 @@ type Props = {
+   selectedEditPlan: StudioEditPlan | null;
+   cleanupPlans: StudioCleanupPlan[];
+   selectedCleanupPlan: StudioCleanupPlan | null;
++  publishPlans: StudioPublishPlan[];
++  selectedPublishPlan: StudioPublishPlan | null;
+   onToggleDiscard: (id: string) => void;
+ };
+ 
+@@ -33,6 +36,14 @@ const cleanupStatusColor: Record<StudioCleanupPlan["status"], string> = {
+   rejected: "#f87171",
+ };
+ 
++const publishStatusColor: Record<StudioPublishPlan["status"], string> = {
++  draft: "#748099",
++  previewed: "#5ebcff",
++  ready: "#34d399",
++  published_mock: "#a78bfa",
++  rejected: "#f87171",
++};
++
+ const StudioSessionPanel: React.FC<Props> = ({
+   session,
+   selectedClip,
+@@ -41,6 +52,8 @@ const StudioSessionPanel: React.FC<Props> = ({
+   selectedEditPlan,
+   cleanupPlans,
+   selectedCleanupPlan,
++  publishPlans,
++  selectedPublishPlan,
+   onToggleDiscard,
+ }) => {
+   return (
+@@ -185,6 +198,56 @@ const StudioSessionPanel: React.FC<Props> = ({
+           Camera/mic integration pending — mock control state only.
+         </div>
+       </div>
++
++      {/* Publish summary card */}
++      <div
++        style={{
++          padding: 10,
++          background: publishPlans.length > 0 ? "rgba(167,139,250,0.05)" : "rgba(255,255,255,0.02)",
++          borderRadius: 8,
++          border: `1px solid ${publishPlans.length > 0 ? "rgba(167,139,250,0.15)" : "rgba(255,255,255,0.03)"}`,
++        }}
++      >
++        <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 8, color: "#a78bfa" }}>Publish</div>
++        <div style={{ fontSize: 12, display: "flex", flexDirection: "column", gap: 4 }}>
++          <div style={{ display: "flex", justifyContent: "space-between" }}>
++            <span style={{ color: "#9aa4b2" }}>Total plans</span>
++            <span>{publishPlans.length}</span>
++          </div>
++          {selectedPublishPlan ? (
++            <>
++              <div style={{ display: "flex", justifyContent: "space-between" }}>
++                <span style={{ color: "#9aa4b2" }}>Status</span>
++                <span style={{ color: publishStatusColor[selectedPublishPlan.status], fontWeight: 600 }}>
++                  {selectedPublishPlan.status}
++                </span>
++              </div>
++              <div style={{ display: "flex", justifyContent: "space-between" }}>
++                <span style={{ color: "#9aa4b2" }}>Destinations</span>
++                <span style={{ color: "#a78bfa" }}>{selectedPublishPlan.destinations.join(", ")}</span>
++              </div>
++              <div style={{ display: "flex", justifyContent: "space-between" }}>
++                <span style={{ color: "#9aa4b2" }}>Disclosure</span>
++                <span style={{ color: selectedPublishPlan.disclosureRequired ? "#f59e0b" : "#748099" }}>
++                  {selectedPublishPlan.disclosureRequired ? "required" : "not required"}
++                </span>
++              </div>
++              <div style={{ display: "flex", justifyContent: "space-between" }}>
++                <span style={{ color: "#9aa4b2" }}>Originality</span>
++                <span style={{ color: selectedPublishPlan.originalityStatus === "pending" ? "#748099" : "#34d399" }}>
++                  {selectedPublishPlan.originalityStatus}
++                </span>
++              </div>
++            </>
++          ) : (
++            <div style={{ color: "#748099", fontStyle: "italic" }}>
++              {publishPlans.length === 0
++                ? 'No publish plan yet. Try "i-post to feed".'
++                : "No plan selected."}
++            </div>
++          )}
++        </div>
++      </div>
+     </div>
+   );
+ };
+diff --git a/src/features/feed/pops/useFeedPopsMoment.ts b/src/features/feed/pops/useFeedPopsMoment.ts
+deleted file mode 100644
+index e685378..0000000
+--- a/src/features/feed/pops/useFeedPopsMoment.ts
++++ /dev/null
+@@ -1,439 +0,0 @@
+-import { useEffect, useMemo, useRef, useState } from "react";
+-import { usePopsIntentCapture } from "../../../pops/intent/usePopsIntentCapture";
+-import { usePopsSession } from "../../../pops/hooks/usePopsSession";
+-import type { PopsEventType } from "../../../pops/capture/pops-client-events";
+-import {
+-  FEED_POPS_DEFAULTS,
+-  type FeedCardKind,
+-  type FeedIntentAction,
+-  type FeedPopsCampaignRules,
+-  canAccrueProgress,
+-  canStartPopsForVisibility,
+-  computeRewardUiProgress,
+-  resolveFeedPopsRules,
+-} from "./feed-pops-rules";
+-import { FeedPopsRewardBadge } from "./FeedPopsRewardBadge";
+-import { FeedPopsStatusOverlay } from "./FeedPopsStatusOverlay";
+-
+-type ServerDecision = "none" | "pending" | "held" | "denied";
+-type FeedPopsMomentState = "idle" | "verifying" | "verified" | "degraded" | "held";
+-
+-export type UseFeedPopsMomentInput = {
+-  userId: string;
+-  deviceId: string;
+-  contentId: string;
+-  cardKind: FeedCardKind;
+-  campaignId?: string;
+-  campaignRules?: FeedPopsCampaignRules;
+-  scrollVelocityPxPerSec?: number;
+-  isMuted?: boolean;
+-  isAudioForegroundAllowed?: boolean;
+-};
+-
+-export type FeedVisibilityTick = {
+-  visibleMs: number;
+-  completionPct: number;
+-  isVisible: boolean;
+-  isForeground: boolean;
+-  isScreenActive: boolean;
+-};
+-
+-export type UseFeedPopsMomentResult = {
+-  state: FeedPopsMomentState;
+-  isSessionActive: boolean;
+-  momentVerified: boolean;
+-  rewardPending: boolean;
+-  statusTitle: string;
+-  statusSubtitle: string;
+-  rewardLabel: string;
+-  rewardMinor: number;
+-  rewardCurrency: string;
+-  progressPct: number;
+-  contentCompletionPct: number;
+-  verificationConfidenceProgressPct: number;
+-  requiredDurationProgressPct: number;
+-  onCardViewportEnter: () => void;
+-  onCardViewportExit: () => void;
+-  onVisibilityTick: (tick: FeedVisibilityTick) => void;
+-  onIntent: (intent: FeedIntentAction) => void;
+-  setServerDecision: (decision: ServerDecision) => void;
+-};
+-
+-export function useFeedPopsMoment(input: UseFeedPopsMomentInput): UseFeedPopsMomentResult {
+-  const pops = usePopsSession();
+-  const rules = useMemo(() => resolveFeedPopsRules(input.cardKind, input.campaignRules), [input.cardKind, input.campaignRules]);
+-  const checkpointRef = useRef<number>(Date.now());
+-  const visibleRef = useRef(false);
+-  const lastExitAtRef = useRef<number>();
+-  const seenFeedContentRef = useRef<Record<string, number>>({});
+-  const [state, setState] = useState<FeedPopsMomentState>("idle");
+-  const [elapsedMs, setElapsedMs] = useState(0);
+-  const [contentCompletionPct, setContentCompletionPct] = useState(0);
+-  const [requiredDurationProgressPct, setRequiredDurationProgressPct] = useState(0);
+-  const [verificationConfidenceProgressPct, setVerificationConfidenceProgressPct] = useState(0);
+-  const [serverDecision, setServerDecision] = useState<ServerDecision>("none");
+-  const [lastForeground, setLastForeground] = useState(true);
+-  const [lastScreenActive, setLastScreenActive] = useState(true);
+-
+-  const intents = usePopsIntentCapture({
+-    recordEvent: pops.recordEvent,
+-    context: {
+-      minimumConfidence: 0.25,
+-      cooldownMs: 350,
+-      stableWindowMs: 450,
+-      maxInterruptionCount: 3,
+-      movementStabilityThreshold: 0.4,
+-      sessionAgeMs: elapsedMs,
+-      interruptionCount: state === "degraded" ? 2 : 0,
+-      accountReputation: "STANDARD",
+-    },
+-  });
+-
+-  const onCardViewportEnter = () => {
+-    visibleRef.current = true;
+-  };
+-
+-  const onCardViewportExit = () => {
+-    visibleRef.current = false;
+-    lastExitAtRef.current = Date.now();
+-    if (pops.state === "ACTIVE") {
+-      pops.pauseSession("scroll_away");
+-      pops.recordEvent("CONTENT_PAUSED", { reason: "scroll_away" });
+-      pops.recordSignalBatch([{ type: "CONTENT_PAUSED", timestamp: Date.now(), value: "scroll_away" }]);
+-      if (contentCompletionPct >= rules.requiredProgressPct || requiredDurationProgressPct >= 100) {
+-        pops.completeSession();
+-      }
+-    }
+-  };
+-
+-  const onVisibilityTick = (tick: FeedVisibilityTick) => {
+-    setContentCompletionPct(Math.max(0, Math.min(100, tick.completionPct)));
+-    const canStart = canStartPopsForVisibility({
+-      visibleMs: tick.visibleMs,
+-      minVisibleMsBeforeSessionStart: rules.minVisibleMsBeforeSessionStart,
+-      scrollVelocityPxPerSec: input.scrollVelocityPxPerSec,
+-    });
+-
+-    const canProgress = canAccrueProgress({
+-      visibleMs: tick.visibleMs,
+-      isForeground: tick.isForeground,
+-      isScreenActive: tick.isScreenActive,
+-      isAudioForegroundAllowed: input.isAudioForegroundAllowed ?? false,
+-      isMuted: input.isMuted ?? false,
+-      allowsMutedPlayback: rules.allowsMutedPlayback,
+-      allowsBackgroundPlaybackWithAudio: rules.allowsBackgroundPlaybackWithAudio,
+-      minVisibleMsBeforeProgress: rules.minVisibleMsBeforeProgress,
+-    });
+-
+-    if (tick.isForeground !== lastForeground) {
+-      const eventType: PopsEventType = tick.isForeground ? "APP_FOREGROUNDED" : "APP_BACKGROUNDED";
+-      pops.recordEvent(eventType);
+-      setLastForeground(tick.isForeground);
+-    }
+-    if (tick.isScreenActive !== lastScreenActive) {
+-      pops.recordEvent("SCREEN_ACTIVE", { active: tick.isScreenActive });
+-      setLastScreenActive(tick.isScreenActive);
+-    }
+-
+-    if (!canStart || !tick.isVisible || !visibleRef.current) return;
+-    if (isWithinRepeatWindow(input.contentId, rules.repeatWindowMs, seenFeedContentRef.current)) return;
+-
+-    const resumeAllowed = lastExitAtRef.current
+-      ? Date.now() - lastExitAtRef.current <= rules.continuityWindowMs
+-      : false;
+-
+-    if (pops.state === "IDLE") {
+-      if (rules.feedProofLevel === "LEVEL_0_NONE") return;
+-      pops.startSession({
+-        userId: input.userId,
+-        deviceId: input.deviceId,
+-        contentId: input.contentId,
+-        campaignId: input.campaignId ?? "feed_default",
+-        sessionType: rules.sessionType,
+-        proofLevel: rules.popsProofLevel,
+-        requiredDurationMs: rules.requiredDurationMs,
+-      });
+-      checkpointRef.current = Date.now();
+-      setElapsedMs(0);
+-    } else if (pops.state === "PAUSED" && resumeAllowed) {
+-      pops.resumeSession("feed_returned");
+-      pops.recordEvent("CONTENT_RESUMED", { reason: "within_continuity_window" });
+-    }
+-
+-    if (!canProgress || pops.state !== "ACTIVE") {
+-      if (state !== "held") {
+-        setState(!tick.isForeground || !tick.isScreenActive ? "degraded" : "verifying");
+-      }
+-      return;
+-    }
+-
+-    const now = Date.now();
+-    const dt = Math.max(0, now - checkpointRef.current);
+-    checkpointRef.current = now;
+-    setElapsedMs((prev) => prev + dt);
+-    pops.recordEvent("CONTENT_PROGRESS", { progressPct: tick.completionPct });
+-    pops.recordSignalBatch([{ type: "CONTENT_PROGRESS", timestamp: now, value: tick.completionPct }]);
+-  };
+-
+-  useEffect(() => {
+-    if (pops.state !== "ACTIVE") return;
+-    const timer = setInterval(() => {
+-      pops.recordEvent("REWARD_CHECKPOINT", {
+-        elapsedMs,
+-        contentCompletionPct,
+-      });
+-    }, FEED_POPS_DEFAULTS.checkpointMs);
+-    return () => clearInterval(timer);
+-  }, [pops, elapsedMs, contentCompletionPct]);
+-
+-  useEffect(() => {
+-    const durationPct = Math.min(100, (elapsedMs / rules.requiredDurationMs) * 100);
+-    setRequiredDurationProgressPct(durationPct);
+-    const confidence = Math.min(
+-      100,
+-      Math.round((pops.attentionConfidence * 100 + pops.presenceConfidence * 100 + pops.intentConfidence * 100) / 3),
+-    );
+-    setVerificationConfidenceProgressPct(confidence);
+-  }, [elapsedMs, rules.requiredDurationMs, pops.attentionConfidence, pops.presenceConfidence, pops.intentConfidence]);
+-
+-  useEffect(() => {
+-    if (serverDecision === "held") {
+-      setState("held");
+-      return;
+-    }
+-    if (serverDecision === "denied") {
+-      setState("degraded");
+-      return;
+-    }
+-    const verified =
+-      contentCompletionPct >= rules.requiredProgressPct &&
+-      requiredDurationProgressPct >= 100 &&
+-      verificationConfidenceProgressPct >= 60;
+-    if (verified) {
+-      setState("verified");
+-      pops.completeSession();
+-      seenFeedContentRef.current[input.contentId] = Date.now();
+-    } else if (pops.state === "ACTIVE") {
+-      setState("verifying");
+-    }
+-  }, [
+-    contentCompletionPct,
+-    requiredDurationProgressPct,
+-    verificationConfidenceProgressPct,
+-    rules.requiredProgressPct,
+-    pops,
+-    serverDecision,
+-    input.contentId,
+-  ]);
+-
+-  const onIntent = (intent: FeedIntentAction) => {
+-    intents.captureIntent({
+-      actionType: intent === "cta_click" ? "tap" : "gesture",
+-      zoneId: `feed:${input.contentId}`,
+-      dwellMs: Math.min(2_000, elapsedMs),
+-      movementStable: state !== "degraded",
+-      confidenceHint: intent === "cta_click" ? 0.9 : 0.7,
+-      metadata: {
+-        intent,
+-        contentId: input.contentId,
+-      },
+-    });
+-  };
+-
+-  const rewardPending = serverDecision === "pending";
+-  const progressPct = computeRewardUiProgress({
+-    contentCompletionPct,
+-    verificationConfidenceProgressPct,
+-    requiredDurationProgressPct,
+-  });
+-
+-  return {
+-    state,
+-    isSessionActive: pops.state === "ACTIVE" || pops.state === "PAUSED",
+-    momentVerified: state === "verified" || rewardPending,
+-    rewardPending,
+-    statusTitle: getStatusTitle(state, rewardPending),
+-    statusSubtitle: getStatusSubtitle(state, rewardPending),
+-    rewardLabel: `Earn ${formatRewardLabel(rules.rewardMinor, rules.rewardCurrency)}`,
+-    rewardMinor: rules.rewardMinor,
+-    rewardCurrency: rules.rewardCurrency,
+-    progressPct,
+-    contentCompletionPct,
+-    verificationConfidenceProgressPct,
+-    requiredDurationProgressPct,
+-    onCardViewportEnter,
+-    onCardViewportExit,
+-    onVisibilityTick,
+-    onIntent,
+-    setServerDecision,
+-  };
+-}
+-
+-function formatRewardLabel(rewardMinor: number, rewardCurrency: string): string {
+-  if (rewardCurrency === "ICOIN" || rewardCurrency === "VCOIN" || rewardCurrency === "RCOIN") {
+-    return `${(rewardMinor / 100).toFixed(2)} ${rewardCurrency.toLowerCase()}s`;
+-  }
+-  return `${(rewardMinor / 100).toFixed(2)} ${rewardCurrency}`;
+-}
+-
+-function isWithinRepeatWindow(contentId: string, repeatWindowMs: number, seen: Record<string, number>): boolean {
+-  const seenAt = seen[contentId];
+-  if (!seenAt) return false;
+-  return Date.now() - seenAt <= repeatWindowMs;
+-}
+-
+-function getStatusTitle(state: FeedPopsMomentState, rewardPending: boolean): string {
+-  if (rewardPending) return "Reward pending";
+-  if (state === "verified") return "Moment verified";
+-  if (state === "degraded") return "Moment not verified";
+-  if (state === "held") return "Reward under review";
+-  return "P.O.P.S verifying moment";
+-}
+-
+-function getStatusSubtitle(state: FeedPopsMomentState, rewardPending: boolean): string {
+-  if (rewardPending) return "Moment verified";
+-  if (state === "verified") return "Moment verified";
+-  if (state === "degraded") return "Moment confidence rising";
+-  if (state === "held") return "Reward pending";
+-  return "Moment confidence rising";
+-}
+-
+-export type MockFeedItem = {
+-  id: string;
+-  cardKind: FeedCardKind;
+-  title: string;
+-  sponsor?: string;
+-  campaignRules?: FeedPopsCampaignRules;
+-};
+-
+-export function createMockFeedItems(): MockFeedItem[] {
+-  return [
+-    {
+-      id: "organic_001",
+-      cardKind: "organic",
+-      title: "Creator story: morning routine",
+-      campaignRules: { proofLevel: "LEVEL_1_SESSION", rewardMinor: 0 },
+-    },
+-    {
+-      id: "sponsored_001",
+-      cardKind: "sponsored",
+-      title: "Sponsored: eco headphones",
+-      sponsor: "Auraloop",
+-      campaignRules: {
+-        proofLevel: "LEVEL_2_ATTENTION",
+-        rewardMinor: 25,
+-        requiredDurationMs: 30_000,
+-        requiredProgressPct: 85,
+-      },
+-    },
+-    {
+-      id: "creator_paid_001",
+-      cardKind: "creator_paid_action",
+-      title: "Creator mission: follow + save",
+-      campaignRules: {
+-        proofLevel: "LEVEL_3_INTENT",
+-        rewardMinor: 20,
+-        requiredDurationMs: 20_000,
+-        requiredProgressPct: 70,
+-      },
+-    },
+-  ];
+-}
+-
+-export function FeedPopsMockedDemoFeed() {
+-  const items = createMockFeedItems();
+-  const [activeId, setActiveId] = useState(items[1]?.id ?? items[0].id);
+-  const active = items.find((item) => item.id === activeId) ?? items[0];
+-  const moment = useFeedPopsMoment({
+-    userId: "demo_feed_user",
+-    deviceId: "demo_feed_device",
+-    contentId: active.id,
+-    cardKind: active.cardKind,
+-    campaignId: active.campaignRules?.id ?? "feed_demo_campaign",
+-    campaignRules: active.campaignRules,
+-    isMuted: false,
+-    isAudioForegroundAllowed: false,
+-  });
+-  const [visibleMs, setVisibleMs] = useState(0);
+-  const [completionPct, setCompletionPct] = useState(0);
+-
+-  useEffect(() => {
+-    moment.onCardViewportEnter();
+-    return () => moment.onCardViewportExit();
+-  }, [active.id, moment]);
+-
+-  useEffect(() => {
+-    const timer = setInterval(() => {
+-      setVisibleMs((prevVisibleMs) => {
+-        const nextVisibleMs = prevVisibleMs + 1_000;
+-        setCompletionPct((prevCompletionPct) => {
+-          const nextCompletionPct = Math.min(100, prevCompletionPct + 4);
+-          moment.onVisibilityTick({
+-            visibleMs: nextVisibleMs,
+-            completionPct: nextCompletionPct,
+-            isVisible: true,
+-            isForeground: true,
+-            isScreenActive: true,
+-          });
+-          return nextCompletionPct;
+-        });
+-        return nextVisibleMs;
+-      });
+-    }, 1_000);
+-    return () => clearInterval(timer);
+-  }, [moment]);
+-
+-  useEffect(() => {
+-    if (moment.state !== "verified" || moment.rewardMinor <= 0) return;
+-    if (moment.rewardPending) return;
+-    const timer = setTimeout(() => {
+-      moment.setServerDecision("pending");
+-    }, 1_200);
+-    return () => clearTimeout(timer);
+-  }, [moment.state, moment.rewardMinor, moment.rewardPending, moment.setServerDecision]);
+-
+-  return (
+-    <div style={{ display: "grid", gap: 12, maxWidth: 520 }}>
+-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+-        {items.map((item) => (
+-          <button
+-            key={item.id}
+-            onClick={() => {
+-              setActiveId(item.id);
+-              setVisibleMs(0);
+-              setCompletionPct(0);
+-            }}
+-          >
+-            {item.cardKind}
+-          </button>
+-        ))}
+-      </div>
+-
+-      {active.cardKind === "sponsored" ? (
+-        <FeedPopsRewardBadge
+-          rewardLabel={moment.rewardLabel}
+-          pending={moment.rewardPending}
+-          underReview={moment.state === "held"}
+-        />
+-      ) : null}
+-
+-      <FeedPopsStatusOverlay
+-        title={moment.statusTitle}
+-        subtitle={moment.statusSubtitle}
+-        progressPct={moment.progressPct}
+-        state={moment.state}
+-      />
+-
+-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+-        <button onClick={() => moment.onIntent("like")}>Like</button>
+-        <button onClick={() => moment.onIntent("save")}>Save</button>
+-        <button onClick={() => moment.onIntent("follow")}>Follow</button>
+-        <button onClick={() => moment.onIntent("share")}>Share</button>
+-        <button onClick={() => moment.onIntent("cta_click")}>CTA click</button>
+-        <button onClick={() => moment.setServerDecision("pending")}>Mock pending</button>
+-        <button onClick={() => moment.setServerDecision("held")}>Mock held</button>
+-        <button onClick={() => moment.setServerDecision("denied")}>Mock denied</button>
+-      </div>
+-    </div>
+-  );
+-}
+diff --git a/src/lib/studio/studio-state.ts b/src/lib/studio/studio-state.ts
+index ed67b76..bddc1e3 100644
+--- a/src/lib/studio/studio-state.ts
++++ b/src/lib/studio/studio-state.ts
+@@ -5,11 +5,14 @@ import type {
+   StudioMark,
+   StudioRecordingState,
+   StudioEditPlanMode,
++  StudioPublishDestination,
+ } from "./studio.types";
+ import { mockSession } from "./studio.mock";
+ import { parseStudioCommand, extractTargetDurationSeconds, createEffectPreviewFromCommand } from "./studio-commands";
+ import { createAutoCutPlan } from "./studio-autocut";
+ import { createCleanupPlan } from "./studio-cleanup";
++import { createPublishPlan } from "./studio-publish";
++import type { PublishPlanOptions } from "./studio-publish";
+ 
+ const clone = <T,>(v: T): T => JSON.parse(JSON.stringify(v));
+ 
+@@ -47,6 +50,9 @@ export function createInitialStudioState(): StudioState {
+     autoCutPanelOpen: false,
+     cleanupPlans: [],
+     selectedCleanupPlanId: null,
++    publishPlans: [],
++    selectedPublishPlanId: null,
++    publishPanelOpen: false,
+   };
+ }
+ 
+@@ -227,6 +233,82 @@ export function rejectCleanupPlanPreview(state: StudioState, planId: string): St
+   return { ...state, cleanupPlans };
+ }
+ 
++// ── Stage 6: Publish plan helpers ─────────────────────────────────────────────
++
++export function generatePublishPlan(
++  state: StudioState,
++  destinations: StudioPublishDestination[],
++  options?: Omit<PublishPlanOptions, "destinations">,
++): StudioState {
++  const plan = createPublishPlan(state, { destinations, ...options });
++  const ef = {
++    id: `ef-${gid()}`,
++    type: "publish" as const,
++    label: "Publish plan preview",
++    description: "Publishing plan generated. No post has been published.",
++    createdAt: nowISO(),
++  };
++  return {
++    ...state,
++    publishPlans: [plan, ...state.publishPlans],
++    selectedPublishPlanId: plan.id,
++    publishPanelOpen: true,
++    exportPanelOpen: true,
++    effectPreviews: [ef, ...state.effectPreviews],
++  };
++}
++
++export function selectPublishPlan(state: StudioState, planId: string): StudioState {
++  return { ...state, selectedPublishPlanId: planId };
++}
++
++export function markPublishPlanReady(state: StudioState, planId: string): StudioState {
++  return {
++    ...state,
++    publishPlans: state.publishPlans.map((p) =>
++      p.id === planId ? { ...p, status: "ready" as const } : p,
++    ),
++  };
++}
++
++export function mockPublishPlan(state: StudioState, planId: string): StudioState {
++  const publishPlans = state.publishPlans.map((p) =>
++    p.id === planId ? { ...p, status: "published_mock" as const } : p,
++  );
++  const ef = {
++    id: `ef-${gid()}`,
++    type: "publish" as const,
++    label: "Mock publish complete",
++    description: "Mock publish completed locally. No external platform received this post.",
++    createdAt: nowISO(),
++  };
++  const session = clone(state.activeSession);
++  const parsed = parseStudioCommand("mock publish");
++  parsed.previewText =
++    "Mock publish completed locally. No external platform received this post.";
++  session.commands.unshift(parsed);
++  session.updatedAt = nowISO();
++  return {
++    ...state,
++    publishPlans,
++    activeSession: session,
++    effectPreviews: [ef, ...state.effectPreviews],
++  };
++}
++
++export function rejectPublishPlan(state: StudioState, planId: string): StudioState {
++  return {
++    ...state,
++    publishPlans: state.publishPlans.map((p) =>
++      p.id === planId ? { ...p, status: "rejected" as const } : p,
++    ),
++  };
++}
++
++export function setPublishPanelOpen(state: StudioState, open: boolean): StudioState {
++  return { ...state, publishPanelOpen: open };
++}
++
+ // ── Stage 3: Recording state machine ─────────────────────────────────────────
+ 
+ export function startRecordingSession(state: StudioState): StudioState {
+@@ -409,6 +491,55 @@ export function applyStudioCommand(state: StudioState, rawCommand: string): Stud
+     return withPlan;
+   }
+ 
++  // ── Publish commands ───────────────────────────────────────────────────────
++  const MOCK_PUBLISH_PREVIEW = "Studio generated a mock publish plan. Nothing has been posted.";
++
++  const withPubCmd = (next: StudioState): StudioState => {
++    const sess2 = clone(next.activeSession);
++    const p2 = parseStudioCommand(rawCommand);
++    p2.previewText = MOCK_PUBLISH_PREVIEW;
++    sess2.commands.unshift(p2);
++    sess2.updatedAt = nowISO();
++    return { ...next, activeSession: sess2, commandPanelOpen: true };
++  };
++
++  if (/(feed.*stories|stories.*feed|feed and stories)/.test(n)) {
++    return withPubCmd(generatePublishPlan(s, ["feed", "stories"]));
++  }
++
++  if (/(post to feed|post.*feed|publish.*feed)/.test(n)) {
++    return withPubCmd(generatePublishPlan(s, ["feed"]));
++  }
++
++  if (/(post to stories|post.*stories|publish.*stories)/.test(n)) {
++    return withPubCmd(generatePublishPlan(s, ["stories"]));
++  }
++
++  if (/(campaign version|make campaign|campaign post)/.test(n)) {
++    return withPubCmd(generatePublishPlan(s, ["campaign"], { campaignMode: true }));
++  }
++
++  if (/(save draft|create draft|draft version)/.test(n)) {
++    return withPubCmd(generatePublishPlan(s, ["draft"]));
++  }
++
++  if (/(schedule this|schedule for|schedule tomorrow|schedule post)/.test(n)) {
++    return withPubCmd(
++      generatePublishPlan(s, ["draft"], { scheduleMode: "scheduled", scheduledFor: null }),
++    );
++  }
++
++  if (/(add cta|^cta$|call to action)/.test(n)) {
++    const existingDests: StudioPublishDestination[] =
++      s.publishPlans.length > 0 ? s.publishPlans[0].destinations : ["feed"];
++    return withPubCmd(
++      generatePublishPlan(s, existingDests, {
++        ctaLabel: "Learn more",
++        campaignMode: existingDests.includes("campaign"),
++      }),
++    );
++  }
++
+   // ── General effect/session commands ───────────────────────────────────────
+   const session = s.activeSession;
+   const parsed = parseStudioCommand(rawCommand);
+@@ -429,16 +560,6 @@ export function applyStudioCommand(state: StudioState, rawCommand: string): Stud
+     return { ...s, activeSession: session };
+   }
+ 
+-  if (/(post to feed|post to stories|feed and stories|post to feed and stories)/.test(n) || /post .*feed/.test(n)) {
+-    s.exportPanelOpen = true;
+-    if (!s.selectedExportTargets.includes("Feed")) s.selectedExportTargets.push("Feed");
+-    if (!s.selectedExportTargets.includes("Stories")) s.selectedExportTargets.push("Stories");
+-    parsed.previewText = "Export panel opened with Feed and Stories selected (preview only).";
+-    const ef = createEffectPreviewFromCommand(rawCommand);
+-    if (ef) s.effectPreviews.unshift(ef);
+-    return { ...s, activeSession: session };
+-  }
+-
+   const ef = createEffectPreviewFromCommand(rawCommand);
+   if (ef) {
+     s.effectPreviews.unshift(ef);
+diff --git a/src/lib/studio/studio.types.ts b/src/lib/studio/studio.types.ts
+index a5ffd0f..711c545 100644
+--- a/src/lib/studio/studio.types.ts
++++ b/src/lib/studio/studio.types.ts
+@@ -230,6 +230,65 @@ export interface StudioCleanupPlan {
+   warnings: string[];
+ }
+ 
++// ── Stage 6: Publishing pipeline ─────────────────────────────────────────────
++
++export type StudioPublishDestination =
++  | "feed"
++  | "stories"
++  | "campaign"
++  | "draft"
++  | "proof_vault"
++  | "external";
++
++export type StudioPublishPlanStatus =
++  | "draft"
++  | "previewed"
++  | "ready"
++  | "published_mock"
++  | "rejected";
++
++export type StudioPublishReadinessGateStatus = "passed" | "warning" | "blocked" | "pending";
++
++export interface StudioPublishReadinessGate {
++  id: string;
++  label: string;
++  status: StudioPublishReadinessGateStatus;
++  message: string;
++}
++
++export interface StudioPublishCTA {
++  label: string;
++  url?: string;
++  enabled: boolean;
++}
++
++export interface StudioPublishSchedule {
++  mode: "now" | "scheduled";
++  scheduledFor: string | null;
++  label: string;
++}
++
++export interface StudioPublishPlan {
++  id: string;
++  status: StudioPublishPlanStatus;
++  createdAt: string;
++  destinations: StudioPublishDestination[];
++  title: string;
++  caption: string;
++  hashtags: string[];
++  disclosureRequired: boolean;
++  disclosureText: string | null;
++  cta: StudioPublishCTA;
++  schedule: StudioPublishSchedule;
++  readinessGates: StudioPublishReadinessGate[];
++  proofRequired: boolean;
++  originalityStatus: "pending" | "ready" | "not_required";
++  selectedEditPlanId: string | null;
++  selectedCleanupPlanId: string | null;
++  summary: string;
++  warnings: string[];
++}
++
+ // ── Full UI state ─────────────────────────────────────────────────────────────
+ 
+ export interface StudioState {
+@@ -248,4 +307,7 @@ export interface StudioState {
+   autoCutPanelOpen: boolean;
+   cleanupPlans: StudioCleanupPlan[];
+   selectedCleanupPlanId: string | null;
++  publishPlans: StudioPublishPlan[];
++  selectedPublishPlanId: string | null;
++  publishPanelOpen: boolean;
+ }
+diff --git a/src/screens/StudioScreen.tsx b/src/screens/StudioScreen.tsx
+index 64db8c4..258971f 100644
+--- a/src/screens/StudioScreen.tsx
++++ b/src/screens/StudioScreen.tsx
+@@ -10,6 +10,7 @@ import StudioCommandPanel from "../components/studio/StudioCommandPanel";
+ import StudioExportPanel from "../components/studio/StudioExportPanel";
+ import StudioAutoCutPanel from "../components/studio/StudioAutoCutPanel";
+ import StudioCleanupPanel from "../components/studio/StudioCleanupPanel";
++import StudioPublishPanel from "../components/studio/StudioPublishPanel";
+ 
+ import {
+   createInitialStudioState,
+@@ -26,6 +27,11 @@ import {
+   confirmCleanupPlanPreview,
+   rejectCleanupPlanPreview,
+   setCleanupPreviewOpen,
++  selectPublishPlan,
++  markPublishPlanReady,
++  mockPublishPlan,
++  rejectPublishPlan,
++  setPublishPanelOpen,
+ } from "../lib/studio/studio-state";
+ import type { AspectRatio, StudioToolId } from "../lib/studio/studio.types";
+ 
+@@ -52,6 +58,16 @@ const StudioScreen: React.FC = () => {
+     [state.cleanupPlans],
+   );
+ 
++  const selectedPublishPlan = useMemo(
++    () => state.publishPlans.find((p) => p.id === state.selectedPublishPlanId) ?? null,
++    [state.publishPlans, state.selectedPublishPlanId],
++  );
++
++  const latestPublishPlan = useMemo(
++    () => state.publishPlans[0] ?? null,
++    [state.publishPlans],
++  );
++
+   function handleSetTool(tool: StudioToolId) {
+     setState((s) => setActiveTool(s, tool));
+   }
+@@ -119,6 +135,27 @@ const StudioScreen: React.FC = () => {
+     setState((s) => setCleanupPreviewOpen(s, false));
+   }
+ 
++  // ── Publish handlers ─────────────────────────────────────────────────────────
++  function handleSelectPublishPlan(planId: string) {
++    setState((s) => selectPublishPlan(s, planId));
++  }
++
++  function handleMarkPublishPlanReady(planId: string) {
++    setState((s) => markPublishPlanReady(s, planId));
++  }
++
++  function handleMockPublishPlan(planId: string) {
++    setState((s) => mockPublishPlan(s, planId));
++  }
++
++  function handleRejectPublishPlan(planId: string) {
++    setState((s) => rejectPublishPlan(s, planId));
++  }
++
++  function handleClosePublish() {
++    setState((s) => setPublishPanelOpen(s, false));
++  }
++
+   return (
+     <StudioShell>
+       <StudioTopBar
+@@ -137,6 +174,7 @@ const StudioScreen: React.FC = () => {
+               isPlaying={state.isPlaying}
+               recording={state.recording}
+               selectedEditPlan={selectedEditPlan}
++              selectedPublishPlan={selectedPublishPlan}
+               onPlayPause={handlePlayPause}
+             />
+           </div>
+@@ -164,6 +202,8 @@ const StudioScreen: React.FC = () => {
+           selectedEditPlan={selectedEditPlan}
+           cleanupPlans={state.cleanupPlans}
+           selectedCleanupPlan={selectedCleanupPlan}
++          publishPlans={state.publishPlans}
++          selectedPublishPlan={selectedPublishPlan}
+           onToggleDiscard={handleToggleDiscard}
+         />
+       </div>
+@@ -178,6 +218,7 @@ const StudioScreen: React.FC = () => {
+         session={state.activeSession}
+         selectedExportTargets={state.selectedExportTargets}
+         latestCleanupPlan={latestCleanupPlan}
++        latestPublishPlan={latestPublishPlan}
+         onClose={() => setState((s) => ({ ...s, exportPanelOpen: false }))}
+       />
+       <StudioAutoCutPanel
+@@ -198,6 +239,16 @@ const StudioScreen: React.FC = () => {
+         onRejectPlan={handleRejectCleanupPlan}
+         onClose={handleCloseCleanup}
+       />
++      <StudioPublishPanel
++        open={state.publishPanelOpen}
++        plans={state.publishPlans}
++        selectedPlanId={state.selectedPublishPlanId}
++        onSelectPlan={handleSelectPublishPlan}
++        onMarkReady={handleMarkPublishPlanReady}
++        onMockPublish={handleMockPublishPlan}
++        onRejectPlan={handleRejectPublishPlan}
++        onClose={handleClosePublish}
++      />
+     </StudioShell>
+   );
+ };

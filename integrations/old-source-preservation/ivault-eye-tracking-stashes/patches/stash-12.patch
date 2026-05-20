@@ -1,0 +1,2175 @@
+# Merge stash: exported via git show -p stash@{12}^3 (untracked/WIP tree commit)
+# git stash show -p returns empty for merge-format stashes
+#
+commit 3c11d502737640365a20f202a0eff6f3165008dd
+Author: iappmodel <iappmailbox@gmail.com>
+Date:   Thu Apr 30 15:48:54 2026 -0400
+
+    untracked files on feature/evidence-vault-v2-hardening: 7a1de91 Protect sealed evidence objects from register mutation
+
+diff --git a/src/components/studio/StudioClipStrip.tsx b/src/components/studio/StudioClipStrip.tsx
+new file mode 100644
+index 0000000..b332b7a
+--- /dev/null
++++ b/src/components/studio/StudioClipStrip.tsx
+@@ -0,0 +1,60 @@
++import React from "react";
++import { StudioClip } from "../../lib/studio/studio.types";
++
++interface Props {
++  clips: StudioClip[];
++  selectedClipId?: string | null;
++  onSelect: (id: string) => void;
++  onToggleDiscard?: (id: string) => void;
++}
++
++export const StudioClipStrip: React.FC<Props> = ({ clips, selectedClipId, onSelect, onToggleDiscard }) => {
++  return (
++    <div style={{ display: "flex", gap: 8, overflowX: "auto", padding: 8 }}>
++      {clips.map((c) => (
++        <div
++          key={c.id}
++          onClick={() => onSelect(c.id)}
++          style={{
++            minWidth: 140,
++            minHeight: 80,
++            borderRadius: 8,
++            padding: 8,
++            cursor: "pointer",
++            border: selectedClipId === c.id ? "2px solid #60a5fa" : "1px solid rgba(255,255,255,0.03)",
++            background: c.thumbnailGradient,
++            display: "flex",
++            flexDirection: "column",
++            justifyContent: "space-between",
++          }}
++        >
++          <div style={{ fontWeight: 700 }}>{c.title}</div>
++          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
++            <div style={{ fontSize: 12, color: "#d6dbe2" }}>{c.durationSeconds}s</div>
++            <div style={{ display: "flex", gap: 6 }}>
++              <MiniBadge>{c.qualityScore}</MiniBadge>
++              <MiniBadge>{c.highlightScore}</MiniBadge>
++              {c.isMarked ? <MiniBadge>★</MiniBadge> : null}
++              <button
++                onClick={(e) => {
++                  e.stopPropagation();
++                  onToggleDiscard?.(c.id);
++                }}
++                style={{ background: "transparent", border: "none", color: "inherit", cursor: "pointer" }}
++              >
++                {c.status === "discarded" ? "↺" : "🗑"}
++              </button>
++            </div>
++          </div>
++        </div>
++      ))}
++    </div>
++  );
++};
++
++const MiniBadge: React.FC<React.PropsWithChildren<{}>> = ({ children }) => (
++  <div style={{ background: "rgba(0,0,0,0.35)", padding: "2px 6px", borderRadius: 6, fontSize: 12 }}>{children}</div>
++);
++
++export default StudioClipStrip;
++
+diff --git a/src/components/studio/StudioCommandPanel.tsx b/src/components/studio/StudioCommandPanel.tsx
+new file mode 100644
+index 0000000..0026ad7
+--- /dev/null
++++ b/src/components/studio/StudioCommandPanel.tsx
+@@ -0,0 +1,78 @@
++import React, { useState } from "react";
++import { StudioCommand, StudioSession } from "../../lib/studio/studio.types";
++import { studioCopy } from "../../lib/studio/studio-copy";
++
++interface Props {
++  open: boolean;
++  session: StudioSession;
++  onSubmit: (raw: string) => void;
++}
++
++export const StudioCommandPanel: React.FC<Props> = ({ open, session, onSubmit }) => {
++  const [val, setVal] = useState("");
++  if (!open) return null;
++  return (
++    <div
++      style={{
++        position: "fixed",
++        right: 18,
++        bottom: 18,
++        width: 420,
++        maxHeight: "50vh",
++        background: "rgba(3,7,18,0.8)",
++        border: "1px solid rgba(255,255,255,0.04)",
++        padding: 12,
++        borderRadius: 12,
++        overflow: "auto",
++      }}
++    >
++      <div style={{ fontWeight: 700, marginBottom: 8 }}>Command Panel</div>
++      <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
++        <input
++          placeholder={studioCopy.placeholders.commandInput}
++          value={val}
++          onChange={(e) => setVal(e.target.value)}
++          style={{
++            flex: 1,
++            padding: "8px 10px",
++            borderRadius: 8,
++            border: "1px solid rgba(255,255,255,0.04)",
++            background: "transparent",
++            color: "inherit",
++          }}
++        />
++        <button
++          onClick={() => {
++            if (!val.trim()) return;
++            onSubmit(val.trim());
++            setVal("");
++          }}
++          style={{ padding: "8px 12px", borderRadius: 8, cursor: "pointer" }}
++        >
++          Send
++        </button>
++      </div>
++      <div style={{ fontSize: 13, color: "#9aa4b2", marginBottom: 6 }}>Recent</div>
++      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
++        {session.commands.map((c: StudioCommand) => (
++          <div
++            key={c.id}
++            style={{
++              background: "rgba(255,255,255,0.02)",
++              padding: 8,
++              borderRadius: 8,
++              border: "1px solid rgba(255,255,255,0.02)",
++            }}
++          >
++            <div style={{ fontSize: 13, fontWeight: 600 }}>{c.raw}</div>
++            <div style={{ fontSize: 12, color: "#b6c0c8" }}>{c.previewText}</div>
++            <div style={{ fontSize: 11, color: "#9aa4b2", marginTop: 6 }}>{c.intent}</div>
++          </div>
++        ))}
++      </div>
++    </div>
++  );
++};
++
++export default StudioCommandPanel;
++
+diff --git a/src/components/studio/StudioExportPanel.tsx b/src/components/studio/StudioExportPanel.tsx
+new file mode 100644
+index 0000000..80e5b62
+--- /dev/null
++++ b/src/components/studio/StudioExportPanel.tsx
+@@ -0,0 +1,67 @@
++import React from "react";
++import { StudioSession } from "../../lib/studio/studio.types";
++import { studioCopy } from "../../lib/studio/studio-copy";
++
++interface Props {
++  open: boolean;
++  session: StudioSession;
++  onClose?: () => void;
++}
++
++export const StudioExportPanel: React.FC<Props> = ({ open, session, onClose }) => {
++  if (!open) return null;
++  return (
++    <div
++      style={{
++        position: "fixed",
++        left: "50%",
++        top: "10%",
++        transform: "translateX(-50%)",
++        width: 640,
++        background: "rgba(2,6,23,0.95)",
++        padding: 16,
++        borderRadius: 12,
++        border: "1px solid rgba(255,255,255,0.04)",
++        zIndex: 60,
++      }}
++    >
++      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
++        <div style={{ fontWeight: 800 }}>Export</div>
++        <div>
++          <button onClick={onClose} style={{ padding: "6px 10px", borderRadius: 8 }}>
++            Close
++          </button>
++        </div>
++      </div>
++      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 12 }}>
++        <div style={{ background: "rgba(255,255,255,0.02)", padding: 12, borderRadius: 8 }}>
++          <div style={{ fontWeight: 700 }}>Targets</div>
++          <div style={{ marginTop: 8, display: "flex", gap: 8, flexWrap: "wrap" }}>
++            {session.exportTargets.map((t) => (
++              <div key={t} style={{ padding: "6px 8px", borderRadius: 8, background: "rgba(0,0,0,0.35)" }}>
++                {t}
++              </div>
++            ))}
++          </div>
++        </div>
++        <div style={{ background: "rgba(255,255,255,0.02)", padding: 12, borderRadius: 8 }}>
++          <div style={{ fontWeight: 700 }}>Readiness</div>
++          <div style={{ marginTop: 8 }}>
++            <div>Originality: {session.proofStatus.originalityFingerprint}</div>
++            <div>Audio rights: safe mock</div>
++            <div>Brand safety: clean mock</div>
++            <div>Storage cleanup: available</div>
++          </div>
++        </div>
++      </div>
++      <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
++        <button style={{ padding: "8px 12px", borderRadius: 8 }}>{studioCopy.export.generatePreview}</button>
++        <button style={{ padding: "8px 12px", borderRadius: 8 }}>{studioCopy.export.saveDraft}</button>
++        <button style={{ padding: "8px 12px", borderRadius: 8 }}>{studioCopy.export.preparePublish}</button>
++      </div>
++    </div>
++  );
++};
++
++export default StudioExportPanel;
++
+diff --git a/src/components/studio/StudioPreview.tsx b/src/components/studio/StudioPreview.tsx
+new file mode 100644
+index 0000000..7625b90
+--- /dev/null
++++ b/src/components/studio/StudioPreview.tsx
+@@ -0,0 +1,84 @@
++import React from "react";
++import { StudioClip, StudioSession } from "../../lib/studio/studio.types";
++import { studioCopy } from "../../lib/studio/studio-copy";
++
++interface Props {
++  session: StudioSession;
++  selectedClip?: StudioClip | null;
++  isPlaying?: boolean;
++  onPlayPause?: () => void;
++}
++
++export const StudioPreview: React.FC<Props> = ({ session, selectedClip, isPlaying, onPlayPause }) => {
++  const bg = selectedClip?.thumbnailGradient ?? "linear-gradient(135deg,#0f172a,#111827)";
++  return (
++    <div style={{ padding: 12, display: "flex", justifyContent: "center" }}>
++      <div
++        style={{
++          width: 320,
++          height: 568,
++          borderRadius: 18,
++          boxShadow: "0 8px 30px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.02)",
++          background: bg,
++          position: "relative",
++          overflow: "hidden",
++          border: "1px solid rgba(255,255,255,0.03)",
++        }}
++      >
++        <div style={{ position: "absolute", top: 12, left: 12, display: "flex", gap: 8 }}>
++          <Badge>{studioCopy.badges.aiReady}</Badge>
++          <Badge>{studioCopy.badges.proofPending}</Badge>
++        </div>
++        {session.targetDurationSeconds ? (
++          <div style={{ position: "absolute", top: 12, right: 12 }}>
++            <div style={{ padding: "6px 8px", background: "rgba(0,0,0,0.3)", borderRadius: 6 }}>
++              {studioCopy.badges.target(session.targetDurationSeconds)}
++            </div>
++          </div>
++        ) : null}
++        <div
++          style={{
++            position: "absolute",
++            bottom: 20,
++            left: 0,
++            right: 0,
++            display: "flex",
++            justifyContent: "center",
++          }}
++        >
++          <button
++            onClick={onPlayPause}
++            style={{
++              background: "rgba(255,255,255,0.06)",
++              border: "1px solid rgba(255,255,255,0.06)",
++              color: "white",
++              width: 56,
++              height: 56,
++              borderRadius: 999,
++              fontSize: 18,
++            }}
++          >
++            {isPlaying ? "❚❚" : "▶"}
++          </button>
++        </div>
++      </div>
++    </div>
++  );
++};
++
++const Badge: React.FC<React.PropsWithChildren<{}>> = ({ children }) => (
++  <div
++    style={{
++      background: "rgba(0,0,0,0.35)",
++      padding: "4px 8px",
++      borderRadius: 8,
++      fontSize: 12,
++      border: "1px solid rgba(255,255,255,0.03)",
++    }}
++  >
++    {children}
++  </div>
++);
++
++export default StudioPreview;
++
+diff --git a/src/components/studio/StudioSessionPanel.tsx b/src/components/studio/StudioSessionPanel.tsx
+new file mode 100644
+index 0000000..1d06907
+--- /dev/null
++++ b/src/components/studio/StudioSessionPanel.tsx
+@@ -0,0 +1,60 @@
++import React from "react";
++import { StudioSession, StudioClip } from "../../lib/studio/studio.types";
++
++interface Props {
++  session: StudioSession;
++  selectedClip?: StudioClip | null;
++  onToggleDiscard?: (clipId: string) => void;
++}
++
++export const StudioSessionPanel: React.FC<Props> = ({ session, selectedClip, onToggleDiscard }) => {
++  return (
++    <div style={{ width: 300, padding: 12, borderLeft: "1px solid rgba(255,255,255,0.03)" }}>
++      <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>{session.title}</div>
++      <div style={{ fontSize: 13, color: "#9aa4b2", marginBottom: 12 }}>
++        Status: {session.status} • Clips: {session.clips.length}
++      </div>
++      <div style={{ marginBottom: 12 }}>
++        <Stat label="Raw time" value={`${Math.round(session.rawDurationSeconds)}s`} />
++        <Stat label="Target" value={session.targetDurationSeconds ? `${session.targetDurationSeconds}s` : "—"} />
++        <Stat label="Storage" value={`${session.storageUsedMb} MB`} />
++        <Stat label="Recoverable" value={`${session.recoverableStorageMb} MB`} />
++      </div>
++      <div style={{ fontWeight: 700, marginBottom: 8 }}>Selected clip</div>
++      {selectedClip ? (
++        <div style={{ background: "rgba(255,255,255,0.02)", padding: 8, borderRadius: 8 }}>
++          <div style={{ fontWeight: 700 }}>{selectedClip.title}</div>
++          <div style={{ fontSize: 12, color: "#9aa4b2" }}>{selectedClip.durationSeconds}s</div>
++          <div style={{ marginTop: 8 }}>
++            <button
++              onClick={() => onToggleDiscard?.(selectedClip.id)}
++              style={{ padding: "6px 10px", borderRadius: 8, cursor: "pointer" }}
++            >
++              {selectedClip.status === "discarded" ? "Undiscard" : "Discard"}
++            </button>
++          </div>
++        </div>
++      ) : (
++        <div style={{ color: "#9aa4b2" }}>No clip selected</div>
++      )}
++      <div style={{ marginTop: 14 }}>
++        <div style={{ fontWeight: 700, marginBottom: 8 }}>Proof & Storage</div>
++        <div style={{ background: "rgba(255,255,255,0.02)", padding: 8, borderRadius: 8 }}>
++          <div style={{ fontSize: 13 }}>Originality: {session.proofStatus.originalityFingerprint}</div>
++          <div style={{ fontSize: 13 }}>Custody: {session.proofStatus.custodyLog}</div>
++          <div style={{ fontSize: 13 }}>Deletion protected: {session.proofStatus.deletionProtected ? "Yes" : "No"}</div>
++        </div>
++      </div>
++    </div>
++  );
++};
++
++const Stat: React.FC<{ label: string; value: string | number }> = ({ label, value }) => (
++  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
++    <div style={{ color: "#9aa4b2" }}>{label}</div>
++    <div style={{ fontWeight: 700 }}>{value}</div>
++  </div>
++);
++
++export default StudioSessionPanel;
++
+diff --git a/src/components/studio/StudioShell.tsx b/src/components/studio/StudioShell.tsx
+new file mode 100644
+index 0000000..bb79bec
+--- /dev/null
++++ b/src/components/studio/StudioShell.tsx
+@@ -0,0 +1,21 @@
++import React from "react";
++
++export const StudioShell: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
++  return (
++    <div
++      style={{
++        display: "flex",
++        flexDirection: "column",
++        height: "100vh",
++        background: "#05060a",
++        color: "#e6eef8",
++        fontFamily: "Inter, DM Sans, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial",
++      }}
++    >
++      {children}
++    </div>
++  );
++};
++
++export default StudioShell;
++
+diff --git a/src/components/studio/StudioTimeline.tsx b/src/components/studio/StudioTimeline.tsx
+new file mode 100644
+index 0000000..982183f
+--- /dev/null
++++ b/src/components/studio/StudioTimeline.tsx
+@@ -0,0 +1,93 @@
++import React from "react";
++import { StudioTimeline, TimelineItem } from "../../lib/studio/studio.types";
++
++interface Props {
++  timeline: StudioTimeline;
++  onSeek?: (seconds: number) => void;
++}
++
++export const StudioTimeline: React.FC<Props> = ({ timeline, onSeek }) => {
++  const width = 800;
++  const duration = Math.max(1, timeline.durationSeconds);
++  return (
++    <div style={{ padding: 12 }}>
++      <div style={{ color: "#9aa4b2", marginBottom: 8 }}>Timeline</div>
++      <div style={{ background: "rgba(255,255,255,0.02)", padding: 12, borderRadius: 8 }}>
++        <div style={{ position: "relative", height: 120 }}>
++          {/* ruler */}
++          <div style={{ height: 24, color: "#9aa4b2", fontSize: 12 }}>
++            {Array.from({ length: 6 }).map((_, i) => {
++              const t = Math.round((i * duration) / 5);
++              return (
++                <span key={i} style={{ display: "inline-block", width: width / 5, textAlign: "center" }}>
++                  {t}s
++                </span>
++              );
++            })}
++          </div>
++          {/* layers */}
++          <div style={{ display: "flex", gap: 6, marginTop: 8, flexDirection: "column" }}>
++            {timeline.layers.map((layer) => (
++              <div key={layer.id} style={{ background: "rgba(0,0,0,0.25)", padding: 8, borderRadius: 6 }}>
++                <div style={{ fontSize: 12, color: "#b6c0c8", marginBottom: 6 }}>{layer.name}</div>
++                <div style={{ position: "relative", height: 28, background: "rgba(255,255,255,0.01)", borderRadius: 4 }}>
++                  {layer.items.map((it) => (
++                    <TimelineBlock key={it.id} item={it} duration={duration} totalWidth={width} onSeek={onSeek} />
++                  ))}
++                  {/* playhead */}
++                  <div
++                    style={{
++                      position: "absolute",
++                      left: `${(timeline.playheadSeconds / duration) * 100}%`,
++                      top: 0,
++                      bottom: 0,
++                      width: 2,
++                      background: "rgba(255,255,255,0.6)",
++                    }}
++                  />
++                </div>
++              </div>
++            ))}
++          </div>
++        </div>
++      </div>
++    </div>
++  );
++};
++
++const TimelineBlock: React.FC<{ item: TimelineItem; duration: number; totalWidth: number; onSeek?: (s: number) => void }> = ({
++  item,
++  duration,
++  totalWidth,
++  onSeek,
++}) => {
++  const left = (item.startSeconds / duration) * 100;
++  const width = (item.durationSeconds / duration) * 100;
++  return (
++    <div
++      onClick={() => onSeek?.(item.startSeconds)}
++      title={item.label}
++      style={{
++        position: "absolute",
++        left: `${left}%`,
++        width: `${width}%`,
++        top: 2,
++        bottom: 2,
++        background: "linear-gradient(90deg,#334155,#0f172a)",
++        borderRadius: 4,
++        border: "1px solid rgba(255,255,255,0.04)",
++        padding: "2px 6px",
++        fontSize: 12,
++        color: "#fff",
++        display: "flex",
++        alignItems: "center",
++        gap: 8,
++      }}
++    >
++      {item.label}
++    </div>
++  );
++};
++
++export default StudioTimeline;
++
+diff --git a/src/components/studio/StudioToolRail.tsx b/src/components/studio/StudioToolRail.tsx
+new file mode 100644
+index 0000000..fd5106a
+--- /dev/null
++++ b/src/components/studio/StudioToolRail.tsx
+@@ -0,0 +1,51 @@
++import React from "react";
++import { StudioToolId } from "../../lib/studio/studio.types";
++
++interface Props {
++  activeTool: StudioToolId;
++  onSetTool: (t: StudioToolId) => void;
++}
++
++const TOOLS: { id: StudioToolId; label: string }[] = [
++  { id: "select", label: "Select" },
++  { id: "trim", label: "Trim" },
++  { id: "captions", label: "Captions" },
++  { id: "audio", label: "Audio" },
++  { id: "effects", label: "Effects" },
++  { id: "beauty", label: "Beauty" },
++  { id: "crop", label: "Crop" },
++  { id: "magic", label: "Magic" },
++  { id: "proof", label: "Proof" },
++  { id: "publish", label: "Publish" },
++  { id: "cleanup", label: "Cleanup" },
++];
++
++export const StudioToolRail: React.FC<Props> = ({ activeTool, onSetTool }) => {
++  return (
++    <div style={{ width: 160, padding: 12, borderRight: "1px solid rgba(255,255,255,0.03)" }}>
++      <div style={{ fontSize: 13, color: "#9aa4b2", marginBottom: 8 }}>Tools</div>
++      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
++        {TOOLS.map((t) => (
++          <button
++            key={t.id}
++            onClick={() => onSetTool(t.id)}
++            style={{
++              textAlign: "left",
++              padding: "8px 10px",
++              borderRadius: 8,
++              border: "none",
++              cursor: "pointer",
++              background: activeTool === t.id ? "linear-gradient(90deg,#0f172a,#14213d)" : "transparent",
++              color: activeTool === t.id ? "#fff" : "#d6dbe2",
++            }}
++          >
++            {t.label}
++          </button>
++        ))}
++      </div>
++    </div>
++  );
++};
++
++export default StudioToolRail;
++
+diff --git a/src/components/studio/StudioTopBar.tsx b/src/components/studio/StudioTopBar.tsx
+new file mode 100644
+index 0000000..b95a213
+--- /dev/null
++++ b/src/components/studio/StudioTopBar.tsx
+@@ -0,0 +1,72 @@
++import React from "react";
++import { StudioSession, AspectRatio } from "../../lib/studio/studio.types";
++import { studioCopy } from "../../lib/studio/studio-copy";
++
++interface Props {
++  session: StudioSession;
++  onBack?: () => void;
++  onToggleExport?: () => void;
++  onCycleAspect?: () => void;
++}
++
++export const StudioTopBar: React.FC<Props> = ({ session, onBack, onToggleExport, onCycleAspect }) => {
++  return (
++    <div
++      style={{
++        display: "flex",
++        alignItems: "center",
++        gap: 12,
++        padding: "12px 16px",
++        borderBottom: "1px solid rgba(255,255,255,0.04)",
++        background: "linear-gradient(180deg, rgba(255,255,255,0.02), transparent)",
++      }}
++    >
++      <button onClick={onBack} style={iconButtonStyle}>
++        ←
++      </button>
++      <div style={{ fontWeight: 700, fontSize: 16 }}>{studioCopy.title}</div>
++      <div style={{ opacity: 0.8, marginLeft: 8 }}>{session.title}</div>
++      <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
++        <div style={statusPill(session.status)}>{session.status}</div>
++        <button style={smallButton} onClick={onCycleAspect}>
++          {session.aspectRatio}
++        </button>
++        <button style={smallButton} onClick={onToggleExport}>
++          Export
++        </button>
++      </div>
++    </div>
++  );
++};
++
++const iconButtonStyle: React.CSSProperties = {
++  background: "transparent",
++  border: "none",
++  color: "inherit",
++  padding: 6,
++  cursor: "pointer",
++  fontSize: 16,
++};
++
++const smallButton: React.CSSProperties = {
++  background: "rgba(255,255,255,0.04)",
++  border: "1px solid rgba(255,255,255,0.04)",
++  color: "inherit",
++  padding: "6px 10px",
++  borderRadius: 6,
++  cursor: "pointer",
++};
++
++function statusPill(status: StudioSession["status"]) {
++  return {
++    padding: "6px 10px",
++    borderRadius: 999,
++    background: "rgba(255,255,255,0.02)",
++    border: "1px solid rgba(255,255,255,0.03)",
++    fontSize: 13,
++    textTransform: "capitalize",
++  } as React.CSSProperties;
++}
++
++export default StudioTopBar;
++
+diff --git a/src/lib/i/i-command-copy.ts b/src/lib/i/i-command-copy.ts
+new file mode 100644
+index 0000000..b6daec9
+--- /dev/null
++++ b/src/lib/i/i-command-copy.ts
+@@ -0,0 +1,16 @@
++export const I_COPY = {
++  emptyInput: "Ask anything to i",
++  focusedInput: "Start with i...",
++  listening: "i is listening",
++  understanding: "i is understanding",
++  doing: "i is doing it",
++  privateMode: "between you and i",
++  memoryQuestion: "Should i remember this?",
++  remembered: "i remembered this for you",
++  forgot: "i forgot this",
++  done: "done by i",
++  failed: "i couldn't complete that yet",
++  notSearch: "When you begin with i, you are not searching. You are commanding.",
++  core: "i knows me. i works for me.",
++};
++
+diff --git a/src/lib/i/i-command-engine.ts b/src/lib/i/i-command-engine.ts
+new file mode 100644
+index 0000000..a2a71c0
+--- /dev/null
++++ b/src/lib/i/i-command-engine.ts
+@@ -0,0 +1,29 @@
++import { createICommandEvent } from "./i-command-events";
++import { parseICommand } from "./i-command-parser";
++import { routeICommand } from "./i-command-router";
++
++import type {
++  ICommandEngineResult,
++  ICommandInput,
++} from "./i-command.types";
++
++export function runICommand(input: ICommandInput): ICommandEngineResult {
++  const parse = parseICommand(input.raw);
++  const route = routeICommand(parse);
++
++  const event = createICommandEvent({
++    userId: input.userId,
++    parse,
++    route,
++  });
++
++  // Log the event for now (no backend)
++  console.log("[i-command:event]", event);
++
++  return {
++    parse,
++    route,
++    event,
++  };
++}
++
+diff --git a/src/lib/i/i-command-events.ts b/src/lib/i/i-command-events.ts
+new file mode 100644
+index 0000000..6198e44
+--- /dev/null
++++ b/src/lib/i/i-command-events.ts
+@@ -0,0 +1,26 @@
++import type {
++  ICommandEvent,
++  ICommandParseResult,
++  ICommandRouteResult,
++} from "./i-command.types";
++
++export function createICommandEvent(input: {
++  userId: string;
++  parse: ICommandParseResult;
++  route: ICommandRouteResult;
++}): ICommandEvent {
++  return {
++    id: crypto.randomUUID(),
++    userId: input.userId,
++    raw: input.parse.raw,
++    verb: input.parse.verb,
++    domain: input.parse.domain,
++    privacyLevel: input.parse.privacyLevel,
++    memoryClass: input.parse.memoryClass,
++    actionType: input.route.actionType,
++    safetyFlags: input.parse.safetyFlags,
++    confidence: input.parse.confidence,
++    createdAt: new Date().toISOString(),
++  };
++}
++
+diff --git a/src/lib/i/i-command-grammar.ts b/src/lib/i/i-command-grammar.ts
+new file mode 100644
+index 0000000..b608fa3
+--- /dev/null
++++ b/src/lib/i/i-command-grammar.ts
+@@ -0,0 +1,183 @@
++import type { ICommandDomain, ICommandVerb } from "./i-command.types";
++
++export const I_COMMAND_PREFIXES = [
++  "i ",
++  "i,",
++  "i.",
++  "i:",
++  "i;",
++  "i\n",
++];
++
++export const VERB_PATTERNS: Record<ICommandVerb, RegExp[]> = {
++  want: [/^want\b/i, /^wanna\b/i],
++  need: [/^need\b/i],
++  feel: [/^feel\b/i, /^am feeling\b/i],
++  think: [/^think\b/i],
++  remember: [/^remember\b/i],
++  forgot: [/^forgot\b/i, /^forget\b/i, /^lost\b/i],
++  pay: [/^pay\b/i, /^send\b/i],
++  earn: [/^earn\b/i, /^make money\b/i],
++  post: [/^post\b/i, /^publish\b/i],
++  make: [/^make\b/i, /^create\b/i, /^edit\b/i],
++  protect: [/^protect\b/i, /^prove\b/i, /^copyright\b/i],
++  go: [/^go\b/i, /^open\b/i, /^take me\b/i],
++  plan: [/^plan\b/i, /^organize\b/i, /^schedule\b/i],
++  confess: [/^confess\b/i, /^tell you something\b/i],
++  save: [/^save\b/i, /^keep\b/i],
++  withdraw: [/^withdraw\b/i, /^cash out\b/i, /^cashout\b/i],
++  convert: [/^convert\b/i, /^exchange\b/i],
++  help: [/^help\b/i],
++  unknown: [],
++};
++
++export const DOMAIN_KEYWORDS: Record<ICommandDomain, string[]> = {
++  private_self: [
++    "feel",
++    "lost",
++    "sad",
++    "scared",
++    "afraid",
++    "confess",
++    "secret",
++    "private",
++    "trauma",
++    "pain",
++    "dream",
++    "desire",
++    "regret",
++    "ashamed",
++    "anxious",
++    "overwhelmed",
++    "alone",
++    "purpose",
++    "become better",
++    "clear my head",
++  ],
++
++  wallet_economy: [
++    "wallet",
++    "pay",
++    "send",
++    "tip",
++    "withdraw",
++    "cash out",
++    "convert",
++    "balance",
++    "coins",
++    "icoin",
++    "icoins",
++    "money",
++    "earnings",
++  ],
++
++  feed_content: [
++    "feed",
++    "watch",
++    "content",
++    "video",
++    "discover",
++    "save this",
++    "like",
++    "share",
++  ],
++
++  studio_creation: [
++    "studio",
++    "edit",
++    "make this video",
++    "create",
++    "caption",
++    "cut",
++    "filter",
++    "export",
++    "post this",
++  ],
++
++  originality_protection: [
++    "protect",
++    "original",
++    "mine",
++    "copyright",
++    "prove",
++    "stolen",
++    "ownership",
++    "fingerprint",
++    "shazam",
++  ],
++
++  health: [
++    "health",
++    "doctor",
++    "sleep",
++    "workout",
++    "trainer",
++    "nutrition",
++    "diet",
++    "food",
++    "weight",
++    "exercise",
++  ],
++
++  career: [
++    "job",
++    "career",
++    "resume",
++    "interview",
++    "apply",
++    "work",
++    "skills",
++    "hiring",
++  ],
++
++  finance: [
++    "budget",
++    "debt",
++    "financial",
++    "invest",
++    "save money",
++    "bills",
++    "rent",
++    "expenses",
++  ],
++
++  relationships: [
++    "relationship",
++    "girlfriend",
++    "boyfriend",
++    "wife",
++    "husband",
++    "friend",
++    "family",
++    "mother",
++    "father",
++    "breakup",
++    "argument",
++  ],
++
++  navigation: [
++    "open",
++    "go to",
++    "show me",
++    "take me",
++    "settings",
++    "profile",
++    "home",
++  ],
++
++  emergency_safety: [
++    "kill myself",
++    "suicide",
++    "hurt myself",
++    "hurt someone",
++    "emergency",
++    "danger",
++    "abuse",
++    "blood",
++    "overdose",
++    "can't go on",
++  ],
++
++  unknown: [],
++};
++
+diff --git a/src/lib/i/i-command-memory.ts b/src/lib/i/i-command-memory.ts
+new file mode 100644
+index 0000000..08c30b3
+--- /dev/null
++++ b/src/lib/i/i-command-memory.ts
+@@ -0,0 +1,37 @@
++import type {
++  ICommandParseResult,
++  IMemoryClass,
++} from "./i-command.types";
++
++export function requiresMemoryConsent(parse: ICommandParseResult): boolean {
++  if (parse.memoryClass === "none") return false;
++  if (parse.memoryClass === "temporary") return false;
++
++  return [
++    "preference",
++    "goal",
++    "pattern",
++    "sensitive",
++    "restricted",
++  ].includes(parse.memoryClass);
++}
++
++export function memoryConsentCopy(memoryClass: IMemoryClass): string {
++  switch (memoryClass) {
++    case "preference":
++      return "Should i remember this preference for you?";
++    case "goal":
++      return "Should i remember this goal for you?";
++    case "pattern":
++      return "Should i remember this pattern to help you better?";
++    case "sensitive":
++      return "Should i keep this between us?";
++    case "restricted":
++      return "This is sensitive. i can help now, but saving it requires explicit consent.";
++    case "temporary":
++    case "none":
++    default:
++      return "i will use this only for this moment.";
++  }
++}
++
+diff --git a/src/lib/i/i-command-parser.ts b/src/lib/i/i-command-parser.ts
+new file mode 100644
+index 0000000..c4d1767
+--- /dev/null
++++ b/src/lib/i/i-command-parser.ts
+@@ -0,0 +1,297 @@
++import {
++  DOMAIN_KEYWORDS,
++  I_COMMAND_PREFIXES,
++  VERB_PATTERNS,
++} from "./i-command-grammar";
++
++import type {
++  ICommandDomain,
++  ICommandEntities,
++  ICommandParseResult,
++  ICommandVerb,
++  IMemoryClass,
++  IPrivacyLevel,
++  ISafetyFlag,
++} from "./i-command.types";
++
++export function parseICommand(raw: string): ICommandParseResult {
++  const normalized = normalize(raw);
++  const isICommand = startsWithICommand(normalized);
++  const body = isICommand ? stripIPrefix(normalized) : normalized;
++
++  const verb = detectVerb(body);
++  const domain = detectDomain(body, verb);
++  const safetyFlags = detectSafetyFlags(body);
++  const privacyLevel = detectPrivacyLevel(domain, body, safetyFlags);
++  const memoryClass = detectMemoryClass(domain, body, safetyFlags);
++  const entities = extractEntities(body);
++  const confidence = computeConfidence({
++    isICommand,
++    verb,
++    domain,
++    safetyFlags,
++  });
++
++  return {
++    isICommand,
++    raw,
++    normalized,
++    body,
++    verb,
++    domain,
++    privacyLevel,
++    memoryClass,
++    confidence,
++    entities,
++    safetyFlags,
++  };
++}
++
++function normalize(raw: string): string {
++  return raw.trim().replace(/\s+/g, " ");
++}
++
++function startsWithICommand(input: string): boolean {
++  const lower = input.toLowerCase();
++
++  if (lower === "i") return true;
++
++  return I_COMMAND_PREFIXES.some((prefix) => lower.startsWith(prefix));
++}
++
++function stripIPrefix(input: string): string {
++  return input
++    .replace(/^i[\s,.:;\n]+/i, "")
++    .trim();
++}
++
++function detectVerb(body: string): ICommandVerb {
++  for (const [verb, patterns] of Object.entries(VERB_PATTERNS)) {
++    if (verb === "unknown") continue;
++
++    if (patterns.some((pattern) => pattern.test(body))) {
++      return verb as ICommandVerb;
++    }
++  }
++
++  return "unknown";
++}
++
++function detectDomain(body: string, verb: ICommandVerb): ICommandDomain {
++  const lower = body.toLowerCase();
++
++  if (["pay", "withdraw", "convert"].includes(verb)) {
++    return "wallet_economy";
++  }
++
++  if (verb === "earn") {
++    return "wallet_economy";
++  }
++
++  if (["post", "make"].includes(verb)) {
++    return "studio_creation";
++  }
++
++  if (verb === "protect") {
++    return "originality_protection";
++  }
++
++  if (verb === "confess" || verb === "feel") {
++    return "private_self";
++  }
++
++  let bestDomain: ICommandDomain = "unknown";
++  let bestScore = 0;
++
++  for (const [domain, keywords] of Object.entries(DOMAIN_KEYWORDS)) {
++    if (domain === "unknown") continue;
++
++    const score = keywords.reduce((count, keyword) => {
++      return lower.includes(keyword) ? count + 1 : count;
++    }, 0);
++
++    if (score > bestScore) {
++      bestScore = score;
++      bestDomain = domain as ICommandDomain;
++    }
++  }
++
++  return bestDomain;
++}
++
++function detectSafetyFlags(body: string): ISafetyFlag[] {
++  const lower = body.toLowerCase();
++  const flags: ISafetyFlag[] = [];
++
++  if (
++    lower.includes("kill myself") ||
++    lower.includes("suicide") ||
++    lower.includes("hurt myself") ||
++    lower.includes("can't go on")
++  ) {
++    flags.push("self_harm");
++  }
++
++  if (
++    lower.includes("hurt someone") ||
++    lower.includes("kill someone") ||
++    lower.includes("violence")
++  ) {
++    flags.push("violence");
++  }
++
++  if (
++    lower.includes("overdose") ||
++    lower.includes("heart attack") ||
++    lower.includes("can't breathe") ||
++    lower.includes("medical emergency")
++  ) {
++    flags.push("medical_emergency");
++  }
++
++  if (
++    lower.includes("abuse") ||
++    lower.includes("being hit") ||
++    lower.includes("unsafe at home")
++  ) {
++    flags.push("abuse");
++  }
++
++  if (
++    lower.includes("minor") ||
++    lower.includes("child") ||
++    lower.includes("underage")
++  ) {
++    flags.push("minor_safety");
++  }
++
++  if (
++    lower.includes("panic") ||
++    lower.includes("overwhelmed") ||
++    lower.includes("breaking down")
++  ) {
++    flags.push("severe_distress");
++  }
++
++  return flags.length > 0 ? flags : ["none"];
++}
++
++function detectPrivacyLevel(
++  domain: ICommandDomain,
++  body: string,
++  safetyFlags: ISafetyFlag[],
++): IPrivacyLevel {
++  if (safetyFlags.some((flag) => flag !== "none")) {
++    return "restricted";
++  }
++
++  const lower = body.toLowerCase();
++
++  if (
++    domain === "private_self" ||
++    lower.includes("secret") ||
++    lower.includes("confess") ||
++    lower.includes("between us") ||
++    lower.includes("private")
++  ) {
++    return "deep_private";
++  }
++
++  if (
++    domain === "health" ||
++    domain === "finance" ||
++    domain === "relationships" ||
++    domain === "career"
++  ) {
++    return "private";
++  }
++
++  if (domain === "wallet_economy") {
++    return "personal";
++  }
++
++  return "public_safe";
++}
++
++function detectMemoryClass(
++  domain: ICommandDomain,
++  body: string,
++  safetyFlags: ISafetyFlag[],
++): IMemoryClass {
++  if (safetyFlags.includes("self_harm") || safetyFlags.includes("abuse")) {
++    return "restricted";
++  }
++
++  const lower = body.toLowerCase();
++
++  if (
++    lower.includes("remember this") ||
++    lower.includes("save this") ||
++    lower.includes("keep this")
++  ) {
++    return "sensitive";
++  }
++
++  if (domain === "private_self" || domain === "relationships") {
++    return "sensitive";
++  }
++
++  if (domain === "health" || domain === "finance") {
++    return "sensitive";
++  }
++
++  if (domain === "career") {
++    return "goal";
++  }
++
++  if (lower.includes("i want to") || lower.includes("my goal")) {
++    return "goal";
++  }
++
++  return "temporary";
++}
++
++function extractEntities(body: string): ICommandEntities {
++  const amountMatch = body.match(/\$?(\d+(?:\.\d{1,2})?)/);
++  const currencyMatch = body.match(/\b(icoin|icoins|vcoin|vcoins|usd|dollar|dollars)\b/i);
++
++  return {
++    amount: amountMatch ? Number(amountMatch[1]) : undefined,
++    currency: currencyMatch?.[1]?.toLowerCase(),
++    personName: extractPersonName(body),
++    timeframe: extractTimeframe(body),
++  };
++}
++
++function extractPersonName(body: string): string | undefined {
++  const payMatch = body.match(/(?:pay|send|tip)\s+([A-Z][a-z]+|\w+)/i);
++  return payMatch?.[1];
++}
++
++function extractTimeframe(body: string): string | undefined {
++  const lower = body.toLowerCase();
++
++  if (lower.includes("today")) return "today";
++  if (lower.includes("tomorrow")) return "tomorrow";
++  if (lower.includes("this week")) return "this_week";
++  if (lower.includes("this month")) return "this_month";
++
++  return undefined;
++}
++
++function computeConfidence(input: {
++  isICommand: boolean;
++  verb: ICommandVerb;
++  domain: ICommandDomain;
++  safetyFlags: ISafetyFlag[];
++}): number {
++  let score = 0;
++
++  if (input.isICommand) score += 0.35;
++  if (input.verb !== "unknown") score += 0.25;
++  if (input.domain !== "unknown") score += 0.3;
++  if (input.safetyFlags.some((flag) => flag !== "none")) score += 0.1;
++
++  return Math.min(1, Number(score.toFixed(2)));
++}
++
+diff --git a/src/lib/i/i-command-privacy.ts b/src/lib/i/i-command-privacy.ts
+new file mode 100644
+index 0000000..e4a1b27
+--- /dev/null
++++ b/src/lib/i/i-command-privacy.ts
+@@ -0,0 +1,38 @@
++import type {
++  ICommandDomain,
++  ICommandParseResult,
++  IPrivacyLevel,
++} from "./i-command.types";
++
++export function shouldEnterPrivateMode(parse: ICommandParseResult): boolean {
++  return (
++    parse.privacyLevel === "deep_private" ||
++    parse.privacyLevel === "restricted"
++  );
++}
++
++export function privacyLabel(level: IPrivacyLevel): string {
++  switch (level) {
++    case "public_safe":
++      return "normal";
++    case "personal":
++      return "personal";
++    case "private":
++      return "private";
++    case "deep_private":
++      return "between you and i";
++    case "restricted":
++      return "safety protected";
++  }
++}
++
++export function domainRequiresIsolation(domain: ICommandDomain): boolean {
++  return [
++    "private_self",
++    "health",
++    "finance",
++    "relationships",
++    "emergency_safety",
++  ].includes(domain);
++}
++
+diff --git a/src/lib/i/i-command.types.ts b/src/lib/i/i-command.types.ts
+new file mode 100644
+index 0000000..db58c7f
+--- /dev/null
++++ b/src/lib/i/i-command.types.ts
+@@ -0,0 +1,151 @@
++export type ICommandDomain =
++  | "private_self"
++  | "wallet_economy"
++  | "feed_content"
++  | "studio_creation"
++  | "originality_protection"
++  | "health"
++  | "career"
++  | "finance"
++  | "relationships"
++  | "navigation"
++  | "emergency_safety"
++  | "unknown";
++
++export type ICommandVerb =
++  | "want"
++  | "need"
++  | "feel"
++  | "think"
++  | "remember"
++  | "forgot"
++  | "pay"
++  | "earn"
++  | "post"
++  | "make"
++  | "protect"
++  | "go"
++  | "plan"
++  | "confess"
++  | "save"
++  | "withdraw"
++  | "convert"
++  | "help"
++  | "unknown";
++
++export type IPrivacyLevel =
++  | "public_safe"
++  | "personal"
++  | "private"
++  | "deep_private"
++  | "restricted";
++
++export type IMemoryClass =
++  | "none"
++  | "temporary"
++  | "preference"
++  | "goal"
++  | "pattern"
++  | "sensitive"
++  | "restricted";
++
++export type ICommandUxState =
++  | "idle"
++  | "listening"
++  | "understanding"
++  | "needs_consent"
++  | "doing"
++  | "done"
++  | "private_mode"
++  | "blocked"
++  | "error";
++
++export type ICommandActionType =
++  | "open_private_session"
++  | "open_wallet"
++  | "prepare_payment"
++  | "open_earn"
++  | "open_studio"
++  | "prepare_post"
++  | "protect_media"
++  | "open_health_plan"
++  | "open_career_plan"
++  | "open_finance_plan"
++  | "open_relationship_reflection"
++  | "open_navigation"
++  | "safety_escalation"
++  | "ask_clarifying_question"
++  | "none";
++
++export interface ICommandInput {
++  raw: string;
++  userId: string;
++  source: "text" | "voice" | "shortcut" | "system";
++  timestamp: string;
++}
++
++export interface ICommandParseResult {
++  isICommand: boolean;
++  raw: string;
++  normalized: string;
++  body: string;
++  verb: ICommandVerb;
++  domain: ICommandDomain;
++  privacyLevel: IPrivacyLevel;
++  memoryClass: IMemoryClass;
++  confidence: number;
++  entities: ICommandEntities;
++  safetyFlags: ISafetyFlag[];
++}
++
++export interface ICommandEntities {
++  amount?: number;
++  currency?: string;
++  personName?: string;
++  topic?: string;
++  object?: string;
++  platform?: string;
++  timeframe?: string;
++}
++
++export type ISafetyFlag =
++  | "self_harm"
++  | "violence"
++  | "medical_emergency"
++  | "abuse"
++  | "minor_safety"
++  | "severe_distress"
++  | "none";
++
++export interface ICommandRouteResult {
++  actionType: ICommandActionType;
++  uxState: ICommandUxState;
++  title: string;
++  message: string;
++  requiresConfirmation: boolean;
++  requiresMemoryConsent: boolean;
++  suggestedActionLabel?: string;
++  nextRoute?: string;
++  payload?: Record<string, unknown>;
++}
++
++export interface ICommandEngineResult {
++  parse: ICommandParseResult;
++  route: ICommandRouteResult;
++  event: ICommandEvent;
++}
++
++export interface ICommandEvent {
++  id: string;
++  userId: string;
++  raw: string;
++  verb: ICommandVerb;
++  domain: ICommandDomain;
++  privacyLevel: IPrivacyLevel;
++  memoryClass: IMemoryClass;
++  actionType: ICommandActionType;
++  safetyFlags: ISafetyFlag[];
++  confidence: number;
++  createdAt: string;
++}
++
+diff --git a/src/lib/studio/studio-commands.ts b/src/lib/studio/studio-commands.ts
+new file mode 100644
+index 0000000..f7defed
+--- /dev/null
++++ b/src/lib/studio/studio-commands.ts
+@@ -0,0 +1,81 @@
++import { StudioCommand, CommandIntent, CommandStatus } from "./studio.types";
++
++function genId(prefix = "cmd-") {
++  return `${prefix}${Math.floor(Math.random() * 1e9).toString(36)}`;
++}
++
++function nowISO() {
++  return new Date().toISOString();
++}
++
++function normalize(raw: string) {
++  return raw.trim().toLowerCase();
++}
++
++export function parseStudioCommand(raw: string): StudioCommand {
++  const n = normalize(raw);
++
++  const intent: CommandIntent = detectIntent(n);
++
++  const previewText = mockedPreviewForIntent(intent, n);
++
++  const cmd: StudioCommand = {
++    id: genId(),
++    raw,
++    normalized: n,
++    intent,
++    status: "previewed",
++    createdAt: nowISO(),
++    previewText,
++  };
++
++  return cmd;
++}
++
++function detectIntent(n: string): CommandIntent {
++  // order matters: more specific first
++  if (/(45 seconds|45s|rough cut|best moments|cut|remove|trim|shorten)/.test(n)) {
++    return "edit_request";
++  }
++  if (/(skin|lighting|cinematic|romantic|action|beauty)/.test(n)) {
++    return "enhancement_request";
++  }
++  if (/(music|sound|audio|voice|noise)/.test(n)) {
++    return "audio_request";
++  }
++  if (/(post|feed|stories|campaign|publish|post to)/.test(n)) {
++    return "publish_request";
++  }
++  if (/(delete|storage|raw clips|cleanup|cleanup storage)/.test(n)) {
++    return "storage_request";
++  }
++  if (/(proof|originality|fingerprint|protect)/.test(n)) {
++    return "proof_request";
++  }
++  if (/(go|pause|resume|stop|mark)/.test(n)) {
++    return "capture_control";
++  }
++  return "unknown";
++}
++
++function mockedPreviewForIntent(intent: CommandIntent, raw: string): string {
++  switch (intent) {
++    case "edit_request":
++      return "Studio will generate a 45s rough cut using marked moments, highlight score, silence detection, and clip quality.";
++    case "enhancement_request":
++      return "Studio will prepare a non-destructive visual enhancement layer. Original media remains protected.";
++    case "audio_request":
++      return "Studio will analyze audio tracks and propose mixing, noise reduction, and music beds.";
++    case "publish_request":
++      return "Studio will prepare feed, story, and campaign-safe publishing options.";
++    case "storage_request":
++      return "Studio found recoverable raw media. Deletion will require explicit confirmation.";
++    case "proof_request":
++      return "Studio will prepare originality fingerprinting and custody metadata.";
++    case "capture_control":
++      return "Capture control command parsed. (mock) — will affect recording state when live.";
++    default:
++      return `Studio could not confidently parse intent for: "${raw}".`;
++  }
++}
++
+diff --git a/src/lib/studio/studio-copy.ts b/src/lib/studio/studio-copy.ts
+new file mode 100644
+index 0000000..fce47f3
+--- /dev/null
++++ b/src/lib/studio/studio-copy.ts
+@@ -0,0 +1,17 @@
++export const studioCopy = {
++  title: "[ i ] Studio",
++  placeholders: {
++    commandInput: "Try: i-make this video 45 seconds",
++  },
++  badges: {
++    aiReady: "AI-ready",
++    proofPending: "Proof pending",
++    target: (s: number) => `${s}s target`,
++  },
++  export: {
++    generatePreview: "Generate preview export",
++    saveDraft: "Save draft",
++    preparePublish: "Prepare publish",
++  },
++};
++
+diff --git a/src/lib/studio/studio-state.ts b/src/lib/studio/studio-state.ts
+new file mode 100644
+index 0000000..01a100d
+--- /dev/null
++++ b/src/lib/studio/studio-state.ts
+@@ -0,0 +1,89 @@
++import {
++  StudioState,
++  StudioSession,
++  StudioToolId,
++  StudioClip,
++  AspectRatio,
++} from "./studio.types";
++import { mockSession } from "./studio.mock";
++import { parseStudioCommand } from "./studio-commands";
++
++function cloneSession(s: StudioSession): StudioSession {
++  return JSON.parse(JSON.stringify(s)) as StudioSession;
++}
++
++export function createInitialStudioState(): StudioState {
++  const session = cloneSession(mockSession);
++  return {
++    activeSession: session,
++    selectedClipId: session.clips.length ? session.clips[0].id : null,
++    activeTool: "select",
++    isPlaying: false,
++    exportPanelOpen: false,
++    commandPanelOpen: false,
++  };
++}
++
++export function selectClip(state: StudioState, clipId: string): StudioState {
++  return {
++    ...state,
++    selectedClipId: clipId,
++    activeTool: state.activeTool,
++  };
++}
++
++export function toggleClipDiscarded(state: StudioState, clipId: string): StudioState {
++  const session = cloneSession(state.activeSession);
++  const clip = session.clips.find((c) => c.id === clipId);
++  if (!clip) return state;
++  clip.status = clip.status === "discarded" ? "raw" : "discarded";
++  session.updatedAt = new Date().toISOString();
++  return { ...state, activeSession: session, selectedClipId: clipId };
++}
++
++export function setAspectRatio(state: StudioState, aspectRatio: AspectRatio): StudioState {
++  const session = cloneSession(state.activeSession);
++  session.aspectRatio = aspectRatio;
++  session.updatedAt = new Date().toISOString();
++  return { ...state, activeSession: session };
++}
++
++export function addStudioCommand(state: StudioState, rawCommand: string): StudioState {
++  const session = cloneSession(state.activeSession);
++  const cmd = parseStudioCommand(rawCommand);
++  session.commands.unshift(cmd);
++  session.updatedAt = new Date().toISOString();
++  return { ...state, activeSession: session, commandPanelOpen: true };
++}
++
++export function setTargetDuration(state: StudioState, seconds?: number | null): StudioState {
++  const session = cloneSession(state.activeSession);
++  session.targetDurationSeconds = seconds ?? null;
++  session.updatedAt = new Date().toISOString();
++  return { ...state, activeSession: session };
++}
++
++export function calculateSessionStats(session: StudioSession) {
++  const clips = session.clips;
++  const totalRaw = clips.reduce((s, c) => s + c.durationSeconds, 0);
++  const avgQuality =
++    clips.length === 0 ? 0 : Math.round(clips.reduce((s, c) => s + c.qualityScore, 0) / clips.length);
++  // update basic derived fields (mutates shallow copy)
++  const updated = cloneSession(session);
++  updated.rawDurationSeconds = totalRaw;
++  if (updated.targetDurationSeconds == null) {
++    updated.estimatedFinalDurationSeconds = Math.min(60, Math.round(totalRaw * 0.1));
++  } else {
++    updated.estimatedFinalDurationSeconds = updated.targetDurationSeconds;
++  }
++  // naive storage estimate: 2 MB/s for video
++  updated.storageUsedMb = Math.max(1, Math.round(totalRaw * 2));
++  updated.recoverableStorageMb = Math.round(updated.storageUsedMb * 0.8);
++  updated.updatedAt = new Date().toISOString();
++  return { updated, stats: { totalRaw, avgQuality } };
++}
++
++export function setActiveTool(state: StudioState, tool: StudioToolId): StudioState {
++  return { ...state, activeTool: tool };
++}
++
+diff --git a/src/lib/studio/studio.mock.ts b/src/lib/studio/studio.mock.ts
+new file mode 100644
+index 0000000..d383b8a
+--- /dev/null
++++ b/src/lib/studio/studio.mock.ts
+@@ -0,0 +1,248 @@
++import { StudioClip, StudioMark, StudioSession, StudioTimeline } from "./studio.types";
++
++const now = () => new Date().toISOString();
++
++function id(prefix = "") {
++  return `${prefix}${Math.floor(Math.random() * 1e9).toString(36)}`;
++}
++
++export const mockClips: StudioClip[] = [
++  {
++    id: id("c-"),
++    sessionId: "s-miami",
++    title: "Beach approach",
++    durationSeconds: 32,
++    type: "video",
++    source: "camera",
++    status: "raw",
++    startOffsetSeconds: 0,
++    endOffsetSeconds: 32,
++    thumbnailGradient: "linear-gradient(135deg,#0f172a,#1e293b)",
++    qualityScore: 78,
++    highlightScore: 62,
++    hasFace: true,
++    hasVoice: false,
++    hasMusic: false,
++    isBlurry: false,
++    isSilent: false,
++    isMarked: false,
++    transcriptSnippet: undefined,
++    tags: ["walking", "outdoors"],
++  },
++  {
++    id: id("c-"),
++    sessionId: "s-miami",
++    title: "Sunset closeup",
++    durationSeconds: 12,
++    type: "video",
++    source: "camera",
++    status: "raw",
++    startOffsetSeconds: 0,
++    endOffsetSeconds: 12,
++    thumbnailGradient: "linear-gradient(135deg,#ff7a18,#af002d)",
++    qualityScore: 92,
++    highlightScore: 95,
++    hasFace: true,
++    hasVoice: false,
++    hasMusic: false,
++    isBlurry: false,
++    isSilent: true,
++    isMarked: true,
++    transcriptSnippet: undefined,
++    tags: ["sunset"],
++  },
++  {
++    id: id("c-"),
++    sessionId: "s-miami",
++    title: "Crowd reaction",
++    durationSeconds: 18,
++    type: "video",
++    source: "upload",
++    status: "raw",
++    startOffsetSeconds: 0,
++    endOffsetSeconds: 18,
++    thumbnailGradient: "linear-gradient(135deg,#0f172a,#064e3b)",
++    qualityScore: 66,
++    highlightScore: 72,
++    hasFace: true,
++    hasVoice: true,
++    hasMusic: false,
++    isBlurry: false,
++    isSilent: false,
++    isMarked: true,
++    transcriptSnippet: "Wow, look at that!",
++    tags: ["reaction"],
++  },
++  {
++    id: id("c-"),
++    sessionId: "s-miami",
++    title: "Walking shot",
++    durationSeconds: 25,
++    type: "video",
++    source: "camera",
++    status: "raw",
++    startOffsetSeconds: 0,
++    endOffsetSeconds: 25,
++    thumbnailGradient: "linear-gradient(135deg,#111827,#374151)",
++    qualityScore: 70,
++    highlightScore: 55,
++    hasFace: false,
++    hasVoice: false,
++    hasMusic: false,
++    isBlurry: false,
++    isSilent: false,
++    isMarked: true,
++    transcriptSnippet: undefined,
++    tags: ["walking"],
++  },
++  {
++    id: id("c-"),
++    sessionId: "s-miami",
++    title: "B-roll waves",
++    durationSeconds: 45,
++    type: "video",
++    source: "imported",
++    status: "raw",
++    startOffsetSeconds: 0,
++    endOffsetSeconds: 45,
++    thumbnailGradient: "linear-gradient(135deg,#0ea5a9,#0369a1)",
++    qualityScore: 84,
++    highlightScore: 40,
++    hasFace: false,
++    hasVoice: false,
++    hasMusic: false,
++    isBlurry: false,
++    isSilent: true,
++    isMarked: false,
++    transcriptSnippet: undefined,
++    tags: ["b-roll", "waves"],
++  },
++  {
++    id: id("c-"),
++    sessionId: "s-miami",
++    title: "Street musician",
++    durationSeconds: 21,
++    type: "video",
++    source: "upload",
++    status: "raw",
++    startOffsetSeconds: 0,
++    endOffsetSeconds: 21,
++    thumbnailGradient: "linear-gradient(135deg,#7c3aed,#6d28d9)",
++    qualityScore: 58,
++    highlightScore: 50,
++    hasFace: true,
++    hasVoice: true,
++    hasMusic: true,
++    isBlurry: false,
++    isSilent: false,
++    isMarked: false,
++    transcriptSnippet: "guitar strum",
++    tags: ["music"],
++  },
++  {
++    id: id("c-"),
++    sessionId: "s-miami",
++    title: "Closing time-lapse",
++    durationSeconds: 120,
++    type: "video",
++    source: "imported",
++    status: "raw",
++    startOffsetSeconds: 0,
++    endOffsetSeconds: 120,
++    thumbnailGradient: "linear-gradient(135deg,#05264c,#09122a)",
++    qualityScore: 80,
++    highlightScore: 33,
++    hasFace: false,
++    hasVoice: false,
++    hasMusic: false,
++    isBlurry: false,
++    isSilent: true,
++    isMarked: false,
++    transcriptSnippet: undefined,
++    tags: ["timelapse"],
++  },
++];
++
++export const mockMarks: StudioMark[] = [
++  {
++    id: id("m-"),
++    clipId: mockClips[1].id,
++    timestampSeconds: 3.2,
++    label: "sunset moment",
++    source: "tap",
++    confidence: 0.92,
++  },
++  {
++    id: id("m-"),
++    clipId: mockClips[2].id,
++    timestampSeconds: 8.5,
++    label: "good reaction",
++    source: "ai",
++    confidence: 0.84,
++  },
++  {
++    id: id("m-"),
++    clipId: mockClips[3].id,
++    timestampSeconds: 12.0,
++    label: "walking shot",
++    source: "voice",
++    confidence: 0.78,
++  },
++];
++
++const timeline: StudioTimeline = {
++  durationSeconds: 60,
++  playheadSeconds: 0,
++  layers: [
++    {
++      id: id("l-"),
++      type: "video",
++      name: "Video",
++      items: mockClips.slice(0, 5).map((c, i) => ({
++        id: id("ti-"),
++        clipId: c.id,
++        label: c.title,
++        startSeconds: i * 6,
++        durationSeconds: Math.min(c.durationSeconds, 20),
++        colorToken: undefined,
++      })),
++    },
++    {
++      id: id("l-"),
++      type: "audio",
++      name: "Audio",
++      items: [],
++    },
++    {
++      id: id("l-"),
++      type: "caption",
++      name: "Captions",
++      items: [],
++    },
++  ],
++};
++
++export const mockSession: StudioSession = {
++  id: "s-miami",
++  title: "Miami Beach Walk",
++  status: "draft",
++  createdAt: now(),
++  updatedAt: now(),
++  aspectRatio: "9:16",
++  targetDurationSeconds: 45,
++  rawDurationSeconds: 41 * 60 + 12, // ~41 minutes
++  estimatedFinalDurationSeconds: 45,
++  storageUsedMb: 3400,
++  recoverableStorageMb: 2800,
++  clips: mockClips,
++  timeline,
++  marks: mockMarks,
++  commands: [],
++  exportTargets: ["Feed", "Stories", "Campaign", "Draft", "Proof Vault"],
++  proofStatus: {
++    originalityFingerprint: "pending",
++    custodyLog: "pending",
++    deletionProtected: false,
++  },
++};
++
+diff --git a/src/lib/studio/studio.types.ts b/src/lib/studio/studio.types.ts
+new file mode 100644
+index 0000000..f289181
+--- /dev/null
++++ b/src/lib/studio/studio.types.ts
+@@ -0,0 +1,136 @@
++export type ISODateString = string;
++
++export type AspectRatio = "9:16" | "1:1" | "16:9";
++
++export type SessionStatus = "draft" | "recording" | "analyzing" | "editing" | "ready" | "exported";
++
++export type ClipType = "video" | "audio" | "image";
++export type ClipSource = "camera" | "upload" | "imported";
++export type ClipStatus = "raw" | "selected" | "discarded" | "used";
++
++export interface StudioClip {
++  id: string;
++  sessionId: string;
++  title: string;
++  durationSeconds: number;
++  type: ClipType;
++  source: ClipSource;
++  status: ClipStatus;
++  startOffsetSeconds: number;
++  endOffsetSeconds: number;
++  thumbnailGradient: string;
++  qualityScore: number; // 0-100
++  highlightScore: number; // 0-100
++  hasFace: boolean;
++  hasVoice: boolean;
++  hasMusic: boolean;
++  isBlurry: boolean;
++  isSilent: boolean;
++  isMarked: boolean;
++  transcriptSnippet?: string;
++  tags: string[];
++}
++
++export type MarkSource = "voice" | "tap" | "ai";
++export interface StudioMark {
++  id: string;
++  clipId: string;
++  timestampSeconds: number;
++  label: string;
++  source: MarkSource;
++  confidence: number;
++}
++
++export type CommandIntent =
++  | "capture_control"
++  | "edit_request"
++  | "enhancement_request"
++  | "audio_request"
++  | "publish_request"
++  | "storage_request"
++  | "proof_request"
++  | "unknown";
++
++export type CommandStatus = "parsed" | "previewed" | "applied" | "rejected";
++
++export interface StudioCommand {
++  id: string;
++  raw: string;
++  normalized: string;
++  intent: CommandIntent;
++  status: CommandStatus;
++  createdAt: ISODateString;
++  previewText: string;
++}
++
++export interface TimelineItem {
++  id: string;
++  clipId?: string;
++  label: string;
++  startSeconds: number;
++  durationSeconds: number;
++  colorToken?: string;
++}
++
++export type TimelineLayerType = "video" | "audio" | "text" | "effect" | "caption";
++export interface TimelineLayer {
++  id: string;
++  type: TimelineLayerType;
++  name: string;
++  items: TimelineItem[];
++}
++
++export interface StudioTimeline {
++  durationSeconds: number;
++  playheadSeconds: number;
++  layers: TimelineLayer[];
++}
++
++export interface ProofStatus {
++  originalityFingerprint: "pending" | "generated" | "failed";
++  custodyLog: "pending" | "active";
++  deletionProtected: boolean;
++}
++
++export interface StudioSession {
++  id: string;
++  title: string;
++  status: SessionStatus;
++  createdAt: ISODateString;
++  updatedAt: ISODateString;
++  aspectRatio: AspectRatio;
++  targetDurationSeconds?: number | null;
++  rawDurationSeconds: number;
++  estimatedFinalDurationSeconds?: number | null;
++  storageUsedMb: number;
++  recoverableStorageMb: number;
++  clips: StudioClip[];
++  timeline: StudioTimeline;
++  marks: StudioMark[];
++  commands: StudioCommand[];
++  exportTargets: string[];
++  proofStatus: ProofStatus;
++}
++
++export type StudioToolId =
++  | "select"
++  | "trim"
++  | "captions"
++  | "audio"
++  | "effects"
++  | "beauty"
++  | "crop"
++  | "magic"
++  | "proof"
++  | "publish"
++  | "cleanup";
++
++export interface StudioState {
++  activeSession: StudioSession;
++  selectedClipId: string | null;
++  activeTool: StudioToolId;
++  isPlaying: boolean;
++  exportPanelOpen: boolean;
++  commandPanelOpen: boolean;
++}
++
+diff --git a/src/screens/StudioScreen.tsx b/src/screens/StudioScreen.tsx
+new file mode 100644
+index 0000000..f553d2b
+--- /dev/null
++++ b/src/screens/StudioScreen.tsx
+@@ -0,0 +1,94 @@
++import React, { useMemo, useState } from "react";
++import StudioShell from "../components/studio/StudioShell";
++import StudioTopBar from "../components/studio/StudioTopBar";
++import StudioToolRail from "../components/studio/StudioToolRail";
++import StudioPreview from "../components/studio/StudioPreview";
++import StudioTimeline from "../components/studio/StudioTimeline";
++import StudioSessionPanel from "../components/studio/StudioSessionPanel";
++import StudioClipStrip from "../components/studio/StudioClipStrip";
++import StudioCommandPanel from "../components/studio/StudioCommandPanel";
++import StudioExportPanel from "../components/studio/StudioExportPanel";
++
++import {
++  createInitialStudioState,
++  selectClip,
++  toggleClipDiscarded,
++  setAspectRatio,
++  addStudioCommand,
++  setActiveTool,
++  setTargetDuration,
++  calculateSessionStats,
++} from "../lib/studio/studio-state";
++import { AspectRatio } from "../lib/studio/studio.types";
++
++export const StudioScreen: React.FC = () => {
++  const [state, setState] = useState(() => createInitialStudioState());
++
++  const selectedClip = useMemo(
++    () => state.activeSession.clips.find((c) => c.id === state.selectedClipId) ?? null,
++    [state.activeSession, state.selectedClipId]
++  );
++
++  function handleSetTool(tool: any) {
++    setState((s) => setActiveTool(s, tool));
++  }
++
++  function handleSelectClip(id: string) {
++    setState((s) => selectClip(s, id));
++  }
++
++  function handleToggleDiscard(id: string) {
++    setState((s) => toggleClipDiscarded(s, id));
++  }
++
++  function cycleAspect() {
++    const order: AspectRatio[] = ["9:16", "1:1", "16:9"];
++    const cur = state.activeSession.aspectRatio;
++    const idx = order.indexOf(cur);
++    const next = order[(idx + 1) % order.length];
++    setState((s) => setAspectRatio(s, next));
++  }
++
++  function toggleExport() {
++    setState((s) => ({ ...s, exportPanelOpen: !s.exportPanelOpen }));
++  }
++
++  function submitCommand(raw: string) {
++    setState((s) => addStudioCommand(s, raw));
++  }
++
++  function handlePlayPause() {
++    setState((s) => ({ ...s, isPlaying: !s.isPlaying }));
++  }
++
++  return (
++    <StudioShell>
++      <StudioTopBar session={state.activeSession} onCycleAspect={cycleAspect} onToggleExport={toggleExport} />
++      <div style={{ display: "flex", flex: 1 }}>
++        <StudioToolRail activeTool={state.activeTool} onSetTool={handleSetTool} />
++
++        <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "auto" }}>
++          <div style={{ display: "flex", justifyContent: "center", paddingTop: 12 }}>
++            <StudioPreview session={state.activeSession} selectedClip={selectedClip} isPlaying={state.isPlaying} onPlayPause={handlePlayPause} />
++          </div>
++
++          <div style={{ padding: 12 }}>
++            <StudioClipStrip clips={state.activeSession.clips} selectedClipId={state.selectedClipId} onSelect={handleSelectClip} onToggleDiscard={handleToggleDiscard} />
++          </div>
++
++          <div style={{ padding: "0 12px 12px 12px" }}>
++            <StudioTimeline timeline={state.activeSession.timeline} />
++          </div>
++        </div>
++
++        <StudioSessionPanel session={state.activeSession} selectedClip={selectedClip} onToggleDiscard={handleToggleDiscard} />
++      </div>
++
++      <StudioCommandPanel open={state.commandPanelOpen} session={state.activeSession} onSubmit={submitCommand} />
++      <StudioExportPanel open={state.exportPanelOpen} session={state.activeSession} onClose={() => setState((s) => ({ ...s, exportPanelOpen: false }))} />
++    </StudioShell>
++  );
++};
++
++export default StudioScreen;
++

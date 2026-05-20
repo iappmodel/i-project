@@ -1,0 +1,134 @@
+diff --git a/src/App.tsx b/src/App.tsx
+index 83dbdbe..84fafb1 100644
+--- a/src/App.tsx
++++ b/src/App.tsx
+@@ -1,5 +1,7 @@
+ import "./features/remote/remote.css";
+ 
++import type { CSSProperties, ReactNode } from "react";
++import { useEffect, useState } from "react";
+ import { AppShell } from "./AppShell";
+ // Temporary P.O.P.S MVP demo mount — removable; see docs/pops/POPS_MVP_LOCAL_README.md
+ import {
+@@ -12,13 +14,87 @@ import {
+ import StudioScreen from "./screens/StudioScreen";
+ import IGoScreen from "./screens/IGoScreen";
+ import { IHomeScreen } from "./screens/IHomeScreen";
++import { IAMScreen } from "./screens/iAMScreen";
++import IGetDashboardScreen from "./features/iGET/screens/IGetDashboardScreen";
++import {
++  ITipHomeScreen,
++  TipHistoryScreen,
++  TipSendScreen,
++  iTIPNavItem,
++} from "./features/iTIP";
++import IvatarStudioScreen from "./screens/ivatar/IvatarStudioScreen";
++import IvatarTryOnScreen from "./screens/ivatar/IvatarTryOnScreen";
++import IvatarWorldsScreen from "./screens/ivatar/IvatarWorldsScreen";
++
++const ITIP_BASE = iTIPNavItem.path;
++
++function ITipLayout({ children }: { children: ReactNode }) {
++  const link: CSSProperties = {
++    color: "#9997a0",
++    textDecoration: "none",
++  };
++  return (
++    <div
++      style={{
++        minHeight: "100vh",
++        background: "#070709",
++        color: "#f0ede8",
++      }}
++    >
++      <nav
++        style={{
++          display: "flex",
++          flexWrap: "wrap",
++          alignItems: "center",
++          gap: 12,
++          borderBottom: "1px solid rgba(255,255,255,0.08)",
++          padding: "8px 16px",
++          fontSize: 14,
++        }}
++        aria-label="iTIP navigation"
++      >
++        <a href={ITIP_BASE} style={{ fontWeight: 600, color: "#4ade80", textDecoration: "none" }}>
++          Tip
++        </a>
++        <a href={`${ITIP_BASE}/send`} style={link}>
++          Send
++        </a>
++        <a href={`${ITIP_BASE}/history`} style={link}>
++          History
++        </a>
++        <a href="/" style={{ ...link, marginLeft: "auto" }}>
++          Studio
++        </a>
++      </nav>
++      {children}
++    </div>
++  );
++}
+ 
+ export function App() {
++  const [, setRouteBump] = useState(0);
++
++  useEffect(() => {
++    const onNav = () => setRouteBump((v) => v + 1);
++    window.addEventListener("popstate", onNav);
++    return () => window.removeEventListener("popstate", onNav);
++  }, []);
++
+   const pathname =
+     typeof window !== "undefined" ? window.location.pathname : "/";
+ 
+   const isICommandDevRoute = pathname === "/dev/i-command";
+   const isIgoDevRoute = pathname === "/dev/igo";
++  const isIAMRoute = pathname === "/iam";
++  const isIGetRoute = pathname === "/iget";
++  const isIvatarStudio = pathname === "/ivatar/studio";
++  const isIvatarTryon = pathname === "/ivatar/tryon";
++  const isIvatarWorlds = pathname === "/ivatar/worlds";
++  const isITipHome = pathname === ITIP_BASE;
++  const isITipSend =
++    pathname === `${ITIP_BASE}/send` ||
++    pathname.startsWith(`${ITIP_BASE}/send/`);
++  const isITipHistory = pathname === `${ITIP_BASE}/history`;
+ 
+   return (
+     <RemoteProvider
+@@ -37,10 +113,32 @@ export function App() {
+       }}
+     >
+       <AppShell>
+-        {isICommandDevRoute ? (
++        {isIAMRoute ? (
++          <IAMScreen />
++        ) : isICommandDevRoute ? (
+           <IHomeScreen />
+         ) : isIgoDevRoute ? (
+           <IGoScreen />
++        ) : isIGetRoute ? (
++          <IGetDashboardScreen />
++        ) : isITipHome ? (
++          <ITipLayout>
++            <ITipHomeScreen />
++          </ITipLayout>
++        ) : isITipSend ? (
++          <ITipLayout>
++            <TipSendScreen />
++          </ITipLayout>
++        ) : isITipHistory ? (
++          <ITipLayout>
++            <TipHistoryScreen />
++          </ITipLayout>
++        ) : isIvatarStudio ? (
++          <IvatarStudioScreen />
++        ) : isIvatarTryon ? (
++          <IvatarTryOnScreen />
++        ) : isIvatarWorlds ? (
++          <IvatarWorldsScreen />
+         ) : (
+           <StudioScreen />
+         )}

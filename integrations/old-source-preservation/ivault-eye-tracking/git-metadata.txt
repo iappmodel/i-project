@@ -1,0 +1,18 @@
+# IVAULT git metadata (read-only capture)
+
+Captured: 2026-05-20T20:11:40Z
+
+## status
+## integration/studio-routing-audit...origin/integration/studio-routing-audit
+?? investor-demo/
+
+## branch
+integration/studio-routing-audit
+
+## HEAD
+d23d365594c7dc519ff9aabefaa2911e5a61ae92
+2026-05-06 17:01:45 -0400 Add autonomous Claude workflow docs
+
+## remote
+origin	https://github.com/iappmodel/eye_tracking_app.git (fetch)
+origin	https://github.com/iappmodel/eye_tracking_app.git (push)

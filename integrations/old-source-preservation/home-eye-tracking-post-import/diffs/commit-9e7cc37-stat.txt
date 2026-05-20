@@ -1,0 +1,9 @@
+commit 9e7cc37f8db7cd6252cc00f754594774e1534956
+Author: iappmodel <iappmailbox@gmail.com>
+Date:   Wed May 20 13:21:37 2026 -0400
+
+    Update i MVP prototype before project migration
+
+ prototypes/i-mvp-prototype/src/App.css |  99 +++++
+ prototypes/i-mvp-prototype/src/App.tsx | 650 +++++++++++++++++++++++++++------
+ 2 files changed, 639 insertions(+), 110 deletions(-)

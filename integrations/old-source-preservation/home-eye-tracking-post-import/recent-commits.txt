@@ -1,0 +1,5 @@
+9e7cc37 Update i MVP prototype before project migration
+4953e01 Add clean MVP prototype inside main app repo
+4eace0c Add investor demo MVP scaffold
+b9216bf Ignore local generated folders
+a5b15d4 Initial project structure

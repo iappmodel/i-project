@@ -1,0 +1,3328 @@
+diff --git a/src/components/igo/IGoAuditRecordPanel.tsx b/src/components/igo/IGoAuditRecordPanel.tsx
+new file mode 100644
+index 0000000..8d80b77
+--- /dev/null
++++ b/src/components/igo/IGoAuditRecordPanel.tsx
+@@ -0,0 +1,47 @@
++import React from "react";
++import type { IGoAuditRecord } from "../../lib/igo/igo.types";
++
++type Props = {
++  record: IGoAuditRecord | null | undefined;
++  onQueueReview?: () => void;
++  onClearReview?: () => void;
++  onBlockReview?: () => void;
++  onClose?: () => void;
++};
++
++export const IGoAuditRecordPanel: React.FC<Props> = ({ record, onQueueReview, onClearReview, onBlockReview, onClose }) => {
++  if (!record) {
++    return (
++      <div className="p-3 bg-gray-900 rounded">
++        <div className="text-sm font-semibold text-white">Audit record detail</div>
++        <div className="mt-2 text-xs text-gray-400">Select an audit record to inspect (local mock).</div>
++      </div>
++    );
++  }
++  return (
++    <div className="p-3 bg-gray-900 rounded">
++      <div className="flex justify-between items-center">
++        <div className="text-sm font-semibold text-white">Audit record</div>
++        <div>
++          <button className="px-2 py-1 text-xs bg-gray-700 rounded" onClick={onClose}>Close</button>
++        </div>
++      </div>
++      <div className="mt-2 text-xs text-gray-300">
++        <div><strong>ID:</strong> {record.id}</div>
++        <div><strong>User:</strong> {record.userLabel}</div>
++        <div><strong>Outcome:</strong> {record.outcome}</div>
++        <div><strong>Audit status:</strong> {record.auditStatus}</div>
++        <div><strong>Risk review:</strong> {record.riskReviewStatus}</div>
++        <div><strong>Score:</strong> {record.verificationScore}</div>
++        <div className="mt-2">
++          <button className="px-3 py-1 mr-2 bg-yellow-600 rounded" onClick={onQueueReview}>Queue review</button>
++          <button className="px-3 py-1 mr-2 bg-green-600 rounded" onClick={onClearReview}>Clear review</button>
++          <button className="px-3 py-1 bg-red-600 rounded" onClick={onBlockReview}>Block review</button>
++        </div>
++      </div>
++    </div>
++  );
++};
++
++export default IGoAuditRecordPanel;
++
+diff --git a/src/components/igo/IGoAuditTable.tsx b/src/components/igo/IGoAuditTable.tsx
+new file mode 100644
+index 0000000..f09f7fb
+--- /dev/null
++++ b/src/components/igo/IGoAuditTable.tsx
+@@ -0,0 +1,38 @@
++import React from "react";
++import type { IGoAuditRecord } from "../../lib/igo/igo.types";
++
++type Props = {
++  records: IGoAuditRecord[];
++  selectedRecordId: string | null | undefined;
++  onSelectRecord: (recordId: string) => void;
++};
++
++export const IGoAuditTable: React.FC<Props> = ({ records, selectedRecordId, onSelectRecord }) => {
++  return (
++    <div className="p-3 bg-gray-900 rounded">
++      <div className="text-sm font-semibold text-white">Proof audit records (local mock)</div>
++      <div className="mt-2 text-xs text-gray-300">
++        {records.length === 0 && <div className="text-gray-500">No audit records yet.</div>}
++        <ul className="mt-2 space-y-2">
++          {records.map((r) => (
++            <li key={r.id} className={`p-2 rounded cursor-pointer ${r.id === selectedRecordId ? "bg-gray-700" : "bg-gray-800"}`} onClick={() => onSelectRecord(r.id)}>
++              <div className="flex justify-between">
++                <div>
++                  <div className="font-medium text-white">{r.userLabel} · {r.placeName}</div>
++                  <div className="text-xs text-gray-400">{r.createdAtLabel}</div>
++                </div>
++                <div className="text-xs text-gray-300">
++                  <div>Outcome: {r.outcome}</div>
++                  <div>Audit: {r.auditStatus}</div>
++                </div>
++              </div>
++            </li>
++          ))}
++        </ul>
++      </div>
++    </div>
++  );
++};
++
++export default IGoAuditTable;
++
+diff --git a/src/components/igo/IGoCampaignBudgetPanel.tsx b/src/components/igo/IGoCampaignBudgetPanel.tsx
+new file mode 100644
+index 0000000..24e11a3
+--- /dev/null
++++ b/src/components/igo/IGoCampaignBudgetPanel.tsx
+@@ -0,0 +1,25 @@
++import React from "react";
++import type { IGoCampaignBudgetSimulation } from "../../lib/igo/igo.types";
++
++type Props = { simulation: IGoCampaignBudgetSimulation | null | undefined };
++
++export const IGoCampaignBudgetPanel: React.FC<Props> = ({ simulation }) => {
++  if (!simulation) return null;
++  return (
++    <div className="p-3 bg-gray-900 rounded">
++      <div className="text-sm font-semibold text-white">Mock budget simulation</div>
++      <div className="mt-2 text-xs text-gray-300">
++        <div>Total: {simulation.totalBudgetLabel}</div>
++        <div>Reward per completion: {simulation.rewardPerCompletionLabel}</div>
++        <div>Max affordable completions: {simulation.maxAffordableCompletions}</div>
++        <div>Configured max completions: {simulation.configuredMaxCompletions}</div>
++        <div>Estimated spend: {simulation.estimatedSpendLabel}</div>
++        <div>Estimated remaining: {simulation.estimatedRemainingLabel}</div>
++        <div>Budget risk: {simulation.budgetRisk}</div>
++      </div>
++    </div>
++  );
++};
++
++export default IGoCampaignBudgetPanel;
++
+diff --git a/src/components/igo/IGoCampaignBuilderPanel.tsx b/src/components/igo/IGoCampaignBuilderPanel.tsx
+new file mode 100644
+index 0000000..56fb3ea
+--- /dev/null
++++ b/src/components/igo/IGoCampaignBuilderPanel.tsx
+@@ -0,0 +1,47 @@
++import React from "react";
++import type { IGoCampaignDraft } from "../../lib/igo/igo.types";
++
++type Props = {
++  draft: IGoCampaignDraft | null | undefined;
++  onUpdateDraft: (patch: Partial<IGoCampaignDraft>) => void;
++  onValidate: () => void;
++  onPublishMock: () => void;
++  onReset: () => void;
++};
++
++export const IGoCampaignBuilderPanel: React.FC<Props> = ({ draft, onUpdateDraft, onValidate, onPublishMock, onReset }) => {
++  if (!draft) return null;
++  return (
++    <div className="p-3 bg-gray-900 rounded">
++      <div className="text-sm font-semibold text-white">Local campaign builder (mock)</div>
++      <div className="mt-2 text-xs text-gray-300 space-y-2">
++        <div>
++          <label className="text-xs">Title</label>
++          <input className="w-full p-1 bg-gray-800 rounded mt-1" value={draft.title} onChange={(e) => onUpdateDraft({ title: e.target.value })} />
++        </div>
++        <div>
++          <label className="text-xs">Sponsor</label>
++          <input className="w-full p-1 bg-gray-800 rounded mt-1" value={draft.sponsorName} onChange={(e) => onUpdateDraft({ sponsorName: e.target.value })} />
++        </div>
++        <div className="flex gap-2">
++          <div>
++            <label className="text-xs">iCoins</label>
++            <input type="number" className="w-24 p-1 bg-gray-800 rounded mt-1" value={draft.reward.icoinAmount} onChange={(e) => onUpdateDraft({ reward: { ...draft.reward, icoinAmount: Number(e.target.value) } })} />
++          </div>
++          <div>
++            <label className="text-xs">min dwell (s)</label>
++            <input type="number" className="w-24 p-1 bg-gray-800 rounded mt-1" value={draft.minDwellSeconds} onChange={(e) => onUpdateDraft({ minDwellSeconds: Number(e.target.value) })} />
++          </div>
++        </div>
++        <div className="flex gap-2">
++          <button className="px-3 py-1 bg-blue-600 rounded" onClick={onValidate}>Validate draft</button>
++          <button className="px-3 py-1 bg-green-600 rounded" onClick={onPublishMock}>Publish mock campaign</button>
++          <button className="px-3 py-1 bg-gray-700 rounded" onClick={onReset}>Reset draft</button>
++        </div>
++      </div>
++    </div>
++  );
++};
++
++export default IGoCampaignBuilderPanel;
++
+diff --git a/src/components/igo/IGoCampaignRulesPanel.tsx b/src/components/igo/IGoCampaignRulesPanel.tsx
+new file mode 100644
+index 0000000..5d9ea60
+--- /dev/null
++++ b/src/components/igo/IGoCampaignRulesPanel.tsx
+@@ -0,0 +1,24 @@
++import React from "react";
++import type { IGoCampaignRuleCheck } from "../../lib/igo/igo.types";
++
++type Props = { checks: IGoCampaignRuleCheck[] | null | undefined };
++
++export const IGoCampaignRulesPanel: React.FC<Props> = ({ checks }) => {
++  return (
++    <div className="p-3 bg-gray-900 rounded">
++      <div className="text-sm font-semibold text-white">Campaign rule checks</div>
++      <div className="mt-2 text-xs text-gray-300">
++        {!checks || checks.length === 0 ? <div className="text-gray-500">No checks</div> : checks.map((c) => (
++          <div key={c.id} className={`p-2 rounded ${c.passed ? "bg-gray-800" : c.severity === "error" ? "bg-red-900" : "bg-yellow-900"} mb-2`}>
++            <div className="font-medium text-white">{c.label}</div>
++            <div className="text-xs text-gray-400">{c.detail}</div>
++            <div className="text-xs text-gray-300">Severity: {c.severity} · Passed: {String(c.passed)}</div>
++          </div>
++        ))}
++      </div>
++    </div>
++  );
++};
++
++export default IGoCampaignRulesPanel;
++
+diff --git a/src/components/igo/IGoEventLog.tsx b/src/components/igo/IGoEventLog.tsx
+new file mode 100644
+index 0000000..8c3f22c
+--- /dev/null
++++ b/src/components/igo/IGoEventLog.tsx
+@@ -0,0 +1,25 @@
++import React from "react";
++import type { IGoEventLogItem } from "../../lib/igo/igo.types";
++
++type Props = { items: IGoEventLogItem[] };
++
++export const IGoEventLog: React.FC<Props> = ({ items }) => {
++  return (
++    <div className="p-3 bg-gray-900 rounded">
++      <div className="text-sm font-semibold text-white">Local event log</div>
++      <div className="mt-2 text-xs text-gray-400 space-y-2">
++        {items.length === 0 && <div className="text-gray-500">No local events yet.</div>}
++        {items.map((it) => (
++          <div key={it.id} className="border-b border-gray-800 pb-2">
++            <div className="font-medium text-white">{it.label}</div>
++            {it.detail && <div className="text-xs text-gray-400">{it.detail}</div>}
++            <div className="text-xs text-gray-500">{it.createdAtLabel} · {it.type}</div>
++          </div>
++        ))}
++      </div>
++    </div>
++  );
++};
++
++export default IGoEventLog;
++
+diff --git a/src/components/igo/IGoMissionCard.tsx b/src/components/igo/IGoMissionCard.tsx
+new file mode 100644
+index 0000000..10d1ff6
+--- /dev/null
++++ b/src/components/igo/IGoMissionCard.tsx
+@@ -0,0 +1,46 @@
++import React from "react";
++import type { IGoMission } from "../../lib/igo/igo.types";
++import IGoRewardBadge from "./IGoRewardBadge";
++
++type IGoMissionCardProps = {
++  mission: IGoMission;
++  selected: boolean;
++  onSelect: () => void;
++};
++
++export const IGoMissionCard: React.FC<IGoMissionCardProps> = ({ mission, selected, onSelect }) => {
++  return (
++    <button
++      onClick={onSelect}
++      className={`w-full text-left p-3 rounded-md border ${
++        selected ? "border-blue-500 bg-gray-800" : "border-transparent bg-gray-900/50"
++      }`}
++      aria-pressed={selected}
++    >
++      <div className="flex items-start justify-between">
++        <div>
++          <div className="text-white font-semibold">{mission.title}</div>
++          <div className="text-xs text-gray-400">
++            {mission.sponsorName} {mission.creatorHandle ? `· ${mission.creatorHandle}` : ""}
++          </div>
++          <div className="text-sm text-gray-300 mt-1">
++            {mission.place.name} · {mission.place.distanceLabel}
++          </div>
++          <div className="text-xs text-gray-400">{mission.place.openUntilLabel}</div>
++        </div>
++
++        <div className="flex flex-col items-end gap-2">
++          <IGoRewardBadge
++            icoinAmount={mission.reward.icoinAmount}
++            gcoinAmount={mission.reward.gcoinAmount}
++            usdLabel={mission.reward.estimatedUsdLabel}
++          />
++          <div className="text-xs text-gray-400">{"I'm Going"}</div>
++        </div>
++      </div>
++    </button>
++  );
++};
++
++export default IGoMissionCard;
++
+diff --git a/src/components/igo/IGoMissionTimer.tsx b/src/components/igo/IGoMissionTimer.tsx
+new file mode 100644
+index 0000000..8e707fc
+--- /dev/null
++++ b/src/components/igo/IGoMissionTimer.tsx
+@@ -0,0 +1,32 @@
++import React from "react";
++
++type Props = {
++  remainingSeconds: number;
++  totalSeconds: number;
++};
++
++function formatSeconds(s: number) {
++  const mm = Math.floor(s / 60)
++    .toString()
++    .padStart(2, "0");
++  const ss = Math.max(0, Math.floor(s % 60))
++    .toString()
++    .padStart(2, "0");
++  return `${mm}:${ss}`;
++}
++
++export const IGoMissionTimer: React.FC<Props> = ({ remainingSeconds, totalSeconds }) => {
++  const pct = totalSeconds > 0 ? Math.round(((totalSeconds - remainingSeconds) / totalSeconds) * 100) : 0;
++  return (
++    <div className="p-3 bg-gray-900 rounded">
++      <div className="text-sm font-semibold text-white">Mock mission timer</div>
++      <div className="mt-2 text-xs text-gray-300">{formatSeconds(remainingSeconds)}</div>
++      <div className="h-2 bg-gray-800 rounded mt-2">
++        <div style={{ width: `${pct}%` }} className="h-2 bg-green-500 rounded" />
++      </div>
++    </div>
++  );
++};
++
++export default IGoMissionTimer;
++
+diff --git a/src/components/igo/IGoMockPublishedCampaignPanel.tsx b/src/components/igo/IGoMockPublishedCampaignPanel.tsx
+new file mode 100644
+index 0000000..07f18b4
+--- /dev/null
++++ b/src/components/igo/IGoMockPublishedCampaignPanel.tsx
+@@ -0,0 +1,30 @@
++import React from "react";
++import type { IGoMockPublishedCampaign } from "../../lib/igo/igo.types";
++
++type Props = { campaign: IGoMockPublishedCampaign | null | undefined };
++
++export const IGoMockPublishedCampaignPanel: React.FC<Props> = ({ campaign }) => {
++  if (!campaign) {
++    return (
++      <div className="p-3 bg-gray-900 rounded">
++        <div className="text-sm font-semibold text-white">Mock published campaign</div>
++        <div className="mt-2 text-xs text-gray-400">No mock campaign published yet.</div>
++      </div>
++    );
++  }
++  return (
++    <div className="p-3 bg-gray-900 rounded">
++      <div className="text-sm font-semibold text-white">Mock published campaign</div>
++      <div className="mt-2 text-xs text-gray-300">
++        <div><strong>ID:</strong> {campaign.id}</div>
++        <div><strong>Draft:</strong> {campaign.draftId}</div>
++        <div><strong>Mission:</strong> {campaign.mission.title}</div>
++        <div><strong>Published:</strong> {campaign.publishedAtLabel}</div>
++        <div className="mt-2"><strong>Rule checks:</strong> {campaign.ruleChecks.length}</div>
++      </div>
++    </div>
++  );
++};
++
++export default IGoMockPublishedCampaignPanel;
++
+diff --git a/src/components/igo/IGoOwnerSummaryPanel.tsx b/src/components/igo/IGoOwnerSummaryPanel.tsx
+new file mode 100644
+index 0000000..a2563a6
+--- /dev/null
++++ b/src/components/igo/IGoOwnerSummaryPanel.tsx
+@@ -0,0 +1,31 @@
++import React from "react";
++import type { IGoCampaignOwnerSummary } from "../../lib/igo/igo.types";
++
++type Props = { summary: IGoCampaignOwnerSummary | null | undefined };
++
++export const IGoOwnerSummaryPanel: React.FC<Props> = ({ summary }) => {
++  if (!summary) {
++    return (
++      <div className="p-3 bg-gray-900 rounded">
++        <div className="text-sm font-semibold text-white">Campaign owner summary</div>
++        <div className="mt-2 text-xs text-gray-400">No campaign audit data yet (local mock).</div>
++      </div>
++    );
++  }
++  return (
++    <div className="p-3 bg-gray-900 rounded">
++      <div className="text-sm font-semibold text-white">Campaign owner summary (local mock)</div>
++      <div className="mt-2 text-xs text-gray-300">
++        <div><strong>Sponsor:</strong> {summary.sponsorName}</div>
++        <div><strong>Place:</strong> {summary.placeName}</div>
++        <div className="mt-2">Budget: {summary.totalBudgetLabel} · Spent: {summary.spentLabel} · Pending: {summary.pendingLabel} · Remaining: {summary.remainingLabel}</div>
++        <div className="mt-2">Completions: {summary.completions} · Approvals: {summary.approvals} · Rejections: {summary.rejections}</div>
++        <div className="mt-1">Manual reviews: {summary.manualReviews} · Mock settlements: {summary.mockSettlements}</div>
++        <div className="mt-1">Average score: {summary.averageVerificationScore}</div>
++      </div>
++    </div>
++  );
++};
++
++export default IGoOwnerSummaryPanel;
++
+diff --git a/src/components/igo/IGoProgressSteps.tsx b/src/components/igo/IGoProgressSteps.tsx
+new file mode 100644
+index 0000000..dc69c01
+--- /dev/null
++++ b/src/components/igo/IGoProgressSteps.tsx
+@@ -0,0 +1,38 @@
++import React from "react";
++import type { IGoProgressStep } from "../../lib/igo/igo.types";
++
++type IGoProgressStepsProps = {
++  steps: IGoProgressStep[];
++};
++
++export const IGoProgressSteps: React.FC<IGoProgressStepsProps> = ({ steps }) => {
++  return (
++    <div className="space-y-2">
++      {steps.map((s) => {
++        const bg =
++          s.state === "done"
++            ? "bg-green-700"
++            : s.state === "current"
++            ? "bg-blue-600"
++            : s.state === "failed"
++            ? "bg-red-700"
++            : "bg-gray-800";
++
++        return (
++          <div key={s.id} className="flex items-center gap-3">
++            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${bg} text-white`}>
++              {s.state === "done" ? "✓" : s.state === "current" ? "●" : "○"}
++            </div>
++            <div>
++              <div className="text-sm font-medium text-white">{s.label}</div>
++              <div className="text-xs text-gray-400">{s.state}</div>
++            </div>
++          </div>
++        );
++      })}
++    </div>
++  );
++};
++
++export default IGoProgressSteps;
++
+diff --git a/src/components/igo/IGoProofJsonPreview.tsx b/src/components/igo/IGoProofJsonPreview.tsx
+new file mode 100644
+index 0000000..b0b01f5
+--- /dev/null
++++ b/src/components/igo/IGoProofJsonPreview.tsx
+@@ -0,0 +1,29 @@
++import React from "react";
++import type { IGoProofPackage, IGoSettlementContract } from "../../lib/igo/igo.types";
++
++type Props = {
++  proofPackage: IGoProofPackage | null | undefined;
++  settlementContract: IGoSettlementContract | null | undefined;
++};
++
++export const IGoProofJsonPreview: React.FC<Props> = ({ proofPackage, settlementContract }) => {
++  if (!proofPackage) {
++    return (
++      <div className="p-3 bg-gray-900 rounded">
++        <div className="text-sm font-semibold text-white">Proof JSON preview</div>
++        <div className="mt-2 text-xs text-gray-400">Complete, reject, or review a mission to generate proof.</div>
++      </div>
++    );
++  }
++
++  const payload = { proofPackage, settlementContract };
++  return (
++    <div className="p-3 bg-gray-900 rounded">
++      <div className="text-sm font-semibold text-white">Proof JSON preview</div>
++      <pre className="mt-2 text-xs text-gray-300 overflow-auto max-h-48">{JSON.stringify(payload, null, 2)}</pre>
++    </div>
++  );
++};
++
++export default IGoProofJsonPreview;
++
+diff --git a/src/components/igo/IGoProofPackagePanel.tsx b/src/components/igo/IGoProofPackagePanel.tsx
+new file mode 100644
+index 0000000..aff3721
+--- /dev/null
++++ b/src/components/igo/IGoProofPackagePanel.tsx
+@@ -0,0 +1,35 @@
++import React from "react";
++import type { IGoProofPackage } from "../../lib/igo/igo.types";
++
++type Props = {
++  proofPackage: IGoProofPackage | null | undefined;
++};
++
++export const IGoProofPackagePanel: React.FC<Props> = ({ proofPackage }) => {
++  if (!proofPackage) {
++    return (
++      <div className="p-3 bg-gray-900 rounded">
++        <div className="text-sm font-semibold text-white">Local proof package</div>
++        <div className="mt-2 text-xs text-gray-400">No proof package yet.</div>
++      </div>
++    );
++  }
++
++  return (
++    <div className="p-3 bg-gray-900 rounded">
++      <div className="text-sm font-semibold text-white">Local proof package</div>
++      <div className="mt-2 text-xs text-gray-300">
++        <div><strong>ID:</strong> {proofPackage.id}</div>
++        <div><strong>Outcome:</strong> {proofPackage.outcome}</div>
++        <div><strong>Integrity:</strong> {proofPackage.localIntegrityId}</div>
++        <div><strong>Score:</strong> {proofPackage.verificationScore}</div>
++        <div><strong>Reward status:</strong> {proofPackage.rewardStatus}</div>
++        <div className="mt-2"><strong>Place:</strong> {proofPackage.placeSnapshot.name} — {proofPackage.placeSnapshot.address}</div>
++        <div className="mt-2 text-xs text-gray-400">Notes: {proofPackage.notes.join("; ")}</div>
++      </div>
++    </div>
++  );
++};
++
++export default IGoProofPackagePanel;
++
+diff --git a/src/components/igo/IGoProofSummary.tsx b/src/components/igo/IGoProofSummary.tsx
+new file mode 100644
+index 0000000..3003544
+--- /dev/null
++++ b/src/components/igo/IGoProofSummary.tsx
+@@ -0,0 +1,46 @@
++import React from "react";
++import type { IGoPresenceCheck } from "../../lib/igo/igo.types";
++import { getIGoMethodLabel } from "../../lib/igo/igo-copy";
++
++type IGoProofSummaryProps = {
++  checks: IGoPresenceCheck[];
++  proofId?: string;
++  verificationScore?: number;
++  rewardStatus?: string;
++};
++
++export const IGoProofSummary: React.FC<IGoProofSummaryProps> = ({ checks, proofId, verificationScore, rewardStatus }) => {
++  return (
++    <div className="space-y-3">
++      <div className="text-xs text-gray-400">Verification score: {typeof verificationScore === "number" ? verificationScore : "-"}</div>
++      <div className="text-xs text-gray-400">Reward status: {rewardStatus ?? "-"}</div>
++      {proofId && (
++        <div className="text-sm text-gray-300">
++          <strong>Proof:</strong> {proofId}
++        </div>
++      )}
++
++      <ul className="space-y-2">
++        {checks.map((c) => (
++          <li key={c.id} className="p-2 bg-gray-900 rounded flex items-center justify-between">
++            <div>
++              <div className="font-medium text-white">{c.label}</div>
++              <div className="text-xs text-gray-400">{getIGoMethodLabel(c.method)}</div>
++            </div>
++            <div className="text-right">
++              <div className={`text-sm ${c.result === "pass" ? "text-green-400" : "text-red-400"}`}>
++                {c.result.toUpperCase()}
++              </div>
++              {typeof c.riskScore === "number" && (
++                <div className="text-xs text-gray-400">Risk: {c.riskScore}</div>
++              )}
++            </div>
++          </li>
++        ))}
++      </ul>
++    </div>
++  );
++};
++
++export default IGoProofSummary;
++
+diff --git a/src/components/igo/IGoRequirementList.tsx b/src/components/igo/IGoRequirementList.tsx
+new file mode 100644
+index 0000000..f557539
+--- /dev/null
++++ b/src/components/igo/IGoRequirementList.tsx
+@@ -0,0 +1,33 @@
++import React from "react";
++import type { IGoRequirement } from "../../lib/igo/igo.types";
++import { getIGoMethodLabel } from "../../lib/igo/igo-copy";
++
++type IGoRequirementListProps = {
++  requirements: IGoRequirement[];
++};
++
++export const IGoRequirementList: React.FC<IGoRequirementListProps> = ({ requirements }) => {
++  return (
++    <ul className="space-y-2">
++      {requirements.map((req) => (
++        <li key={req.id} className="p-2 bg-gray-900 rounded">
++          <div className="flex items-center justify-between">
++            <div>
++              <div className="font-medium text-white">{req.label}</div>
++              <div className="text-xs text-gray-400">{req.detail}</div>
++            </div>
++            <div className="text-right">
++              <div className="text-sm">{getIGoMethodLabel(req.method)}</div>
++              <div className="text-xs text-gray-400">
++                {req.required ? "Required" : "Optional"}
++              </div>
++            </div>
++          </div>
++        </li>
++      ))}
++    </ul>
++  );
++};
++
++export default IGoRequirementList;
++
+diff --git a/src/components/igo/IGoRewardBadge.tsx b/src/components/igo/IGoRewardBadge.tsx
+new file mode 100644
+index 0000000..cb2d742
+--- /dev/null
++++ b/src/components/igo/IGoRewardBadge.tsx
+@@ -0,0 +1,27 @@
++import React from "react";
++
++type IGoRewardBadgeProps = {
++  icoinAmount: number;
++  gcoinAmount: number;
++  usdLabel: string;
++};
++
++export const IGoRewardBadge: React.FC<IGoRewardBadgeProps> = ({
++  icoinAmount,
++  gcoinAmount,
++  usdLabel
++}) => {
++  return (
++    <div
++      aria-label={`Reward ${usdLabel}, ${gcoinAmount} gCoins, ${icoinAmount} iCoins`}
++      className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-800 text-sm text-white"
++    >
++      <span className="font-medium">{usdLabel}</span>
++      <span className="text-xs opacity-80">+{gcoinAmount} gCoins</span>
++      <span className="text-xs opacity-80">+{icoinAmount} iCoins</span>
++    </div>
++  );
++};
++
++export default IGoRewardBadge;
++
+diff --git a/src/components/igo/IGoSettlementPanel.tsx b/src/components/igo/IGoSettlementPanel.tsx
+new file mode 100644
+index 0000000..2821c66
+--- /dev/null
++++ b/src/components/igo/IGoSettlementPanel.tsx
+@@ -0,0 +1,41 @@
++import React from "react";
++import type { IGoSettlementContract } from "../../lib/igo/igo.types";
++
++type Props = {
++  settlementContract: IGoSettlementContract | null | undefined;
++  onMockSettle?: () => void;
++};
++
++export const IGoSettlementPanel: React.FC<Props> = ({ settlementContract, onMockSettle }) => {
++  if (!settlementContract) {
++    return (
++      <div className="p-3 bg-gray-900 rounded">
++        <div className="text-sm font-semibold text-white">Mock settlement contract</div>
++        <div className="mt-2 text-xs text-gray-400">No settlement contract yet.</div>
++      </div>
++    );
++  }
++
++  return (
++    <div className="p-3 bg-gray-900 rounded">
++      <div className="text-sm font-semibold text-white">Mock settlement contract</div>
++      <div className="mt-2 text-xs text-gray-300">
++        <div><strong>ID:</strong> {settlementContract.id}</div>
++        <div><strong>Status:</strong> {settlementContract.status}</div>
++        <div><strong>User credit:</strong> {settlementContract.userCredit.icoinAmount} iCoins</div>
++        {settlementContract.creatorCredit && <div><strong>Creator:</strong> {settlementContract.creatorCredit.handle} ({settlementContract.creatorCredit.icoinAmount} iCoins)</div>}
++        {settlementContract.platformFee && <div><strong>Platform fee:</strong> {settlementContract.platformFee.icoinAmount} iCoins</div>}
++        <div className="mt-2 text-xs text-gray-400">{settlementContract.settlementNote}</div>
++        <div className="mt-3">
++          {settlementContract.status === "ready" && onMockSettle && (
++            <button className="px-3 py-1 bg-green-600 rounded" onClick={onMockSettle}>Mark mock settled</button>
++          )}
++          {settlementContract.status === "mock_settled" && <div className="text-sm text-green-400">Mock settled — no wallet ledger mutation performed.</div>}
++        </div>
++      </div>
++    </div>
++  );
++};
++
++export default IGoSettlementPanel;
++
+diff --git a/src/components/igo/IGoTrustBadge.tsx b/src/components/igo/IGoTrustBadge.tsx
+new file mode 100644
+index 0000000..39b60d7
+--- /dev/null
++++ b/src/components/igo/IGoTrustBadge.tsx
+@@ -0,0 +1,22 @@
++import React from "react";
++
++type IGoTrustBadgeProps = {
++  level: "standard" | "verified" | "premium";
++  riskLabel: string;
++};
++
++export const IGoTrustBadge: React.FC<IGoTrustBadgeProps> = ({ level, riskLabel }) => {
++  const levelLabel =
++    level === "premium" ? "Premium place" : level === "verified" ? "Verified place" : "Place";
++
++  return (
++    <div className="inline-flex items-center gap-2 px-2 py-1 rounded bg-gray-800 text-white text-sm">
++      <span className="font-semibold">{levelLabel}</span>
++      <span className="text-xs opacity-80">·</span>
++      <span className="text-xs opacity-80">{riskLabel}</span>
++    </div>
++  );
++};
++
++export default IGoTrustBadge;
++
+diff --git a/src/components/igo/IGoVerificationGates.tsx b/src/components/igo/IGoVerificationGates.tsx
+new file mode 100644
+index 0000000..307e1d4
+--- /dev/null
++++ b/src/components/igo/IGoVerificationGates.tsx
+@@ -0,0 +1,31 @@
++import React from "react";
++import type { IGoVerificationGate } from "../../lib/igo/igo.types";
++
++type Props = { gates: IGoVerificationGate[] };
++
++export const IGoVerificationGates: React.FC<Props> = ({ gates }) => {
++  return (
++    <div className="p-3 bg-gray-900 rounded">
++      <div className="text-sm font-semibold text-white">Verification Gates</div>
++      <div className="mt-2 space-y-2 text-xs text-gray-300">
++        {gates.map((g) => (
++          <div key={g.id} className="p-2 bg-gray-800 rounded flex justify-between items-center">
++            <div>
++              <div className="font-medium text-white">{g.label}{g.required ? "" : " (optional)"}</div>
++              <div className="text-xs text-gray-400">{g.detail}</div>
++            </div>
++            <div className="text-right">
++              <div className={`text-sm ${g.status === "passed" ? "text-green-400" : g.status === "failed" ? "text-red-400" : "text-yellow-400"}`}>
++                {g.status.toUpperCase()}
++              </div>
++              {typeof g.riskScore === "number" && <div className="text-xs text-gray-400">Risk: {g.riskScore}</div>}
++            </div>
++          </div>
++        ))}
++      </div>
++    </div>
++  );
++};
++
++export default IGoVerificationGates;
++
+diff --git a/src/lib/igo/igo-audit.ts b/src/lib/igo/igo-audit.ts
+new file mode 100644
+index 0000000..7fa78d2
+--- /dev/null
++++ b/src/lib/igo/igo-audit.ts
+@@ -0,0 +1,102 @@
++import type {
++  IGoMission,
++  IGoIntent,
++  IGoProofPackage,
++  IGoSettlementContract,
++  IGoAuditRecord,
++  IGoCampaignOwnerSummary,
++  IGoRiskReviewStatus
++} from "./igo.types";
++
++import { createLocalIntegrityId } from "./igo-proof";
++
++export function createIGoAuditRecord(input: {
++  mission: IGoMission;
++  intent: IGoIntent;
++  proofPackage?: IGoProofPackage | null;
++  settlementContract?: IGoSettlementContract | null;
++  userLabel?: string;
++}): IGoAuditRecord {
++  const { mission, intent, proofPackage, settlementContract, userLabel } = input;
++  const outcome = proofPackage?.outcome ?? (intent.rewardStatus === "manual_review" ? "manual_review" : intent.rewardStatus === "approved" ? "approved" : "rejected");
++  let auditStatus: IGoAuditRecord["auditStatus"] = "clean";
++  if (outcome === "approved" && settlementContract?.status === "ready") auditStatus = "settlement_ready";
++  else if (outcome === "approved" && settlementContract?.status === "mock_settled") auditStatus = "mock_settled";
++  else if (outcome === "manual_review") auditStatus = "needs_review";
++  else if (outcome === "rejected" || outcome === "expired") auditStatus = "rejected";
++
++  let riskReviewStatus: IGoRiskReviewStatus = "not_required";
++  if (outcome === "manual_review") riskReviewStatus = "queued";
++  else if (outcome === "rejected") riskReviewStatus = "blocked";
++
++  const record: IGoAuditRecord = {
++    id: `audit-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
++    missionId: mission.id,
++    intentId: intent.id,
++    proofPackageId: proofPackage?.id,
++    settlementContractId: settlementContract?.id,
++    userLabel: userLabel ?? "Mock user",
++    placeName: mission.place.name,
++    outcome: (proofPackage?.outcome ?? (intent.rewardStatus === "manual_review" ? "manual_review" : (intent.rewardStatus as any))) as any,
++    rewardStatus: intent.rewardStatus ?? "none",
++    settlementStatus: settlementContract?.status ?? "not_ready",
++    auditStatus,
++    riskReviewStatus,
++    verificationScore: intent.verificationScore ?? 0,
++    localIntegrityId: proofPackage?.localIntegrityId,
++    createdAtLabel: "Just now"
++  };
++
++  return record;
++}
++
++export function createIGoCampaignOwnerSummary(input: {
++  mission: IGoMission;
++  records: IGoAuditRecord[];
++}): IGoCampaignOwnerSummary {
++  const { mission, records } = input;
++  const completions = records.length;
++  const approvals = records.filter((r) => r.outcome === "approved").length;
++  const rejections = records.filter((r) => r.outcome === "rejected" || r.outcome === "expired").length;
++  const manualReviews = records.filter((r) => r.outcome === "manual_review").length;
++  const mockSettlements = records.filter((r) => r.settlementStatus === "mock_settled").length;
++  const avgScore = records.length === 0 ? 0 : Math.round(records.reduce((s, r) => s + (r.verificationScore || 0), 0) / records.length);
++  const spent = approvals * (mission.reward.icoinAmount || 0);
++  const pending = manualReviews * (mission.reward.icoinAmount || 0);
++  const total = 500; // mock total in iCoins
++  const remaining = total - spent;
++
++  return {
++    campaignId: `campaign-${mission.id}`,
++    missionId: mission.id,
++    sponsorName: mission.sponsorName,
++    placeName: mission.place.name,
++    campaignType: mission.campaignType,
++    totalBudgetLabel: `$${(total / 100).toFixed(2)}`,
++    spentLabel: `${spent} iCoins`,
++    pendingLabel: `${pending} iCoins`,
++    remainingLabel: `${remaining} iCoins`,
++    completions,
++    approvals,
++    rejections,
++    manualReviews,
++    mockSettlements,
++    averageVerificationScore: avgScore
++  };
++}
++
++export function updateAuditRecordForSettlement(record: IGoAuditRecord): IGoAuditRecord {
++  if (record.settlementStatus === "ready") {
++    return { ...record, settlementStatus: "mock_settled", auditStatus: "mock_settled" };
++  }
++  return record;
++}
++
++export function updateAuditRecordRiskStatus(record: IGoAuditRecord, status: IGoRiskReviewStatus): IGoAuditRecord {
++  const newRecord = { ...record, riskReviewStatus: status };
++  if (status === "blocked") {
++    newRecord.auditStatus = "rejected";
++  }
++  return newRecord;
++}
++
+diff --git a/src/lib/igo/igo-campaign-builder.ts b/src/lib/igo/igo-campaign-builder.ts
+new file mode 100644
+index 0000000..0793319
+--- /dev/null
++++ b/src/lib/igo/igo-campaign-builder.ts
+@@ -0,0 +1,120 @@
++import type {
++  IGoCampaignDraft,
++  IGoMission,
++  IGoCampaignRuleCheck,
++  IGoCampaignBudgetSimulation,
++  IGoMockPublishedCampaign,
++  IGoCampaignDraftStatus
++} from "./igo.types";
++import { IGO_MOCK_MISSIONS } from "./igo.mock";
++
++// Note: we avoid adding new dependencies. Implement helpers locally.
++export function createInitialIGoCampaignDraft(mission?: IGoMission): IGoCampaignDraft {
++  const seed = mission ?? IGO_MOCK_MISSIONS[0];
++  return {
++    id: `draft-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
++    status: "draft",
++    title: seed.title,
++    description: seed.description,
++    sponsorName: seed.sponsorName,
++    creatorHandle: seed.creatorHandle,
++    campaignType: seed.campaignType,
++    place: seed.place,
++    reward: seed.reward,
++    minDwellSeconds: Math.max(30, seed.minDwellSeconds),
++    timeLimitMinutes: Math.max(15, seed.timeLimitMinutes),
++    requiredVerificationLevel: seed.requiredVerificationLevel,
++    maxCompletions: 100,
++    maxCompletionsPerUser: 1,
++    budgetMode: "fixed_total",
++    totalBudgetAmount: 500,
++    startsAtLabel: seed.startsAtLabel,
++    endsAtLabel: seed.endsAtLabel,
++    isMockPublished: false
++  };
++}
++
++export function validateIGoCampaignDraft(draft: IGoCampaignDraft): IGoCampaignRuleCheck[] {
++  const checks: IGoCampaignRuleCheck[] = [];
++  if (!draft.title || draft.title.trim().length === 0) checks.push({ id: "title", label: "Title required", detail: "Campaign title is required", severity: "error", passed: false });
++  else checks.push({ id: "title", label: "Title", detail: "Title present", severity: "info", passed: true });
++  if (!draft.sponsorName || draft.sponsorName.trim().length === 0) checks.push({ id: "sponsor", label: "Sponsor required", detail: "Sponsor name is required", severity: "error", passed: false });
++  else checks.push({ id: "sponsor", label: "Sponsor", detail: "Sponsor present", severity: "info", passed: true });
++  if (!(draft.reward.icoinAmount > 0)) checks.push({ id: "reward-icoin", label: "iCoin reward > 0", detail: "iCoin reward must be > 0", severity: "error", passed: false });
++  else checks.push({ id: "reward-icoin", label: "iCoin reward", detail: "iCoin ok", severity: "info", passed: true });
++  if (draft.minDwellSeconds < 30) checks.push({ id: "dwell", label: "minDwellSeconds", detail: "Recommended >= 30s", severity: "warning", passed: false }); else checks.push({ id: "dwell", label: "minDwellSeconds", detail: "OK", severity: "info", passed: true });
++  if (draft.timeLimitMinutes < 15) checks.push({ id: "time", label: "timeLimitMinutes", detail: "Recommended >= 15m", severity: "warning", passed: false }); else checks.push({ id: "time", label: "timeLimitMinutes", detail: "OK", severity: "info", passed: true });
++  if (draft.maxCompletions <= 0) checks.push({ id: "max", label: "maxCompletions", detail: "Must be > 0", severity: "error", passed: false }); else checks.push({ id: "max", label: "maxCompletions", detail: "OK", severity: "info", passed: true });
++  if (draft.maxCompletionsPerUser < 1) checks.push({ id: "per-user", label: "maxCompletionsPerUser", detail: "Must be >= 1", severity: "error", passed: false }); else checks.push({ id: "per-user", label: "maxCompletionsPerUser", detail: "OK", severity: "info", passed: true });
++  if (draft.budgetMode === "fixed_total") {
++    const afford = Math.floor(draft.totalBudgetAmount / Math.max(1, draft.reward.icoinAmount));
++    if (afford < 1) checks.push({ id: "budget", label: "totalBudgetAmount", detail: "Budget does not cover a single reward", severity: "error", passed: false }); else checks.push({ id: "budget", label: "totalBudgetAmount", detail: "Budget OK", severity: "info", passed: true });
++  }
++  if (draft.requiredVerificationLevel >= 3) checks.push({ id: "verification-level", label: "verification level", detail: "High verification recommended", severity: "info", passed: true });
++  return checks;
++}
++
++export function simulateIGoCampaignBudget(draft: IGoCampaignDraft): IGoCampaignBudgetSimulation {
++  const total = draft.totalBudgetAmount;
++  const reward = draft.reward.icoinAmount || 1;
++  const maxAffordable = reward > 0 ? Math.floor(total / reward) : 0;
++  const configured = draft.maxCompletions;
++  const take = Math.min(maxAffordable, configured);
++  const estimatedSpend = take * reward;
++  const remaining = total - estimatedSpend;
++  const pctRemaining = total > 0 ? remaining / total : 0;
++  const risk: "low" | "medium" | "high" = maxAffordable < configured ? "high" : pctRemaining < 0.2 ? "medium" : "low";
++  return {
++    totalBudgetLabel: `$${(total / 100).toFixed(2)}`,
++    rewardPerCompletionLabel: `${reward} iCoins`,
++    maxAffordableCompletions: maxAffordable,
++    configuredMaxCompletions: configured,
++    estimatedSpendLabel: `${estimatedSpend} iCoins`,
++    estimatedRemainingLabel: `${remaining} iCoins`,
++    budgetRisk: risk
++  };
++}
++
++// createMissionFromCampaignDraft - simplified mapping
++export function createMissionFromCampaignDraft(draft: IGoCampaignDraft): IGoMission {
++  // minimal mission scaffold
++  return {
++    id: `mock-mission-${draft.id}`,
++    campaignType: draft.campaignType,
++    title: draft.title,
++    description: draft.description,
++    sponsorName: draft.sponsorName,
++    creatorHandle: draft.creatorHandle,
++    place: draft.place,
++    reward: draft.reward,
++    requirements: [],
++    minDwellSeconds: draft.minDwellSeconds,
++    timeLimitMinutes: draft.timeLimitMinutes,
++    startsAtLabel: draft.startsAtLabel,
++    endsAtLabel: draft.endsAtLabel,
++    riskLevel: "medium",
++    requiredVerificationLevel: draft.requiredVerificationLevel,
++    status: "available"
++  } as IGoMission;
++}
++
++export function createMockPublishedCampaign(input: { draft: IGoCampaignDraft; ruleChecks: IGoCampaignRuleCheck[]; budgetSimulation: IGoCampaignBudgetSimulation; }): IGoMockPublishedCampaign {
++  const mission = createMissionFromCampaignDraft(input.draft);
++  return {
++    id: `mockpub-${Date.now()}`,
++    draftId: input.draft.id,
++    mission,
++    publishedAtLabel: "Just now",
++    ruleChecks: input.ruleChecks,
++    budgetSimulation: input.budgetSimulation
++  };
++}
++
++export function hasBlockingCampaignErrors(ruleChecks: IGoCampaignRuleCheck[]): boolean {
++  return ruleChecks.some((c) => c.severity === "error" && !c.passed);
++}
++
++export function formatMockMoney(amount: number): string {
++  return `$${(amount / 100).toFixed(2)}`;
++}
++
+diff --git a/src/lib/igo/igo-copy.ts b/src/lib/igo/igo-copy.ts
+new file mode 100644
+index 0000000..fd8a315
+--- /dev/null
++++ b/src/lib/igo/igo-copy.ts
+@@ -0,0 +1,86 @@
++import type {
++  IGoMissionStatus,
++  IGoRiskLevel,
++  IGoVerificationMethod
++} from "./igo.types";
++
++export function getIGoStatusLabel(status: IGoMissionStatus): string {
++  switch (status) {
++    case "available":
++      return "Available";
++    case "reserved":
++      return "Intent declared";
++    case "active":
++      return "Going";
++    case "arrived":
++      return "Arrived";
++    case "verifying":
++      return "Verifying";
++    case "completed":
++      return "Completed";
++    case "expired":
++      return "Expired";
++    case "cancelled":
++      return "Cancelled";
++    case "rejected":
++      return "Rejected";
++  }
++}
++
++export function getIGoStatusDescription(status: IGoMissionStatus): string {
++  switch (status) {
++    case "available":
++      return "Review the mission and start when ready.";
++    case "reserved":
++      return "Your intent is locked. Start moving when ready.";
++    case "active":
++      return "Mission active. Reach the place before the timer expires.";
++    case "arrived":
++      return "You are inside the place area. Complete verification.";
++    case "verifying":
++      return "Presence proof is being checked.";
++    case "completed":
++      return "Reward approved and ready for wallet settlement.";
++    case "expired":
++      return "The mission window expired.";
++    case "cancelled":
++      return "The mission was cancelled.";
++    case "rejected":
++      return "Verification failed or needs review.";
++  }
++}
++
++export function getIGoRiskLabel(risk: IGoRiskLevel): string {
++  switch (risk) {
++    case "low":
++      return "Low fraud risk";
++    case "medium":
++      return "Medium fraud risk";
++    case "high":
++      return "High fraud risk";
++  }
++}
++
++export function getIGoMethodLabel(method: IGoVerificationMethod): string {
++  switch (method) {
++    case "gps":
++      return "GPS";
++    case "qr_scan":
++      return "QR scan";
++    case "nfc_tap":
++      return "NFC tap";
++    case "merchant_confirm":
++      return "Merchant confirm";
++    case "receipt":
++      return "Receipt";
++    case "payment":
++      return "Payment";
++    case "device_motion":
++      return "Device motion";
++    case "pops_liveness":
++      return "POPS";
++    case "camera_context":
++      return "Camera context";
++  }
++}
++
+diff --git a/src/lib/igo/igo-events.ts b/src/lib/igo/igo-events.ts
+new file mode 100644
+index 0000000..55bf04f
+--- /dev/null
++++ b/src/lib/igo/igo-events.ts
+@@ -0,0 +1,41 @@
++export type IGoEventType =
++  | "IGO_MISSION_VIEWED"
++  | "IGO_INTENT_CREATED"
++  | "IGO_INTENT_STARTED"
++  | "IGO_USER_ARRIVED"
++  | "IGO_VERIFICATION_STARTED"
++  | "IGO_GPS_CHECK_RECORDED"
++  | "IGO_QR_SCAN_RECORDED"
++  | "IGO_NFC_TAP_RECORDED"
++  | "IGO_POPS_CHECK_RECORDED"
++  | "IGO_VERIFICATION_APPROVED"
++  | "IGO_VERIFICATION_REJECTED"
++  | "IGO_REWARD_APPROVED"
++  | "IGO_REWARD_PAID"
++  | "IGO_TRUST_UPDATED";
++
++export type IGoEvent = {
++  id: string;
++  type: IGoEventType;
++  missionId: string;
++  intentId?: string;
++  createdAtLabel: string;
++  metadata?: Record<string, string | number | boolean>;
++};
++
++export function createIGoEvent(input: {
++  type: IGoEventType;
++  missionId: string;
++  intentId?: string;
++  metadata?: Record<string, string | number | boolean>;
++}): IGoEvent {
++  return {
++    id: `igo-event-${Date.now()}-${Math.random().toString(16).slice(2)}`,
++    type: input.type,
++    missionId: input.missionId,
++    intentId: input.intentId,
++    createdAtLabel: "Just now",
++    metadata: input.metadata
++  };
++}
++
+diff --git a/src/lib/igo/igo-proof.ts b/src/lib/igo/igo-proof.ts
+new file mode 100644
+index 0000000..db742bf
+--- /dev/null
++++ b/src/lib/igo/igo-proof.ts
+@@ -0,0 +1,126 @@
++import type {
++  IGoMission,
++  IGoIntent,
++  IGoProofOutcome,
++  IGoProofPackage,
++  IGoSettlementContract,
++  IGoReward,
++  IGoVerificationGate,
++  IGoPresenceCheck
++} from "./igo.types";
++
++function simpleHash(input: string): string {
++  // deterministic, small, safe local hash-like id (no crypto)
++  let h = 2166136261 >>> 0;
++  for (let i = 0; i < input.length; i++) {
++    h ^= input.charCodeAt(i);
++    h = Math.imul(h, 16777619) >>> 0;
++  }
++  // produce short base36 suffix
++  return (h >>> 0).toString(36).slice(-6);
++}
++
++export function createLocalIntegrityId(input: {
++  missionId: string;
++  intentId: string;
++  outcome: IGoProofOutcome;
++  verificationScore: number;
++  rewardStatus: string;
++}): string {
++  const raw = `${input.missionId}|${input.intentId}|${input.outcome}|${input.verificationScore}|${input.rewardStatus}`;
++  return `igo-proof-local-${simpleHash(raw)}`;
++}
++
++export function createIGoProofPackage(input: {
++  mission: IGoMission;
++  intent: IGoIntent;
++  outcome: IGoProofOutcome;
++  trustImpact: number;
++}): IGoProofPackage {
++  const { mission, intent, outcome, trustImpact } = input;
++  const verificationScore = intent.verificationScore ?? 0;
++  const rewardStatus = intent.rewardStatus ?? "none";
++
++  const localIntegrityId = createLocalIntegrityId({
++    missionId: mission.id,
++    intentId: intent.id,
++    outcome,
++    verificationScore,
++    rewardStatus
++  });
++
++  const gateSnapshot = (intent.gates ?? []).map((g) => ({ ...g }));
++  const checksSnapshot = (intent.checks ?? []).map((c) => ({ ...c }));
++
++  const proof: IGoProofPackage = {
++    id: `proof-${Date.now()}-${localIntegrityId}`,
++    missionId: mission.id,
++    intentId: intent.id,
++    outcome,
++    createdAtLabel: "Just now",
++    placeSnapshot: {
++      placeId: mission.place.id,
++      name: mission.place.name,
++      address: mission.place.address,
++      city: mission.place.city,
++      distanceLabel: mission.place.distanceLabel,
++      geofenceRadiusMeters: mission.place.geofenceRadiusMeters
++    },
++    rewardSnapshot: mission.reward,
++    gateSnapshot,
++    checksSnapshot,
++    verificationScore,
++    rewardStatus: rewardStatus as any,
++    trustImpact,
++    localIntegrityId,
++    notes: ["LOCAL MOCK PROOF: Not submitted to backend. For demo only."]
++  };
++
++  return proof;
++}
++
++export function createIGoSettlementContract(input: {
++  mission: IGoMission;
++  intent: IGoIntent;
++  proofPackage: IGoProofPackage;
++}): IGoSettlementContract {
++  const { mission, intent, proofPackage } = input;
++  const outcome = proofPackage.outcome;
++  const reward = mission.reward;
++  const icoin = reward.icoinAmount;
++  const creatorShare = mission.creatorHandle ? Math.round(icoin * 0.1) : undefined;
++  const platformFee = Math.round(icoin * 0.05);
++
++  let status: IGoSettlementContract["status"] = "not_ready";
++  if (outcome === "approved" && intent.rewardStatus === "approved") status = "ready";
++  else if (outcome === "rejected" || outcome === "expired") status = "blocked";
++  else if (outcome === "manual_review") status = "not_ready";
++
++  const contract: IGoSettlementContract = {
++    id: `settle-${Date.now()}-${proofPackage.localIntegrityId}`,
++    proofPackageId: proofPackage.id,
++    missionId: mission.id,
++    intentId: intent.id,
++    status,
++    userCredit: {
++      icoinAmount: reward.icoinAmount,
++      gcoinAmount: reward.gcoinAmount,
++      estimatedUsdLabel: reward.estimatedUsdLabel
++    },
++    creatorCredit: mission.creatorHandle
++      ? {
++          handle: mission.creatorHandle,
++          icoinAmount: creatorShare ?? 0
++        }
++      : undefined,
++    platformFee: {
++      icoinAmount: platformFee
++    },
++    walletLedgerMode: "mock_only",
++    settlementNote: "Local mock settlement contract. No ledger mutation performed.",
++    createdAtLabel: "Just now"
++  };
++
++  return contract;
++}
++
+diff --git a/src/lib/igo/igo-state.ts b/src/lib/igo/igo-state.ts
+new file mode 100644
+index 0000000..0f80e3f
+--- /dev/null
++++ b/src/lib/igo/igo-state.ts
+@@ -0,0 +1,695 @@
++import { useMemo, useReducer } from "react";
++import type {
++  IGoCompletion,
++  IGoIntent,
++  IGoMission,
++  IGoEventLogItem,
++  IGoVerificationGate,
++  IGoRewardStatus,
++  IGoProofPackage,
++  IGoSettlementContract
++} from "./igo.types";
++import { IGO_DEFAULT_MISSION_ID, IGO_MOCK_MISSIONS } from "./igo.mock";
++import {
++  createInitialIntent,
++  createMockPresenceChecks,
++  getIGoProgressSteps
++  } from "./igo-verification";
++import {
++  createVerificationGates,
++  startAllVerificationGates,
++  passAllVerificationGates,
++  failFirstVerificationGate,
++  reviewVerificationGates,
++  createPresenceChecksFromGates,
++  calculateGateScore
++} from "./igo-verification";
++import { createIGoProofPackage, createIGoSettlementContract } from "./igo-proof";
++import {
++  createIGoAuditRecord,
++  createIGoCampaignOwnerSummary,
++  updateAuditRecordForSettlement,
++  updateAuditRecordRiskStatus
++} from "./igo-audit";
++import type { IGoAuditRecord, IGoCampaignOwnerSummary } from "./igo.types";
++import {
++  createInitialIGoCampaignDraft,
++  validateIGoCampaignDraft,
++  simulateIGoCampaignBudget,
++  createMockPublishedCampaign,
++  createMissionFromCampaignDraft,
++  hasBlockingCampaignErrors
++} from "./igo-campaign-builder";
++import type { IGoCampaignDraft, IGoCampaignRuleCheck, IGoCampaignBudgetSimulation, IGoMockPublishedCampaign, IGoCampaignDraftStatus } from "./igo.types";
++
++type IGoState = {
++  missions: IGoMission[];
++  selectedMissionId: string;
++  intent: IGoIntent | null;
++  completion: IGoCompletion | null;
++  eventLog: IGoEventLogItem[];
++  proofPackage?: IGoProofPackage | null;
++  settlementContract?: IGoSettlementContract | null;
++  ownerSummary?: IGoCampaignOwnerSummary | null;
++  auditRecords?: IGoAuditRecord[];
++  selectedAuditRecordId?: string | null;
++  campaignDraft?: IGoCampaignDraft | null;
++  campaignRuleChecks?: IGoCampaignRuleCheck[] | null;
++  campaignBudgetSimulation?: IGoCampaignBudgetSimulation | null;
++  mockPublishedCampaign?: IGoMockPublishedCampaign | null;
++};
++
++type IGoAction =
++  | { type: "select_mission"; missionId: string }
++  | { type: "select_audit_record"; recordId: string }
++  | { type: "clear_audit_selection" }
++  | { type: "queue_risk_review" }
++  | { type: "clear_risk_review" }
++  | { type: "block_risk_review" }
++  | { type: "create_intent" }
++  | { type: "start_mission" }
++  | { type: "mock_arrival" }
++  | { type: "start_verification" }
++  | { type: "pass_verification" }
++  | { type: "fail_verification" }
++  | { type: "send_manual_review" }
++  | { type: "approve_pending_reward" }
++  | { type: "reject_pending_reward" }
++  | { type: "tick_timer" }
++  | { type: "reset" }
++  | { type: "mark_mock_settled" }
++  | { type: "update_campaign_draft"; patch: Partial<IGoCampaignDraft> }
++  | { type: "validate_campaign_draft" }
++  | { type: "publish_mock_campaign" }
++  | { type: "reset_campaign_draft" };
++
++function makeInitialState(): IGoState {
++  return {
++    missions: IGO_MOCK_MISSIONS,
++    selectedMissionId: IGO_DEFAULT_MISSION_ID,
++    intent: null,
++    completion: null,
++    eventLog: []
++    ,proofPackage: null,
++    settlementContract: null
++    ,ownerSummary: null,
++    auditRecords: [],
++    selectedAuditRecordId: null
++    ,campaignDraft: createInitialIGoCampaignDraft(IGO_MOCK_MISSIONS[0]),
++    campaignRuleChecks: validateIGoCampaignDraft(createInitialIGoCampaignDraft(IGO_MOCK_MISSIONS[0])),
++    campaignBudgetSimulation: simulateIGoCampaignBudget(createInitialIGoCampaignDraft(IGO_MOCK_MISSIONS[0])),
++    mockPublishedCampaign: null
++  };
++}
++const initialState: IGoState = makeInitialState();
++
++function getSelectedMission(state: IGoState): IGoMission {
++  return (
++    state.missions.find((mission) => mission.id === state.selectedMissionId) ??
++    state.missions[0]
++  );
++}
++
++function reducer(state: IGoState, action: IGoAction): IGoState {
++  const selectedMission = getSelectedMission(state);
++
++  switch (action.type) {
++    case "select_mission":
++      {
++        const draftFromMission = createInitialIGoCampaignDraft(state.missions.find((m) => m.id === action.missionId) ?? state.missions[0]);
++        return {
++          ...state,
++          selectedMissionId: action.missionId,
++          intent: null,
++          completion: null,
++          campaignDraft: draftFromMission,
++          campaignRuleChecks: validateIGoCampaignDraft(draftFromMission),
++          campaignBudgetSimulation: simulateIGoCampaignBudget(draftFromMission),
++          mockPublishedCampaign: null
++        };
++      }
++
++    case "create_intent":
++      return {
++        ...state,
++        intent: {
++          ...createInitialIntent(selectedMission),
++          rewardStatus: "none",
++          gates: [], // will be created on start or immediately
++          remainingSeconds: selectedMission.timeLimitMinutes * 60,
++          verificationScore: 0
++        },
++        completion: null,
++        eventLog: [
++          {
++            id: `evt-${Date.now()}`,
++            type: "intent_created",
++            label: "Intent created",
++            detail: selectedMission.title,
++            createdAtLabel: "Just now"
++          },
++          ...state.eventLog
++        ]
++      };
++
++    case "start_mission":
++      if (!state.intent) return state;
++
++      return {
++        ...state,
++        intent: {
++          ...state.intent,
++          status: "active",
++          startedAtLabel: "Just now",
++          progressPercent: 40
++        }
++      };
++
++    case "mock_arrival":
++      if (!state.intent) return state;
++
++      return {
++        ...state,
++        intent: {
++          ...state.intent,
++          status: "arrived",
++          arrivedAtLabel: "Just now",
++          progressPercent: 60,
++          dwellSeconds: selectedMission.minDwellSeconds
++        }
++      };
++
++    case "start_verification":
++      if (!state.intent) return state;
++      // create gates from mission requirements
++      {
++        const gates: IGoVerificationGate[] = createVerificationGates(selectedMission);
++        const checking = startAllVerificationGates(gates);
++        const checks = createPresenceChecksFromGates(checking);
++        const score = calculateGateScore(checking);
++        return {
++          ...state,
++          intent: {
++            ...state.intent,
++            status: "verifying",
++            progressPercent: 80,
++            gates: checking,
++            checks,
++            verificationScore: score,
++            rewardStatus: "none"
++          },
++          eventLog: [
++            {
++              id: `evt-${Date.now()}`,
++              type: "verification_started",
++              label: "Verification started",
++              detail: selectedMission.title,
++              createdAtLabel: "Just now"
++            },
++            ...state.eventLog
++          ]
++        };
++      }
++
++    case "update_campaign_draft":
++      {
++        const patch = (action as any).patch as Partial<IGoCampaignDraft>;
++        const newDraft = { ...(state.campaignDraft ?? createInitialIGoCampaignDraft(selectedMission)), ...patch };
++        const checks = validateIGoCampaignDraft(newDraft);
++        const sim = simulateIGoCampaignBudget(newDraft);
++        const status: IGoCampaignDraftStatus = hasBlockingCampaignErrors(checks) ? "invalid" : "valid";
++        return {
++          ...state,
++          campaignDraft: { ...newDraft, status },
++          campaignRuleChecks: checks,
++          campaignBudgetSimulation: sim,
++          eventLog: [{ id: `evt-${Date.now()}`, type: "campaign_draft_updated", label: "Campaign draft updated", detail: newDraft.title, createdAtLabel: "Just now" }, ...state.eventLog]
++        };
++      }
++
++    case "validate_campaign_draft":
++      {
++        const draft = state.campaignDraft ?? createInitialIGoCampaignDraft(selectedMission);
++        const checks = validateIGoCampaignDraft(draft);
++        const sim = simulateIGoCampaignBudget(draft);
++        return {
++          ...state,
++          campaignRuleChecks: checks,
++          campaignBudgetSimulation: sim,
++          eventLog: [{ id: `evt-${Date.now()}`, type: "campaign_rules_checked", label: "Campaign rules checked", detail: draft.title, createdAtLabel: "Just now" }, ...state.eventLog]
++        };
++      }
++
++    case "publish_mock_campaign":
++      {
++        const draft = state.campaignDraft ?? createInitialIGoCampaignDraft(selectedMission);
++        const checks = validateIGoCampaignDraft(draft);
++        if (hasBlockingCampaignErrors(checks)) {
++          return {
++            ...state,
++            campaignRuleChecks: checks,
++            eventLog: [{ id: `evt-${Date.now()}`, type: "campaign_mock_publish_failed", label: "Mock publish failed", detail: draft.title, createdAtLabel: "Just now" }, ...state.eventLog]
++          };
++        }
++        const sim = simulateIGoCampaignBudget(draft);
++        const published = createMockPublishedCampaign({ draft, ruleChecks: checks, budgetSimulation: sim });
++        const mission = createMissionFromCampaignDraft(draft);
++        const missions = [mission, ...state.missions];
++        return {
++          ...state,
++          missions,
++          selectedMissionId: mission.id,
++          campaignDraft: { ...draft, status: "mock_published", isMockPublished: true },
++          campaignRuleChecks: checks,
++          campaignBudgetSimulation: sim,
++          mockPublishedCampaign: published,
++          // clear user intent/completion/proof/audit to keep separation
++          intent: null,
++          completion: null,
++          proofPackage: null,
++          settlementContract: null,
++          auditRecords: [],
++          ownerSummary: null,
++          eventLog: [{ id: `evt-${Date.now()}`, type: "campaign_mock_published", label: "Campaign mock published", detail: draft.title, createdAtLabel: "Just now" }, ...state.eventLog]
++        };
++      }
++
++    case "reset_campaign_draft":
++      {
++        const draft = createInitialIGoCampaignDraft(selectedMission);
++        return {
++          ...state,
++          campaignDraft: draft,
++          campaignRuleChecks: validateIGoCampaignDraft(draft),
++          campaignBudgetSimulation: simulateIGoCampaignBudget(draft),
++          mockPublishedCampaign: null,
++          eventLog: [{ id: `evt-${Date.now()}`, type: "campaign_draft_updated", label: "Campaign draft reset", detail: draft.title, createdAtLabel: "Just now" }, ...state.eventLog]
++        };
++      }
++
++    case "pass_verification":
++      if (!state.intent) return state;
++      // pass all gates
++      {
++        const passedGates = passAllVerificationGates(state.intent.gates ?? []);
++        const checks = createPresenceChecksFromGates(passedGates);
++        const score = calculateGateScore(passedGates);
++        return {
++          ...state,
++          intent: {
++            ...state.intent,
++            status: "verifying",
++            gates: passedGates,
++            checks,
++            verificationScore: score,
++            rewardStatus: "pending"
++          },
++          eventLog: [
++            {
++              id: `evt-${Date.now()}`,
++              type: "gate_passed",
++              label: "Verification passed",
++              detail: selectedMission.title,
++              createdAtLabel: "Just now"
++            },
++            {
++              id: `evt2-${Date.now()}`,
++              type: "reward_pending",
++              label: "Reward pending",
++              detail: "Awaiting approval",
++              createdAtLabel: "Just now"
++            },
++            ...state.eventLog
++          ]
++        };
++      }
++
++    case "fail_verification":
++      if (!state.intent) return state;
++      {
++        const failedGates = failFirstVerificationGate(state.intent.gates ?? []);
++        const checks = createPresenceChecksFromGates(failedGates);
++        const score = calculateGateScore(failedGates);
++        const proof = createIGoProofPackage({ mission: selectedMission, intent: state.intent, outcome: "rejected", trustImpact: 0 });
++        const settle = createIGoSettlementContract({ mission: selectedMission, intent: state.intent, proofPackage: proof });
++        return {
++          ...state,
++          intent: {
++            ...state.intent,
++            status: "rejected",
++            gates: failedGates,
++            checks,
++            verificationScore: score,
++            rewardStatus: "rejected"
++          },
++          completion: null,
++          proofPackage: proof,
++          settlementContract: settle,
++          eventLog: [
++            {
++              id: `evt-${Date.now()}`,
++              type: "proof_package_created",
++              label: "Proof package created",
++              detail: selectedMission.title,
++              createdAtLabel: "Just now"
++            },
++            {
++              id: `evt2-${Date.now()}`,
++              type: "gate_failed",
++              label: "Verification failed",
++              detail: selectedMission.title,
++              createdAtLabel: "Just now"
++            },
++            {
++              id: `evt3-${Date.now()}`,
++              type: "reward_rejected",
++              label: "Reward rejected",
++              detail: "Verification failed",
++              createdAtLabel: "Just now"
++            },
++            ...state.eventLog
++          ]
++        };
++      }
++
++    case "send_manual_review":
++      if (!state.intent) return state;
++      {
++        const reviewGates = reviewVerificationGates(state.intent.gates ?? []);
++        const checks = createPresenceChecksFromGates(reviewGates);
++        const score = calculateGateScore(reviewGates);
++        const proof = createIGoProofPackage({ mission: selectedMission, intent: state.intent, outcome: "manual_review", trustImpact: 0 });
++        const settle = createIGoSettlementContract({ mission: selectedMission, intent: state.intent, proofPackage: proof });
++        const auditRec = createIGoAuditRecord({ mission: selectedMission, intent: state.intent, proofPackage: proof, settlementContract: settle });
++        const newRecords = [auditRec, ...(state.auditRecords ?? [])];
++        return {
++          ...state,
++          intent: {
++            ...state.intent,
++            status: "verifying",
++            gates: reviewGates,
++            checks,
++            verificationScore: score,
++            rewardStatus: "manual_review"
++          },
++          proofPackage: proof,
++          settlementContract: settle,
++          auditRecords: newRecords,
++          ownerSummary: createIGoCampaignOwnerSummary({ mission: selectedMission, records: newRecords }),
++          eventLog: [
++            {
++              id: `evt-${Date.now()}`,
++              type: "proof_package_created",
++              label: "Proof package created (manual review)",
++              detail: selectedMission.title,
++              createdAtLabel: "Just now"
++            },
++            {
++              id: `evt2-${Date.now()}`,
++              type: "manual_review",
++              label: "Sent for manual review",
++              detail: selectedMission.title,
++              createdAtLabel: "Just now"
++            },
++            ...state.eventLog
++          ]
++        };
++      }
++
++    case "approve_pending_reward":
++      if (!state.intent) return state;
++      {
++        const completion = {
++          intentId: state.intent.id,
++          missionId: selectedMission.id,
++          approved: true,
++          reward: selectedMission.reward,
++          proofId: `igo-proof-${selectedMission.id}`,
++          trustImpact: 0.3,
++          completedAtLabel: "Just now"
++        } as IGoCompletion;
++
++        const proof = createIGoProofPackage({
++          mission: selectedMission,
++          intent: state.intent,
++          outcome: "approved",
++          trustImpact: completion.trustImpact
++        });
++        const settle = createIGoSettlementContract({ mission: selectedMission, intent: state.intent, proofPackage: proof });
++
++        const auditRec = createIGoAuditRecord({ mission: selectedMission, intent: state.intent, proofPackage: proof, settlementContract: settle });
++        const newRecords = [auditRec, ...(state.auditRecords ?? [])];
++        return {
++          ...state,
++          intent: {
++            ...state.intent,
++            status: "completed",
++            rewardStatus: "approved",
++            completedAtLabel: "Just now",
++            progressPercent: 100
++          },
++          completion,
++          proofPackage: proof,
++          settlementContract: settle,
++          auditRecords: newRecords,
++          ownerSummary: createIGoCampaignOwnerSummary({ mission: selectedMission, records: newRecords }),
++          eventLog: [
++            {
++              id: `evt-${Date.now()}`,
++              type: "proof_package_created",
++              label: "Proof package created",
++              detail: selectedMission.title,
++              createdAtLabel: "Just now"
++            },
++            {
++              id: `evt2-${Date.now()}`,
++              type: settle.status === "ready" ? "settlement_ready" : "proof_package_created",
++              label: settle.status === "ready" ? "Settlement ready (mock)" : "Settlement pending",
++              detail: settle.settlementNote,
++              createdAtLabel: "Just now"
++            },
++            {
++              id: `evt3-${Date.now()}`,
++              type: "reward_approved",
++              label: "Reward approved",
++              detail: selectedMission.title,
++              createdAtLabel: "Just now"
++            },
++            ...state.eventLog
++          ]
++        };
++      }
++
++    case "reject_pending_reward":
++      if (!state.intent) return state;
++      {
++        const proof = createIGoProofPackage({
++          mission: selectedMission,
++          intent: state.intent,
++          outcome: "rejected",
++          trustImpact: 0
++        });
++        const settle = createIGoSettlementContract({ mission: selectedMission, intent: state.intent, proofPackage: proof });
++        const auditRec = createIGoAuditRecord({ mission: selectedMission, intent: state.intent, proofPackage: proof, settlementContract: settle });
++        const newRecords = [auditRec, ...(state.auditRecords ?? [])];
++        return {
++          ...state,
++          intent: {
++            ...state.intent,
++            status: "rejected",
++            rewardStatus: "rejected"
++          },
++          completion: null,
++          proofPackage: proof,
++          settlementContract: settle,
++          auditRecords: newRecords,
++          ownerSummary: createIGoCampaignOwnerSummary({ mission: selectedMission, records: newRecords }),
++          eventLog: [
++            {
++              id: `evt-${Date.now()}`,
++              type: "proof_package_created",
++              label: "Proof package created",
++              detail: selectedMission.title,
++              createdAtLabel: "Just now"
++            },
++            {
++              id: `evt2-${Date.now()}`,
++              type: "reward_rejected",
++              label: "Reward rejected",
++              detail: selectedMission.title,
++              createdAtLabel: "Just now"
++            },
++            ...state.eventLog
++          ]
++        };
++      }
++
++    case "tick_timer":
++      if (!state.intent) return state;
++      if (state.intent.remainingSeconds && state.intent.remainingSeconds > 0) {
++        const rem = state.intent.remainingSeconds - 1;
++        if (rem <= 0) {
++          // expire: create proof + blocked settlement
++          const proof = createIGoProofPackage({ mission: selectedMission, intent: state.intent!, outcome: "expired", trustImpact: 0 });
++          const settle = createIGoSettlementContract({ mission: selectedMission, intent: state.intent!, proofPackage: proof });
++          const auditRec = createIGoAuditRecord({ mission: selectedMission, intent: state.intent!, proofPackage: proof, settlementContract: settle });
++          const newRecords = [auditRec, ...(state.auditRecords ?? [])];
++          return {
++            ...state,
++            intent: {
++              ...state.intent,
++              remainingSeconds: 0,
++              status: "expired",
++              rewardStatus: "rejected"
++            },
++            proofPackage: proof,
++            settlementContract: settle,
++            auditRecords: newRecords,
++            ownerSummary: createIGoCampaignOwnerSummary({ mission: selectedMission, records: newRecords }),
++            eventLog: [
++              {
++                id: `evt-${Date.now()}`,
++                type: "proof_package_created",
++                label: "Proof package created (expired)",
++                detail: selectedMission.title,
++                createdAtLabel: "Just now"
++              },
++              {
++                id: `evt2-${Date.now()}`,
++                type: "expired",
++                label: "Mission expired",
++                detail: selectedMission.title,
++                createdAtLabel: "Just now"
++              },
++              ...state.eventLog
++            ]
++          };
++        }
++        return {
++          ...state,
++          intent: {
++            ...state.intent,
++            remainingSeconds: rem
++          }
++        };
++      }
++
++    case "reset":
++      return makeInitialState();
++    case "mark_mock_settled":
++      if (!state.settlementContract) return state;
++      if (state.settlementContract.status !== "ready") return state;
++      {
++        const updatedSettlement = { ...state.settlementContract, status: "mock_settled" as const };
++        // update matching audit record
++        const records = (state.auditRecords ?? []).map((r) =>
++          r.settlementContractId === state.settlementContract!.id || r.proofPackageId === state.proofPackage?.id
++            ? updateAuditRecordForSettlement(r)
++            : r
++        );
++        return {
++          ...state,
++          settlementContract: updatedSettlement,
++          auditRecords: records,
++          ownerSummary: createIGoCampaignOwnerSummary({ mission: selectedMission, records }),
++          eventLog: [
++            {
++              id: `evt-${Date.now()}`,
++              type: "mock_settled",
++              label: "Mock settled",
++              detail: state.settlementContract.settlementNote,
++              createdAtLabel: "Just now"
++            },
++            ...state.eventLog
++          ]
++        };
++      }
++    case "select_audit_record":
++      return { ...state, selectedAuditRecordId: (action as any).recordId ?? null };
++    case "clear_audit_selection":
++      return { ...state, selectedAuditRecordId: null };
++    case "queue_risk_review":
++      {
++        const sel = state.selectedAuditRecordId;
++        if (!sel) return state;
++        const records = (state.auditRecords ?? []).map((r) => (r.id === sel ? updateAuditRecordRiskStatus(r, "queued") : r));
++        return {
++          ...state,
++          auditRecords: records,
++          ownerSummary: createIGoCampaignOwnerSummary({ mission: selectedMission, records }),
++          eventLog: [{ id: `evt-${Date.now()}`, type: "risk_review_queued", label: "Risk review queued", detail: sel, createdAtLabel: "Just now" }, ...state.eventLog]
++        };
++      }
++    case "clear_risk_review":
++      {
++        const sel = state.selectedAuditRecordId;
++        if (!sel) return state;
++        const records = (state.auditRecords ?? []).map((r) => (r.id === sel ? updateAuditRecordRiskStatus(r, "cleared") : r));
++        return {
++          ...state,
++          auditRecords: records,
++          ownerSummary: createIGoCampaignOwnerSummary({ mission: selectedMission, records }),
++          eventLog: [{ id: `evt-${Date.now()}`, type: "risk_review_cleared", label: "Risk review cleared", detail: sel, createdAtLabel: "Just now" }, ...state.eventLog]
++        };
++      }
++    case "block_risk_review":
++      {
++        const sel = state.selectedAuditRecordId;
++        if (!sel) return state;
++        const records = (state.auditRecords ?? []).map((r) => (r.id === sel ? updateAuditRecordRiskStatus(r, "blocked") : r));
++        return {
++          ...state,
++          auditRecords: records,
++          ownerSummary: createIGoCampaignOwnerSummary({ mission: selectedMission, records }),
++          eventLog: [{ id: `evt-${Date.now()}`, type: "risk_review_blocked", label: "Risk review blocked", detail: sel, createdAtLabel: "Just now" }, ...state.eventLog]
++        };
++      }
++  }
++}
++
++// Export the reducer and a factory for the initial state for focused unit testing.
++// These exports are intentionally minimal and do not change runtime behavior
++// of the `useIGoState` hook which continues to use the same `reducer` and
++// `initialState` internally.
++export const igoReducer = reducer;
++export function createInitialIGoState(): IGoState {
++  return makeInitialState();
++}
++
++export function useIGoState() {
++  const [state, dispatch] = useReducer(reducer, initialState);
++
++  const selectedMission = useMemo(() => getSelectedMission(state), [state]);
++
++  const progressSteps = useMemo(() => getIGoProgressSteps(state.intent), [state.intent]);
++
++  return {
++    state,
++    selectedMission,
++    progressSteps,
++    selectMission: (missionId: string) => dispatch({ type: "select_mission", missionId }),
++    selectAuditRecord: (recordId: string) => dispatch({ type: "select_audit_record", recordId }),
++    clearAuditSelection: () => dispatch({ type: "clear_audit_selection" }),
++    queueRiskReview: () => dispatch({ type: "queue_risk_review" }),
++    clearRiskReview: () => dispatch({ type: "clear_risk_review" }),
++    blockRiskReview: () => dispatch({ type: "block_risk_review" }),
++    
++    createIntent: () => dispatch({ type: "create_intent" }),
++    startMission: () => dispatch({ type: "start_mission" }),
++    mockArrival: () => dispatch({ type: "mock_arrival" }),
++    startVerification: () => dispatch({ type: "start_verification" }),
++    passVerification: () => dispatch({ type: "pass_verification" }),
++    failVerification: () => dispatch({ type: "fail_verification" }),
++    sendManualReview: () => dispatch({ type: "send_manual_review" }),
++    approvePendingReward: () => dispatch({ type: "approve_pending_reward" }),
++    rejectPendingReward: () => dispatch({ type: "reject_pending_reward" }),
++    tickTimer: () => dispatch({ type: "tick_timer" }),
++    markMockSettled: () => dispatch({ type: "mark_mock_settled" }),
++    updateCampaignDraft: (patch: Partial<IGoCampaignDraft>) => dispatch({ type: "update_campaign_draft", patch }),
++    validateCampaignDraft: () => dispatch({ type: "validate_campaign_draft" }),
++    publishMockCampaign: () => dispatch({ type: "publish_mock_campaign" }),
++    resetCampaignDraft: () => dispatch({ type: "reset_campaign_draft" }),
++    reset: () => dispatch({ type: "reset" })
++  };
++}
++
+diff --git a/src/lib/igo/igo-verification.ts b/src/lib/igo/igo-verification.ts
+new file mode 100644
+index 0000000..a860b54
+--- /dev/null
++++ b/src/lib/igo/igo-verification.ts
+@@ -0,0 +1,181 @@
++import type {
++  IGoIntent,
++  IGoMission,
++  IGoPresenceCheck,
++  IGoVerificationGate,
++  IGoVerificationGateStatus,
++  IGoEventLogItem,
++  IGoVerificationMethod,
++  IGoProgressStep
++} from "./igo.types";
++
++export function createInitialIntent(mission: IGoMission): IGoIntent {
++  return {
++    id: `igo-intent-${mission.id}`,
++    missionId: mission.id,
++    status: "reserved",
++    declaredAtLabel: "Just now",
++    progressPercent: 20,
++    dwellSeconds: 0,
++    checks: []
++  };
++}
++
++export function getIGoProgressSteps(intent: IGoIntent | null): IGoProgressStep[] {
++  const status = intent?.status ?? "available";
++
++  return [
++    {
++      id: "intent",
++      label: "Intent",
++      state: status === "available" ? "current" : "done"
++    },
++    {
++      id: "travel",
++      label: "Go",
++      state:
++        status === "active"
++          ? "current"
++          : status === "arrived" ||
++              status === "verifying" ||
++              status === "completed"
++          ? "done"
++          : status === "rejected"
++          ? "failed"
++          : "locked"
++    },
++    {
++      id: "arrival",
++      label: "Arrive",
++      state:
++        status === "arrived"
++          ? "current"
++          : status === "verifying" || status === "completed"
++          ? "done"
++          : status === "rejected"
++          ? "failed"
++          : "locked"
++    },
++    {
++      id: "verification",
++      label: "Verify",
++      state:
++        status === "verifying"
++          ? "current"
++          : status === "completed"
++          ? "done"
++          : status === "rejected"
++          ? "failed"
++          : "locked"
++    },
++    {
++      id: "reward",
++      label: "Reward",
++      state:
++        status === "completed" ? "done" : status === "rejected" ? "failed" : "locked"
++    }
++  ];
++}
++
++export function createMockPresenceChecks(mission: IGoMission): IGoPresenceCheck[] {
++  return mission.requirements.map((requirement, index) => ({
++    id: `check-${requirement.id}`,
++    method: requirement.method,
++    label: requirement.label,
++    result: "pass",
++    checkedAtLabel: "Just now",
++    riskScore: Math.max(3, 12 - index * 2)
++  }));
++}
++
++export function calculateVerificationScore(checks: IGoPresenceCheck[]): number {
++  if (checks.length === 0) return 0;
++
++  const passed = checks.filter((check) => check.result === "pass").length;
++  return Math.round((passed / checks.length) * 100);
++}
++
++export function isIGoVerificationApproved(checks: IGoPresenceCheck[]): boolean {
++  return checks.length > 0 && checks.every((check) => check.result === "pass");
++}
++
++// Stage 2 helpers
++export function createVerificationGates(mission: IGoMission): IGoVerificationGate[] {
++  return mission.requirements.map((req, idx) => ({
++    id: `gate-${req.id}`,
++    method: req.method,
++    label: req.label,
++    detail: req.detail,
++    required: req.required,
++    status: idx === 0 ? "ready" : "locked",
++  }));
++}
++
++export function startAllVerificationGates(gates: IGoVerificationGate[]): IGoVerificationGate[] {
++  return gates.map((g) =>
++    g.required ? { ...g, status: "checking" } : { ...g }
++  );
++}
++
++export function passAllVerificationGates(gates: IGoVerificationGate[]): IGoVerificationGate[] {
++  return gates.map((g) =>
++    g.required && (g.status === "checking" || g.status === "ready")
++      ? { ...g, status: "passed", checkedAtLabel: "Just now", riskScore: 12 }
++      : g
++  );
++}
++
++export function failFirstVerificationGate(gates: IGoVerificationGate[]): IGoVerificationGate[] {
++  const out = gates.map((g) => ({ ...g }));
++  const idx = out.findIndex((g) => g.required && (g.status === "checking" || g.status === "ready"));
++  if (idx >= 0) {
++    out[idx].status = "failed";
++    out[idx].checkedAtLabel = "Just now";
++    out[idx].riskScore = 87;
++    // later gates remain locked
++  }
++  return out;
++}
++
++export function reviewVerificationGates(gates: IGoVerificationGate[]): IGoVerificationGate[] {
++  return gates.map((g) =>
++    g.required && (g.status === "checking" || g.status === "ready")
++      ? { ...g, status: "review", checkedAtLabel: "Just now", riskScore: 54 }
++      : g
++  );
++}
++
++export function calculateGateScore(gates: IGoVerificationGate[]): number {
++  if (gates.length === 0) return 0;
++  let score = 0;
++  gates.forEach((g) => {
++    if (g.status === "passed") score += 100;
++    else if (g.status === "review") score += 60;
++    else if (g.status === "failed") score += 0;
++    else if (g.status === "checking" || g.status === "ready") score += 30;
++  });
++  const avg = Math.round(score / gates.length);
++  return Math.max(0, Math.min(100, avg));
++}
++
++export function createPresenceChecksFromGates(gates: IGoVerificationGate[]): IGoPresenceCheck[] {
++  return gates.map((g) => {
++    const map: Record<string, any> = {
++      passed: "pass",
++      failed: "fail",
++      review: "manual_review",
++      checking: "pending",
++      ready: "pending",
++      locked: "pending",
++    };
++    return {
++      id: `check-${g.id}`,
++      method: g.method as IGoVerificationMethod,
++      label: g.label,
++      result: map[g.status] as any,
++      checkedAtLabel: g.checkedAtLabel,
++      riskScore: g.riskScore,
++    };
++  });
++}
++
+diff --git a/src/lib/igo/igo.mock.ts b/src/lib/igo/igo.mock.ts
+new file mode 100644
+index 0000000..57a49e7
+--- /dev/null
++++ b/src/lib/igo/igo.mock.ts
+@@ -0,0 +1,119 @@
++import type { IGoMission } from "./igo.types";
++
++export const IGO_MOCK_MISSIONS: IGoMission[] = [
++  {
++    id: "igo-luna-pizza",
++    campaignType: "visit",
++    title: "Go to Luna Pizza",
++    description: "Visit Luna Pizza today, verify presence, and unlock a local reward.",
++    sponsorName: "Luna Pizza",
++    creatorHandle: "@citybites",
++    place: {
++      id: "place-luna-pizza",
++      name: "Luna Pizza",
++      placeType: "Restaurant",
++      address: "214 Market Street",
++      city: "Miami",
++      distanceLabel: "1.8 mi",
++      distanceMeters: 2896,
++      geofenceRadiusMeters: 75,
++      isOpenNow: true,
++      openUntilLabel: "Open until 10 PM",
++      trustTier: "verified"
++    },
++    reward: {
++      icoinAmount: 2.4,
++      gcoinAmount: 18,
++      estimatedUsdLabel: "$2.40"
++    },
++    requirements: [
++      {
++        id: "req-gps",
++        label: "Enter the place area",
++        detail: "GPS must place you inside the verified geofence.",
++        method: "gps",
++        required: true
++      },
++      {
++        id: "req-dwell",
++        label: "Stay for 3 minutes",
++        detail: "Dwell time prevents drive-by or spoofed visits.",
++        method: "device_motion",
++        required: true
++      },
++      {
++        id: "req-qr",
++        label: "Scan in-store code",
++        detail: "QR confirms you reached the intended merchant.",
++        method: "qr_scan",
++        required: true
++      }
++    ],
++    minDwellSeconds: 180,
++    timeLimitMinutes: 240,
++    startsAtLabel: "Now",
++    endsAtLabel: "Today · 10 PM",
++    riskLevel: "low",
++    requiredVerificationLevel: 3,
++    status: "available"
++  },
++  {
++    id: "igo-rooftop-session",
++    campaignType: "event_attendance",
++    title: "Attend Rooftop Session",
++    description: "Show up for a creator-hosted music session and verify attendance.",
++    sponsorName: "SoundBlock",
++    creatorHandle: "@melodymae",
++    place: {
++      id: "place-rooftop-session",
++      name: "The North Deck",
++      placeType: "Event",
++      address: "88 Biscayne Blvd",
++      city: "Miami",
++      distanceLabel: "3.2 mi",
++      distanceMeters: 5149,
++      geofenceRadiusMeters: 100,
++      isOpenNow: true,
++      openUntilLabel: "Event starts at 8 PM",
++      trustTier: "premium"
++    },
++    reward: {
++      icoinAmount: 5,
++      gcoinAmount: 42,
++      estimatedUsdLabel: "$5.00"
++    },
++    requirements: [
++      {
++        id: "req-gps-event",
++        label: "Arrive at venue",
++        detail: "Location must match the event geofence.",
++        method: "gps",
++        required: true
++      },
++      {
++        id: "req-pops-event",
++        label: "Presence check",
++        detail: "POPS verifies humane presence during the event window.",
++        method: "pops_liveness",
++        required: true
++      },
++      {
++        id: "req-nfc-event",
++        label: "Tap event marker",
++        detail: "NFC confirms attendance at the official check-in point.",
++        method: "nfc_tap",
++        required: true
++      }
++    ],
++    minDwellSeconds: 900,
++    timeLimitMinutes: 360,
++    startsAtLabel: "Tonight · 8 PM",
++    endsAtLabel: "Tonight · 11 PM",
++    riskLevel: "medium",
++    requiredVerificationLevel: 4,
++    status: "available"
++  }
++];
++
++export const IGO_DEFAULT_MISSION_ID = "igo-luna-pizza";
++
+diff --git a/src/lib/igo/igo.types.ts b/src/lib/igo/igo.types.ts
+new file mode 100644
+index 0000000..728856e
+--- /dev/null
++++ b/src/lib/igo/igo.types.ts
+@@ -0,0 +1,370 @@
++export type IGoMissionStatus =
++  | "available"
++  | "reserved"
++  | "active"
++  | "arrived"
++  | "verifying"
++  | "completed"
++  | "expired"
++  | "cancelled"
++  | "rejected";
++
++export type IGoVerificationMethod =
++  | "gps"
++  | "qr_scan"
++  | "nfc_tap"
++  | "merchant_confirm"
++  | "receipt"
++  | "payment"
++  | "device_motion"
++  | "pops_liveness"
++  | "camera_context";
++
++export type IGoVerificationResult =
++  | "pending"
++  | "pass"
++  | "fail"
++  | "uncertain"
++  | "manual_review";
++
++export type IGoCampaignType =
++  | "visit"
++  | "event_attendance"
++  | "purchase"
++  | "creator_referral"
++  | "challenge"
++  | "local_discovery";
++
++export type IGoRiskLevel = "low" | "medium" | "high";
++
++export type IGoPlace = {
++  id: string;
++  name: string;
++  placeType: string;
++  address: string;
++  city: string;
++  distanceLabel: string;
++  distanceMeters: number;
++  geofenceRadiusMeters: number;
++  isOpenNow: boolean;
++  openUntilLabel: string;
++  trustTier: "standard" | "verified" | "premium";
++};
++
++export type IGoReward = {
++  icoinAmount: number;
++  gcoinAmount: number;
++  estimatedUsdLabel: string;
++  creatorSplitAmount?: number;
++  platformFeeAmount?: number;
++};
++
++export type IGoRequirement = {
++  id: string;
++  label: string;
++  detail: string;
++  method: IGoVerificationMethod;
++  required: boolean;
++};
++
++export type IGoMission = {
++  id: string;
++  campaignType: IGoCampaignType;
++  title: string;
++  description: string;
++  sponsorName: string;
++  creatorHandle?: string;
++  place: IGoPlace;
++  reward: IGoReward;
++  requirements: IGoRequirement[];
++  minDwellSeconds: number;
++  timeLimitMinutes: number;
++  startsAtLabel: string;
++  endsAtLabel: string;
++  riskLevel: IGoRiskLevel;
++  requiredVerificationLevel: 1 | 2 | 3 | 4 | 5;
++  status: IGoMissionStatus;
++};
++
++export type IGoPresenceCheck = {
++  id: string;
++  method: IGoVerificationMethod;
++  label: string;
++  result: IGoVerificationResult;
++  checkedAtLabel?: string;
++  riskScore?: number;
++};
++
++export type IGoIntent = {
++  id: string;
++  missionId: string;
++  status: IGoMissionStatus;
++  declaredAtLabel: string;
++  startedAtLabel?: string;
++  arrivedAtLabel?: string;
++  completedAtLabel?: string;
++  progressPercent: number;
++  dwellSeconds: number;
++  checks: IGoPresenceCheck[];
++  // Stage 2 additions:
++  rewardStatus?: IGoRewardStatus;
++  gates?: IGoVerificationGate[];
++  remainingSeconds?: number;
++  verificationScore?: number;
++};
++
++export type IGoCompletion = {
++  intentId: string;
++  missionId: string;
++  approved: boolean;
++  reward: IGoReward;
++  proofId: string;
++  trustImpact: number;
++  completedAtLabel: string;
++};
++
++export type IGoStepId =
++  | "intent"
++  | "travel"
++  | "arrival"
++  | "verification"
++  | "reward";
++
++export type IGoProgressStep = {
++  id: IGoStepId;
++  label: string;
++  state: "locked" | "current" | "done" | "failed";
++};
++
++// Stage 2 types
++export type IGoRewardStatus =
++  | "none"
++  | "pending"
++  | "approved"
++  | "rejected"
++  | "paid"
++  | "manual_review";
++
++export type IGoVerificationGateStatus =
++  | "locked"
++  | "ready"
++  | "checking"
++  | "passed"
++  | "failed"
++  | "review";
++
++export type IGoVerificationGate = {
++  id: string;
++  method: IGoVerificationMethod;
++  label: string;
++  detail: string;
++  required: boolean;
++  status: IGoVerificationGateStatus;
++  checkedAtLabel?: string;
++  riskScore?: number;
++};
++
++export type IGoEventLogItem = {
++  id: string;
++  type:
++    | "mission_selected"
++    | "intent_created"
++    | "mission_started"
++    | "arrival_mocked"
++    | "verification_started"
++    | "gate_passed"
++    | "gate_failed"
++    | "reward_pending"
++    | "reward_approved"
++    | "reward_rejected"
++    | "manual_review"
++    | "proof_package_created"
++    | "settlement_ready"
++    | "mock_settled"
++    | "risk_review_queued"
++    | "risk_review_cleared"
++    | "risk_review_blocked"
++  | "campaign_draft_updated"
++  | "campaign_rules_checked"
++  | "campaign_mock_published"
++  | "campaign_mock_publish_failed"
++    | "mission_reset"
++    | "expired";
++  label: string;
++  detail?: string;
++  createdAtLabel: string;
++};
++
++// Stage 3: proof and settlement types
++export type IGoProofOutcome =
++  | "approved"
++  | "rejected"
++  | "manual_review"
++  | "expired";
++
++export type IGoProofPackage = {
++  id: string;
++  missionId: string;
++  intentId: string;
++  outcome: IGoProofOutcome;
++  createdAtLabel: string;
++  placeSnapshot: {
++    placeId: string;
++    name: string;
++    address: string;
++    city: string;
++    distanceLabel: string;
++    geofenceRadiusMeters: number;
++  };
++  rewardSnapshot: IGoReward;
++  gateSnapshot: IGoVerificationGate[];
++  checksSnapshot: IGoPresenceCheck[];
++  verificationScore: number;
++  rewardStatus: IGoRewardStatus;
++  trustImpact: number;
++  localIntegrityId: string;
++  notes: string[];
++};
++
++export type IGoSettlementStatus =
++  | "not_ready"
++  | "ready"
++  | "blocked"
++  | "mock_settled";
++
++export type IGoSettlementContract = {
++  id: string;
++  proofPackageId: string;
++  missionId: string;
++  intentId: string;
++  status: IGoSettlementStatus;
++  userCredit: {
++    icoinAmount: number;
++    gcoinAmount: number;
++    estimatedUsdLabel: string;
++  };
++  creatorCredit?: {
++    handle: string;
++    icoinAmount: number;
++  };
++  platformFee?: {
++    icoinAmount: number;
++  };
++  walletLedgerMode: "mock_only";
++  settlementNote: string;
++  createdAtLabel: string;
++};
++
++// Stage 4: owner/audit types
++export type IGoAuditStatus =
++  | "clean"
++  | "needs_review"
++  | "rejected"
++  | "settlement_ready"
++  | "mock_settled";
++
++export type IGoRiskReviewStatus =
++  | "not_required"
++  | "queued"
++  | "reviewing"
++  | "cleared"
++  | "blocked";
++
++export type IGoCampaignOwnerSummary = {
++  campaignId: string;
++  missionId: string;
++  sponsorName: string;
++  placeName: string;
++  campaignType: IGoCampaignType;
++  totalBudgetLabel: string;
++  spentLabel: string;
++  pendingLabel: string;
++  remainingLabel: string;
++  completions: number;
++  approvals: number;
++  rejections: number;
++  manualReviews: number;
++  mockSettlements: number;
++  averageVerificationScore: number;
++};
++
++export type IGoAuditRecord = {
++  id: string;
++  missionId: string;
++  intentId: string;
++  proofPackageId?: string;
++  settlementContractId?: string;
++  userLabel: string;
++  placeName: string;
++  outcome: IGoProofOutcome;
++  rewardStatus: IGoRewardStatus;
++  settlementStatus: IGoSettlementStatus;
++  auditStatus: IGoAuditStatus;
++  riskReviewStatus: IGoRiskReviewStatus;
++  verificationScore: number;
++  localIntegrityId?: string;
++  createdAtLabel: string;
++};
++
++// Stage 5: campaign builder types
++export type IGoCampaignDraftStatus =
++  | "draft"
++  | "valid"
++  | "invalid"
++  | "mock_published";
++
++export type IGoCampaignBudgetMode =
++  | "fixed_total"
++  | "per_completion_cap"
++  | "unlimited_mock";
++
++export type IGoCampaignRuleSeverity = "info" | "warning" | "error";
++
++export type IGoCampaignDraft = {
++  id: string;
++  status: IGoCampaignDraftStatus;
++  title: string;
++  description: string;
++  sponsorName: string;
++  creatorHandle?: string;
++  campaignType: IGoCampaignType;
++  place: IGoPlace;
++  reward: IGoReward;
++  minDwellSeconds: number;
++  timeLimitMinutes: number;
++  requiredVerificationLevel: 1 | 2 | 3 | 4 | 5;
++  maxCompletions: number;
++  maxCompletionsPerUser: number;
++  budgetMode: IGoCampaignBudgetMode;
++  totalBudgetAmount: number;
++  startsAtLabel: string;
++  endsAtLabel: string;
++  isMockPublished: boolean;
++};
++
++export type IGoCampaignRuleCheck = {
++  id: string;
++  label: string;
++  detail: string;
++  severity: IGoCampaignRuleSeverity;
++  passed: boolean;
++};
++
++export type IGoCampaignBudgetSimulation = {
++  totalBudgetLabel: string;
++  rewardPerCompletionLabel: string;
++  maxAffordableCompletions: number;
++  configuredMaxCompletions: number;
++  estimatedSpendLabel: string;
++  estimatedRemainingLabel: string;
++  budgetRisk: "low" | "medium" | "high";
++};
++
++export type IGoMockPublishedCampaign = {
++  id: string;
++  draftId: string;
++  mission: IGoMission;
++  publishedAtLabel: string;
++  ruleChecks: IGoCampaignRuleCheck[];
++  budgetSimulation: IGoCampaignBudgetSimulation;
++};
+diff --git a/src/lib/igo/tests/igo.reducer.test.ts b/src/lib/igo/tests/igo.reducer.test.ts
+new file mode 100644
+index 0000000..589c6cc
+--- /dev/null
++++ b/src/lib/igo/tests/igo.reducer.test.ts
+@@ -0,0 +1,267 @@
++import assert from "assert";
++import { igoReducer, createInitialIGoState } from "../igo-state";
++import { IGO_DEFAULT_MISSION_ID, IGO_MOCK_MISSIONS } from "../igo.mock";
++import type {
++  IGoMission,
++  IGoVerificationGate,
++  IGoCampaignRuleCheck,
++} from "../igo.types";
++
++// TypeScript-only reducer verification module (no test runner required).
++// A test runner (vitest/jest) can import and call runIGoReducerChecks(),
++// or a maintainer can call it directly.
++export function runIGoReducerChecks(): void {
++  let state = createInitialIGoState();
++
++  // ── Stage 1 ──────────────────────────────────────────────────────────────
++
++  // initial selected mission is the default
++  assert.strictEqual(
++    state.selectedMissionId,
++    IGO_DEFAULT_MISSION_ID,
++    "initial selectedMissionId should be the default"
++  );
++
++  // event log empty initially
++  assert.ok(
++    Array.isArray(state.eventLog) && state.eventLog.length === 0,
++    "eventLog should start empty"
++  );
++
++  // create_intent → reserved intent
++  state = igoReducer(state, { type: "create_intent" } as Parameters<typeof igoReducer>[1]);
++  assert.ok(state.intent, "intent should exist after create_intent");
++  assert.strictEqual(state.intent!.status, "reserved", "intent should be reserved");
++  assert.strictEqual(state.completion, null, "completion should be null after create_intent");
++  assert.ok(Array.isArray(state.intent!.gates), "gates array should exist on intent");
++  assert.strictEqual(typeof state.intent!.remainingSeconds, "number", "remainingSeconds should be set");
++
++  // start_mission → active
++  state = igoReducer(state, { type: "start_mission" } as Parameters<typeof igoReducer>[1]);
++  assert.strictEqual(state.intent!.status, "active", "intent should be active after start_mission");
++
++  // mock_arrival → arrived + dwellSeconds
++  const selectedMissionBefore = state.missions.find(
++    (m: IGoMission) => m.id === state.selectedMissionId
++  )!;
++  state = igoReducer(state, { type: "mock_arrival" } as Parameters<typeof igoReducer>[1]);
++  assert.strictEqual(state.intent!.status, "arrived", "intent should be arrived after mock_arrival");
++  assert.strictEqual(
++    state.intent!.dwellSeconds,
++    selectedMissionBefore.minDwellSeconds,
++    "dwellSeconds should equal mission.minDwellSeconds"
++  );
++
++  // start_verification → verifying + gates present
++  state = igoReducer(state, { type: "start_verification" } as Parameters<typeof igoReducer>[1]);
++  assert.strictEqual(state.intent!.status, "verifying", "intent should be verifying");
++  assert.ok(
++    Array.isArray(state.intent!.gates) && state.intent!.gates.length > 0,
++    "gates should be present"
++  );
++  assert.ok(
++    state.intent!.gates!.some((g: IGoVerificationGate) => g.status === "checking"),
++    "at least some gates should be checking"
++  );
++
++  // pass_verification → pending reward, all required gates passed
++  state = igoReducer(state, { type: "pass_verification" } as Parameters<typeof igoReducer>[1]);
++  assert.strictEqual(
++    state.intent!.rewardStatus,
++    "pending",
++    "rewardStatus should be pending after pass_verification"
++  );
++  assert.ok(
++    state.intent!.gates!.every(
++      (g: IGoVerificationGate) => g.status === "passed" || !g.required
++    ),
++    "required gates should be passed"
++  );
++
++  // approve_pending_reward → completed + completion + proof + settlement
++  state = igoReducer(state, { type: "approve_pending_reward" } as Parameters<typeof igoReducer>[1]);
++  assert.strictEqual(state.intent!.status, "completed", "intent should be completed");
++  assert.ok(state.completion, "completion should be present");
++  assert.strictEqual(state.completion!.approved, true, "completion.approved should be true");
++  assert.ok(state.proofPackage, "proofPackage should be present after approve_pending_reward");
++  assert.ok(state.settlementContract, "settlementContract should be present");
++  if (state.settlementContract) {
++    assert.ok(
++      ["ready", "not_ready", "blocked"].includes(state.settlementContract.status),
++      "settlement status should be a known value"
++    );
++  }
++
++  // mark_mock_settled
++  const prevStatus = state.settlementContract?.status;
++  state = igoReducer(state, { type: "mark_mock_settled" } as Parameters<typeof igoReducer>[1]);
++  if (prevStatus === "ready") {
++    assert.strictEqual(
++      state.settlementContract!.status,
++      "mock_settled",
++      "settlement should be mock_settled when previously ready"
++    );
++  } else {
++    assert.strictEqual(
++      state.settlementContract!.status,
++      prevStatus,
++      "settlement status unchanged if not ready"
++    );
++  }
++
++  // select_mission → resets intent and completion
++  const otherMission =
++    IGO_MOCK_MISSIONS.find((m: IGoMission) => m.id !== state.selectedMissionId) ??
++    IGO_MOCK_MISSIONS[0];
++  state = igoReducer(state, {
++    type: "select_mission",
++    missionId: otherMission.id,
++  } as Parameters<typeof igoReducer>[1]);
++  assert.strictEqual(state.selectedMissionId, otherMission.id, "selectedMissionId should update");
++  assert.strictEqual(state.intent, null, "intent should be reset after selecting another mission");
++  assert.strictEqual(state.completion, null, "completion should be reset");
++
++  // reset → clean state
++  state = igoReducer(state, { type: "reset" } as Parameters<typeof igoReducer>[1]);
++  assert.strictEqual(state.intent, null, "intent should be null after reset");
++  assert.strictEqual(state.completion, null, "completion should be null after reset");
++  assert.ok(Array.isArray(state.eventLog), "eventLog present after reset");
++
++  // ── Stage 5: Campaign Builder ────────────────────────────────────────────
++
++  // 1. initial campaignDraft exists
++  assert.ok(state.campaignDraft, "campaignDraft should exist on initial state");
++
++  // 2. initial campaignRuleChecks exists and has checks
++  assert.ok(
++    Array.isArray(state.campaignRuleChecks) && state.campaignRuleChecks.length > 0,
++    "campaignRuleChecks should exist and have entries"
++  );
++
++  // 3. initial campaignBudgetSimulation exists
++  assert.ok(state.campaignBudgetSimulation, "campaignBudgetSimulation should exist");
++
++  // 4. update_campaign_draft with invalid title creates a blocking title error
++  state = igoReducer(state, {
++    type: "update_campaign_draft",
++    patch: { title: "" },
++  } as Parameters<typeof igoReducer>[1]);
++  assert.strictEqual(state.campaignDraft?.title, "", "campaignDraft title should be patched to empty");
++  const titleCheckInvalid = state.campaignRuleChecks?.find(
++    (c: IGoCampaignRuleCheck) => c.id === "title"
++  );
++  assert.ok(
++    titleCheckInvalid &&
++      titleCheckInvalid.passed === false &&
++      titleCheckInvalid.severity === "error",
++    "title check should be failing with severity=error"
++  );
++  assert.strictEqual(
++    state.campaignDraft?.status,
++    "invalid",
++    "campaignDraft status should be invalid when blocking errors present"
++  );
++
++  // 5. update_campaign_draft with valid title clears the blocking title error
++  state = igoReducer(state, {
++    type: "update_campaign_draft",
++    patch: { title: "Local Promo" },
++  } as Parameters<typeof igoReducer>[1]);
++  const titleCheckValid = state.campaignRuleChecks?.find(
++    (c: IGoCampaignRuleCheck) => c.id === "title"
++  );
++  assert.ok(
++    titleCheckValid && titleCheckValid.passed === true,
++    "title check should pass after a valid title"
++  );
++  assert.strictEqual(
++    state.campaignDraft?.status,
++    "valid",
++    "campaignDraft status should be valid when no blocking errors"
++  );
++
++  // 6. publish_mock_campaign with a valid draft creates mockPublishedCampaign
++  state = igoReducer(state, {
++    type: "publish_mock_campaign",
++  } as Parameters<typeof igoReducer>[1]);
++  assert.ok(
++    state.mockPublishedCampaign,
++    "mockPublishedCampaign should be present after publishing a valid draft"
++  );
++
++  // 7. publish_mock_campaign adds the generated mission to state.missions
++  const pub = state.mockPublishedCampaign!;
++  assert.ok(
++    state.missions.find((m: IGoMission) => m.id === pub.mission.id),
++    "published mission should be present in state.missions"
++  );
++
++  // 8. publish_mock_campaign selects the generated mission
++  assert.strictEqual(
++    state.selectedMissionId,
++    pub.mission.id,
++    "selectedMissionId should point to the published mission"
++  );
++
++  // 9. selected generated mission can create an intent
++  state = igoReducer(state, { type: "create_intent" } as Parameters<typeof igoReducer>[1]);
++  assert.ok(state.intent, "intent should be creatable for published mission");
++  assert.strictEqual(
++    state.intent!.missionId,
++    state.selectedMissionId,
++    "intent.missionId should match selected mission"
++  );
++
++  // 11. full iGO user flow still works after publishing a mock campaign
++  state = igoReducer(state, { type: "start_mission" } as Parameters<typeof igoReducer>[1]);
++  assert.strictEqual(state.intent!.status, "active", "intent should be active on published mission");
++
++  state = igoReducer(state, { type: "mock_arrival" } as Parameters<typeof igoReducer>[1]);
++  assert.strictEqual(state.intent!.status, "arrived", "intent should be arrived on published mission");
++
++  state = igoReducer(state, { type: "start_verification" } as Parameters<typeof igoReducer>[1]);
++  state = igoReducer(state, { type: "pass_verification" } as Parameters<typeof igoReducer>[1]);
++  assert.strictEqual(
++    state.intent!.rewardStatus,
++    "pending",
++    "rewardStatus should be pending after pass_verification on published mission"
++  );
++
++  state = igoReducer(state, { type: "approve_pending_reward" } as Parameters<typeof igoReducer>[1]);
++  assert.strictEqual(
++    state.intent!.status,
++    "completed",
++    "intent should be completed after approve_pending_reward on published mission"
++  );
++  assert.ok(state.proofPackage, "proofPackage should be created on published mission flow");
++  assert.ok(state.settlementContract, "settlementContract should be created on published mission flow");
++
++  // 10. reset_campaign_draft clears mockPublishedCampaign
++  state = igoReducer(state, { type: "reset_campaign_draft" } as Parameters<typeof igoReducer>[1]);
++  assert.strictEqual(
++    state.mockPublishedCampaign,
++    null,
++    "mockPublishedCampaign should be null after reset_campaign_draft"
++  );
++
++  // 12. publish_mock_campaign with invalid draft does not create mockPublishedCampaign
++  state = igoReducer(state, {
++    type: "update_campaign_draft",
++    patch: { title: "" },
++  } as Parameters<typeof igoReducer>[1]);
++  state = igoReducer(state, {
++    type: "publish_mock_campaign",
++  } as Parameters<typeof igoReducer>[1]);
++  assert.strictEqual(
++    state.mockPublishedCampaign,
++    null,
++    "publish should not create mockPublishedCampaign for an invalid draft"
++  );
++  assert.strictEqual(
++    state.campaignDraft?.status,
++    "invalid",
++    "campaignDraft should be invalid after a failed publish"
++  );
++}
++
++export default runIGoReducerChecks;
+diff --git a/src/screens/IGoScreen.tsx b/src/screens/IGoScreen.tsx
+new file mode 100644
+index 0000000..8b5acda
+--- /dev/null
++++ b/src/screens/IGoScreen.tsx
+@@ -0,0 +1,297 @@
++import React from "react";
++import { useIGoState } from "../lib/igo/igo-state";
++import IGoMissionCard from "../components/igo/IGoMissionCard";
++import IGoRequirementList from "../components/igo/IGoRequirementList";
++import IGoProgressSteps from "../components/igo/IGoProgressSteps";
++import IGoTrustBadge from "../components/igo/IGoTrustBadge";
++import IGoRewardBadge from "../components/igo/IGoRewardBadge";
++import IGoProofSummary from "../components/igo/IGoProofSummary";
++import IGoEventLog from "../components/igo/IGoEventLog";
++import IGoVerificationGates from "../components/igo/IGoVerificationGates";
++import IGoMissionTimer from "../components/igo/IGoMissionTimer";
++import IGoProofPackagePanel from "../components/igo/IGoProofPackagePanel";
++import IGoSettlementPanel from "../components/igo/IGoSettlementPanel";
++import IGoProofJsonPreview from "../components/igo/IGoProofJsonPreview";
++import IGoOwnerSummaryPanel from "../components/igo/IGoOwnerSummaryPanel";
++import IGoAuditTable from "../components/igo/IGoAuditTable";
++import IGoAuditRecordPanel from "../components/igo/IGoAuditRecordPanel";
++import IGoCampaignBuilderPanel from "../components/igo/IGoCampaignBuilderPanel";
++import IGoCampaignRulesPanel from "../components/igo/IGoCampaignRulesPanel";
++import IGoCampaignBudgetPanel from "../components/igo/IGoCampaignBudgetPanel";
++import IGoMockPublishedCampaignPanel from "../components/igo/IGoMockPublishedCampaignPanel";
++import { getIGoStatusLabel, getIGoStatusDescription } from "../lib/igo/igo-copy";
++
++export default function IGoScreen() {
++  const {
++    state,
++    selectedMission,
++    progressSteps,
++    selectMission,
++    createIntent,
++    startMission,
++    mockArrival,
++    startVerification,
++    passVerification,
++    failVerification,
++    sendManualReview,
++    approvePendingReward,
++    rejectPendingReward,
++    tickTimer,
++    markMockSettled,
++    reset,
++    selectAuditRecord,
++    clearAuditSelection,
++    queueRiskReview,
++    clearRiskReview,
++    blockRiskReview,
++    updateCampaignDraft,
++    validateCampaignDraft,
++    publishMockCampaign,
++    resetCampaignDraft
++  } = useIGoState();
++
++  const intent = state.intent;
++
++  // simple interval for ticking timer while active
++  React.useEffect(() => {
++    const iv = setInterval(() => tickTimer(), 1000);
++    return () => clearInterval(iv);
++  }, [tickTimer]);
++
++  return (
++    <div className="min-h-screen p-6 bg-black text-white">
++      <header className="mb-6">
++        <h1 className="text-2xl font-bold">[ i ] iGO</h1>
++        <p className="text-sm text-gray-400">Verified movement. Real-world rewards.</p>
++        <div className="mt-2 text-xs text-gray-300">Wallet-ready rewards</div>
++      </header>
++
++      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
++        <aside className="md:col-span-1 space-y-4">
++          <div className="text-sm text-gray-300">Available Missions</div>
++          <div className="space-y-3">
++            {state.missions.map((m) => (
++              <IGoMissionCard
++                key={m.id}
++                mission={m}
++                selected={m.id === selectedMission.id}
++                onSelect={() => selectMission(m.id)}
++              />
++            ))}
++          </div>
++        </aside>
++
++        <main className="md:col-span-2 space-y-6">
++          <section className="p-4 bg-gray-900 rounded">
++            <div className="flex items-start justify-between">
++              <div>
++                <h2 className="text-xl font-semibold">{selectedMission.title}</h2>
++                <div className="text-sm text-gray-400">{selectedMission.description}</div>
++                <div className="mt-2 text-xs text-gray-400">
++                  Sponsor: {selectedMission.sponsorName}{" "}
++                  {selectedMission.creatorHandle ? `· ${selectedMission.creatorHandle}` : ""}
++                </div>
++              </div>
++              <div className="space-y-2">
++                <IGoRewardBadge
++                  icoinAmount={selectedMission.reward.icoinAmount}
++                  gcoinAmount={selectedMission.reward.gcoinAmount}
++                  usdLabel={selectedMission.reward.estimatedUsdLabel}
++                />
++                <IGoTrustBadge level={selectedMission.place.trustTier} riskLabel={`${selectedMission.riskLevel} risk`} />
++              </div>
++            </div>
++
++            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
++              <div>
++                <h3 className="text-sm text-gray-300">Place</h3>
++                <div className="font-medium">{selectedMission.place.name}</div>
++                <div className="text-xs text-gray-400">{selectedMission.place.address}</div>
++                <div className="text-xs text-gray-400">{selectedMission.place.openUntilLabel}</div>
++              </div>
++
++              <div>
++                <h3 className="text-sm text-gray-300">Verification</h3>
++                <div className="text-sm">{getIGoStatusLabel(selectedMission.status)}</div>
++                <div className="text-xs text-gray-400">{getIGoStatusDescription(selectedMission.status)}</div>
++                <div className="mt-2 text-xs text-gray-400">Verification level: {selectedMission.requiredVerificationLevel}</div>
++                <div className="mt-1 text-xs text-gray-400">
++                  Window: {selectedMission.startsAtLabel} — {selectedMission.endsAtLabel}
++                </div>
++              </div>
++            </div>
++
++            <div className="mt-4">
++              <h4 className="text-sm text-gray-300">Requirements</h4>
++              <IGoRequirementList requirements={selectedMission.requirements} />
++            </div>
++          </section>
++
++          <section className="p-4 bg-gray-900 rounded">
++            <h4 className="text-sm text-gray-300">Progress</h4>
++            <IGoProgressSteps steps={progressSteps} />
++
++            <div className="mt-4 flex items-center gap-3">
++              {!intent && (
++                <button className="px-4 py-2 bg-blue-600 rounded" onClick={() => createIntent()}>
++                  I'm Going
++                </button>
++              )}
++
++              {intent?.status === "reserved" && (
++                <button className="px-4 py-2 bg-blue-600 rounded" onClick={() => startMission()}>
++                  Start iGO
++                </button>
++              )}
++
++              {intent?.status === "active" && (
++                <button className="px-4 py-2 bg-yellow-600 rounded" onClick={() => mockArrival()}>
++                  Mock arrival
++                </button>
++              )}
++
++              {intent?.status === "arrived" && (
++                <button className="px-4 py-2 bg-indigo-600 rounded" onClick={() => startVerification()}>
++                  Verify presence (mock)
++                </button>
++              )}
++
++              {intent?.status === "verifying" && intent?.rewardStatus !== "pending" && (
++                <div className="flex gap-2">
++                  <button className="px-4 py-2 bg-green-600 rounded" onClick={() => passVerification()}>
++                    Pass verification (mock)
++                  </button>
++                  <button className="px-4 py-2 bg-red-600 rounded" onClick={() => failVerification()}>
++                    Fail verification (mock)
++                  </button>
++                  <button className="px-4 py-2 bg-yellow-600 rounded" onClick={() => sendManualReview()}>
++                    Send to review
++                  </button>
++                </div>
++              )}
++
++              {intent?.status === "verifying" && intent?.rewardStatus === "pending" && (
++                <div className="flex gap-2">
++                  <div className="px-4 py-2 bg-gray-700 rounded text-sm">Reward pending</div>
++                  <button className="px-4 py-2 bg-green-600 rounded" onClick={() => approvePendingReward()}>
++                    Approve pending reward
++                  </button>
++                  <button className="px-4 py-2 bg-red-600 rounded" onClick={() => rejectPendingReward()}>
++                    Reject pending reward
++                  </button>
++                </div>
++              )}
++
++              {intent && (
++                <button className="px-3 py-1 text-xs bg-gray-700 rounded" onClick={() => reset()}>
++                  Reset demo
++                </button>
++              )}
++            </div>
++          </section>
++
++          {state.completion && (
++            <section className="p-4 bg-gray-800 rounded">
++              <h3 className="text-lg font-semibold">iGO Complete</h3>
++              <div className="text-sm text-gray-300">Presence verified. Reward approved.</div>
++              <div className="mt-3">
++                <div className="text-sm">iCoins: {state.completion.reward.icoinAmount}</div>
++                <div className="text-sm">gCoins: {state.completion.reward.gcoinAmount}</div>
++                <div className="text-sm">Proof: {state.completion.proofId}</div>
++                <div className="text-sm">Trust impact: {state.completion.trustImpact}</div>
++              </div>
++
++              <div className="mt-4">
++                <h4 className="text-sm text-gray-300">Proof summary</h4>
++                <IGoProofSummary
++                  checks={state.intent?.checks ?? []}
++                  proofId={state.completion.proofId}
++                  verificationScore={state.intent?.verificationScore}
++                  rewardStatus={state.intent?.rewardStatus}
++                />
++              </div>
++            </section>
++          )}
++
++          {/* Proof package & settlement panels */}
++          <section className="p-4 bg-gray-900 rounded space-y-4">
++            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
++              <div className="md:col-span-1">
++                <IGoProofPackagePanel proofPackage={state.proofPackage ?? null} />
++              </div>
++              <div className="md:col-span-1">
++                <IGoSettlementPanel settlementContract={state.settlementContract ?? null} onMockSettle={() => markMockSettled()} />
++              </div>
++              <div className="md:col-span-1">
++                <IGoProofJsonPreview proofPackage={state.proofPackage ?? null} settlementContract={state.settlementContract ?? null} />
++              </div>
++            </div>
++          </section>
++
++          {/* Owner / audit view (local mock) */}
++          <section className="p-4 bg-gray-900 rounded space-y-4">
++            <h3 className="text-lg font-semibold">Owner / audit view (local mock)</h3>
++            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
++              <div className="md:col-span-1">
++                <IGoOwnerSummaryPanel summary={state.ownerSummary ?? null} />
++              </div>
++              <div className="md:col-span-1">
++                <IGoAuditTable records={state.auditRecords ?? []} selectedRecordId={state.selectedAuditRecordId ?? null} onSelectRecord={(id) => selectAuditRecord(id)} />
++              </div>
++              <div className="md:col-span-1">
++                <IGoAuditRecordPanel
++                  record={(state.auditRecords ?? []).find((r) => r.id === state.selectedAuditRecordId) ?? null}
++                  onQueueReview={() => queueRiskReview()}
++                  onClearReview={() => clearRiskReview()}
++                  onBlockReview={() => blockRiskReview()}
++                  onClose={() => clearAuditSelection()}
++                />
++              </div>
++            </div>
++          </section>
++
++          {/* Campaign builder */}
++          <section className="p-4 bg-gray-900 rounded space-y-4">
++            <h3 className="text-lg font-semibold">Campaign builder (local mock)</h3>
++            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
++              <div className="md:col-span-1">
++                <IGoCampaignBuilderPanel draft={state.campaignDraft ?? null} onUpdateDraft={(p) => updateCampaignDraft(p)} onValidate={() => validateCampaignDraft()} onPublishMock={() => publishMockCampaign()} onReset={() => resetCampaignDraft()} />
++              </div>
++              <div className="md:col-span-1">
++                <IGoCampaignRulesPanel checks={state.campaignRuleChecks ?? []} />
++                <div className="mt-3">
++                  <IGoCampaignBudgetPanel simulation={state.campaignBudgetSimulation ?? null} />
++                </div>
++              </div>
++              <div className="md:col-span-1">
++                <IGoMockPublishedCampaignPanel campaign={state.mockPublishedCampaign ?? null} />
++              </div>
++            </div>
++          </section>
++
++          {/* verification gates & timer & event log */}
++          {intent && (
++            <section className="p-4 bg-gray-900 rounded">
++              {typeof intent.remainingSeconds === "number" && (
++                <div className="mb-3">
++                  <IGoMissionTimer remainingSeconds={intent.remainingSeconds} totalSeconds={selectedMission.timeLimitMinutes * 60} />
++                </div>
++              )}
++
++              {intent.gates && intent.gates.length > 0 && (
++                <div className="mb-3">
++                  <IGoVerificationGates gates={intent.gates} />
++                </div>
++              )}
++
++              <div>
++                <IGoEventLog items={state.eventLog} />
++              </div>
++            </section>
++          )}
++        </main>
++      </div>
++    </div>
++  );
++}
++
+diff --git a/tsconfig.igo.json b/tsconfig.igo.json
+new file mode 100644
+index 0000000..b5ef8b1
+--- /dev/null
++++ b/tsconfig.igo.json
+@@ -0,0 +1,42 @@
++{
++  "extends": "./tsconfig.json",
++  "compilerOptions": {
++    "noEmit": true,
++    "esModuleInterop": true,
++    "allowJs": false,
++    "jsx": "react-jsx",
++    "module": "ESNext",
++    "target": "ES2022",
++    "moduleResolution": "node",
++    "baseUrl": ".",
++    "paths": {
++      "@/*": [
++        "src/*"
++      ]
++    },
++    "lib": [
++      "DOM",
++      "DOM.Iterable",
++      "ES2022"
++    ],
++    "types": [
++      "node",
++      "react",
++      "react-dom"
++    ]
++  },
++  "include": [
++    "src/lib/igo/**/*.ts",
++    "src/components/igo/**/*.tsx",
++    "src/screens/IGoScreen.tsx"
++  ],
++  "exclude": [
++    "node_modules",
++    "dist",
++    "build",
++    "services",
++    "tests",
++    "src/features",
++    "src/screens/studio"
++  ]
++}
+diff --git a/tsconfig.json b/tsconfig.json
+new file mode 100644
+index 0000000..8e26211
+--- /dev/null
++++ b/tsconfig.json
+@@ -0,0 +1,43 @@
++{
++  "compilerOptions": {
++    "target": "ES2020",
++    "useDefineForClassFields": true,
++    "lib": [
++      "DOM",
++      "DOM.Iterable",
++      "ES2022"
++    ],
++    "allowJs": false,
++    "skipLibCheck": true,
++    "esModuleInterop": true,
++    "allowSyntheticDefaultImports": true,
++    "strict": true,
++    "forceConsistentCasingInFileNames": true,
++    "module": "ESNext",
++    "moduleResolution": "Bundler",
++    "resolveJsonModule": true,
++    "isolatedModules": true,
++    "noEmit": true,
++    "jsx": "react-jsx",
++    "baseUrl": ".",
++    "paths": {
++      "@/*": [
++        "src/*"
++      ]
++    },
++    "types": [
++      "node",
++      "react",
++      "react-dom"
++    ]
++  },
++  "include": [
++    "src"
++  ],
++  "exclude": [
++    "node_modules",
++    "services",
++    "backend",
++    "build"
++  ]
++}

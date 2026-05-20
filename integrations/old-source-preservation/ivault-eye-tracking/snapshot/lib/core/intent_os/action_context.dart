@@ -1,0 +1,51 @@
+import '../../gaze_fixation.dart' show FixationState;
+import 'ui_action_type.dart';
+
+/// Signals around one intent decision for policy layers (e.g. [GovernanceKernel]).
+final class ActionContext {
+  const ActionContext({
+    required this.actionType,
+    required this.target,
+    required this.confidence,
+    required this.riskScore,
+    required this.userTrust,
+    required this.fixationState,
+    required this.dwellProgress,
+    required this.dwellMs,
+    required this.timeSinceLastActionMs,
+    required this.recentActionsLast1s,
+    required this.isReversible,
+    required this.timestampMs,
+    required this.autonomyLevel,
+    required this.stabilityVariance,
+  });
+
+  /// Optional caller convention for “no prior action” (e.g. logging). [GovernanceKernel]
+  /// rate limiting uses [timeSinceLastActionMs] > 600 — use a large elapsed ms when the
+  /// first action should pass that gate (e.g. time since session start).
+  static const int noPriorActionTimeSentinel = -1;
+
+  final UIActionType actionType;
+  final String target;
+  final double confidence;
+  final double riskScore;
+  final double userTrust;
+  final FixationState fixationState;
+  final double dwellProgress;
+
+  /// Dwell duration in milliseconds backing [dwellProgress] (same basis as [KernelEvaluationInput.dwellMs]).
+  final int dwellMs;
+
+  final int timeSinceLastActionMs;
+  final int recentActionsLast1s;
+  final bool isReversible;
+
+  /// Wall-clock ms when this context was built (commit / evaluation instant).
+  final int timestampMs;
+
+  /// Policy autonomy / trust blend, \([0,1]\) — same semantics as [KernelEvaluationInput.autonomyLevel].
+  final double autonomyLevel;
+
+  /// Gaze pipeline stability (e.g. [GazePipeline.varianceX]) for audit / downstream policy.
+  final double stabilityVariance;
+}

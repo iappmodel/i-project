@@ -1,0 +1,10 @@
+d23d365 2026-05-06 17:01:45 -0400 Add autonomous Claude workflow docs
+3910759 2026-05-06 15:33:07 -0400 Initial i app project before Claude migration
+e9e8e4f 2026-05-01 18:19:24 -0400 Merge Studio proof mock pipeline
+054331f 2026-05-01 18:17:52 -0400 Add Studio proof mock pipeline
+45adbfb 2026-05-01 17:36:00 -0400 Add i Command dev smoke buttons
+361e0ae 2026-05-01 13:44:05 -0400 Update IResponseCard rendering
+3c7740c 2026-05-01 13:24:50 -0400 Use normalized i Command display result in UI
+250184b 2026-05-01 13:04:48 -0400 Add Studio Stage 6 publish mock pipeline
+003e0e3 2026-05-01 11:50:44 -0400 Add i Command display result normalization
+d6f4502 2026-05-01 11:09:05 -0400 Expand i Command fixture coverage

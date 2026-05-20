@@ -1,0 +1,2 @@
+drop trigger if exists trg_pops_campaign_requirements_set_updated_at on pops_campaign_requirements;
+drop table if exists pops_campaign_requirements;

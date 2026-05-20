@@ -1,0 +1,17 @@
+{
+  "scripts": {
+    "typecheck": "./node_modules/.bin/tsc --noEmit -p tsconfig.json",
+    "studio:typecheck": "./node_modules/.bin/tsc --noEmit -p tsconfig.studio.json"
+  },
+  "devDependencies": {
+    "@types/node": "^18.19.130",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "5.4"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.105.1",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5"
+  }
+}

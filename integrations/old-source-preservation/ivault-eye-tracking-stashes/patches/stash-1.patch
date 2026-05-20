@@ -1,0 +1,848 @@
+diff --git a/src/components/studio/StudioClipStrip.tsx b/src/components/studio/StudioClipStrip.tsx
+index b192bb5..8033165 100644
+--- a/src/components/studio/StudioClipStrip.tsx
++++ b/src/components/studio/StudioClipStrip.tsx
+@@ -5,6 +5,7 @@ type Props = {
+   clips: StudioClip[];
+   selectedClipId: string | null;
+   latestCleanupPlan?: StudioCleanupPlan | null;
++  deletionProtected?: boolean;
+   onSelect: (id: string) => void;
+   onToggleDiscard: (id: string) => void;
+ };
+@@ -13,10 +14,29 @@ const StudioClipStrip: React.FC<Props> = ({
+   clips,
+   selectedClipId,
+   latestCleanupPlan = null,
++  deletionProtected = false,
+   onSelect,
+   onToggleDiscard,
+ }) => {
+   return (
++    <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
++      {deletionProtected && (
++        <div
++          style={{
++            padding: "4px 10px",
++            background: "rgba(34,197,94,0.08)",
++            border: "1px solid rgba(34,197,94,0.2)",
++            borderRadius: 6,
++            fontSize: 11,
++            color: "#22c55e",
++            fontWeight: 600,
++            marginBottom: 6,
++            letterSpacing: 0.5,
++          }}
++        >
++          🔒 Protected media — deletion locked by proof layer. Mock only.
++        </div>
++      )}
+     <div style={{ display: "flex", gap: 8, overflowX: "auto" }}>
+       {clips.map((c) => {
+         const candidate = latestCleanupPlan?.candidates.find((cd) => cd.clipId === c.id);
+@@ -119,6 +139,7 @@ const StudioClipStrip: React.FC<Props> = ({
+         );
+       })}
+     </div>
++    </div>
+   );
+ };
+ 
+diff --git a/src/components/studio/StudioCommandPanel.tsx b/src/components/studio/StudioCommandPanel.tsx
+index 9468497..fc50670 100644
+--- a/src/components/studio/StudioCommandPanel.tsx
++++ b/src/components/studio/StudioCommandPanel.tsx
+@@ -31,6 +31,15 @@ const CLEANUP_COMMANDS = [
+   { label: "PROTECT MARKED", command: "i-protect marked moments" },
+ ] as const;
+ 
++const PROOF_COMMANDS = [
++  { label: "GENERATE PROOF", command: "i-generate proof" },
++  { label: "CHECK ORIGINALITY", command: "i-check originality" },
++  { label: "CREATE FINGERPRINT", command: "i-create fingerprint" },
++  { label: "PROTECT VIDEO", command: "i-protect this video" },
++  { label: "EXPORT PROOF PACKAGE", command: "i-export proof package" },
++  { label: "SAVE TO PROOF VAULT", command: "i-save to proof vault" },
++] as const;
++
+ const StudioCommandPanel: React.FC<Props> = ({ open, session, effectPreviews, onSubmit }) => {
+   const [value, setValue] = useState("");
+   if (!open) return null;
+@@ -151,12 +160,35 @@ const StudioCommandPanel: React.FC<Props> = ({ open, session, effectPreviews, on
+         ))}
+       </div>
+ 
++      {/* Proof quick buttons */}
++      <div style={{ fontSize: 11, color: "#748099", marginBottom: 4 }}>Proof / Originality</div>
++      <div style={{ display: "flex", gap: 6, marginBottom: 12, flexWrap: "wrap" }}>
++        {PROOF_COMMANDS.map(({ label, command }) => (
++          <button
++            key={command}
++            onClick={() => onSubmit(command)}
++            style={{
++              padding: "4px 10px",
++              borderRadius: 6,
++              fontSize: 11,
++              fontWeight: 600,
++              background: "rgba(34,197,94,0.08)",
++              color: "#22c55e",
++              border: "1px solid rgba(34,197,94,0.18)",
++              cursor: "pointer",
++            }}
++          >
++            {label}
++          </button>
++        ))}
++      </div>
++
+       {/* Text input */}
+       <input
+         value={value}
+         onChange={(e) => setValue(e.target.value)}
+         onKeyDown={(e) => { if (e.key === "Enter") { onSubmit(value); setValue(""); } }}
+-        placeholder="Try: i-cleanup storage"
++        placeholder="Try: i-generate proof"
+         style={{
+           width: "100%",
+           padding: 8,
+diff --git a/src/components/studio/StudioExportPanel.tsx b/src/components/studio/StudioExportPanel.tsx
+index 166db74..c6d57a2 100644
+--- a/src/components/studio/StudioExportPanel.tsx
++++ b/src/components/studio/StudioExportPanel.tsx
+@@ -5,6 +5,10 @@ import type {
+   StudioPublishPlan,
+   StudioPublishPlanStatus,
+   StudioPublishReadinessGateStatus,
++  StudioProofPlan,
++  StudioProofPackage,
++  StudioOriginalityStatus,
++  StudioProofPlanStatus,
+ } from "../../lib/studio/studio.types";
+ 
+ type Props = {
+@@ -13,6 +17,8 @@ type Props = {
+   selectedExportTargets?: string[];
+   latestCleanupPlan?: StudioCleanupPlan | null;
+   latestPublishPlan?: StudioPublishPlan | null;
++  selectedProofPlan?: StudioProofPlan | null;
++  latestProofPackage?: StudioProofPackage | null;
+   onClose: () => void;
+ };
+ 
+@@ -38,12 +44,29 @@ const gateStatusColor: Record<StudioPublishReadinessGateStatus, string> = {
+   pending: "#748099",
+ };
+ 
++const proofPlanStatusColor: Record<StudioProofPlanStatus, string> = {
++  draft: "#748099",
++  generated: "#22c55e",
++  export_previewed: "#a78bfa",
++  rejected: "#f87171",
++};
++
++const origColor: Record<StudioOriginalityStatus, string> = {
++  unchecked: "#748099",
++  pending: "#f59e0b",
++  likely_original: "#22c55e",
++  needs_review: "#f59e0b",
++  duplicate_risk: "#ef4444",
++};
++
+ const StudioExportPanel: React.FC<Props> = ({
+   open,
+   session,
+   selectedExportTargets = [],
+   latestCleanupPlan = null,
+   latestPublishPlan = null,
++  selectedProofPlan = null,
++  latestProofPackage = null,
+   onClose,
+ }) => {
+   if (!open) return null;
+@@ -183,6 +206,77 @@ const StudioExportPanel: React.FC<Props> = ({
+         )}
+       </div>
+ 
++      {/* Proof readiness */}
++      <div
++        style={{
++          marginTop: 12,
++          padding: "8px 10px",
++          background: "rgba(255,255,255,0.02)",
++          borderRadius: 8,
++          border: "1px solid rgba(34,197,94,0.12)",
++        }}
++      >
++        <div style={{ fontSize: 12, fontWeight: 700, color: "#22c55e", marginBottom: 6 }}>
++          Proof readiness
++        </div>
++        {selectedProofPlan ? (
++          <div style={{ fontSize: 12, display: "flex", flexDirection: "column", gap: 4 }}>
++            <div style={{ display: "flex", justifyContent: "space-between" }}>
++              <span style={{ color: "#9aa4b2" }}>Plan status</span>
++              <span style={{ color: proofPlanStatusColor[selectedProofPlan.status], fontWeight: 600 }}>
++                {selectedProofPlan.status}
++              </span>
++            </div>
++            <div style={{ display: "flex", justifyContent: "space-between" }}>
++              <span style={{ color: "#9aa4b2" }}>Originality</span>
++              <span style={{ color: origColor[selectedProofPlan.originalityStatus], fontWeight: 600 }}>
++                {selectedProofPlan.originalityStatus}
++              </span>
++            </div>
++            <div style={{ display: "flex", justifyContent: "space-between" }}>
++              <span style={{ color: "#9aa4b2" }}>Score</span>
++              <span>{selectedProofPlan.originalityScore}/100</span>
++            </div>
++            {latestProofPackage && (
++              <div style={{ display: "flex", justifyContent: "space-between" }}>
++                <span style={{ color: "#9aa4b2" }}>Package</span>
++                <span
++                  style={{
++                    color:
++                      latestProofPackage.status === "exported_mock"
++                        ? "#22c55e"
++                        : latestProofPackage.status === "rejected"
++                        ? "#ef4444"
++                        : "#f59e0b",
++                    fontWeight: 600,
++                  }}
++                >
++                  {latestProofPackage.status}
++                </span>
++              </div>
++            )}
++            <div style={{ display: "flex", justifyContent: "space-between" }}>
++              <span style={{ color: "#9aa4b2" }}>Vault ready</span>
++              <span
++                style={{
++                  color:
++                    selectedProofPlan.status === "export_previewed" ? "#22c55e" : "#748099",
++                }}
++              >
++                {selectedProofPlan.status === "export_previewed" ? "yes" : "pending"}
++              </span>
++            </div>
++            <div style={{ fontSize: 11, color: "#748099", fontStyle: "italic", marginTop: 2 }}>
++              Mock proof only. No file or ledger record created.
++            </div>
++          </div>
++        ) : (
++          <div style={{ fontSize: 12, color: "#748099", fontStyle: "italic" }}>
++            No proof plan yet. Try &quot;i-generate proof&quot;.
++          </div>
++        )}
++      </div>
++
+       {/* Actions */}
+       <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
+         <button style={{ padding: "8px 10px", borderRadius: 6 }}>Generate Preview</button>
+diff --git a/src/components/studio/StudioPreview.tsx b/src/components/studio/StudioPreview.tsx
+index 3fe5318..3f8211e 100644
+--- a/src/components/studio/StudioPreview.tsx
++++ b/src/components/studio/StudioPreview.tsx
+@@ -1,5 +1,5 @@
+ import React from "react";
+-import type { StudioSession, StudioClip, StudioRecordingState, StudioEditPlan, StudioPublishPlan } from "../../lib/studio/studio.types";
++import type { StudioSession, StudioClip, StudioRecordingState, StudioEditPlan, StudioPublishPlan, StudioProofPlan } from "../../lib/studio/studio.types";
+ import { formatRecordingElapsed } from "../../lib/studio/studio-copy";
+ 
+ type Props = {
+@@ -9,6 +9,7 @@ type Props = {
+   recording: StudioRecordingState;
+   selectedEditPlan: StudioEditPlan | null;
+   selectedPublishPlan: StudioPublishPlan | null;
++  selectedProofPlan: StudioProofPlan | null;
+   onPlayPause?: () => void;
+ };
+ 
+@@ -25,7 +26,7 @@ function overlayColor(status: StudioRecordingState["status"]): string {
+   return "#9fa8c0";
+ }
+ 
+-const StudioPreview: React.FC<Props> = ({ session, selectedClip, isPlaying, recording, selectedEditPlan, selectedPublishPlan, onPlayPause }) => {
++const StudioPreview: React.FC<Props> = ({ session, selectedClip, isPlaying, recording, selectedEditPlan, selectedPublishPlan, selectedProofPlan, onPlayPause }) => {
+   const title = selectedClip ? selectedClip.title : session.title;
+   const overlayLabel = recordingOverlayLabel(recording.status);
+ 
+@@ -51,6 +52,29 @@ const StudioPreview: React.FC<Props> = ({ session, selectedClip, isPlaying, reco
+             PUBLISH PLAN · {selectedPublishPlan.destinations.join(", ")}
+           </div>
+         ) : null}
++        {selectedProofPlan ? (
++          <div
++            style={{
++              background:
++                selectedProofPlan.originalityStatus === "likely_original"
++                  ? "rgba(34,197,94,0.12)"
++                  : "rgba(245,158,11,0.12)",
++              padding: "3px 8px",
++              borderRadius: 6,
++              fontSize: 12,
++              color:
++                selectedProofPlan.originalityStatus === "likely_original"
++                  ? "#22c55e"
++                  : "#f59e0b",
++              fontWeight: 700,
++            }}
++          >
++            {selectedProofPlan.originalityStatus === "likely_original"
++              ? "PROOF READY"
++              : "PROOF REVIEW"}{" "}
++            · {selectedProofPlan.originalityScore}/100
++          </div>
++        ) : null}
+       </div>
+ 
+       {/* Recording overlay */}
+diff --git a/src/components/studio/StudioSessionPanel.tsx b/src/components/studio/StudioSessionPanel.tsx
+index a12180d..a611031 100644
+--- a/src/components/studio/StudioSessionPanel.tsx
++++ b/src/components/studio/StudioSessionPanel.tsx
+@@ -7,6 +7,8 @@ import type {
+   StudioCleanupPlan,
+   StudioPublishPlan,
+   StudioPublishPlanStatus,
++  StudioProofPlan,
++  StudioOriginalityStatus,
+ } from "../../lib/studio/studio.types";
+ import { formatRecordingElapsed } from "../../lib/studio/studio-copy";
+ 
+@@ -20,6 +22,10 @@ type Props = {
+   selectedCleanupPlan: StudioCleanupPlan | null;
+   publishPlans: StudioPublishPlan[];
+   selectedPublishPlan: StudioPublishPlan | null;
++  proofPlans: StudioProofPlan[];
++  selectedProofPlan: StudioProofPlan | null;
++  proofArtifactCount: number;
++  custodyEventCount: number;
+   onToggleDiscard: (id: string) => void;
+ };
+ 
+@@ -45,9 +51,18 @@ const cleanupStatusColor: Record<StudioCleanupPlan["status"], string> = {
+   rejected: "#f87171",
+ };
+ 
++const origColor: Record<StudioOriginalityStatus, string> = {
++  unchecked: "#748099",
++  pending: "#f59e0b",
++  likely_original: "#22c55e",
++  needs_review: "#f59e0b",
++  duplicate_risk: "#ef4444",
++};
++
+ const StudioSessionPanel: React.FC<Props> = ({
+   session,
+   selectedClip,
++  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   recording,
+   editPlans,
+   selectedEditPlan,
+@@ -55,6 +70,10 @@ const StudioSessionPanel: React.FC<Props> = ({
+   selectedCleanupPlan,
+   publishPlans,
+   selectedPublishPlan,
++  proofPlans,
++  selectedProofPlan,
++  proofArtifactCount,
++  custodyEventCount,
+   onToggleDiscard,
+ }) => {
+   return (
+@@ -136,6 +155,67 @@ const StudioSessionPanel: React.FC<Props> = ({
+         </div>
+       </div>
+ 
++      {/* Proof / originality summary card */}
++      <div
++        style={{
++          padding: 10,
++          background: proofPlans.length > 0 ? "rgba(34,197,94,0.05)" : "rgba(255,255,255,0.02)",
++          borderRadius: 8,
++          border: `1px solid ${proofPlans.length > 0 ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.03)"}`,
++        }}
++      >
++        <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 8, color: "#22c55e" }}>
++          Proof / Originality
++        </div>
++        <div style={{ fontSize: 12, display: "flex", flexDirection: "column", gap: 4 }}>
++          <div style={{ display: "flex", justifyContent: "space-between" }}>
++            <span style={{ color: "#9aa4b2" }}>Total proof plans</span>
++            <span>{proofPlans.length}</span>
++          </div>
++          <div style={{ display: "flex", justifyContent: "space-between" }}>
++            <span style={{ color: "#9aa4b2" }}>Artifacts</span>
++            <span>{proofArtifactCount}</span>
++          </div>
++          <div style={{ display: "flex", justifyContent: "space-between" }}>
++            <span style={{ color: "#9aa4b2" }}>Custody events</span>
++            <span>{custodyEventCount}</span>
++          </div>
++          <div style={{ display: "flex", justifyContent: "space-between" }}>
++            <span style={{ color: "#9aa4b2" }}>Deletion protected</span>
++            <span
++              style={{
++                color: session.proofStatus.deletionProtected ? "#22c55e" : "#748099",
++                fontWeight: 600,
++              }}
++            >
++              {session.proofStatus.deletionProtected ? "yes" : "no"}
++            </span>
++          </div>
++          {selectedProofPlan ? (
++            <>
++              <div style={{ display: "flex", justifyContent: "space-between" }}>
++                <span style={{ color: "#9aa4b2" }}>Originality</span>
++                <span
++                  style={{ color: origColor[selectedProofPlan.originalityStatus], fontWeight: 600 }}
++                >
++                  {selectedProofPlan.originalityStatus}
++                </span>
++              </div>
++              <div style={{ display: "flex", justifyContent: "space-between" }}>
++                <span style={{ color: "#9aa4b2" }}>Score</span>
++                <span>{selectedProofPlan.originalityScore}/100</span>
++              </div>
++            </>
++          ) : (
++            <div style={{ color: "#748099", fontStyle: "italic" }}>
++              {proofPlans.length === 0
++                ? "No proof yet. Try \"i-generate proof\"."
++                : "No plan selected."}
++            </div>
++          )}
++        </div>
++      </div>
++
+       {/* Cleanup plan summary */}
+       <div
+         style={{
+diff --git a/src/lib/studio/studio-state.ts b/src/lib/studio/studio-state.ts
+index 1f60385..8b754b5 100644
+--- a/src/lib/studio/studio-state.ts
++++ b/src/lib/studio/studio-state.ts
+@@ -13,6 +13,7 @@ import { createAutoCutPlan } from "./studio-autocut";
+ import { createCleanupPlan } from "./studio-cleanup";
+ import { createPublishPlan } from "./studio-publish";
+ import type { CreatePublishPlanOptions } from "./studio-publish";
++import { createProofPlan, createProofPackage } from "./studio-proof";
+ 
+ const clone = <T,>(v: T): T => JSON.parse(JSON.stringify(v));
+ 
+@@ -53,6 +54,13 @@ export function createInitialStudioState(): StudioState {
+     publishPlans: [],
+     selectedPublishPlanId: null,
+     publishPanelOpen: false,
++    proofArtifacts: [],
++    custodyEvents: [],
++    proofPlans: [],
++    proofPackages: [],
++    selectedProofPlanId: null,
++    selectedProofPackageId: null,
++    proofPanelOpen: false,
+   };
+ }
+ 
+@@ -412,6 +420,112 @@ export function applyCaptureCommand(state: StudioState, rawCommand: string): Stu
+   return appendCmd(state, "Capture command not recognized.");
+ }
+ 
++// ── Stage 7: Proof plan helpers ───────────────────────────────────────────────
++
++export function generateProofPlan(state: StudioState): StudioState {
++  const { plan, artifacts, custodyEvent } = createProofPlan(state);
++  const ef = {
++    id: `ef-${gid()}`,
++    type: "proof" as const,
++    label: "Proof plan generated",
++    description: "Originality and custody proof preview generated locally.",
++    createdAt: nowISO(),
++  };
++  const session = clone(state.activeSession);
++  session.proofStatus = {
++    originalityFingerprint: "generated",
++    custodyLog: "active",
++    deletionProtected: true,
++  };
++  session.updatedAt = nowISO();
++  return {
++    ...state,
++    activeSession: session,
++    proofArtifacts: [...artifacts, ...state.proofArtifacts],
++    custodyEvents: [custodyEvent, ...state.custodyEvents],
++    proofPlans: [plan, ...state.proofPlans],
++    selectedProofPlanId: plan.id,
++    proofPanelOpen: true,
++    effectPreviews: [ef, ...state.effectPreviews],
++  };
++}
++
++export function selectProofPlan(state: StudioState, proofPlanId: string): StudioState {
++  return { ...state, selectedProofPlanId: proofPlanId };
++}
++
++export function rejectProofPlan(state: StudioState, proofPlanId: string): StudioState {
++  return {
++    ...state,
++    proofPlans: state.proofPlans.map((p) =>
++      p.id === proofPlanId ? { ...p, status: "rejected" as const } : p,
++    ),
++  };
++}
++
++export function generateProofPackagePreview(
++  state: StudioState,
++  proofPlanId: string,
++): StudioState {
++  const plan = state.proofPlans.find((p) => p.id === proofPlanId);
++  if (!plan) return state;
++  const { proofPackage, artifact, custodyEvent } = createProofPackage(state, plan);
++  const updatedPlan = { ...plan, status: "export_previewed" as const };
++  const ef = {
++    id: `ef-${gid()}`,
++    type: "proof" as const,
++    label: "Proof package preview",
++    description: "Proof package preview created. No file export occurred.",
++    createdAt: nowISO(),
++  };
++  return {
++    ...state,
++    proofPlans: state.proofPlans.map((p) => (p.id === proofPlanId ? updatedPlan : p)),
++    proofPackages: [proofPackage, ...state.proofPackages],
++    proofArtifacts: [artifact, ...state.proofArtifacts],
++    custodyEvents: [custodyEvent, ...state.custodyEvents],
++    selectedProofPackageId: proofPackage.id,
++    proofPanelOpen: true,
++    effectPreviews: [ef, ...state.effectPreviews],
++  };
++}
++
++export function mockExportProofPackage(state: StudioState, packageId: string): StudioState {
++  const ef = {
++    id: `ef-${gid()}`,
++    type: "proof" as const,
++    label: "Mock proof package exported",
++    description: "Mock proof package export complete. No file was written or sent externally.",
++    createdAt: nowISO(),
++  };
++  const session = clone(state.activeSession);
++  const cmd = parseStudioCommand("mock export proof");
++  cmd.previewText = "Mock proof package export complete. No file was written or sent externally.";
++  session.commands.unshift(cmd);
++  session.updatedAt = nowISO();
++  return {
++    ...state,
++    activeSession: session,
++    proofPackages: state.proofPackages.map((p) =>
++      p.id === packageId ? { ...p, status: "exported_mock" as const } : p,
++    ),
++    effectPreviews: [ef, ...state.effectPreviews],
++  };
++}
++
++export function rejectProofPackage(state: StudioState, packageId: string): StudioState {
++  return {
++    ...state,
++    proofPackages: state.proofPackages.map((p) =>
++      p.id === packageId ? { ...p, status: "rejected" as const } : p,
++    ),
++  };
++}
++
++export function setProofPanelOpen(state: StudioState, open: boolean): StudioState {
++  return { ...state, proofPanelOpen: open };
++}
++
+ // ── Main command dispatcher ───────────────────────────────────────────────────
+ 
+ export function applyStudioCommand(state: StudioState, rawCommand: string): StudioState {
+@@ -491,6 +605,31 @@ export function applyStudioCommand(state: StudioState, rawCommand: string): Stud
+     return withPlan;
+   }
+ 
++  // ── Proof / originality commands ──────────────────────────────────────────
++  const PROOF_PREVIEW =
++    "Studio generated a mock proof/originality preview. No cryptographic hash or external record was created.";
++
++  const withProofCmd = (next: StudioState): StudioState => {
++    const sess = clone(next.activeSession);
++    const cmd = parseStudioCommand(rawCommand);
++    cmd.previewText = PROOF_PREVIEW;
++    sess.commands.unshift(cmd);
++    sess.updatedAt = nowISO();
++    return { ...next, activeSession: sess, commandPanelOpen: true };
++  };
++
++  if (/(generate proof|check originality|create fingerprint|protect this video)/.test(n)) {
++    return withProofCmd(generateProofPlan(s));
++  }
++
++  if (/(export proof package|save to proof vault)/.test(n)) {
++    // Ensure we have a proof plan first
++    const withPlan = s.proofPlans.length > 0 ? s : generateProofPlan(s);
++    const planId = withPlan.selectedProofPlanId ?? withPlan.proofPlans[0]?.id;
++    if (!planId) return withProofCmd(withPlan);
++    return withProofCmd(generateProofPackagePreview(withPlan, planId));
++  }
++
+   // ── Publish commands ───────────────────────────────────────────────────────
+   const PUB_PREVIEW = "Studio generated a mock publish plan. Nothing has been posted.";
+ 
+diff --git a/src/lib/studio/studio.types.ts b/src/lib/studio/studio.types.ts
+index 143fd2c..93001f3 100644
+--- a/src/lib/studio/studio.types.ts
++++ b/src/lib/studio/studio.types.ts
+@@ -127,7 +127,7 @@ export type StudioToolId =
+ 
+ export interface StudioEffectPreview {
+   id: string;
+-  type: "audio" | "visual" | "transition" | "caption" | "publish" | "cleanup";
++  type: "audio" | "visual" | "transition" | "caption" | "publish" | "cleanup" | "proof";
+   label: string;
+   description: string;
+   createdAt: ISODateString;
+@@ -293,6 +293,88 @@ export interface StudioPublishPlan {
+   warnings: string[];
+ }
+ 
++// ── Stage 7: Proof / originality mock layer ───────────────────────────────────
++
++export type StudioProofStatus =
++  | "not_started"
++  | "pending"
++  | "generated"
++  | "failed";
++
++export type StudioOriginalityStatus =
++  | "unchecked"
++  | "pending"
++  | "likely_original"
++  | "needs_review"
++  | "duplicate_risk";
++
++export type StudioProofArtifactType =
++  | "visual_fingerprint"
++  | "audio_fingerprint"
++  | "edit_manifest"
++  | "custody_log"
++  | "export_receipt"
++  | "cleanup_receipt"
++  | "publish_receipt";
++
++export interface StudioProofArtifact {
++  id: string;
++  type: StudioProofArtifactType;
++  label: string;
++  status: StudioProofStatus;
++  createdAt: string;
++  description: string;
++  referenceId: string | null;
++}
++
++export type StudioCustodyEventType =
++  | "session_created"
++  | "clip_imported"
++  | "mark_added"
++  | "edit_plan_created"
++  | "cleanup_plan_created"
++  | "publish_plan_created"
++  | "proof_generated"
++  | "proof_package_exported";
++
++export interface StudioCustodyEvent {
++  id: string;
++  type: StudioCustodyEventType;
++  createdAt: string;
++  label: string;
++  description: string;
++  referenceId: string | null;
++}
++
++export type StudioProofPlanStatus =
++  | "draft"
++  | "generated"
++  | "export_previewed"
++  | "rejected";
++
++export interface StudioProofPlan {
++  id: string;
++  status: StudioProofPlanStatus;
++  createdAt: string;
++  originalityStatus: StudioOriginalityStatus;
++  originalityScore: number;
++  fingerprintId: string;
++  custodyEventCount: number;
++  artifactIds: string[];
++  summary: string;
++  warnings: string[];
++}
++
++export interface StudioProofPackage {
++  id: string;
++  proofPlanId: string;
++  createdAt: string;
++  status: "previewed" | "exported_mock" | "rejected";
++  artifactIds: string[];
++  manifestSummary: string;
++  disclosure: string;
++}
++
+ // ── Full UI state ─────────────────────────────────────────────────────────────
+ 
+ export interface StudioState {
+@@ -314,4 +396,11 @@ export interface StudioState {
+   publishPlans: StudioPublishPlan[];
+   selectedPublishPlanId: string | null;
+   publishPanelOpen: boolean;
++  proofArtifacts: StudioProofArtifact[];
++  custodyEvents: StudioCustodyEvent[];
++  proofPlans: StudioProofPlan[];
++  proofPackages: StudioProofPackage[];
++  selectedProofPlanId: string | null;
++  selectedProofPackageId: string | null;
++  proofPanelOpen: boolean;
+ }
+diff --git a/src/screens/StudioScreen.tsx b/src/screens/StudioScreen.tsx
+index 12ce95a..1fa4183 100644
+--- a/src/screens/StudioScreen.tsx
++++ b/src/screens/StudioScreen.tsx
+@@ -11,6 +11,7 @@ import StudioExportPanel from "../components/studio/StudioExportPanel";
+ import StudioAutoCutPanel from "../components/studio/StudioAutoCutPanel";
+ import StudioCleanupPanel from "../components/studio/StudioCleanupPanel";
+ import StudioPublishPanel from "../components/studio/StudioPublishPanel";
++import StudioProofPanel from "../components/studio/StudioProofPanel";
+ 
+ import {
+   createInitialStudioState,
+@@ -32,6 +33,13 @@ import {
+   mockPublishPlan,
+   rejectPublishPlan,
+   setPublishPanelOpen,
++  generateProofPlan,
++  selectProofPlan,
++  rejectProofPlan,
++  generateProofPackagePreview,
++  mockExportProofPackage,
++  rejectProofPackage,
++  setProofPanelOpen,
+ } from "../lib/studio/studio-state";
+ import type { AspectRatio, StudioToolId } from "../lib/studio/studio.types";
+ 
+@@ -68,6 +76,24 @@ const StudioScreen: React.FC = () => {
+     [state.publishPlans],
+   );
+ 
++  const selectedProofPlan = useMemo(
++    () => state.proofPlans.find((p) => p.id === state.selectedProofPlanId) ?? null,
++    [state.proofPlans, state.selectedProofPlanId],
++  );
++
++  const selectedProofPackage = useMemo(
++    () => state.proofPackages.find((p) => p.id === state.selectedProofPackageId) ?? null,
++    [state.proofPackages, state.selectedProofPackageId],
++  );
++
++  const latestProofPackage = useMemo(
++    () =>
++      selectedProofPlan
++        ? (state.proofPackages.find((p) => p.proofPlanId === selectedProofPlan.id) ?? null)
++        : null,
++    [state.proofPackages, selectedProofPlan],
++  );
++
+   function handleSetTool(tool: StudioToolId) {
+     setState((s) => setActiveTool(s, tool));
+   }
+@@ -156,6 +182,34 @@ const StudioScreen: React.FC = () => {
+     setState((s) => setPublishPanelOpen(s, false));
+   }
+ 
++  // ── Proof handlers ──────────────────────────────────────────────────────────
++  function handleSelectProofPlan(proofPlanId: string) {
++    setState((s) => selectProofPlan(s, proofPlanId));
++  }
++
++  function handleGenerateProofPackage(proofPlanId: string) {
++    setState((s) => generateProofPackagePreview(s, proofPlanId));
++  }
++
++  function handleExportProofPackage(packageId: string) {
++    setState((s) => mockExportProofPackage(s, packageId));
++  }
++
++  function handleRejectProofPlan(proofPlanId: string) {
++    setState((s) => rejectProofPlan(s, proofPlanId));
++  }
++
++  function handleRejectProofPackage(packageId: string) {
++    setState((s) => rejectProofPackage(s, packageId));
++  }
++
++  function handleCloseProof() {
++    setState((s) => setProofPanelOpen(s, false));
++  }
++
++  // suppress unused warning — generateProofPlan is used via applyStudioCommand
++  void generateProofPlan;
++
+   return (
+     <StudioShell>
+       <StudioTopBar
+@@ -175,6 +229,7 @@ const StudioScreen: React.FC = () => {
+               recording={state.recording}
+               selectedEditPlan={selectedEditPlan}
+               selectedPublishPlan={selectedPublishPlan}
++              selectedProofPlan={selectedProofPlan}
+               onPlayPause={handlePlayPause}
+             />
+           </div>
+@@ -183,6 +238,7 @@ const StudioScreen: React.FC = () => {
+               clips={state.activeSession.clips}
+               selectedClipId={state.selectedClipId}
+               latestCleanupPlan={latestCleanupPlan}
++              deletionProtected={state.activeSession.proofStatus.deletionProtected}
+               onSelect={handleSelectClip}
+               onToggleDiscard={handleToggleDiscard}
+             />
+@@ -204,6 +260,10 @@ const StudioScreen: React.FC = () => {
+           selectedCleanupPlan={selectedCleanupPlan}
+           publishPlans={state.publishPlans}
+           selectedPublishPlan={selectedPublishPlan}
++          proofPlans={state.proofPlans}
++          selectedProofPlan={selectedProofPlan}
++          proofArtifactCount={state.proofArtifacts.length}
++          custodyEventCount={state.custodyEvents.length}
+           onToggleDiscard={handleToggleDiscard}
+         />
+       </div>
+@@ -219,6 +279,8 @@ const StudioScreen: React.FC = () => {
+         selectedExportTargets={state.selectedExportTargets}
+         latestCleanupPlan={latestCleanupPlan}
+         latestPublishPlan={latestPublishPlan}
++        selectedProofPlan={selectedProofPlan}
++        latestProofPackage={latestProofPackage}
+         onClose={() => setState((s) => ({ ...s, exportPanelOpen: false }))}
+       />
+       <StudioAutoCutPanel
+@@ -249,6 +311,21 @@ const StudioScreen: React.FC = () => {
+         onRejectPlan={handleRejectPublishPlan}
+         onClose={handleClosePublish}
+       />
++      <StudioProofPanel
++        open={state.proofPanelOpen}
++        proofPlans={state.proofPlans}
++        proofPackages={state.proofPackages}
++        artifacts={state.proofArtifacts}
++        custodyEvents={state.custodyEvents}
++        selectedProofPlanId={state.selectedProofPlanId}
++        selectedProofPackageId={state.selectedProofPackageId}
++        onSelectProofPlan={handleSelectProofPlan}
++        onGeneratePackage={handleGenerateProofPackage}
++        onExportPackage={handleExportProofPackage}
++        onRejectProofPlan={handleRejectProofPlan}
++        onRejectPackage={handleRejectProofPackage}
++        onClose={handleCloseProof}
++      />
+     </StudioShell>
+   );
+ };

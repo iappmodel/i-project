@@ -1,0 +1,35 @@
+{
+  "name": "@eye-tracking-app/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "node dist/server.js",
+    "build": "./node_modules/.bin/tsc",
+    "typecheck": "./node_modules/.bin/tsc --noEmit",
+    "test": "./node_modules/.bin/vitest run",
+    "test:alphabet-runtime": "./node_modules/.bin/vitest run --config vitest.alphabet-runtime.config.ts",
+    "test:pops-retention": "./node_modules/.bin/vitest run --config vitest.pops-retention.config.ts",
+    "test:watch": "./node_modules/.bin/vitest",
+    "test:integration": "./node_modules/.bin/vitest run tests/integration"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.0.0",
+    "dotenv": "^16.0.0",
+    "express": "^4.18.0",
+    "otplib": "^13.4.0",
+    "qrcode": "^1.5.4",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.0",
+    "@types/node": "^20.0.0",
+    "@types/qrcode": "^1.5.6",
+    "@types/supertest": "^6.0.3",
+    "supertest": "^7.1.4",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^3.2.4"
+  }
+}

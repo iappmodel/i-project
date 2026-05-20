@@ -1,0 +1,302 @@
+import type {
+  ExecutionAction,
+  ExecutionRouterRuleSet
+} from "../../types/alphabet/execution-router.types";
+
+const moneyActions = [
+  "credit",
+  "debit",
+  "convert",
+  "withdraw",
+  "payout",
+  "reserve",
+  "release",
+  "reverse"
+] as const;
+
+const mutationActions = [
+  "credit",
+  "debit",
+  "convert",
+  "withdraw",
+  "payout",
+  "reserve",
+  "release",
+  "reverse",
+  "restore",
+  "remove",
+  "pause",
+  "resume",
+  "notify",
+  "create_review",
+  "create_audit",
+  "request_guardian",
+  "request_verification",
+  "apply_trust_event",
+  "apply_u_value_event"
+] as const;
+
+export const EXECUTION_ROUTER_RULES: ExecutionRouterRuleSet[] = [
+  {
+    targetSystem: "wallet",
+    allowedActions: ["allow", "limit", "hold", "block", "credit", "debit", "release", "reverse"],
+    requiresIdempotency: true,
+    requiresAuditForDangerousActions: true,
+    allowMutationWithoutPolicyAllow: false,
+    minDispatchSafetyScore: 0.78,
+    minHandlerReadinessScore: 0.8,
+    minPayloadSafetyScore: 0.82,
+    minRetrySafetyScore: 0.7,
+    maxExecutionRiskScore: 0.25,
+    maxRetries: 2,
+    active: true
+  },
+  {
+    targetSystem: "withdrawal",
+    allowedActions: ["hold", "block", "withdraw", "release", "reverse", "create_audit", "notify"],
+    requiresIdempotency: true,
+    requiresAuditForDangerousActions: true,
+    allowMutationWithoutPolicyAllow: false,
+    minDispatchSafetyScore: 0.85,
+    minHandlerReadinessScore: 0.85,
+    minPayloadSafetyScore: 0.88,
+    minRetrySafetyScore: 0.75,
+    maxExecutionRiskScore: 0.18,
+    maxRetries: 1,
+    active: true
+  },
+  {
+    targetSystem: "treasury",
+    allowedActions: ["reserve", "release", "reverse", "hold", "block", "create_audit"],
+    requiresIdempotency: true,
+    requiresAuditForDangerousActions: true,
+    allowMutationWithoutPolicyAllow: false,
+    minDispatchSafetyScore: 0.88,
+    minHandlerReadinessScore: 0.88,
+    minPayloadSafetyScore: 0.9,
+    minRetrySafetyScore: 0.8,
+    maxExecutionRiskScore: 0.15,
+    maxRetries: 1,
+    active: true
+  },
+  {
+    targetSystem: "reward",
+    allowedActions: ["allow", "limit", "hold", "block", "credit", "create_audit", "notify"],
+    requiresIdempotency: true,
+    requiresAuditForDangerousActions: false,
+    allowMutationWithoutPolicyAllow: false,
+    minDispatchSafetyScore: 0.72,
+    minHandlerReadinessScore: 0.75,
+    minPayloadSafetyScore: 0.78,
+    minRetrySafetyScore: 0.7,
+    maxExecutionRiskScore: 0.3,
+    maxRetries: 3,
+    active: true
+  },
+  {
+    targetSystem: "conversion",
+    allowedActions: ["convert", "hold", "block", "reverse", "create_audit", "notify"],
+    requiresIdempotency: true,
+    requiresAuditForDangerousActions: true,
+    allowMutationWithoutPolicyAllow: false,
+    minDispatchSafetyScore: 0.8,
+    minHandlerReadinessScore: 0.82,
+    minPayloadSafetyScore: 0.85,
+    minRetrySafetyScore: 0.72,
+    maxExecutionRiskScore: 0.22,
+    maxRetries: 2,
+    active: true
+  },
+  {
+    targetSystem: "campaign",
+    allowedActions: ["allow", "limit", "hold", "block", "pause", "resume", "release", "reverse", "notify"],
+    requiresIdempotency: false,
+    requiresAuditForDangerousActions: true,
+    allowMutationWithoutPolicyAllow: false,
+    minDispatchSafetyScore: 0.72,
+    minHandlerReadinessScore: 0.75,
+    minPayloadSafetyScore: 0.78,
+    minRetrySafetyScore: 0.7,
+    maxExecutionRiskScore: 0.32,
+    maxRetries: 2,
+    active: true
+  },
+  {
+    targetSystem: "content_safety",
+    allowedActions: ["allow", "limit", "hold", "block", "restore", "remove", "escalate", "create_review", "notify"],
+    requiresIdempotency: false,
+    requiresAuditForDangerousActions: true,
+    allowMutationWithoutPolicyAllow: false,
+    minDispatchSafetyScore: 0.78,
+    minHandlerReadinessScore: 0.78,
+    minPayloadSafetyScore: 0.82,
+    minRetrySafetyScore: 0.72,
+    maxExecutionRiskScore: 0.25,
+    maxRetries: 2,
+    active: true
+  },
+  {
+    targetSystem: "content_rights",
+    allowedActions: ["allow", "limit", "hold", "block", "restore", "remove", "escalate", "create_review", "notify"],
+    requiresIdempotency: false,
+    requiresAuditForDangerousActions: true,
+    allowMutationWithoutPolicyAllow: false,
+    minDispatchSafetyScore: 0.78,
+    minHandlerReadinessScore: 0.78,
+    minPayloadSafetyScore: 0.82,
+    minRetrySafetyScore: 0.72,
+    maxExecutionRiskScore: 0.25,
+    maxRetries: 2,
+    active: true
+  },
+  {
+    targetSystem: "review",
+    allowedActions: ["create_review", "escalate", "hold", "notify"],
+    requiresIdempotency: false,
+    requiresAuditForDangerousActions: false,
+    allowMutationWithoutPolicyAllow: true,
+    minDispatchSafetyScore: 0.65,
+    minHandlerReadinessScore: 0.7,
+    minPayloadSafetyScore: 0.72,
+    minRetrySafetyScore: 0.65,
+    maxExecutionRiskScore: 0.45,
+    maxRetries: 3,
+    active: true
+  },
+  {
+    targetSystem: "audit",
+    allowedActions: ["create_audit", "hold", "notify"],
+    requiresIdempotency: false,
+    requiresAuditForDangerousActions: false,
+    allowMutationWithoutPolicyAllow: true,
+    minDispatchSafetyScore: 0.65,
+    minHandlerReadinessScore: 0.7,
+    minPayloadSafetyScore: 0.72,
+    minRetrySafetyScore: 0.65,
+    maxExecutionRiskScore: 0.45,
+    maxRetries: 3,
+    active: true
+  },
+  {
+    targetSystem: "notification",
+    allowedActions: ["notify", "hold", "block"],
+    requiresIdempotency: false,
+    requiresAuditForDangerousActions: false,
+    allowMutationWithoutPolicyAllow: true,
+    minDispatchSafetyScore: 0.62,
+    minHandlerReadinessScore: 0.7,
+    minPayloadSafetyScore: 0.72,
+    minRetrySafetyScore: 0.65,
+    maxExecutionRiskScore: 0.5,
+    maxRetries: 3,
+    active: true
+  },
+  {
+    targetSystem: "age_guardian",
+    allowedActions: ["request_guardian", "request_verification", "hold", "block", "notify"],
+    requiresIdempotency: false,
+    requiresAuditForDangerousActions: false,
+    allowMutationWithoutPolicyAllow: true,
+    minDispatchSafetyScore: 0.7,
+    minHandlerReadinessScore: 0.72,
+    minPayloadSafetyScore: 0.78,
+    minRetrySafetyScore: 0.65,
+    maxExecutionRiskScore: 0.35,
+    maxRetries: 3,
+    active: true
+  },
+  {
+    targetSystem: "trust",
+    allowedActions: ["apply_trust_event", "hold", "block"],
+    requiresIdempotency: false,
+    requiresAuditForDangerousActions: false,
+    allowMutationWithoutPolicyAllow: true,
+    minDispatchSafetyScore: 0.68,
+    minHandlerReadinessScore: 0.72,
+    minPayloadSafetyScore: 0.72,
+    minRetrySafetyScore: 0.65,
+    maxExecutionRiskScore: 0.42,
+    maxRetries: 2,
+    active: true
+  },
+  {
+    targetSystem: "u_value",
+    allowedActions: ["apply_u_value_event", "hold", "block"],
+    requiresIdempotency: false,
+    requiresAuditForDangerousActions: false,
+    allowMutationWithoutPolicyAllow: true,
+    minDispatchSafetyScore: 0.68,
+    minHandlerReadinessScore: 0.72,
+    minPayloadSafetyScore: 0.72,
+    minRetrySafetyScore: 0.65,
+    maxExecutionRiskScore: 0.42,
+    maxRetries: 2,
+    active: true
+  },
+  {
+    targetSystem: "grant",
+    allowedActions: ["allow", "hold", "block", "credit", "reserve", "release", "create_review", "create_audit", "notify"],
+    requiresIdempotency: true,
+    requiresAuditForDangerousActions: true,
+    allowMutationWithoutPolicyAllow: false,
+    minDispatchSafetyScore: 0.82,
+    minHandlerReadinessScore: 0.82,
+    minPayloadSafetyScore: 0.86,
+    minRetrySafetyScore: 0.75,
+    maxExecutionRiskScore: 0.2,
+    maxRetries: 1,
+    active: true
+  },
+  {
+    targetSystem: "admin",
+    allowedActions: ["allow", "hold", "block", "escalate", "create_audit", "notify"],
+    requiresIdempotency: true,
+    requiresAuditForDangerousActions: true,
+    allowMutationWithoutPolicyAllow: false,
+    minDispatchSafetyScore: 0.85,
+    minHandlerReadinessScore: 0.85,
+    minPayloadSafetyScore: 0.88,
+    minRetrySafetyScore: 0.75,
+    maxExecutionRiskScore: 0.18,
+    maxRetries: 1,
+    active: true
+  },
+  {
+    targetSystem: "system",
+    allowedActions: ["allow", "limit", "hold", "block", "escalate", "noop", "request_verification", "notify"],
+    requiresIdempotency: false,
+    requiresAuditForDangerousActions: false,
+    allowMutationWithoutPolicyAllow: true,
+    minDispatchSafetyScore: 0.6,
+    minHandlerReadinessScore: 0.65,
+    minPayloadSafetyScore: 0.68,
+    minRetrySafetyScore: 0.6,
+    maxExecutionRiskScore: 0.55,
+    maxRetries: 3,
+    active: true
+  }
+];
+
+export const MONEY_EXECUTION_ACTIONS = new Set<ExecutionAction>(moneyActions);
+export const MUTATION_EXECUTION_ACTIONS = new Set<ExecutionAction>(mutationActions);
+export const DANGEROUS_EXECUTION_ACTIONS = new Set<ExecutionAction>([
+  ...moneyActions,
+  "restore",
+  "remove",
+  "block",
+  "pause",
+  "request_verification"
+]);
+
+export const RESTRICTED_PAYLOAD_KEYS = new Set<string>([
+  "rawRiskScore",
+  "fraudModelOutput",
+  "deviceFingerprint",
+  "bankToken",
+  "paymentToken",
+  "identityGraph",
+  "privateEvidence",
+  "reviewerPrivateNote",
+  "internalThreshold",
+  "riskClusterId"
+]);

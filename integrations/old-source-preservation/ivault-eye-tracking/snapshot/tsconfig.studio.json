@@ -1,0 +1,53 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ES2022"
+    ],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    }
+  },
+  "include": [
+    "src/screens/StudioStage1TypecheckEntry.tsx",
+    "src/screens/StudioScreen.tsx",
+    "src/lib/studio/**/*.ts",
+    "src/components/studio/**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "services",
+    "backend",
+    "build",
+    "src/screens/studio",
+    "src/lib/i",
+    "src/components/i",
+    "src/screens/IHomeScreen.tsx",
+    "src/lib/supabase",
+    "src/pops",
+    "src/server",
+    "src/admin",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
+  ]
+}

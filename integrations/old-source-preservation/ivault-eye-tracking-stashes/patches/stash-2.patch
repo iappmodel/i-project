@@ -1,0 +1,693 @@
+diff --git a/src/components/studio/StudioCommandPanel.tsx b/src/components/studio/StudioCommandPanel.tsx
+index f367170..1db4452 100644
+--- a/src/components/studio/StudioCommandPanel.tsx
++++ b/src/components/studio/StudioCommandPanel.tsx
+@@ -31,6 +31,15 @@ const CLEANUP_COMMANDS = [
+   { label: "PROTECT MARKED", command: "i-protect marked moments" },
+ ] as const;
+ 
++const PUBLISH_COMMANDS = [
++  { label: "POST FEED", command: "i-post to feed" },
++  { label: "POST STORIES", command: "i-post to stories" },
++  { label: "FEED + STORIES", command: "i-post to feed and stories" },
++  { label: "CAMPAIGN VERSION", command: "i-make campaign version" },
++  { label: "SAVE DRAFT", command: "i-save draft" },
++  { label: "SCHEDULE", command: "i-schedule this tomorrow" },
++] as const;
++
+ const StudioCommandPanel: React.FC<Props> = ({ open, session, effectPreviews, onSubmit }) => {
+   const [value, setValue] = useState("");
+   if (!open) return null;
+@@ -121,12 +130,35 @@ const StudioCommandPanel: React.FC<Props> = ({ open, session, effectPreviews, on
+         ))}
+       </div>
+ 
++      {/* Publish quick buttons */}
++      <div style={{ fontSize: 11, color: "#748099", marginBottom: 4 }}>Publish</div>
++      <div style={{ display: "flex", gap: 6, marginBottom: 12, flexWrap: "wrap" }}>
++        {PUBLISH_COMMANDS.map(({ label, command }) => (
++          <button
++            key={command}
++            onClick={() => onSubmit(command)}
++            style={{
++              padding: "4px 10px",
++              borderRadius: 6,
++              fontSize: 11,
++              fontWeight: 600,
++              background: "rgba(167,139,250,0.1)",
++              color: "#a78bfa",
++              border: "1px solid rgba(167,139,250,0.2)",
++              cursor: "pointer",
++            }}
++          >
++            {label}
++          </button>
++        ))}
++      </div>
++
+       {/* Text input */}
+       <input
+         value={value}
+         onChange={(e) => setValue(e.target.value)}
+         onKeyDown={(e) => { if (e.key === "Enter") { onSubmit(value); setValue(""); } }}
+-        placeholder="Try: i-cleanup storage"
++        placeholder="Try: i-post to feed"
+         style={{
+           width: "100%",
+           padding: 8,
+diff --git a/src/components/studio/StudioExportPanel.tsx b/src/components/studio/StudioExportPanel.tsx
+index 61ab1fa..84254a1 100644
+--- a/src/components/studio/StudioExportPanel.tsx
++++ b/src/components/studio/StudioExportPanel.tsx
+@@ -1,11 +1,18 @@
+ import React from "react";
+-import type { StudioSession, StudioCleanupPlan } from "../../lib/studio/studio.types";
++import type {
++  StudioSession,
++  StudioCleanupPlan,
++  StudioPublishPlan,
++  StudioPublishPlanStatus,
++  StudioPublishReadinessGateStatus,
++} from "../../lib/studio/studio.types";
+ 
+ type Props = {
+   open: boolean;
+   session: StudioSession;
+   selectedExportTargets?: string[];
+   latestCleanupPlan?: StudioCleanupPlan | null;
++  latestPublishPlan?: StudioPublishPlan | null;
+   onClose: () => void;
+ };
+ 
+@@ -16,11 +23,27 @@ const cleanupStatusColor: Record<StudioCleanupPlan["status"], string> = {
+   rejected: "#f87171",
+ };
+ 
++const publishStatusColor: Record<StudioPublishPlanStatus, string> = {
++  draft: "#748099",
++  previewed: "#5ebcff",
++  ready: "#34d399",
++  published_mock: "#a78bfa",
++  rejected: "#f87171",
++};
++
++const gateStatusColor: Record<StudioPublishReadinessGateStatus, string> = {
++  passed: "#34d399",
++  warning: "#f59e0b",
++  blocked: "#f87171",
++  pending: "#748099",
++};
++
+ const StudioExportPanel: React.FC<Props> = ({
+   open,
+   session,
+   selectedExportTargets = [],
+   latestCleanupPlan = null,
++  latestPublishPlan = null,
+   onClose,
+ }) => {
+   if (!open) return null;
+@@ -104,6 +127,62 @@ const StudioExportPanel: React.FC<Props> = ({
+         )}
+       </div>
+ 
++      {/* Publish plan readiness */}
++      <div
++        style={{
++          marginTop: 12,
++          padding: "8px 10px",
++          background: "rgba(255,255,255,0.02)",
++          borderRadius: 8,
++          border: "1px solid rgba(167,139,250,0.12)",
++        }}
++      >
++        <div style={{ fontSize: 12, fontWeight: 700, color: "#a78bfa", marginBottom: 6 }}>
++          Publish plan readiness
++        </div>
++        {latestPublishPlan ? (
++          (() => {
++            const gates = latestPublishPlan.readinessGates;
++            const counts: Record<StudioPublishReadinessGateStatus, number> = {
++              passed: gates.filter((g) => g.status === "passed").length,
++              warning: gates.filter((g) => g.status === "warning").length,
++              blocked: gates.filter((g) => g.status === "blocked").length,
++              pending: gates.filter((g) => g.status === "pending").length,
++            };
++            return (
++              <div style={{ fontSize: 12, display: "flex", flexDirection: "column", gap: 4 }}>
++                <div style={{ display: "flex", justifyContent: "space-between" }}>
++                  <span style={{ color: "#9aa4b2" }}>Status</span>
++                  <span style={{ color: publishStatusColor[latestPublishPlan.status], fontWeight: 600 }}>
++                    {latestPublishPlan.status}
++                  </span>
++                </div>
++                <div style={{ display: "flex", justifyContent: "space-between" }}>
++                  <span style={{ color: "#9aa4b2" }}>Destinations</span>
++                  <span style={{ color: "#a78bfa" }}>{latestPublishPlan.destinations.join(", ")}</span>
++                </div>
++                <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 2 }}>
++                  {(Object.keys(counts) as StudioPublishReadinessGateStatus[]).map((k) => (
++                    <span key={k} style={{ color: gateStatusColor[k], fontSize: 11 }}>
++                      {k}: {counts[k]}
++                    </span>
++                  ))}
++                </div>
++                {latestPublishPlan.status === "published_mock" && (
++                  <div style={{ color: "#a78bfa", fontSize: 11, fontStyle: "italic" }}>
++                    Mock published locally. No external post sent.
++                  </div>
++                )}
++              </div>
++            );
++          })()
++        ) : (
++          <div style={{ fontSize: 12, color: "#748099", fontStyle: "italic" }}>
++            No publish plan yet. Try "i-post to feed".
++          </div>
++        )}
++      </div>
++
+       {/* Actions */}
+       <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
+         <button style={{ padding: "8px 10px", borderRadius: 6 }}>Generate Preview</button>
+diff --git a/src/components/studio/StudioPreview.tsx b/src/components/studio/StudioPreview.tsx
+index d035b9e..3fe5318 100644
+--- a/src/components/studio/StudioPreview.tsx
++++ b/src/components/studio/StudioPreview.tsx
+@@ -1,5 +1,5 @@
+ import React from "react";
+-import type { StudioSession, StudioClip, StudioRecordingState, StudioEditPlan } from "../../lib/studio/studio.types";
++import type { StudioSession, StudioClip, StudioRecordingState, StudioEditPlan, StudioPublishPlan } from "../../lib/studio/studio.types";
+ import { formatRecordingElapsed } from "../../lib/studio/studio-copy";
+ 
+ type Props = {
+@@ -8,6 +8,7 @@ type Props = {
+   isPlaying: boolean;
+   recording: StudioRecordingState;
+   selectedEditPlan: StudioEditPlan | null;
++  selectedPublishPlan: StudioPublishPlan | null;
+   onPlayPause?: () => void;
+ };
+ 
+@@ -24,7 +25,7 @@ function overlayColor(status: StudioRecordingState["status"]): string {
+   return "#9fa8c0";
+ }
+ 
+-const StudioPreview: React.FC<Props> = ({ session, selectedClip, isPlaying, recording, selectedEditPlan, onPlayPause }) => {
++const StudioPreview: React.FC<Props> = ({ session, selectedClip, isPlaying, recording, selectedEditPlan, selectedPublishPlan, onPlayPause }) => {
+   const title = selectedClip ? selectedClip.title : session.title;
+   const overlayLabel = recordingOverlayLabel(recording.status);
+ 
+@@ -45,6 +46,11 @@ const StudioPreview: React.FC<Props> = ({ session, selectedClip, isPlaying, reco
+             AUTO-CUT PREVIEW · {selectedEditPlan.estimatedDurationSeconds.toFixed(1)}s
+           </div>
+         ) : null}
++        {selectedPublishPlan ? (
++          <div style={{ background: "rgba(167,139,250,0.12)", padding: "3px 8px", borderRadius: 6, fontSize: 12, color: "#a78bfa", fontWeight: 700 }}>
++            PUBLISH PLAN · {selectedPublishPlan.destinations.join(", ")}
++          </div>
++        ) : null}
+       </div>
+ 
+       {/* Recording overlay */}
+diff --git a/src/components/studio/StudioSessionPanel.tsx b/src/components/studio/StudioSessionPanel.tsx
+index 4d81116..71654c4 100644
+--- a/src/components/studio/StudioSessionPanel.tsx
++++ b/src/components/studio/StudioSessionPanel.tsx
+@@ -5,6 +5,8 @@ import type {
+   StudioRecordingState,
+   StudioEditPlan,
+   StudioCleanupPlan,
++  StudioPublishPlan,
++  StudioPublishPlanStatus,
+ } from "../../lib/studio/studio.types";
+ import { formatRecordingElapsed } from "../../lib/studio/studio-copy";
+ 
+@@ -16,6 +18,8 @@ type Props = {
+   selectedEditPlan: StudioEditPlan | null;
+   cleanupPlans: StudioCleanupPlan[];
+   selectedCleanupPlan: StudioCleanupPlan | null;
++  publishPlans: StudioPublishPlan[];
++  selectedPublishPlan: StudioPublishPlan | null;
+   onToggleDiscard: (id: string) => void;
+ };
+ 
+@@ -33,6 +37,14 @@ const cleanupStatusColor: Record<StudioCleanupPlan["status"], string> = {
+   rejected: "#f87171",
+ };
+ 
++const publishStatusColor: Record<StudioPublishPlanStatus, string> = {
++  draft: "#748099",
++  previewed: "#5ebcff",
++  ready: "#34d399",
++  published_mock: "#a78bfa",
++  rejected: "#f87171",
++};
++
+ const StudioSessionPanel: React.FC<Props> = ({
+   session,
+   selectedClip,
+@@ -41,6 +53,8 @@ const StudioSessionPanel: React.FC<Props> = ({
+   selectedEditPlan,
+   cleanupPlans,
+   selectedCleanupPlan,
++  publishPlans,
++  selectedPublishPlan,
+   onToggleDiscard,
+ }) => {
+   return (
+@@ -118,6 +132,56 @@ const StudioSessionPanel: React.FC<Props> = ({
+         </div>
+       </div>
+ 
++      {/* Publish summary card */}
++      <div
++        style={{
++          padding: 10,
++          background: publishPlans.length > 0 ? "rgba(167,139,250,0.05)" : "rgba(255,255,255,0.02)",
++          borderRadius: 8,
++          border: `1px solid ${publishPlans.length > 0 ? "rgba(167,139,250,0.15)" : "rgba(255,255,255,0.03)"}`,
++        }}
++      >
++        <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 8, color: "#a78bfa" }}>Publish</div>
++        <div style={{ fontSize: 12, display: "flex", flexDirection: "column", gap: 4 }}>
++          <div style={{ display: "flex", justifyContent: "space-between" }}>
++            <span style={{ color: "#9aa4b2" }}>Total plans</span>
++            <span>{publishPlans.length}</span>
++          </div>
++          {selectedPublishPlan ? (
++            <>
++              <div style={{ display: "flex", justifyContent: "space-between" }}>
++                <span style={{ color: "#9aa4b2" }}>Status</span>
++                <span style={{ color: publishStatusColor[selectedPublishPlan.status], fontWeight: 600 }}>
++                  {selectedPublishPlan.status}
++                </span>
++              </div>
++              <div style={{ display: "flex", justifyContent: "space-between" }}>
++                <span style={{ color: "#9aa4b2" }}>Destinations</span>
++                <span style={{ color: "#a78bfa" }}>{selectedPublishPlan.destinations.join(", ")}</span>
++              </div>
++              <div style={{ display: "flex", justifyContent: "space-between" }}>
++                <span style={{ color: "#9aa4b2" }}>Disclosure</span>
++                <span style={{ color: selectedPublishPlan.disclosureRequired ? "#f59e0b" : "#748099" }}>
++                  {selectedPublishPlan.disclosureRequired ? "required" : "not required"}
++                </span>
++              </div>
++              <div style={{ display: "flex", justifyContent: "space-between" }}>
++                <span style={{ color: "#9aa4b2" }}>Originality</span>
++                <span style={{ color: selectedPublishPlan.originalityStatus === "pending" ? "#748099" : "#34d399" }}>
++                  {selectedPublishPlan.originalityStatus}
++                </span>
++              </div>
++            </>
++          ) : (
++            <div style={{ color: "#748099", fontStyle: "italic" }}>
++              {publishPlans.length === 0
++                ? "No publish plan yet. Try \"i-post to feed\"."
++                : "No plan selected."}
++            </div>
++          )}
++        </div>
++      </div>
++
+       {/* Auto-cut summary card */}
+       <div
+         style={{
+diff --git a/src/lib/studio/studio-state.ts b/src/lib/studio/studio-state.ts
+index ed67b76..e6550f2 100644
+--- a/src/lib/studio/studio-state.ts
++++ b/src/lib/studio/studio-state.ts
+@@ -5,11 +5,14 @@ import type {
+   StudioMark,
+   StudioRecordingState,
+   StudioEditPlanMode,
++  StudioPublishDestination,
+ } from "./studio.types";
+ import { mockSession } from "./studio.mock";
+ import { parseStudioCommand, extractTargetDurationSeconds, createEffectPreviewFromCommand } from "./studio-commands";
+ import { createAutoCutPlan } from "./studio-autocut";
+ import { createCleanupPlan } from "./studio-cleanup";
++import { createPublishPlan } from "./studio-publish";
++import type { PublishPlanOptions } from "./studio-publish";
+ 
+ const clone = <T,>(v: T): T => JSON.parse(JSON.stringify(v));
+ 
+@@ -47,6 +50,9 @@ export function createInitialStudioState(): StudioState {
+     autoCutPanelOpen: false,
+     cleanupPlans: [],
+     selectedCleanupPlanId: null,
++    publishPlans: [],
++    selectedPublishPlanId: null,
++    publishPanelOpen: false,
+   };
+ }
+ 
+@@ -227,6 +233,82 @@ export function rejectCleanupPlanPreview(state: StudioState, planId: string): St
+   return { ...state, cleanupPlans };
+ }
+ 
++// ── Stage 6: Publish plan helpers ────────────────────────────────────────────
++
++export function generatePublishPlan(
++  state: StudioState,
++  destinations: StudioPublishDestination[],
++  options?: Omit<PublishPlanOptions, "destinations">,
++): StudioState {
++  const plan = createPublishPlan(state, { destinations, ...options });
++  const ef = {
++    id: `ef-${gid()}`,
++    type: "publish" as const,
++    label: "Publish plan preview",
++    description: "Publishing plan generated. No post has been published.",
++    createdAt: nowISO(),
++  };
++  return {
++    ...state,
++    publishPlans: [plan, ...state.publishPlans],
++    selectedPublishPlanId: plan.id,
++    publishPanelOpen: true,
++    exportPanelOpen: true,
++    effectPreviews: [ef, ...state.effectPreviews],
++  };
++}
++
++export function selectPublishPlan(state: StudioState, planId: string): StudioState {
++  return { ...state, selectedPublishPlanId: planId };
++}
++
++export function markPublishPlanReady(state: StudioState, planId: string): StudioState {
++  return {
++    ...state,
++    publishPlans: state.publishPlans.map((p) =>
++      p.id === planId ? { ...p, status: "ready" as const } : p,
++    ),
++  };
++}
++
++export function mockPublishPlan(state: StudioState, planId: string): StudioState {
++  const publishPlans = state.publishPlans.map((p) =>
++    p.id === planId ? { ...p, status: "published_mock" as const } : p,
++  );
++  const ef = {
++    id: `ef-${gid()}`,
++    type: "publish" as const,
++    label: "Mock publish complete",
++    description: "Mock publish completed locally. No external platform received this post.",
++    createdAt: nowISO(),
++  };
++  const session = clone(state.activeSession);
++  const parsed = parseStudioCommand("mock publish");
++  parsed.previewText =
++    "Mock publish completed locally. No external platform received this post.";
++  session.commands.unshift(parsed);
++  session.updatedAt = nowISO();
++  return {
++    ...state,
++    publishPlans,
++    activeSession: session,
++    effectPreviews: [ef, ...state.effectPreviews],
++  };
++}
++
++export function rejectPublishPlan(state: StudioState, planId: string): StudioState {
++  return {
++    ...state,
++    publishPlans: state.publishPlans.map((p) =>
++      p.id === planId ? { ...p, status: "rejected" as const } : p,
++    ),
++  };
++}
++
++export function setPublishPanelOpen(state: StudioState, open: boolean): StudioState {
++  return { ...state, publishPanelOpen: open };
++}
++
+ // ── Stage 3: Recording state machine ─────────────────────────────────────────
+ 
+ export function startRecordingSession(state: StudioState): StudioState {
+@@ -409,6 +491,55 @@ export function applyStudioCommand(state: StudioState, rawCommand: string): Stud
+     return withPlan;
+   }
+ 
++  // ── Publish commands ───────────────────────────────────────────────────────
++  const MOCK_PUBLISH_PREVIEW = "Studio generated a mock publish plan. Nothing has been posted.";
++
++  const withPubCmd = (next: StudioState): StudioState => {
++    const sess2 = clone(next.activeSession);
++    const p2 = parseStudioCommand(rawCommand);
++    p2.previewText = MOCK_PUBLISH_PREVIEW;
++    sess2.commands.unshift(p2);
++    sess2.updatedAt = nowISO();
++    return { ...next, activeSession: sess2, commandPanelOpen: true };
++  };
++
++  if (/(feed.*stories|stories.*feed|feed and stories)/.test(n)) {
++    return withPubCmd(generatePublishPlan(s, ["feed", "stories"]));
++  }
++
++  if (/(post to feed|post.*feed|publish.*feed)/.test(n)) {
++    return withPubCmd(generatePublishPlan(s, ["feed"]));
++  }
++
++  if (/(post to stories|post.*stories|publish.*stories)/.test(n)) {
++    return withPubCmd(generatePublishPlan(s, ["stories"]));
++  }
++
++  if (/(campaign version|make campaign|campaign post)/.test(n)) {
++    return withPubCmd(generatePublishPlan(s, ["campaign"], { campaignMode: true }));
++  }
++
++  if (/(save draft|create draft|draft version)/.test(n)) {
++    return withPubCmd(generatePublishPlan(s, ["draft"]));
++  }
++
++  if (/(schedule this|schedule for|schedule tomorrow|schedule post)/.test(n)) {
++    return withPubCmd(
++      generatePublishPlan(s, ["draft"], { scheduleMode: "scheduled", scheduledFor: null }),
++    );
++  }
++
++  if (/(add cta|^cta$|call to action)/.test(n)) {
++    const existingDests: StudioPublishDestination[] =
++      s.publishPlans.length > 0 ? s.publishPlans[0].destinations : ["feed"];
++    return withPubCmd(
++      generatePublishPlan(s, existingDests, {
++        ctaLabel: "Learn more",
++        campaignMode: existingDests.includes("campaign"),
++      }),
++    );
++  }
++
+   // ── General effect/session commands ───────────────────────────────────────
+   const session = s.activeSession;
+   const parsed = parseStudioCommand(rawCommand);
+@@ -429,16 +560,6 @@ export function applyStudioCommand(state: StudioState, rawCommand: string): Stud
+     return { ...s, activeSession: session };
+   }
+ 
+-  if (/(post to feed|post to stories|feed and stories|post to feed and stories)/.test(n) || /post .*feed/.test(n)) {
+-    s.exportPanelOpen = true;
+-    if (!s.selectedExportTargets.includes("Feed")) s.selectedExportTargets.push("Feed");
+-    if (!s.selectedExportTargets.includes("Stories")) s.selectedExportTargets.push("Stories");
+-    parsed.previewText = "Export panel opened with Feed and Stories selected (preview only).";
+-    const ef = createEffectPreviewFromCommand(rawCommand);
+-    if (ef) s.effectPreviews.unshift(ef);
+-    return { ...s, activeSession: session };
+-  }
+-
+   const ef = createEffectPreviewFromCommand(rawCommand);
+   if (ef) {
+     s.effectPreviews.unshift(ef);
+diff --git a/src/lib/studio/studio.types.ts b/src/lib/studio/studio.types.ts
+index a5ffd0f..c5fd255 100644
+--- a/src/lib/studio/studio.types.ts
++++ b/src/lib/studio/studio.types.ts
+@@ -230,6 +230,69 @@ export interface StudioCleanupPlan {
+   warnings: string[];
+ }
+ 
++// ── Stage 6: Publishing pipeline ─────────────────────────────────────────────
++
++export type StudioPublishDestination =
++  | "feed"
++  | "stories"
++  | "campaign"
++  | "draft"
++  | "proof_vault"
++  | "external";
++
++export type StudioPublishPlanStatus =
++  | "draft"
++  | "previewed"
++  | "ready"
++  | "published_mock"
++  | "rejected";
++
++export type StudioPublishReadinessGateStatus =
++  | "passed"
++  | "warning"
++  | "blocked"
++  | "pending";
++
++export interface StudioPublishReadinessGate {
++  id: string;
++  label: string;
++  status: StudioPublishReadinessGateStatus;
++  message: string;
++}
++
++export interface StudioPublishCTA {
++  label: string;
++  url?: string;
++  enabled: boolean;
++}
++
++export interface StudioPublishSchedule {
++  mode: "now" | "scheduled";
++  scheduledFor: string | null;
++  label: string;
++}
++
++export interface StudioPublishPlan {
++  id: string;
++  status: StudioPublishPlanStatus;
++  createdAt: ISODateString;
++  destinations: StudioPublishDestination[];
++  title: string;
++  caption: string;
++  hashtags: string[];
++  disclosureRequired: boolean;
++  disclosureText: string | null;
++  cta: StudioPublishCTA;
++  schedule: StudioPublishSchedule;
++  readinessGates: StudioPublishReadinessGate[];
++  proofRequired: boolean;
++  originalityStatus: "pending" | "ready" | "not_required";
++  selectedEditPlanId: string | null;
++  selectedCleanupPlanId: string | null;
++  summary: string;
++  warnings: string[];
++}
++
+ // ── Full UI state ─────────────────────────────────────────────────────────────
+ 
+ export interface StudioState {
+@@ -248,4 +311,7 @@ export interface StudioState {
+   autoCutPanelOpen: boolean;
+   cleanupPlans: StudioCleanupPlan[];
+   selectedCleanupPlanId: string | null;
++  publishPlans: StudioPublishPlan[];
++  selectedPublishPlanId: string | null;
++  publishPanelOpen: boolean;
+ }
+diff --git a/src/screens/StudioScreen.tsx b/src/screens/StudioScreen.tsx
+index 64db8c4..258971f 100644
+--- a/src/screens/StudioScreen.tsx
++++ b/src/screens/StudioScreen.tsx
+@@ -10,6 +10,7 @@ import StudioCommandPanel from "../components/studio/StudioCommandPanel";
+ import StudioExportPanel from "../components/studio/StudioExportPanel";
+ import StudioAutoCutPanel from "../components/studio/StudioAutoCutPanel";
+ import StudioCleanupPanel from "../components/studio/StudioCleanupPanel";
++import StudioPublishPanel from "../components/studio/StudioPublishPanel";
+ 
+ import {
+   createInitialStudioState,
+@@ -26,6 +27,11 @@ import {
+   confirmCleanupPlanPreview,
+   rejectCleanupPlanPreview,
+   setCleanupPreviewOpen,
++  selectPublishPlan,
++  markPublishPlanReady,
++  mockPublishPlan,
++  rejectPublishPlan,
++  setPublishPanelOpen,
+ } from "../lib/studio/studio-state";
+ import type { AspectRatio, StudioToolId } from "../lib/studio/studio.types";
+ 
+@@ -52,6 +58,16 @@ const StudioScreen: React.FC = () => {
+     [state.cleanupPlans],
+   );
+ 
++  const selectedPublishPlan = useMemo(
++    () => state.publishPlans.find((p) => p.id === state.selectedPublishPlanId) ?? null,
++    [state.publishPlans, state.selectedPublishPlanId],
++  );
++
++  const latestPublishPlan = useMemo(
++    () => state.publishPlans[0] ?? null,
++    [state.publishPlans],
++  );
++
+   function handleSetTool(tool: StudioToolId) {
+     setState((s) => setActiveTool(s, tool));
+   }
+@@ -119,6 +135,27 @@ const StudioScreen: React.FC = () => {
+     setState((s) => setCleanupPreviewOpen(s, false));
+   }
+ 
++  // ── Publish handlers ─────────────────────────────────────────────────────────
++  function handleSelectPublishPlan(planId: string) {
++    setState((s) => selectPublishPlan(s, planId));
++  }
++
++  function handleMarkPublishPlanReady(planId: string) {
++    setState((s) => markPublishPlanReady(s, planId));
++  }
++
++  function handleMockPublishPlan(planId: string) {
++    setState((s) => mockPublishPlan(s, planId));
++  }
++
++  function handleRejectPublishPlan(planId: string) {
++    setState((s) => rejectPublishPlan(s, planId));
++  }
++
++  function handleClosePublish() {
++    setState((s) => setPublishPanelOpen(s, false));
++  }
++
+   return (
+     <StudioShell>
+       <StudioTopBar
+@@ -137,6 +174,7 @@ const StudioScreen: React.FC = () => {
+               isPlaying={state.isPlaying}
+               recording={state.recording}
+               selectedEditPlan={selectedEditPlan}
++              selectedPublishPlan={selectedPublishPlan}
+               onPlayPause={handlePlayPause}
+             />
+           </div>
+@@ -164,6 +202,8 @@ const StudioScreen: React.FC = () => {
+           selectedEditPlan={selectedEditPlan}
+           cleanupPlans={state.cleanupPlans}
+           selectedCleanupPlan={selectedCleanupPlan}
++          publishPlans={state.publishPlans}
++          selectedPublishPlan={selectedPublishPlan}
+           onToggleDiscard={handleToggleDiscard}
+         />
+       </div>
+@@ -178,6 +218,7 @@ const StudioScreen: React.FC = () => {
+         session={state.activeSession}
+         selectedExportTargets={state.selectedExportTargets}
+         latestCleanupPlan={latestCleanupPlan}
++        latestPublishPlan={latestPublishPlan}
+         onClose={() => setState((s) => ({ ...s, exportPanelOpen: false }))}
+       />
+       <StudioAutoCutPanel
+@@ -198,6 +239,16 @@ const StudioScreen: React.FC = () => {
+         onRejectPlan={handleRejectCleanupPlan}
+         onClose={handleCloseCleanup}
+       />
++      <StudioPublishPanel
++        open={state.publishPanelOpen}
++        plans={state.publishPlans}
++        selectedPlanId={state.selectedPublishPlanId}
++        onSelectPlan={handleSelectPublishPlan}
++        onMarkReady={handleMarkPublishPlanReady}
++        onMockPublish={handleMockPublishPlan}
++        onRejectPlan={handleRejectPublishPlan}
++        onClose={handleClosePublish}
++      />
+     </StudioShell>
+   );
+ };

@@ -1,0 +1,1021 @@
+diff --git a/src/components/studio/StudioCommandPanel.tsx b/src/components/studio/StudioCommandPanel.tsx
+index f367170..a333088 100644
+--- a/src/components/studio/StudioCommandPanel.tsx
++++ b/src/components/studio/StudioCommandPanel.tsx
+@@ -31,6 +31,15 @@ const CLEANUP_COMMANDS = [
+   { label: "PROTECT MARKED", command: "i-protect marked moments" },
+ ] as const;
+ 
++const PUBLISH_COMMANDS = [
++  { label: "POST FEED", command: "i-post to feed" },
++  { label: "POST STORIES", command: "i-post to stories" },
++  { label: "FEED + STORIES", command: "i-post to feed and stories" },
++  { label: "CAMPAIGN VERSION", command: "i-make campaign version" },
++  { label: "SAVE DRAFT", command: "i-save draft" },
++  { label: "SCHEDULE", command: "i-schedule this tomorrow" },
++] as const;
++
+ const StudioCommandPanel: React.FC<Props> = ({ open, session, effectPreviews, onSubmit }) => {
+   const [value, setValue] = useState("");
+   if (!open) return null;
+@@ -121,6 +130,29 @@ const StudioCommandPanel: React.FC<Props> = ({ open, session, effectPreviews, on
+         ))}
+       </div>
+ 
++      {/* Publish quick buttons */}
++      <div style={{ fontSize: 11, color: "#748099", marginBottom: 4 }}>Publish</div>
++      <div style={{ display: "flex", gap: 6, marginBottom: 12, flexWrap: "wrap" }}>
++        {PUBLISH_COMMANDS.map(({ label, command }) => (
++          <button
++            key={command}
++            onClick={() => onSubmit(command)}
++            style={{
++              padding: "4px 10px",
++              borderRadius: 6,
++              fontSize: 11,
++              fontWeight: 600,
++              background: "rgba(167,139,250,0.08)",
++              color: "#a78bfa",
++              border: "1px solid rgba(167,139,250,0.15)",
++              cursor: "pointer",
++            }}
++          >
++            {label}
++          </button>
++        ))}
++      </div>
++
+       {/* Text input */}
+       <input
+         value={value}
+diff --git a/src/components/studio/StudioExportPanel.tsx b/src/components/studio/StudioExportPanel.tsx
+index 61ab1fa..fa6a279 100644
+--- a/src/components/studio/StudioExportPanel.tsx
++++ b/src/components/studio/StudioExportPanel.tsx
+@@ -1,11 +1,17 @@
+ import React from "react";
+-import type { StudioSession, StudioCleanupPlan } from "../../lib/studio/studio.types";
++import type {
++  StudioSession,
++  StudioCleanupPlan,
++  StudioPublishPlan,
++  StudioPublishReadinessGateStatus,
++} from "../../lib/studio/studio.types";
+ 
+ type Props = {
+   open: boolean;
+   session: StudioSession;
+   selectedExportTargets?: string[];
+   latestCleanupPlan?: StudioCleanupPlan | null;
++  latestPublishPlan?: StudioPublishPlan | null;
+   onClose: () => void;
+ };
+ 
+@@ -16,11 +22,27 @@ const cleanupStatusColor: Record<StudioCleanupPlan["status"], string> = {
+   rejected: "#f87171",
+ };
+ 
++const publishStatusColor: Record<StudioPublishPlan["status"], string> = {
++  draft: "#748099",
++  previewed: "#5ebcff",
++  ready: "#34d399",
++  published_mock: "#a78bfa",
++  rejected: "#f87171",
++};
++
++const gateStatusColor: Record<StudioPublishReadinessGateStatus, string> = {
++  passed: "#34d399",
++  warning: "#f59e0b",
++  blocked: "#f87171",
++  pending: "#748099",
++};
++
+ const StudioExportPanel: React.FC<Props> = ({
+   open,
+   session,
+   selectedExportTargets = [],
+   latestCleanupPlan = null,
++  latestPublishPlan = null,
+   onClose,
+ }) => {
+   if (!open) return null;
+@@ -104,6 +126,60 @@ const StudioExportPanel: React.FC<Props> = ({
+         )}
+       </div>
+ 
++      {/* Publish plan readiness */}
++      <div
++        style={{
++          marginTop: 12,
++          padding: "8px 10px",
++          background: "rgba(255,255,255,0.02)",
++          borderRadius: 8,
++          border: "1px solid rgba(167,139,250,0.1)",
++        }}
++      >
++        <div style={{ fontSize: 12, fontWeight: 700, color: "#a78bfa", marginBottom: 6 }}>
++          Publish plan readiness
++        </div>
++        {latestPublishPlan ? (() => {
++          const gates = latestPublishPlan.readinessGates;
++          const counts = {
++            passed: gates.filter((g) => g.status === "passed").length,
++            warning: gates.filter((g) => g.status === "warning").length,
++            blocked: gates.filter((g) => g.status === "blocked").length,
++            pending: gates.filter((g) => g.status === "pending").length,
++          } as const;
++          return (
++            <div style={{ fontSize: 12, display: "flex", flexDirection: "column", gap: 4 }}>
++              <div style={{ display: "flex", justifyContent: "space-between" }}>
++                <span style={{ color: "#9aa4b2" }}>Status</span>
++                <span style={{ color: publishStatusColor[latestPublishPlan.status], fontWeight: 600 }}>
++                  {latestPublishPlan.status}
++                </span>
++              </div>
++              <div style={{ display: "flex", justifyContent: "space-between" }}>
++                <span style={{ color: "#9aa4b2" }}>Destinations</span>
++                <span style={{ color: "#a78bfa" }}>{latestPublishPlan.destinations.join(", ")}</span>
++              </div>
++              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 2 }}>
++                {(Object.keys(counts) as (keyof typeof counts)[]).map((k) => (
++                  <span key={k} style={{ color: gateStatusColor[k], fontSize: 11 }}>
++                    {k}: {counts[k]}
++                  </span>
++                ))}
++              </div>
++              {latestPublishPlan.status === "published_mock" && (
++                <div style={{ color: "#a78bfa", fontSize: 11, fontStyle: "italic" }}>
++                  Mock published locally. No external post sent.
++                </div>
++              )}
++            </div>
++          );
++        })() : (
++          <div style={{ fontSize: 12, color: "#748099", fontStyle: "italic" }}>
++            No publish plan yet. Try "i-post to feed".
++          </div>
++        )}
++      </div>
++
+       {/* Actions */}
+       <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
+         <button style={{ padding: "8px 10px", borderRadius: 6 }}>Generate Preview</button>
+diff --git a/src/components/studio/StudioPreview.tsx b/src/components/studio/StudioPreview.tsx
+index d035b9e..f7d6fa2 100644
+--- a/src/components/studio/StudioPreview.tsx
++++ b/src/components/studio/StudioPreview.tsx
+@@ -1,5 +1,11 @@
+ import React from "react";
+-import type { StudioSession, StudioClip, StudioRecordingState, StudioEditPlan } from "../../lib/studio/studio.types";
++import type {
++  StudioSession,
++  StudioClip,
++  StudioRecordingState,
++  StudioEditPlan,
++  StudioPublishPlan,
++} from "../../lib/studio/studio.types";
+ import { formatRecordingElapsed } from "../../lib/studio/studio-copy";
+ 
+ type Props = {
+@@ -8,6 +14,7 @@ type Props = {
+   isPlaying: boolean;
+   recording: StudioRecordingState;
+   selectedEditPlan: StudioEditPlan | null;
++  selectedPublishPlan: StudioPublishPlan | null;
+   onPlayPause?: () => void;
+ };
+ 
+@@ -24,7 +31,7 @@ function overlayColor(status: StudioRecordingState["status"]): string {
+   return "#9fa8c0";
+ }
+ 
+-const StudioPreview: React.FC<Props> = ({ session, selectedClip, isPlaying, recording, selectedEditPlan, onPlayPause }) => {
++const StudioPreview: React.FC<Props> = ({ session, selectedClip, isPlaying, recording, selectedEditPlan, selectedPublishPlan, onPlayPause }) => {
+   const title = selectedClip ? selectedClip.title : session.title;
+   const overlayLabel = recordingOverlayLabel(recording.status);
+ 
+@@ -45,6 +52,11 @@ const StudioPreview: React.FC<Props> = ({ session, selectedClip, isPlaying, reco
+             AUTO-CUT PREVIEW · {selectedEditPlan.estimatedDurationSeconds.toFixed(1)}s
+           </div>
+         ) : null}
++        {selectedPublishPlan ? (
++          <div style={{ background: "rgba(167,139,250,0.12)", padding: "3px 8px", borderRadius: 6, fontSize: 12, color: "#a78bfa", fontWeight: 700 }}>
++            PUBLISH PLAN · {selectedPublishPlan.destinations.join(", ")}
++          </div>
++        ) : null}
+       </div>
+ 
+       {/* Recording overlay */}
+diff --git a/src/components/studio/StudioSessionPanel.tsx b/src/components/studio/StudioSessionPanel.tsx
+index 4d81116..9cea449 100644
+--- a/src/components/studio/StudioSessionPanel.tsx
++++ b/src/components/studio/StudioSessionPanel.tsx
+@@ -5,6 +5,7 @@ import type {
+   StudioRecordingState,
+   StudioEditPlan,
+   StudioCleanupPlan,
++  StudioPublishPlan,
+ } from "../../lib/studio/studio.types";
+ import { formatRecordingElapsed } from "../../lib/studio/studio-copy";
+ 
+@@ -16,6 +17,8 @@ type Props = {
+   selectedEditPlan: StudioEditPlan | null;
+   cleanupPlans: StudioCleanupPlan[];
+   selectedCleanupPlan: StudioCleanupPlan | null;
++  publishPlans: StudioPublishPlan[];
++  selectedPublishPlan: StudioPublishPlan | null;
+   onToggleDiscard: (id: string) => void;
+ };
+ 
+@@ -33,6 +36,14 @@ const cleanupStatusColor: Record<StudioCleanupPlan["status"], string> = {
+   rejected: "#f87171",
+ };
+ 
++const publishStatusColor: Record<StudioPublishPlan["status"], string> = {
++  draft: "#748099",
++  previewed: "#5ebcff",
++  ready: "#34d399",
++  published_mock: "#a78bfa",
++  rejected: "#f87171",
++};
++
+ const StudioSessionPanel: React.FC<Props> = ({
+   session,
+   selectedClip,
+@@ -41,6 +52,8 @@ const StudioSessionPanel: React.FC<Props> = ({
+   selectedEditPlan,
+   cleanupPlans,
+   selectedCleanupPlan,
++  publishPlans,
++  selectedPublishPlan,
+   onToggleDiscard,
+ }) => {
+   return (
+@@ -118,6 +131,56 @@ const StudioSessionPanel: React.FC<Props> = ({
+         </div>
+       </div>
+ 
++      {/* Publish summary card */}
++      <div
++        style={{
++          padding: 10,
++          background: publishPlans.length > 0 ? "rgba(167,139,250,0.05)" : "rgba(255,255,255,0.02)",
++          borderRadius: 8,
++          border: `1px solid ${publishPlans.length > 0 ? "rgba(167,139,250,0.15)" : "rgba(255,255,255,0.03)"}`,
++        }}
++      >
++        <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 8, color: "#a78bfa" }}>Publish</div>
++        <div style={{ fontSize: 12, display: "flex", flexDirection: "column", gap: 4 }}>
++          <div style={{ display: "flex", justifyContent: "space-between" }}>
++            <span style={{ color: "#9aa4b2" }}>Total plans</span>
++            <span>{publishPlans.length}</span>
++          </div>
++          {selectedPublishPlan ? (
++            <>
++              <div style={{ display: "flex", justifyContent: "space-between" }}>
++                <span style={{ color: "#9aa4b2" }}>Status</span>
++                <span style={{ color: publishStatusColor[selectedPublishPlan.status], fontWeight: 600 }}>
++                  {selectedPublishPlan.status}
++                </span>
++              </div>
++              <div style={{ display: "flex", justifyContent: "space-between" }}>
++                <span style={{ color: "#9aa4b2" }}>Destinations</span>
++                <span style={{ color: "#a78bfa" }}>{selectedPublishPlan.destinations.join(", ")}</span>
++              </div>
++              <div style={{ display: "flex", justifyContent: "space-between" }}>
++                <span style={{ color: "#9aa4b2" }}>Disclosure</span>
++                <span style={{ color: selectedPublishPlan.disclosureRequired ? "#f59e0b" : "#748099" }}>
++                  {selectedPublishPlan.disclosureRequired ? "required" : "not required"}
++                </span>
++              </div>
++              <div style={{ display: "flex", justifyContent: "space-between" }}>
++                <span style={{ color: "#9aa4b2" }}>Originality</span>
++                <span style={{ color: selectedPublishPlan.originalityStatus === "pending" ? "#748099" : "#34d399" }}>
++                  {selectedPublishPlan.originalityStatus}
++                </span>
++              </div>
++            </>
++          ) : (
++            <div style={{ color: "#748099", fontStyle: "italic" }}>
++              {publishPlans.length === 0
++                ? "No publish plan yet. Try \"i-post to feed\"."
++                : "No plan selected."}
++            </div>
++          )}
++        </div>
++      </div>
++
+       {/* Auto-cut summary card */}
+       <div
+         style={{
+diff --git a/src/lib/studio/studio-state.ts b/src/lib/studio/studio-state.ts
+index ed67b76..6afa2ed 100644
+--- a/src/lib/studio/studio-state.ts
++++ b/src/lib/studio/studio-state.ts
+@@ -5,14 +5,20 @@ import type {
+   StudioMark,
+   StudioRecordingState,
+   StudioEditPlanMode,
++  StudioPublishDestination,
+ } from "./studio.types";
+ import { mockSession } from "./studio.mock";
+-import { parseStudioCommand, extractTargetDurationSeconds, createEffectPreviewFromCommand } from "./studio-commands";
++import {
++  parseStudioCommand,
++  extractTargetDurationSeconds,
++  createEffectPreviewFromCommand,
++} from "./studio-commands";
+ import { createAutoCutPlan } from "./studio-autocut";
+ import { createCleanupPlan } from "./studio-cleanup";
++import { createPublishPlan } from "./studio-publish";
++import type { PublishPlanOptions } from "./studio-publish";
+ 
+ const clone = <T,>(v: T): T => JSON.parse(JSON.stringify(v));
+-
+ const gid = (p = "t-") => `${p}${Math.floor(Math.random() * 1e9).toString(36)}`;
+ const nowISO = () => new Date().toISOString();
+ 
+@@ -47,9 +53,14 @@ export function createInitialStudioState(): StudioState {
+     autoCutPanelOpen: false,
+     cleanupPlans: [],
+     selectedCleanupPlanId: null,
++    publishPlans: [],
++    selectedPublishPlanId: null,
++    publishPanelOpen: false,
+   };
+ }
+ 
++// ── Basic helpers ─────────────────────────────────────────────────────────────
++
+ export function selectClip(state: StudioState, clipId: string): StudioState {
+   return { ...state, selectedClipId: clipId };
+ }
+@@ -82,7 +93,10 @@ export function setActiveTool(state: StudioState, tool: StudioToolId): StudioSta
+   return { ...state, activeTool: tool };
+ }
+ 
+-export function addStudioMarkAtPlayhead(state: StudioState, label = "manual mark"): StudioState {
++export function addStudioMarkAtPlayhead(
++  state: StudioState,
++  label = "manual mark",
++): StudioState {
+   const s = clone(state);
+   const session = s.activeSession;
+   const playhead = session.timeline.playheadSeconds ?? 0;
+@@ -107,7 +121,11 @@ export function setCleanupPreviewOpen(state: StudioState, open: boolean): Studio
+   return { ...state, cleanupPreviewOpen: open };
+ }
+ 
+-export function setExportTargetSelected(state: StudioState, target: string, selected: boolean): StudioState {
++export function setExportTargetSelected(
++  state: StudioState,
++  target: string,
++  selected: boolean,
++): StudioState {
+   const targets = [...state.selectedExportTargets];
+   const idx = targets.indexOf(target);
+   if (selected && idx === -1) targets.push(target);
+@@ -124,12 +142,12 @@ export function generateEditPlan(
+ ): StudioState {
+   const plan = createAutoCutPlan(state.activeSession, {
+     mode,
+-    targetDurationSeconds: targetDurationSeconds ?? state.activeSession.targetDurationSeconds ?? 45,
++    targetDurationSeconds:
++      targetDurationSeconds ?? state.activeSession.targetDurationSeconds ?? 45,
+   });
+-  const editPlans = [plan, ...state.editPlans];
+   return {
+     ...state,
+-    editPlans,
++    editPlans: [plan, ...state.editPlans],
+     selectedEditPlanId: plan.id,
+     autoCutPanelOpen: true,
+   };
+@@ -153,10 +171,12 @@ export function acceptEditPlanPreview(state: StudioState, planId: string): Studi
+ }
+ 
+ export function rejectEditPlanPreview(state: StudioState, planId: string): StudioState {
+-  const editPlans = state.editPlans.map((p) =>
+-    p.id === planId ? { ...p, status: "rejected" as const } : p,
+-  );
+-  return { ...state, editPlans };
++  return {
++    ...state,
++    editPlans: state.editPlans.map((p) =>
++      p.id === planId ? { ...p, status: "rejected" as const } : p,
++    ),
++  };
+ }
+ 
+ export function setAutoCutPanelOpen(state: StudioState, open: boolean): StudioState {
+@@ -168,10 +188,7 @@ export function setAutoCutPanelOpen(state: StudioState, open: boolean): StudioSt
+ export function generateCleanupPlan(state: StudioState): StudioState {
+   const selectedEditPlan =
+     state.editPlans.find((p) => p.id === state.selectedEditPlanId) ?? null;
+-
+   const plan = createCleanupPlan(state.activeSession, selectedEditPlan);
+-  const cleanupPlans = [plan, ...state.cleanupPlans];
+-
+   const ef = {
+     id: `ef-${gid()}`,
+     type: "cleanup" as const,
+@@ -179,10 +196,9 @@ export function generateCleanupPlan(state: StudioState): StudioState {
+     description: "Safe-delete plan generated. No files deleted.",
+     createdAt: nowISO(),
+   };
+-
+   return {
+     ...state,
+-    cleanupPlans,
++    cleanupPlans: [plan, ...state.cleanupPlans],
+     selectedCleanupPlanId: plan.id,
+     cleanupPreviewOpen: true,
+     effectPreviews: [ef, ...state.effectPreviews],
+@@ -197,7 +213,6 @@ export function confirmCleanupPlanPreview(state: StudioState, planId: string): S
+   const cleanupPlans = state.cleanupPlans.map((p) =>
+     p.id === planId ? { ...p, status: "confirmed" as const } : p,
+   );
+-
+   const ef = {
+     id: `ef-${gid()}`,
+     type: "cleanup" as const,
+@@ -205,13 +220,11 @@ export function confirmCleanupPlanPreview(state: StudioState, planId: string): S
+     description: "Confirmation is mock only. Raw media unchanged.",
+     createdAt: nowISO(),
+   };
+-
+   const session = clone(state.activeSession);
+   const parsed = parseStudioCommand("confirm cleanup");
+   parsed.previewText = "Cleanup confirmation recorded (mock only). No media was removed.";
+   session.commands.unshift(parsed);
+   session.updatedAt = nowISO();
+-
+   return {
+     ...state,
+     cleanupPlans,
+@@ -221,10 +234,88 @@ export function confirmCleanupPlanPreview(state: StudioState, planId: string): S
+ }
+ 
+ export function rejectCleanupPlanPreview(state: StudioState, planId: string): StudioState {
+-  const cleanupPlans = state.cleanupPlans.map((p) =>
+-    p.id === planId ? { ...p, status: "rejected" as const } : p,
++  return {
++    ...state,
++    cleanupPlans: state.cleanupPlans.map((p) =>
++      p.id === planId ? { ...p, status: "rejected" as const } : p,
++    ),
++  };
++}
++
++// ── Stage 6: Publish plan helpers ─────────────────────────────────────────────
++
++export function generatePublishPlan(
++  state: StudioState,
++  destinations: StudioPublishDestination[],
++  options?: Omit<PublishPlanOptions, "destinations">,
++): StudioState {
++  const plan = createPublishPlan(state, { destinations, ...options });
++  const ef = {
++    id: `ef-${gid()}`,
++    type: "publish" as const,
++    label: "Publish plan preview",
++    description: "Publishing plan generated. No post has been published.",
++    createdAt: nowISO(),
++  };
++  return {
++    ...state,
++    publishPlans: [plan, ...state.publishPlans],
++    selectedPublishPlanId: plan.id,
++    publishPanelOpen: true,
++    exportPanelOpen: true,
++    effectPreviews: [ef, ...state.effectPreviews],
++  };
++}
++
++export function selectPublishPlan(state: StudioState, planId: string): StudioState {
++  return { ...state, selectedPublishPlanId: planId };
++}
++
++export function markPublishPlanReady(state: StudioState, planId: string): StudioState {
++  return {
++    ...state,
++    publishPlans: state.publishPlans.map((p) =>
++      p.id === planId ? { ...p, status: "ready" as const } : p,
++    ),
++  };
++}
++
++export function mockPublishPlan(state: StudioState, planId: string): StudioState {
++  const publishPlans = state.publishPlans.map((p) =>
++    p.id === planId ? { ...p, status: "published_mock" as const } : p,
+   );
+-  return { ...state, cleanupPlans };
++  const ef = {
++    id: `ef-${gid()}`,
++    type: "publish" as const,
++    label: "Mock publish complete",
++    description: "Mock publish completed locally. No external platform received this post.",
++    createdAt: nowISO(),
++  };
++  const session = clone(state.activeSession);
++  const parsed = parseStudioCommand("mock publish");
++  parsed.previewText =
++    "Mock publish completed locally. No external platform received this post.";
++  session.commands.unshift(parsed);
++  session.updatedAt = nowISO();
++  return {
++    ...state,
++    publishPlans,
++    activeSession: session,
++    effectPreviews: [ef, ...state.effectPreviews],
++  };
++}
++
++export function rejectPublishPlan(state: StudioState, planId: string): StudioState {
++  return {
++    ...state,
++    publishPlans: state.publishPlans.map((p) =>
++      p.id === planId ? { ...p, status: "rejected" as const } : p,
++    ),
++  };
++}
++
++export function setPublishPanelOpen(state: StudioState, open: boolean): StudioState {
++  return { ...state, publishPanelOpen: open };
+ }
+ 
+ // ── Stage 3: Recording state machine ─────────────────────────────────────────
+@@ -248,36 +339,41 @@ export function startRecordingSession(state: StudioState): StudioState {
+ export function pauseRecordingSession(state: StudioState): StudioState {
+   const rec = state.recording;
+   if (rec.status !== "recording") return state;
+-  const recording: StudioRecordingState = { ...rec, status: "paused", pausedAt: nowISO(), lastCommand: "pause" };
+-  return { ...state, recording };
++  return {
++    ...state,
++    recording: { ...rec, status: "paused", pausedAt: nowISO(), lastCommand: "pause" },
++  };
+ }
+ 
+ export function resumeRecordingSession(state: StudioState): StudioState {
+   const rec = state.recording;
+   if (rec.status !== "paused") return state;
+-  const recording: StudioRecordingState = { ...rec, status: "recording", pausedAt: null, lastCommand: "resume" };
+-  return { ...state, recording };
++  return {
++    ...state,
++    recording: { ...rec, status: "recording", pausedAt: null, lastCommand: "resume" },
++  };
+ }
+ 
+ export function stopRecordingSession(state: StudioState): StudioState {
+   const rec = state.recording;
+   if (rec.status !== "recording" && rec.status !== "paused") return state;
+-  const recording: StudioRecordingState = {
+-    ...rec,
+-    status: "stopped",
+-    stoppedAt: nowISO(),
+-    activeTakeId: null,
+-    takeCount: rec.takeCount + 1,
+-    lastCommand: "stop",
++  return {
++    ...state,
++    recording: {
++      ...rec,
++      status: "stopped",
++      stoppedAt: nowISO(),
++      activeTakeId: null,
++      takeCount: rec.takeCount + 1,
++      lastCommand: "stop",
++    },
+   };
+-  return { ...state, recording };
+ }
+ 
+ export function analyzeStoppedSession(state: StudioState): StudioState {
+   const rec = state.recording;
+   if (rec.status !== "stopped") return state;
+-  const recording: StudioRecordingState = { ...rec, status: "analyzing", lastCommand: "analyze" };
+-  return { ...state, recording };
++  return { ...state, recording: { ...rec, status: "analyzing", lastCommand: "analyze" } };
+ }
+ 
+ export function applyCaptureCommand(state: StudioState, rawCommand: string): StudioState {
+@@ -294,39 +390,30 @@ export function applyCaptureCommand(state: StudioState, rawCommand: string): Stu
+   };
+ 
+   if (/\b(go|start recording)\b/.test(n)) {
+-    if (rec.status === "idle" || rec.status === "stopped") {
++    if (rec.status === "idle" || rec.status === "stopped")
+       return appendCmd(startRecordingSession(state), "Recording started.");
+-    }
+-    return appendCmd(state, `Command ignored because recording is already ${rec.status}.`);
++    return appendCmd(state, `Command ignored — recording is already ${rec.status}.`);
+   }
+-
+   if (/\bpause\b/.test(n)) {
+     if (rec.status === "recording") return appendCmd(pauseRecordingSession(state), "Recording paused.");
+-    return appendCmd(state, `Command ignored because recording is not active (${rec.status}).`);
++    return appendCmd(state, `Command ignored — not recording (${rec.status}).`);
+   }
+-
+   if (/\bresume\b/.test(n)) {
+     if (rec.status === "paused") return appendCmd(resumeRecordingSession(state), "Recording resumed.");
+-    return appendCmd(state, `Command ignored because recording is not paused (${rec.status}).`);
++    return appendCmd(state, `Command ignored — not paused (${rec.status}).`);
+   }
+-
+   if (/\bstop\b/.test(n)) {
+-    if (rec.status === "recording" || rec.status === "paused") {
+-      return appendCmd(stopRecordingSession(state), "Recording stopped. Session ready for analysis.");
+-    }
+-    return appendCmd(state, `Command ignored because recording is not active (${rec.status}).`);
++    if (rec.status === "recording" || rec.status === "paused")
++      return appendCmd(stopRecordingSession(state), "Recording stopped.");
++    return appendCmd(state, `Command ignored — not active (${rec.status}).`);
+   }
+-
+   if (/\banalyze\b/.test(n)) {
+     if (rec.status === "stopped") return appendCmd(analyzeStoppedSession(state), "Analysis started (mock).");
+-    return appendCmd(state, `Cannot analyze: recording must be stopped first (${rec.status}).`);
++    return appendCmd(state, `Cannot analyze — stop first (${rec.status}).`);
+   }
+-
+   if (/\bmark\b/.test(n)) {
+-    const withMark = addStudioMarkAtPlayhead(state, "voice mark");
+-    return appendCmd(withMark, "Voice mark added at playhead.");
++    return appendCmd(addStudioMarkAtPlayhead(state, "voice mark"), "Voice mark added.");
+   }
+-
+   return appendCmd(state, "Capture command not recognized.");
+ }
+ 
+@@ -336,77 +423,91 @@ export function applyStudioCommand(state: StudioState, rawCommand: string): Stud
+   const s = clone(state);
+   const n = rawCommand.trim().toLowerCase();
+ 
+-  // ── Capture commands ───────────────────────────────────────────────────────
++  // ── Capture ────────────────────────────────────────────────────────────────
+   if (/\b(go|start recording|pause|resume|stop|analyze|mark)\b/.test(n)) {
+     return applyCaptureCommand(s, rawCommand);
+   }
+ 
++  // ── Publish commands ───────────────────────────────────────────────────────
++  // "i-post to feed and stories" — must match before single-target patterns
++  if (/(feed.*stories|stories.*feed|feed and stories)/.test(n)) {
++    const next = generatePublishPlan(s, ["feed", "stories"]);
++    return _withCmdPreview(next, rawCommand, "Studio generated a mock publish plan. Nothing has been posted.");
++  }
++
++  if (/(post to feed|post.*feed|publish.*feed)/.test(n)) {
++    const next = generatePublishPlan(s, ["feed"]);
++    return _withCmdPreview(next, rawCommand, "Studio generated a mock publish plan. Nothing has been posted.");
++  }
++
++  if (/(post to stories|post.*stories|publish.*stories)/.test(n)) {
++    const next = generatePublishPlan(s, ["stories"]);
++    return _withCmdPreview(next, rawCommand, "Studio generated a mock publish plan. Nothing has been posted.");
++  }
++
++  if (/(campaign version|make campaign|campaign post)/.test(n)) {
++    const next = generatePublishPlan(s, ["campaign"], { campaignMode: true });
++    return _withCmdPreview(next, rawCommand, "Studio generated a mock publish plan. Nothing has been posted.");
++  }
++
++  if (/(save draft|create draft|draft version)/.test(n)) {
++    const next = generatePublishPlan(s, ["draft"]);
++    return _withCmdPreview(next, rawCommand, "Studio generated a mock publish plan. Nothing has been posted.");
++  }
++
++  if (/(schedule this|schedule for|schedule tomorrow|schedule post)/.test(n)) {
++    const next = generatePublishPlan(s, ["draft"], {
++      scheduleMode: "scheduled",
++      scheduledFor: null,
++    });
++    return _withCmdPreview(next, rawCommand, "Studio generated a mock publish plan. Nothing has been posted.");
++  }
++
++  if (/(add cta|cta|call to action)/.test(n)) {
++    const dests: StudioPublishDestination[] = s.publishPlans.length > 0
++      ? s.publishPlans[0].destinations
++      : ["feed"];
++    const next = generatePublishPlan(s, dests, { ctaLabel: "Learn more", campaignMode: dests.includes("campaign") });
++    return _withCmdPreview(next, rawCommand, "Studio generated a mock publish plan. Nothing has been posted.");
++  }
++
+   // ── Cleanup / storage commands ─────────────────────────────────────────────
+   if (/(delete unused|cleanup storage|cleanup|keep only final|protect marked)/.test(n)) {
+     const next = generateCleanupPlan(s);
+-    const session = clone(next.activeSession);
+-    const parsed = parseStudioCommand(rawCommand);
+-    parsed.previewText =
+-      "Studio generated a safe-delete cleanup preview. No media will be removed without explicit confirmation.";
+-    session.commands.unshift(parsed);
+-    session.updatedAt = nowISO();
+-    return { ...next, activeSession: session, commandPanelOpen: true };
++    return _withCmdPreview(
++      next,
++      rawCommand,
++      "Studio generated a safe-delete cleanup preview. No media will be removed without explicit confirmation.",
++    );
+   }
+ 
+   // ── Auto-cut commands ──────────────────────────────────────────────────────
+   if (/(remove dead|dead parts|dead footage)/.test(n)) {
+     const next = generateEditPlan(s, "remove_dead_parts");
+-    const session = clone(next.activeSession);
+-    const parsed = parseStudioCommand(rawCommand);
+-    parsed.previewText = "Auto-cut plan created: dead parts removed (mock preview).";
+-    session.commands.unshift(parsed);
+-    session.updatedAt = nowISO();
+-    return { ...next, activeSession: session };
++    return _withCmdPreview(next, rawCommand, "Auto-cut plan created: dead parts removed.");
+   }
+-
+   if (/(marked moments|use marks|best marks)/.test(n)) {
+     const next = generateEditPlan(s, "marked_moments");
+-    const session = clone(next.activeSession);
+-    const parsed = parseStudioCommand(rawCommand);
+-    parsed.previewText = "Auto-cut plan created: marked moments (mock preview).";
+-    session.commands.unshift(parsed);
+-    session.updatedAt = nowISO();
+-    return { ...next, activeSession: session };
++    return _withCmdPreview(next, rawCommand, "Auto-cut plan created: marked moments.");
+   }
+-
+   if (/(best highlights|best moments|keep best|top clips)/.test(n)) {
+     const next = generateEditPlan(s, "best_highlights");
+-    const session = clone(next.activeSession);
+-    const parsed = parseStudioCommand(rawCommand);
+-    parsed.previewText = "Auto-cut plan created: best highlights (mock preview).";
+-    session.commands.unshift(parsed);
+-    session.updatedAt = nowISO();
+-    return { ...next, activeSession: session };
++    return _withCmdPreview(next, rawCommand, "Auto-cut plan created: best highlights.");
+   }
+-
+   if (/(3 versions|multi.?version|make.*versions|multiple versions)/.test(n)) {
+     const next = generateEditPlan(s, "multi_version");
+-    const session = clone(next.activeSession);
+-    const parsed = parseStudioCommand(rawCommand);
+-    parsed.previewText = "Multi-version draft assembled. 15s/45s/90s versioning is staged for next step.";
+-    session.commands.unshift(parsed);
+-    session.updatedAt = nowISO();
+-    return { ...next, activeSession: session };
++    return _withCmdPreview(next, rawCommand, "Multi-version draft assembled.");
+   }
+ 
+-  // ── Duration commands (also generate target_duration plan) ─────────────────
++  // ── Duration commands ──────────────────────────────────────────────────────
+   const dur = extractTargetDurationSeconds(rawCommand);
+   if (dur && dur > 0) {
+     const session = s.activeSession;
+     session.targetDurationSeconds = dur;
+     session.estimatedFinalDurationSeconds = dur;
+     session.updatedAt = nowISO();
+-    const parsed = parseStudioCommand(rawCommand);
+-    parsed.previewText = `Target duration set to ${dur}s. Auto-cut plan prepared.`;
+-    session.commands.unshift(parsed);
+     const withPlan = generateEditPlan({ ...s, activeSession: session }, "target_duration", dur);
+-    s.commandPanelOpen = true;
+-    return withPlan;
++    return _withCmdPreview(withPlan, rawCommand, `Target duration set to ${dur}s. Auto-cut plan prepared.`);
+   }
+ 
+   // ── General effect/session commands ───────────────────────────────────────
+@@ -418,22 +519,9 @@ export function applyStudioCommand(state: StudioState, rawCommand: string): Stud
+   if (/(music|background sound|audio|sound|clean audio)/.test(n)) {
+     const ef = createEffectPreviewFromCommand(rawCommand);
+     if (ef) s.effectPreviews.unshift(ef);
+-    parsed.previewText = ef ? ef.description : parsed.previewText;
+     return { ...s, activeSession: session };
+   }
+-
+   if (/(skin|lighting|cinematic|beauty|make cinematic|better my skin|fix lighting)/.test(n)) {
+-    const ef = createEffectPreviewFromCommand(rawCommand);
+-    if (ef) s.effectPreviews.unshift(ef);
+-    parsed.previewText = ef ? ef.description : parsed.previewText;
+-    return { ...s, activeSession: session };
+-  }
+-
+-  if (/(post to feed|post to stories|feed and stories|post to feed and stories)/.test(n) || /post .*feed/.test(n)) {
+-    s.exportPanelOpen = true;
+-    if (!s.selectedExportTargets.includes("Feed")) s.selectedExportTargets.push("Feed");
+-    if (!s.selectedExportTargets.includes("Stories")) s.selectedExportTargets.push("Stories");
+-    parsed.previewText = "Export panel opened with Feed and Stories selected (preview only).";
+     const ef = createEffectPreviewFromCommand(rawCommand);
+     if (ef) s.effectPreviews.unshift(ef);
+     return { ...s, activeSession: session };
+@@ -443,8 +531,17 @@ export function applyStudioCommand(state: StudioState, rawCommand: string): Stud
+   if (ef) {
+     s.effectPreviews.unshift(ef);
+     parsed.previewText = ef.description;
+-    return { ...s, activeSession: session };
+   }
+-
+   return { ...s, activeSession: session };
+ }
++
++// ── Internal utility ──────────────────────────────────────────────────────────
++
++function _withCmdPreview(state: StudioState, rawCommand: string, preview: string): StudioState {
++  const session = clone(state.activeSession);
++  const parsed = parseStudioCommand(rawCommand);
++  parsed.previewText = preview;
++  session.commands.unshift(parsed);
++  session.updatedAt = nowISO();
++  return { ...state, activeSession: session, commandPanelOpen: true };
++}
+diff --git a/src/lib/studio/studio.types.ts b/src/lib/studio/studio.types.ts
+index a5ffd0f..143fd2c 100644
+--- a/src/lib/studio/studio.types.ts
++++ b/src/lib/studio/studio.types.ts
+@@ -230,6 +230,69 @@ export interface StudioCleanupPlan {
+   warnings: string[];
+ }
+ 
++// ── Stage 6: Publishing pipeline ─────────────────────────────────────────────
++
++export type StudioPublishDestination =
++  | "feed"
++  | "stories"
++  | "campaign"
++  | "draft"
++  | "proof_vault"
++  | "external";
++
++export type StudioPublishPlanStatus =
++  | "draft"
++  | "previewed"
++  | "ready"
++  | "published_mock"
++  | "rejected";
++
++export type StudioPublishReadinessGateStatus =
++  | "passed"
++  | "warning"
++  | "blocked"
++  | "pending";
++
++export interface StudioPublishReadinessGate {
++  id: string;
++  label: string;
++  status: StudioPublishReadinessGateStatus;
++  message: string;
++}
++
++export interface StudioPublishCTA {
++  label: string;
++  url?: string;
++  enabled: boolean;
++}
++
++export interface StudioPublishSchedule {
++  mode: "now" | "scheduled";
++  scheduledFor: string | null;
++  label: string;
++}
++
++export interface StudioPublishPlan {
++  id: string;
++  status: StudioPublishPlanStatus;
++  createdAt: string;
++  destinations: StudioPublishDestination[];
++  title: string;
++  caption: string;
++  hashtags: string[];
++  disclosureRequired: boolean;
++  disclosureText: string | null;
++  cta: StudioPublishCTA;
++  schedule: StudioPublishSchedule;
++  readinessGates: StudioPublishReadinessGate[];
++  proofRequired: boolean;
++  originalityStatus: "pending" | "ready" | "not_required";
++  selectedEditPlanId: string | null;
++  selectedCleanupPlanId: string | null;
++  summary: string;
++  warnings: string[];
++}
++
+ // ── Full UI state ─────────────────────────────────────────────────────────────
+ 
+ export interface StudioState {
+@@ -248,4 +311,7 @@ export interface StudioState {
+   autoCutPanelOpen: boolean;
+   cleanupPlans: StudioCleanupPlan[];
+   selectedCleanupPlanId: string | null;
++  publishPlans: StudioPublishPlan[];
++  selectedPublishPlanId: string | null;
++  publishPanelOpen: boolean;
+ }
+diff --git a/src/screens/StudioScreen.tsx b/src/screens/StudioScreen.tsx
+index 64db8c4..88e72fa 100644
+--- a/src/screens/StudioScreen.tsx
++++ b/src/screens/StudioScreen.tsx
+@@ -10,6 +10,7 @@ import StudioCommandPanel from "../components/studio/StudioCommandPanel";
+ import StudioExportPanel from "../components/studio/StudioExportPanel";
+ import StudioAutoCutPanel from "../components/studio/StudioAutoCutPanel";
+ import StudioCleanupPanel from "../components/studio/StudioCleanupPanel";
++import StudioPublishPanel from "../components/studio/StudioPublishPanel";
+ 
+ import {
+   createInitialStudioState,
+@@ -26,6 +27,11 @@ import {
+   confirmCleanupPlanPreview,
+   rejectCleanupPlanPreview,
+   setCleanupPreviewOpen,
++  selectPublishPlan,
++  markPublishPlanReady,
++  mockPublishPlan,
++  rejectPublishPlan,
++  setPublishPanelOpen,
+ } from "../lib/studio/studio-state";
+ import type { AspectRatio, StudioToolId } from "../lib/studio/studio.types";
+ 
+@@ -52,6 +58,16 @@ const StudioScreen: React.FC = () => {
+     [state.cleanupPlans],
+   );
+ 
++  const selectedPublishPlan = useMemo(
++    () => state.publishPlans.find((p) => p.id === state.selectedPublishPlanId) ?? null,
++    [state.publishPlans, state.selectedPublishPlanId],
++  );
++
++  const latestPublishPlan = useMemo(
++    () => state.publishPlans[0] ?? null,
++    [state.publishPlans],
++  );
++
+   function handleSetTool(tool: StudioToolId) {
+     setState((s) => setActiveTool(s, tool));
+   }
+@@ -119,6 +135,27 @@ const StudioScreen: React.FC = () => {
+     setState((s) => setCleanupPreviewOpen(s, false));
+   }
+ 
++  // ── Publish handlers ──────────────────────────────────────────────────────────
++  function handleSelectPublishPlan(planId: string) {
++    setState((s) => selectPublishPlan(s, planId));
++  }
++
++  function handleMarkPublishPlanReady(planId: string) {
++    setState((s) => markPublishPlanReady(s, planId));
++  }
++
++  function handleMockPublishPlan(planId: string) {
++    setState((s) => mockPublishPlan(s, planId));
++  }
++
++  function handleRejectPublishPlan(planId: string) {
++    setState((s) => rejectPublishPlan(s, planId));
++  }
++
++  function handleClosePublish() {
++    setState((s) => setPublishPanelOpen(s, false));
++  }
++
+   return (
+     <StudioShell>
+       <StudioTopBar
+@@ -137,6 +174,7 @@ const StudioScreen: React.FC = () => {
+               isPlaying={state.isPlaying}
+               recording={state.recording}
+               selectedEditPlan={selectedEditPlan}
++              selectedPublishPlan={selectedPublishPlan}
+               onPlayPause={handlePlayPause}
+             />
+           </div>
+@@ -164,6 +202,8 @@ const StudioScreen: React.FC = () => {
+           selectedEditPlan={selectedEditPlan}
+           cleanupPlans={state.cleanupPlans}
+           selectedCleanupPlan={selectedCleanupPlan}
++          publishPlans={state.publishPlans}
++          selectedPublishPlan={selectedPublishPlan}
+           onToggleDiscard={handleToggleDiscard}
+         />
+       </div>
+@@ -178,6 +218,7 @@ const StudioScreen: React.FC = () => {
+         session={state.activeSession}
+         selectedExportTargets={state.selectedExportTargets}
+         latestCleanupPlan={latestCleanupPlan}
++        latestPublishPlan={latestPublishPlan}
+         onClose={() => setState((s) => ({ ...s, exportPanelOpen: false }))}
+       />
+       <StudioAutoCutPanel
+@@ -198,6 +239,16 @@ const StudioScreen: React.FC = () => {
+         onRejectPlan={handleRejectCleanupPlan}
+         onClose={handleCloseCleanup}
+       />
++      <StudioPublishPanel
++        open={state.publishPanelOpen}
++        plans={state.publishPlans}
++        selectedPlanId={state.selectedPublishPlanId}
++        onSelectPlan={handleSelectPublishPlan}
++        onMarkReady={handleMarkPublishPlanReady}
++        onMockPublish={handleMockPublishPlan}
++        onRejectPlan={handleRejectPublishPlan}
++        onClose={handleClosePublish}
++      />
+     </StudioShell>
+   );
+ };

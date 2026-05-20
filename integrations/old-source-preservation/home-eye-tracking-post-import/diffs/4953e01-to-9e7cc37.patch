@@ -1,0 +1,774 @@
+diff --git a/prototypes/i-mvp-prototype/src/App.css b/prototypes/i-mvp-prototype/src/App.css
+index f90339d..184854d 100644
+--- a/prototypes/i-mvp-prototype/src/App.css
++++ b/prototypes/i-mvp-prototype/src/App.css
+@@ -182,3 +182,102 @@
+     border-right-color: var(--border);
+   }
+ }
++
++/* App prototype styles */
++.app-root {
++  min-height: 100vh;
++  display: flex;
++  flex-direction: column;
++  background: linear-gradient(180deg, #0f1113 0%, #0b0c0e 100%);
++  color: var(--text);
++}
++
++.topbar {
++  display: flex;
++  justify-content: space-between;
++  align-items: center;
++  padding: 12px 16px;
++  border-bottom: 1px solid rgba(255,255,255,0.04);
++}
++.brand { display:flex; gap:12px; align-items:center; }
++.logo-spot { width:44px; height:44px; border-radius:10px; background:linear-gradient(135deg,#0b6623,#14b8a6); box-shadow: 0 6px 18px rgba(10,10,10,0.6); }
++.title { font-weight:600; color:#e6edf0; }
++.subtitle { font-size:12px; color: #9aa4ae; margin-top:2px; }
++.balance-compact .icoin { background:rgba(50,213,131,0.08); color:#32d583; padding:6px 10px; border-radius:999px; font-family:monospace; }
++
++.viewport { flex:1; display:flex; justify-content:center; padding:18px; }
++.content { width:420px; max-width:96vw; display:flex; flex-direction:column; gap:14px; }
++
++.card { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.012)); border:1px solid rgba(255,255,255,0.04); padding:14px; border-radius:14px; box-shadow: 0 6px 18px rgba(2,6,23,0.6); color:#e6edf0; }
++.card.small { padding:10px; }
++.card.large { padding:22px; }
++.muted { color:#9aa4ae; font-size:13px; }
++.mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
++
++.splash { text-align:center; padding:36px; }
++.splash .large { margin-top:18px; }
++.splash .muted { margin-top:8px; }
++
++.feed-top { display:flex; flex-direction:column; gap:10px; }
++.stories { display:flex; gap:8px; overflow:auto; padding-bottom:6px; }
++.story { min-width:76px; background:linear-gradient(180deg,#0f1214,#0b0d0f); padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,0.03); text-align:center; font-weight:600; color:#dbe6e4; }
++.filters { display:flex; gap:8px; flex-wrap:wrap; }
++.filter { background:transparent; border:1px solid rgba(255,255,255,0.04); padding:8px 10px; border-radius:10px; color:#9aa4ae; }
++
++.cards { display:flex; flex-direction:column; gap:12px; margin-top:6px; }
++.card.organic { cursor:pointer; padding:16px; }
++.card.organic .title { font-weight:700; color:#eaf2f1; margin-top:6px; }
++.card.sponsored { cursor:pointer; padding:14px; border-left:4px solid rgba(255,190,0,0.08); }
++.sponsor-bar { display:flex; justify-content:space-between; align-items:center; font-size:12px; color:#9aa4ae; margin-bottom:8px; }
++.sponsored { color:#ffd166; font-weight:700; }
++.reward-row { display:flex; justify-content:space-between; margin-top:8px; align-items:center; }
++.reward { color:#32d583; font-weight:700; font-family:monospace; }
++.watch { color:#9aa4ae; font-size:13px; }
++.progress-hint { margin-top:10px; }
++.progress-bar { height:8px; background:rgba(255,255,255,0.03); border-radius:6px; overflow:hidden; }
++.progress { height:8px; background:linear-gradient(90deg,#14b8a6,#32d583); width:0%; transition:width 0.3s; }
++.hint { font-size:12px; color:#9aa4ae; margin-top:6px; }
++
++.offer-detail .reward-large { font-size:20px; font-weight:800; color:#32d583; font-family:monospace; margin-top:8px; }
++.offer-detail .consent { margin-top:10px; }
++.offer-detail .actions { margin-top:12px; display:flex; gap:8px; justify-content:flex-end; }
++
++.watch-verify .ring-row { display:flex; gap:14px; align-items:center; }
++.attention-ring { width:110px; height:110px; }
++.watch-meta .score { font-weight:700; font-size:18px; color:#e6edf0; }
++.timeline { margin-top:8px; }
++.timeline-bar { width:220px; height:8px; background:rgba(255,255,255,0.03); border-radius:8px; overflow:hidden; }
++.timeline-bar .filled { height:8px; background:linear-gradient(90deg,#1dd3c6,#32d583); width:0%; transition:width 0.1s; }
++.timeline-text { font-size:12px; color:#9aa4ae; margin-top:6px; }
++
++.gates { list-style:none; padding:0; margin:12px 0; display:flex; flex-direction:column; gap:8px; }
++.gates li { display:flex; gap:12px; align-items:center; padding:10px; border-radius:10px; background:rgba(255,255,255,0.01); }
++.gates li.pass { border-left:4px solid #32d583; }
++.gates li.fail { border-left:4px solid #ff6b6b; opacity:0.9; }
++.gates .dot { width:36px; height:36px; display:flex; align-items:center; justify-content:center; border-radius:8px; background:rgba(255,255,255,0.02); font-weight:700; }
++
++.glow-coin { font-size:28px; font-weight:800; color:#32d583; text-align:center; padding:24px 0; text-shadow: 0 6px 28px rgba(50,213,131,0.14); }
++.tx-meta { text-align:center; color:#9aa4ae; margin-bottom:12px; }
++
++.balances { display:flex; gap:8px; margin-top:10px; }
++.bal { flex:1; background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent); padding:12px; border-radius:10px; text-align:center; }
++.bal .label { font-size:12px; color:#9aa4ae; }
++.bal .amount { font-size:18px; font-weight:800; margin-top:6px; }
++.last-tx { display:flex; justify-content:space-between; align-items:center; margin-top:12px; }
++.wallet-actions { display:flex; gap:8px; margin-top:12px; justify-content:flex-end; }
++
++.convert .field { margin-top:12px; display:flex; gap:12px; align-items:center; }
++.convert input { width:100px; padding:8px; border-radius:8px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:inherit; }
++
++.preview .row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed rgba(255,255,255,0.02); }
++.preview .total { font-weight:700; margin-top:6px; }
++
++.actions { display:flex; gap:8px; justify-content:flex-end; margin-top:12px; }
++.primary { background:linear-gradient(90deg,#14b8a6,#32d583); color:#071014; padding:10px 12px; border-radius:10px; border:none; font-weight:700; }
++.ghost { background:transparent; color:#9aa4ae; padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.02); }
++
++.presenter { position:fixed; left:50%; transform:translateX(-50%); bottom:18px; width:92%; max-width:760px; display:flex; justify-content:space-between; gap:12px; align-items:center; pointer-events:auto; }
++.presenter .controls { display:flex; gap:8px; }
++.presenter .jump-list { display:flex; gap:6px; overflow:auto; }
++.presenter .jump-list button { padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.03); background:transparent; color:#9aa4ae; }
++.presenter .jump-list button.active { background:linear-gradient(90deg,#0b6623,#14b8a6); color:#e6edf0; border:none; }
+diff --git a/prototypes/i-mvp-prototype/src/App.tsx b/prototypes/i-mvp-prototype/src/App.tsx
+index a66b5ef..55a5e3b 100644
+--- a/prototypes/i-mvp-prototype/src/App.tsx
++++ b/prototypes/i-mvp-prototype/src/App.tsx
+@@ -1,122 +1,552 @@
+-import { useState } from 'react'
+-import reactLogo from './assets/react.svg'
+-import viteLogo from './assets/vite.svg'
+-import heroImg from './assets/hero.png'
+-import './App.css'
++import React, { useMemo, useState } from "react"
++import "./App.css"
+ 
+-function App() {
+-  const [count, setCount] = useState(0)
++type Page =
++  | "Splash"
++  | "Feed"
++  | "Offer"
++  | "Watch"
++  | "Verification"
++  | "Reward"
++  | "Wallet"
++  | "Convert"
++  | "Withdraw"
++  | "CreatorEconomics"
++  | "Roadmap"
++
++const PAGES: Page[] = [
++  "Splash",
++  "Feed",
++  "Offer",
++  "Watch",
++  "Verification",
++  "Reward",
++  "Wallet",
++  "Convert",
++  "Withdraw",
++  "CreatorEconomics",
++  "Roadmap",
++]
++
++export default function App() {
++  const [pageIdx, setPageIdx] = useState(0)
++  const page = PAGES[pageIdx]
++
++  const reset = () => setPageIdx(0)
++  const next = () => setPageIdx((i) => Math.min(i + 1, PAGES.length - 1))
++  const prev = () => setPageIdx((i) => Math.max(i - 1, 0))
++  const jump = (p: Page) => setPageIdx(PAGES.indexOf(p))
++
++  // mocked state shared across flow
++  const [balance, setBalance] = useState({ i: 12.4, a: 4.2, pending: 2.0 })
++  const [lastTx, setLastTx] = useState({
++    id: "tx-nike-001",
++    source: "Nike Running",
++    amount: 2.0,
++    status: "confirmed",
++  })
++
++  const [watchProgress, setWatchProgress] = useState(0) // 0-1
++  const [attentionScore, setAttentionScore] = useState(78) // out of 100
++
++  const feedData = useMemo(
++    () => ({
++      stories: [
++        { id: "s1", label: "Nike" },
++        { id: "s2", label: "Apple" },
++        { id: "s3", label: "Meta" },
++        { id: "s4", label: "Creator" },
++      ],
++      filters: ["All", "Sports", "Tech", "Lifestyle"],
++      organic: {
++        title: "Morning rituals for better focus",
++        publisher: "FocusLabs",
++        excerpt: "Tiny habits to improve attention and work clarity.",
++      },
++      sponsored: {
++        network: "YouTube",
++        label: "Sponsored",
++        brand: "Nike Running",
++        campaign: "Pegasus 41 campaign",
++        reward: 2.0,
++        watchTimeSec: 270, // 4:30
++      },
++    }),
++    []
++  )
+ 
+   return (
+-    <>
+-      <section id="center">
+-        <div className="hero">
+-          <img src={heroImg} className="base" width="170" height="179" alt="" />
+-          <img src={reactLogo} className="framework" alt="React logo" />
+-          <img src={viteLogo} className="vite" alt="Vite logo" />
++    <div className="app-root">
++      <Topbar />
++      <main className="viewport">
++        <div className="content">
++          {page === "Splash" && (
++            <Splash onContinue={() => jump("Feed")} />
++          )}
++          {page === "Feed" && (
++            <Feed
++              data={feedData}
++              onOpenOffer={() => jump("Offer")}
++              onOpenSponsored={() => jump("Offer")}
++            />
++          )}
++          {page === "Offer" && (
++            <OfferDetail
++              offer={feedData.sponsored}
++              onStart={() => {
++                setWatchProgress(0)
++                setAttentionScore(78)
++                jump("Watch")
++              }}
++            />
++          )}
++          {page === "Watch" && (
++            <WatchVerify
++              requiredSec={feedData.sponsored.watchTimeSec}
++              reward={feedData.sponsored.reward}
++              progress={watchProgress}
++              attentionScore={attentionScore}
++              onProgress={(p: number, score: number) => {
++                setWatchProgress(p)
++                setAttentionScore(score)
++              }}
++              onComplete={() => jump("Verification")}
++            />
++          )}
++          {page === "Verification" && (
++            <VerificationResult
++              attentionScore={attentionScore}
++              watchSec={Math.round(watchProgress * feedData.sponsored.watchTimeSec)}
++              requiredSec={feedData.sponsored.watchTimeSec}
++              onSuccess={() => {
++                // credit balance
++                setBalance((b) => ({ ...b, pending: +(b.pending + feedData.sponsored.reward).toFixed(2) }))
++                setLastTx({
++                  id: `tx-${Date.now()}`,
++                  source: feedData.sponsored.brand,
++                  amount: feedData.sponsored.reward,
++                  status: "pending",
++                })
++                jump("Reward")
++              }}
++              onFail={() => jump("Feed")}
++            />
++          )}
++          {page === "Reward" && (
++            <RewardReveal
++              tx={lastTx}
++              onContinue={() => jump("Wallet")}
++            />
++          )}
++          {page === "Wallet" && (
++            <Wallet
++              balance={balance}
++              lastTx={lastTx}
++              onConvert={() => jump("Convert")}
++              onWithdraw={() => jump("Withdraw")}
++            />
++          )}
++          {page === "Convert" && (
++            <Convert
++              balance={balance}
++              onBack={() => jump("Wallet")}
++            onSimulate={(delta: number) => {
++                setBalance((b) => ({ ...b, i: +(b.i - delta).toFixed(2), a: +(b.a + delta * 0.95).toFixed(2) }))
++                jump("Wallet")
++              }}
++            />
++          )}
++          {page === "Withdraw" && (
++            <WithdrawPreview
++              balance={balance}
++              onBack={() => jump("Wallet")}
++              onSimulate={() => jump("Wallet")}
++            />
++          )}
++          {page === "CreatorEconomics" && <CreatorEconomics />}
++          {page === "Roadmap" && <Roadmap />}
+         </div>
++      </main>
++
++      <PresenterStrip
++        onReset={reset}
++        onPrev={prev}
++        onNext={next}
++        onJump={jump}
++        pages={PAGES}
++        current={page}
++      />
++    </div>
++  )
++}
++
++function Topbar() {
++  return (
++    <header className="topbar">
++      <div className="brand">
++        <div className="logo-spot" />
+         <div>
+-          <h1>Get started</h1>
+-          <p>
+-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
+-          </p>
++          <div className="title">[ i ] Attention Wallet</div>
++          <div className="subtitle">verified attention infrastructure</div>
++        </div>
++      </div>
++      <div className="balance-compact">
++        <div className="icoin">i {12.4.toFixed(2)}</div>
++      </div>
++    </header>
++  )
++}
++
++function PresenterStrip({
++  onReset,
++  onPrev,
++  onNext,
++  onJump,
++  pages,
++  current,
++}: {
++  onReset: () => void
++  onPrev: () => void
++  onNext: () => void
++  onJump: (p: Page) => void
++  pages: Page[]
++  current: Page
++}) {
++  return (
++    <nav className="presenter">
++      <div className="controls">
++        <button onClick={onReset} className="ghost">Reset</button>
++        <button onClick={onPrev} className="ghost">Prev</button>
++        <button onClick={onNext} className="primary">Next</button>
++      </div>
++      <div className="jump-list">
++        {pages.map((p) => (
++          <button key={p} onClick={() => onJump(p)} className={p === current ? "active" : "ghost"}>
++            {p}
++          </button>
++        ))}
++      </div>
++    </nav>
++  )
++}
++
++function Splash({ onContinue }: { onContinue: () => void }) {
++  return (
++    <section className="splash card">
++      <h1>[ i ] Attention Wallet</h1>
++      <p className="muted">Premium attention rewards — demo prototype</p>
++      <div className="splash-actions">
++        <button className="primary large" onClick={onContinue}>Open Feed</button>
++      </div>
++    </section>
++  )
++}
++
++type FeedData = {
++  stories: { id: string; label: string }[]
++  filters: string[]
++  organic: { title: string; publisher: string; excerpt: string }
++  sponsored: { network: string; label: string; brand: string; campaign: string; reward: number; watchTimeSec: number }
++}
++
++function Feed({ data, onOpenOffer, onOpenSponsored }: { data: FeedData; onOpenOffer: () => void; onOpenSponsored: () => void }) {
++  return (
++    <section className="feed">
++      <div className="feed-top card">
++        <div className="stories">
++          {data.stories.map((s) => (
++            <div key={s.id} className="story">{s.label}</div>
++          ))}
++        </div>
++        <div className="filters">
++          {data.filters.map((f: string) => (
++            <button key={f} className="filter">{f}</button>
++          ))}
++        </div>
++      </div>
++
++      <div className="cards">
++        <article className="card organic" onClick={onOpenOffer}>
++          <div className="meta">
++            <div className="publisher">{data.organic?.publisher ?? "FocusLabs"}</div>
++            <div className="title">{data.organic?.title ?? "Morning rituals for better focus"}</div>
++            <p className="excerpt">{data.organic?.excerpt ?? "Tiny habits to improve attention."}</p>
++          </div>
++        </article>
++
++        <article className="card sponsored" onClick={onOpenSponsored}>
++          <div className="sponsor-bar">
++            <div className="network">{data.sponsored.network} · <span className="sponsored">Sponsored</span></div>
++            <div className="brand">{data.sponsored.brand}</div>
++          </div>
++          <div className="sponsor-body">
++            <div className="campaign">{data.sponsored.campaign}</div>
++            <div className="reward-row">
++              <div className="reward">+{data.sponsored.reward.toFixed(2)} iCoins</div>
++              <div className="watch">4:30 required · Watch to earn</div>
++            </div>
++            <div className="progress-hint">
++              <div className="progress-bar">
++                <div className="progress" style={{ width: "12%" }} />
++              </div>
++              <div className="hint">progress: watch to verify & earn</div>
++            </div>
++          </div>
++        </article>
++      </div>
++    </section>
++  )
++}
++
++function OfferDetail({ offer, onStart }: { offer: FeedData["sponsored"]; onStart: () => void }) {
++  return (
++    <section className="card offer-detail">
++      <div className="offer-head">
++        <div className="chip">{offer.network} · Sponsored</div>
++        <h2>{offer.brand}</h2>
++        <div className="campaign">{offer.campaign}</div>
++      </div>
++      <div className="offer-body">
++        <div className="reward-large">+{offer.reward.toFixed(2)} iCoins</div>
++        <div className="watch-time">Watch time: 4:30</div>
++        <div className="verification">Requires attention verification</div>
++        <p className="consent muted">By starting you consent to simulated attention verification for demo purposes.</p>
++        <div className="actions">
++          <button className="primary" onClick={onStart}>Start Watching</button>
++        </div>
++      </div>
++    </section>
++  )
++}
++
++function WatchVerify({ requiredSec, progress, attentionScore, onProgress, onComplete }: { requiredSec: number; progress: number; attentionScore: number; onProgress: (p: number, score: number) => void; onComplete: () => void }) {
++  // simulate progress when component mounts
++  React.useEffect(() => {
++    let raf = 0
++    const start = performance.now()
++    let p = progress
++    let score = attentionScore
++    function step(t: number) {
++      const elapsed = (t - start) / 1000
++      const total = requiredSec
++      p = Math.min(1, elapsed / total)
++      // simulate attention score wiggle
++      score = Math.max(40, Math.min(99, score + (Math.sin(t / 400) * 2)))
++      onProgress(p, Math.round(score))
++      if (p < 1) raf = requestAnimationFrame(step)
++    }
++    raf = requestAnimationFrame(step)
++    return () => cancelAnimationFrame(raf)
++  }, [requiredSec, attentionScore, onProgress, progress])
++
++  return (
++    <section className="card watch-verify">
++      <h2>Watching — reward locked</h2>
++      <div className="watch-body">
++        <div className="ring-row">
++          <AttentionRing score={attentionScore} />
++          <div className="watch-meta">
++            <div className="score">{attentionScore} / 100</div>
++            <div className="eye-indicator">eye-tracking: simulated</div>
++            <div className="timeline">
++              <div className="timeline-bar"><div className="filled" style={{ width: `${Math.round(progress * 100)}%` }} /></div>
++              <div className="timeline-text">{Math.round(progress * 100)}% · {Math.round(progress * requiredSec)}s / {requiredSec}s</div>
++            </div>
++          </div>
++        </div>
++        <div className="actions">
++          <button className="primary" onClick={onComplete}>Complete & Verify</button>
++        </div>
++      </div>
++    </section>
++  )
++}
++
++function AttentionRing({ score }: { score: number }) {
++  const pct = Math.max(0, Math.min(100, score))
++  const radius = 44
++  const circ = 2 * Math.PI * radius
++  const dash = (pct / 100) * circ
++  const color =
++    pct >= 80 ? "#32d583" : pct >= 60 ? "#1dd3c6" : pct >= 45 ? "#ffd166" : "#ff8a65"
++  return (
++    <svg width={110} height={110} viewBox="0 0 110 110" className="attention-ring">
++      <defs>
++        <filter id="glow">
++          <feGaussianBlur stdDeviation="3" result="b" />
++          <feMerge>
++            <feMergeNode in="b" />
++            <feMergeNode in="SourceGraphic" />
++          </feMerge>
++        </filter>
++      </defs>
++      <g transform="translate(55,55)">
++        <circle r={radius} fill="#0f1113" stroke="#2b2d33" strokeWidth="10" />
++        <circle
++          r={radius}
++          fill="transparent"
++          stroke={color}
++          strokeWidth={8}
++          strokeLinecap="round"
++          strokeDasharray={`${dash} ${circ - dash}`}
++          strokeDashoffset={circ * 0.25}
++          transform="rotate(-90)"
++          style={{ filter: "url(#glow)" }}
++        />
++        <text x="0" y="6" textAnchor="middle" fill="#e6edf0" fontSize="20" fontFamily="monospace">{score}</text>
++      </g>
++    </svg>
++  )
++}
++
++function VerificationResult({ attentionScore, watchSec, requiredSec, onSuccess, onFail }: { attentionScore: number; watchSec: number; requiredSec: number; onSuccess: () => void; onFail: () => void }) {
++  // deterministic gates
++  const gates = [
++    { id: "presence", label: "presence detected", pass: true },
++    { id: "time", label: "required watch time met", pass: watchSec >= requiredSec },
++    { id: "attention", label: "attention score passed", pass: attentionScore >= 60 },
++    { id: "completion", label: "completion received", pass: true },
++    { id: "fraud", label: "fraud flags clean", pass: attentionScore < 95 },
++  ]
++  const allPass = gates.every((g) => g.pass)
++  return (
++    <section className="card verification-result">
++      <h2>Verification Result</h2>
++      <ul className="gates">
++        {gates.map((g) => (
++          <li key={g.id} className={g.pass ? "pass" : "fail"}>
++            <span className="dot">{g.pass ? "✓" : "✕"}</span>
++            <div className="gate-meta">
++              <div className="gate-label">{g.label}</div>
++            </div>
++          </li>
++        ))}
++      </ul>
++      <div className="actions">
++        {allPass ? (
++          <button className="primary" onClick={onSuccess}>Claim reward</button>
++        ) : (
++          <button className="ghost" onClick={onFail}>Return to feed</button>
++        )}
++      </div>
++    </section>
++  )
++}
++
++function RewardReveal({ tx, onContinue }: { tx: { amount: number; source: string; status: string }; onContinue: () => void }) {
++  return (
++    <section className="card reward-reveal">
++      <div className="glow-coin">+{tx.amount.toFixed(2)} iCoins</div>
++      <div className="tx-meta">
++        <div className="source">{tx.source}</div>
++        <div className="status">transaction created · {tx.status}</div>
++      </div>
++      <div className="actions">
++        <button className="primary" onClick={onContinue}>Continue to Wallet</button>
++      </div>
++    </section>
++  )
++}
++
++function Wallet({ balance, lastTx, onConvert, onWithdraw }: { balance: { i: number; a: number; pending: number }; lastTx: { id: string; source: string; amount: number; status: string }; onConvert: () => void; onWithdraw: () => void }) {
++  return (
++    <section className="card wallet">
++      <h2>Wallet</h2>
++      <div className="balances">
++        <div className="bal">
++          <div className="label">Available</div>
++          <div className="amount mono">{balance.i.toFixed(2)} iCoins</div>
++        </div>
++        <div className="bal">
++          <div className="label">aCoins</div>
++          <div className="amount mono">{balance.a.toFixed(2)}</div>
+         </div>
+-        <button
+-          type="button"
+-          className="counter"
+-          onClick={() => setCount((count) => count + 1)}
+-        >
+-          Count is {count}
+-        </button>
+-      </section>
+-
+-      <div className="ticks"></div>
+-
+-      <section id="next-steps">
+-        <div id="docs">
+-          <svg className="icon" role="presentation" aria-hidden="true">
+-            <use href="/icons.svg#documentation-icon"></use>
+-          </svg>
+-          <h2>Documentation</h2>
+-          <p>Your questions, answered</p>
+-          <ul>
+-            <li>
+-              <a href="https://vite.dev/" target="_blank">
+-                <img className="logo" src={viteLogo} alt="" />
+-                Explore Vite
+-              </a>
+-            </li>
+-            <li>
+-              <a href="https://react.dev/" target="_blank">
+-                <img className="button-icon" src={reactLogo} alt="" />
+-                Learn more
+-              </a>
+-            </li>
+-          </ul>
++        <div className="bal">
++          <div className="label">Pending</div>
++          <div className="amount mono">{balance.pending.toFixed(2)}</div>
+         </div>
+-        <div id="social">
+-          <svg className="icon" role="presentation" aria-hidden="true">
+-            <use href="/icons.svg#social-icon"></use>
+-          </svg>
+-          <h2>Connect with us</h2>
+-          <p>Join the Vite community</p>
+-          <ul>
+-            <li>
+-              <a href="https://github.com/vitejs/vite" target="_blank">
+-                <svg
+-                  className="button-icon"
+-                  role="presentation"
+-                  aria-hidden="true"
+-                >
+-                  <use href="/icons.svg#github-icon"></use>
+-                </svg>
+-                GitHub
+-              </a>
+-            </li>
+-            <li>
+-              <a href="https://chat.vite.dev/" target="_blank">
+-                <svg
+-                  className="button-icon"
+-                  role="presentation"
+-                  aria-hidden="true"
+-                >
+-                  <use href="/icons.svg#discord-icon"></use>
+-                </svg>
+-                Discord
+-              </a>
+-            </li>
+-            <li>
+-              <a href="https://x.com/vite_js" target="_blank">
+-                <svg
+-                  className="button-icon"
+-                  role="presentation"
+-                  aria-hidden="true"
+-                >
+-                  <use href="/icons.svg#x-icon"></use>
+-                </svg>
+-                X.com
+-              </a>
+-            </li>
+-            <li>
+-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
+-                <svg
+-                  className="button-icon"
+-                  role="presentation"
+-                  aria-hidden="true"
+-                >
+-                  <use href="/icons.svg#bluesky-icon"></use>
+-                </svg>
+-                Bluesky
+-              </a>
+-            </li>
+-          </ul>
++      </div>
++      <div className="last-tx card small">
++        <div className="tx-left">
++          <div className="tx-title">{lastTx.source}</div>
++          <div className="tx-sub muted">#{lastTx.id}</div>
+         </div>
+-      </section>
++        <div className="tx-right">
++          <div className="tx-amount">+{lastTx.amount.toFixed(2)} i</div>
++          <div className="tx-status muted">{lastTx.status}</div>
++        </div>
++      </div>
++      <div className="wallet-actions">
++        <button className="primary" onClick={onConvert}>Convert</button>
++        <button className="ghost" onClick={onWithdraw}>Withdraw</button>
++        <button className="ghost">Pay</button>
++      </div>
++    </section>
++  )
++}
+ 
+-      <div className="ticks"></div>
+-      <section id="spacer"></section>
+-    </>
++function Convert({ onBack, onSimulate }: { onBack: () => void; onSimulate: (delta: number) => void }) {
++  const [amount, setAmount] = useState(1)
++  return (
++    <section className="card convert">
++      <h2>Convert iCoins → aCoins</h2>
++      <div className="muted">Simulated only — no real payments</div>
++      <div className="convert-body">
++        <div className="field">
++          <label>Amount</label>
++          <input type="number" value={amount} onChange={(e) => setAmount(Number(e.target.value))} />
++        </div>
++        <div className="estimate muted">You will receive ~{(amount * 0.95).toFixed(2)} aCoins</div>
++      </div>
++      <div className="actions">
++        <button className="ghost" onClick={onBack}>Cancel</button>
++        <button className="primary" onClick={() => onSimulate(amount)}>Convert</button>
++      </div>
++    </section>
+   )
+ }
+ 
+-export default App
++function WithdrawPreview({ balance, onBack, onSimulate }: { balance: { i: number; a: number; pending: number }; onBack: () => void; onSimulate: () => void }) {
++  return (
++    <section className="card withdraw">
++      <h2>Withdraw Preview</h2>
++      <div className="muted">Simulated withdraw preview — no bank transfers</div>
++      <div className="preview">
++        <div className="row"><div>Available</div><div className="mono">{balance.i.toFixed(2)} iCoins</div></div>
++        <div className="row"><div>Estimated fees</div><div className="mono">0.00 i</div></div>
++        <div className="row total"><div>To receive</div><div className="mono">{balance.i.toFixed(2)} USD (sim)</div></div>
++      </div>
++      <div className="actions">
++        <button className="ghost" onClick={onBack}>Back</button>
++        <button className="primary" onClick={onSimulate}>Simulate Withdraw</button>
++      </div>
++    </section>
++  )
++}
++
++function CreatorEconomics() {
++  return (
++    <section className="card creator-econ">
++      <h2>Creator Economics</h2>
++      <p className="muted">Simulated split and reward flows for creators.</p>
++      <ul>
++        <li>Impression-share weighting</li>
++        <li>Attention-adjusted payouts</li>
++        <li>Revenue cadence: daily settlements</li>
++      </ul>
++    </section>
++  )
++}
++
++function Roadmap() {
++  return (
++    <section className="card roadmap">
++      <h2>Roadmap</h2>
++      <ol>
++        <li>Phase 1 — Android research prototype & demo</li>
++        <li>Phase 2 — Cross-platform SDK</li>
++        <li>Phase 3 — Governance & autonomy</li>
++      </ol>
++    </section>
++  )
++}
