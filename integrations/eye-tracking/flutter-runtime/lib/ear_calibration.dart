@@ -16,6 +16,9 @@ double earFatigueLevel(double baselineEarMean, double currentEarMean) =>
     baselineEarMean - currentEarMean;
 
 /// First “closing” threshold on raw **mean** EAR: [dynamicEarCloseThreshold] = `baseline × 0.7`.
+///
+/// **Calibration tuning:** [rawDynamicCloseFraction] / [rawDynamicOpenFraction] after
+/// open-EAR baseline capture on device — see CALIBRATION_TUNING_PLAN.md.
 const double rawDynamicCloseFraction = 0.7;
 
 /// Reopen hysteresis band (must stay **above** [rawDynamicCloseFraction] on the same scale).

@@ -1,3 +1,7 @@
+/// Calibration FSM labels and capture gates ([main] Cal L/R/N/EAR buttons).
+///
+/// **Calibration tuning:** sample acceptance (multi-frame, fixation) and operator
+/// feedback — see docs/technical/CALIBRATION_TUNING_PLAN.md.
 enum CalibrationPhase {
   idle,
   samplingLeft,

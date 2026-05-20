@@ -2,6 +2,8 @@ import 'trust_merge.dart';
 
 /// Subtracted from live native [gazeX] before [normalizeGazeX]. Left/right calibration
 /// samples are still stored in **raw** native units.
+///
+/// **Calibration tuning:** re-evaluate offset vs neutral capture on target hardware.
 const double gazeXCalibrationOffset = 0.09;
 
 /// Population raw gazeX extremes (native units) when local calibration is missing or

@@ -1116,6 +1116,9 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
 
   /// Calibration samples + [normalizeGazeX].
   ///
+  /// **Calibration tuning:** capture quality (multi-frame median, fixation gate) and
+  /// wiring normalized gaze into [getZone]/dwell — see docs/technical/CALIBRATION_TUNING_PLAN.md.
+  ///
   /// [effectiveGazeX] is live gaze from the current frame while a face is active, or null on hard loss.
   ({double? normalizedGazeX, bool calibrationDirty}) _normalize(
     VisionFrame face, {
@@ -1174,6 +1177,9 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
 
   /// Raw [gazeX] → [getZone], then runs dwell lock:
   /// zone change resets timer; after [_zoneDwellMs], zone is locked.
+  ///
+  /// **Calibration tuning:** [getZone] deadband (±0.10 in [gaze_zone.dart]) and optional
+  /// switch to [getGazeZone] on normalized X — measure on device before changing.
   bool updateZone(double gazeX) {
     final zone = getZone(gazeX);
     return _advanceZoneDwell(zone);
@@ -2178,51 +2184,71 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
           Positioned(
             left: 12,
             bottom: 24,
-            child: GestureDetector(
-              onLongPress: defaultTargetPlatform == TargetPlatform.android
-                  ? _requestHeadNeutralCalibration
-                  : null,
-              child: ValueListenableBuilder<int>(
-                valueListenable: _blinkCountNotifier,
-                builder: (context, blinkCount, _) {
-                  return Text(
-                    'Gaze: min=${_gazeMeasuredLeft?.toStringAsFixed(3) ?? '—'} '
-                    'max=${_gazeMeasuredRight?.toStringAsFixed(3) ?? '—'} '
-                    'yaw₀=${_neutralHeadYaw?.toStringAsFixed(3) ?? '—'}\n'
-                    'EAR open: leftOpenEAR=${_leftOpenEar?.toStringAsFixed(3) ?? '—'} '
-                    'rightOpenEAR=${_rightOpenEar?.toStringAsFixed(3) ?? '—'}'
-                    '${_openEarCalibrating ? ' (${_openEarCalibrator.framesCollected}/${_openEarCalibrator.sampleCount})' : ''}\n'
-                    'Calibration FSM: $_calibrationPhaseLabel\n'
-                    'EAR norm: leftNorm=${_lastLeftNorm?.toStringAsFixed(2) ?? '—'} '
-                    'rightNorm=${_lastRightNorm?.toStringAsFixed(2) ?? '—'}\n'
-                    'EAR fatigue (mean): ${_earFatigueLevel?.toStringAsFixed(4) ?? '—'} '
-                    '(baselineMean−currentMean)\n'
-                    'Attention: $_displayAttentionScore (native $_nativeAttentionScore'
-                    '${_earFatigueLevel != null && _earFatigueLevel! < 0.05 ? ', +0.1 fatigue' : ''})\n'
-                    'Authenticity: likelyFake=$_likelyFake '
-                    '(staticGaze=$_fakeStaticGaze perfectStab=$_fakePerfectStability noBlink=$_fakeNoBlink)\n'
-                    'EAR blink close (dyn): ${rawMeanOpenEarBaseline(_leftOpenEar, _rightOpenEar) != null ? dynamicEarCloseThreshold(rawMeanOpenEarBaseline(_leftOpenEar, _rightOpenEar)!).toStringAsFixed(3) : '—'} '
-                    '(0.7×meanOpen)\n'
-                    'Blinks: dwell, then close eyes (mean EAR<0.08) to select · 2=confirm · 3+=cancel\n'
-                    'Blink: $_isBlinking | Count: $blinkCount\n'
-                    'Blink drop: leftDrop=${_blinkLeftDrop?.toStringAsFixed(3) ?? '—'} '
-                    'rightDrop=${_blinkRightDrop?.toStringAsFixed(3) ?? '—'} '
-                    'isRightDominant=${_blinkIsRightDominant == null ? '—' : _blinkIsRightDominant!}\n'
-                    'Zone: ${_currentZone ?? '—'}'
-                    '${_currentZone != null && _zoneStart != null && !_selectedAnnouncedForStint ? (_dwellSatisfiedForStint ? ' (blink to select)' : ' (dwell…)') : ''}'
-                    '${_selectedAnnouncedForStint && _currentZone != null ? ' ✓' : ''}\n'
-                    'Pitch: ${_headPitchBand ?? '—'}\n'
-                    '${defaultTargetPlatform == TargetPlatform.android ? 'Long-press: head yaw only · Cal L/R/N: gaze + yaw₀.' : ''}',
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                      height: 1.35,
-                      shadows: [
-                        Shadow(blurRadius: 4, color: Colors.black54),
-                      ],
+            child: SafeArea(
+              child: GestureDetector(
+                onLongPress: defaultTargetPlatform == TargetPlatform.android
+                    ? _requestHeadNeutralCalibration
+                    : null,
+                child: ConstrainedBox(
+                  // Lab HUD: bounded so telemetry stays readable on narrow phones (e.g. 1080×2340).
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.sizeOf(context).width * 0.55,
+                    maxHeight: MediaQuery.sizeOf(context).height * 0.45,
+                  ),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.35),
+                      borderRadius: BorderRadius.circular(6),
                     ),
-                  );
-                },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: SingleChildScrollView(
+                        child: ValueListenableBuilder<int>(
+                          valueListenable: _blinkCountNotifier,
+                          builder: (context, blinkCount, _) {
+                            return Text(
+                              'Gaze: min=${_gazeMeasuredLeft?.toStringAsFixed(3) ?? '—'} '
+                              'max=${_gazeMeasuredRight?.toStringAsFixed(3) ?? '—'} '
+                              'yaw₀=${_neutralHeadYaw?.toStringAsFixed(3) ?? '—'}\n'
+                              'EAR open: leftOpenEAR=${_leftOpenEar?.toStringAsFixed(3) ?? '—'} '
+                              'rightOpenEAR=${_rightOpenEar?.toStringAsFixed(3) ?? '—'}'
+                              '${_openEarCalibrating ? ' (${_openEarCalibrator.framesCollected}/${_openEarCalibrator.sampleCount})' : ''}\n'
+                              'Calibration FSM: $_calibrationPhaseLabel\n'
+                              'EAR norm: leftNorm=${_lastLeftNorm?.toStringAsFixed(2) ?? '—'} '
+                              'rightNorm=${_lastRightNorm?.toStringAsFixed(2) ?? '—'}\n'
+                              'EAR fatigue (mean): ${_earFatigueLevel?.toStringAsFixed(4) ?? '—'} '
+                              '(baselineMean−currentMean)\n'
+                              'Attention: $_displayAttentionScore (native $_nativeAttentionScore'
+                              '${_earFatigueLevel != null && _earFatigueLevel! < 0.05 ? ', +0.1 fatigue' : ''})\n'
+                              'Authenticity: likelyFake=$_likelyFake '
+                              '(staticGaze=$_fakeStaticGaze perfectStab=$_fakePerfectStability noBlink=$_fakeNoBlink)\n'
+                              'EAR blink close (dyn): ${rawMeanOpenEarBaseline(_leftOpenEar, _rightOpenEar) != null ? dynamicEarCloseThreshold(rawMeanOpenEarBaseline(_leftOpenEar, _rightOpenEar)!).toStringAsFixed(3) : '—'} '
+                              '(0.7×meanOpen)\n'
+                              'Blinks: dwell, then close eyes (mean EAR<0.08) to select · 2=confirm · 3+=cancel\n'
+                              'Blink: $_isBlinking | Count: $blinkCount\n'
+                              'Blink drop: leftDrop=${_blinkLeftDrop?.toStringAsFixed(3) ?? '—'} '
+                              'rightDrop=${_blinkRightDrop?.toStringAsFixed(3) ?? '—'} '
+                              'isRightDominant=${_blinkIsRightDominant == null ? '—' : _blinkIsRightDominant!}\n'
+                              'Zone: ${_currentZone ?? '—'}'
+                              '${_currentZone != null && _zoneStart != null && !_selectedAnnouncedForStint ? (_dwellSatisfiedForStint ? ' (blink to select)' : ' (dwell…)') : ''}'
+                              '${_selectedAnnouncedForStint && _currentZone != null ? ' ✓' : ''}\n'
+                              'Pitch: ${_headPitchBand ?? '—'}\n'
+                              '${defaultTargetPlatform == TargetPlatform.android ? 'Long-press: head yaw only · Cal L/R/N: gaze + yaw₀.' : ''}',
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                                height: 1.35,
+                                shadows: [
+                                  Shadow(blurRadius: 4, color: Colors.black54),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
@@ -2231,28 +2257,40 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
             builder: (context, t, _) {
               if (t == null) return const SizedBox.shrink();
               return Positioned(
-                right: 20,
-                bottom: 30,
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: const Color(0x88000000),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: DefaultTextStyle(
-                    style: const TextStyle(color: Colors.white, fontSize: 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('CONF: ${t.confidence.toStringAsFixed(2)}'),
-                        Text('STAB: ${t.stability.toStringAsFixed(2)}'),
-                        Text('HEAD: ${t.headPenalty.toStringAsFixed(2)}'),
-                        Text('VEL: ${t.velocityPenalty.toStringAsFixed(2)}'),
-                        Text('FIX: ${t.fixationDuration}ms'),
-                        Text('STATE: ${t.isFixating}'),
-                        Text('PASS: ${t.passed}'),
-                        Text('REASON: ${t.reason}'),
-                      ],
+                right: 12,
+                bottom: 24,
+                child: SafeArea(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.sizeOf(context).width * 0.38,
+                    ),
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: const Color(0x88000000),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: DefaultTextStyle(
+                        style: const TextStyle(color: Colors.white, fontSize: 11),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text('CONF: ${t.confidence.toStringAsFixed(2)}'),
+                            Text('STAB: ${t.stability.toStringAsFixed(2)}'),
+                            Text('HEAD: ${t.headPenalty.toStringAsFixed(2)}'),
+                            Text('VEL: ${t.velocityPenalty.toStringAsFixed(2)}'),
+                            Text('FIX: ${t.fixationDuration}ms'),
+                            Text('STATE: ${t.isFixating}'),
+                            Text('PASS: ${t.passed}'),
+                            Text(
+                              'REASON: ${t.reason}',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),

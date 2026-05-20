@@ -1,4 +1,7 @@
 /// Native **raw** [gazeX] from vision (pre-[normalizeGazeX]): symmetric deadband ±0.10.
+///
+/// **Calibration tuning:** adjust deadband after SM-S928U gazeX sweep; consider
+/// [getGazeZone] when user L/R samples exist — see CALIBRATION_TUNING_PLAN.md.
 String getZone(double x) {
   if (x < -0.10) return 'LEFT';
   if (x > 0.10) return 'RIGHT';
