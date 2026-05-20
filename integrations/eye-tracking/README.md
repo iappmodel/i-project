@@ -9,6 +9,9 @@ Snapshot copied from `~/eye_tracking_app` on 2026-05-20. The original project wa
 | `prototypes/` | `i-mvp-prototype` — clickable MVP with simulated gaze |
 | `docs/` | `DECISIONS.md`, `AGENTS.md`, Obsidian vault |
 | `ai-history/` | Import provenance + Cursor hook state |
+| `source-runtime-candidates/` | Recovered Flutter/Android camera runtime (2026-05-20 scan) — see recovery report |
+
+**Recovery report:** [`docs/technical/EYE_TRACKING_RUNTIME_RECOVERY_REPORT.md`](../../docs/technical/EYE_TRACKING_RUNTIME_RECOVERY_REPORT.md)
 
 **Map:** [`docs/technical/EYE_TRACKING_INTEGRATION_MAP.md`](../../docs/technical/EYE_TRACKING_INTEGRATION_MAP.md)
 
