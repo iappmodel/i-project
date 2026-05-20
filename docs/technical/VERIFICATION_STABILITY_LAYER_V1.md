@@ -32,6 +32,8 @@ Verification Stability Layer v1 is a **lightweight, local, explainable** Dart mo
 
 It is **not** fraud detection, **not** production attention scoring, and **not** connected to rewards or backend APIs.
 
+**POPS alignment:** The stability layer should produce **proof confidence** (bands, ratios, reasons) for inclusion in a delayed proof packet—not **instant reward truth**. Settlement follows multi-signal POPS review; see [`POPS_MULTI_SIGNAL_VALIDATION_ARCHITECTURE.md`](POPS_MULTI_SIGNAL_VALIDATION_ARCHITECTURE.md).
+
 ---
 
 ## 3. Inputs

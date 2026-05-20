@@ -4,6 +4,8 @@
 **Scope:** Files already present in `i_project_migration_archive`.  
 **Primary demo spine:** Loop 1 (*Watch → Verify → Earn*) from `06_feed_earning_loops/iapp_three_loops.html`, wired end-to-end in `integrations/eye-tracking/demos/investor-demo/`.
 
+**Validation note:** Rewards may be shown as **pending validation** after the watch session before final settlement (provisional earn → review → approved/rejected). Eye-tracking is one proof signal among many; see [`docs/technical/POPS_MULTI_SIGNAL_VALIDATION_ARCHITECTURE.md`](technical/POPS_MULTI_SIGNAL_VALIDATION_ARCHITECTURE.md).
+
 ---
 
 ## How to run the demo today

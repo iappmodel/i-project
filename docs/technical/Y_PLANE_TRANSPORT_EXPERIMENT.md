@@ -181,3 +181,9 @@ Archive snippets under `docs/technical/smoke-runs/` with filenames like `y8-tran
 | `MainActivity.kt` | `y8` / `jpeg` map + legacy `ByteArray` |
 
 **Explicitly unchanged:** verification scoring, rewards, gaze math, dwell, `VisionProcessor.kt`, JPEG quality contract on baseline path.
+
+---
+
+## POPS note
+
+Y-plane optimization improves **one validation signal** (throughput and stability of gaze/dwell-derived proof). POPS validation can tolerate **delayed proof** and **multi-signal review**—see [`POPS_MULTI_SIGNAL_VALIDATION_ARCHITECTURE.md`](POPS_MULTI_SIGNAL_VALIDATION_ARCHITECTURE.md). Transport wins reduce false **low-confidence** packets; they do not require instant payout or single-signal truth.
