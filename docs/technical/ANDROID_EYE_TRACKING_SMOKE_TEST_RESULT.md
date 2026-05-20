@@ -248,10 +248,22 @@ Redact faces if sharing externally.
 
 ---
 
+## 13. Follow-up — pipeline performance instrumentation v1
+
+**2026-05-20 (next):** Verification stability layer is in place (§12). **Next stage** is **Pipeline Performance Instrumentation v1** — observe-only rolling-window stage timings and bottleneck labeling in the lab HUD, without changing native processing, gaze math, or verification gates.
+
+**Plan:** [`PIPELINE_PERFORMANCE_INSTRUMENTATION_V1.md`](PIPELINE_PERFORMANCE_INSTRUMENTATION_V1.md)  
+**Code:** `integrations/eye-tracking/flutter-runtime/lib/performance/pipeline_performance_monitor.dart` — feeds existing encode/channel/native timings; keeps `[frame_perf]` logs.
+
+**Next device run:** `cd integrations/eye-tracking/flutter-runtime && flutter run -d R5CX2137BEB` — confirm **Pipeline perf** HUD block and correlate `bn:` with `[frame_perf]` averages.
+
+---
+
 ## References
 
 | Doc | Path |
 |-----|------|
+| Pipeline perf instrumentation v1 | [`PIPELINE_PERFORMANCE_INSTRUMENTATION_V1.md`](PIPELINE_PERFORMANCE_INSTRUMENTATION_V1.md) |
 | Smoke test plan | [`ANDROID_EYE_TRACKING_SMOKE_TEST_PLAN.md`](ANDROID_EYE_TRACKING_SMOKE_TEST_PLAN.md) |
 | Calibration tuning plan | [`CALIBRATION_TUNING_PLAN.md`](CALIBRATION_TUNING_PLAN.md) |
 | Adaptive calibration system | [`ADAPTIVE_CALIBRATION_SYSTEM.md`](ADAPTIVE_CALIBRATION_SYSTEM.md) |

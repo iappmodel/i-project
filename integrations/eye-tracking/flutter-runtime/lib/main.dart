@@ -65,6 +65,7 @@ import 'core/stability/tracking_state.dart';
 import 'head_pitch_zone.dart';
 import 'user_engagement_state.dart';
 import 'debug_state.dart';
+import 'performance/pipeline_performance_monitor.dart';
 import 'verification/verification_stability_layer.dart';
 
 /// Native 0–100 [nativeAttention] plus a small bonus when [fatigueLevel] is low (EAR fatigue).
@@ -305,6 +306,19 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
   int _lastLogTime = 0;
   int _lastPerfSummaryMs = 0;
   final FramePerfMetrics _framePerf = FramePerfMetrics();
+
+  /// Observe-only: rolling pipeline stage timings for debug HUD (no processing changes).
+  final PipelinePerformanceMonitor _pipelinePerf = PipelinePerformanceMonitor();
+  PipelinePerformanceSnapshot _pipelinePerfSnapshot =
+      PipelinePerformanceSnapshot.empty;
+  int _frameArrivalMs = 0;
+  double _lastPipelineCaptureMs = 0;
+  double _lastPipelineEncodeMs = 0;
+  double _lastPipelineChannelMs = 0;
+  double? _lastPipelineNativeDecodeMs;
+  double? _lastPipelineNativeProcessMs;
+  double? _lastPipelineNativeTotalMs;
+  bool _lastFacePipelineTimed = false;
 
   /// Observe-only: smooths runtime signals for operator verification HUD (no dwell/reward control).
   final VerificationStabilityLayer _verificationStability =
@@ -692,17 +706,21 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
     final now = DateTime.now().millisecondsSinceEpoch;
     _ensurePerfWindow(now);
     _framePerf.cameraInputCount++;
+    _pipelinePerf.recordCameraInput(now);
     if (now - _lastFrameMs < _kFrameSpacingMs) {
       _framePerf.droppedThrottle++;
+      _pipelinePerf.recordDrop(PipelineDropKind.throttle, now);
       _maybeLogPerfSummary(now);
       return;
     } // ~12 FPS (stable)
     _lastFrameMs = now;
     if (_processingFrame) {
       _framePerf.droppedBusy++;
+      _pipelinePerf.recordDrop(PipelineDropKind.busy, now);
       _maybeLogPerfSummary(now);
       return;
     }
+    _frameArrivalMs = now;
     _processingFrame = true;
     _maybeLogPerfSummary(now);
     unawaited(_updateFrame(image));
@@ -710,6 +728,9 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
 
   /// One frame: native face → gaze → normalize → zone → blink → intent → attention → UI.
   Future<void> _updateFrame(CameraImage image) async {
+    final totalSw = Stopwatch()..start();
+    var dartPostMs = 0.0;
+    var pipelineValid = false;
     try {
       if (!mounted) return;
       if (defaultTargetPlatform != TargetPlatform.android) return;
@@ -737,6 +758,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
 
       if (!isValidFrame) {
         _framePerf.droppedInvalid++;
+        _pipelinePerf.recordDrop(PipelineDropKind.invalid, now);
         _faceLocked = false;
         _lastHeldFace = null;
         if (fresh == null && _kVerbosePerFrameLogs) {
@@ -751,6 +773,8 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
         _attentionKernel.reset();
         _verificationStability.reset();
         _verificationSnapshot = VerificationStabilitySnapshot.empty;
+        _pipelinePerf.reset();
+        _pipelinePerfSnapshot = PipelinePerformanceSnapshot.empty;
         _gazeSessionSamples = 0;
         smoothGazeX = 0;
         smoothGazeY = 0;
@@ -764,6 +788,14 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
           validFrame: false,
         );
         if (verificationDirty && mounted) setState(() {});
+        postprocessSw.stop();
+        dartPostMs = postprocessSw.elapsedMicroseconds / 1000.0;
+        _emitPipelinePerfSample(
+          timestampMs: now,
+          dartPostMs: dartPostMs,
+          totalMs: totalSw.elapsedMicroseconds / 1000.0,
+          validFrame: false,
+        );
         return;
       }
 
@@ -779,10 +811,28 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
       final rawY = effectiveGazeY;
       if (rawX == null || rawY == null) {
         _framePerf.droppedInvalid++;
+        _pipelinePerf.recordDrop(PipelineDropKind.invalid, now);
+        postprocessSw.stop();
+        dartPostMs = postprocessSw.elapsedMicroseconds / 1000.0;
+        _emitPipelinePerfSample(
+          timestampMs: now,
+          dartPostMs: dartPostMs,
+          totalMs: totalSw.elapsedMicroseconds / 1000.0,
+          validFrame: false,
+        );
         return;
       }
       if (!rawX.isFinite || !rawY.isFinite) {
         _framePerf.droppedInvalid++;
+        _pipelinePerf.recordDrop(PipelineDropKind.invalid, now);
+        postprocessSw.stop();
+        dartPostMs = postprocessSw.elapsedMicroseconds / 1000.0;
+        _emitPipelinePerfSample(
+          timestampMs: now,
+          dartPostMs: dartPostMs,
+          totalMs: totalSw.elapsedMicroseconds / 1000.0,
+          validFrame: false,
+        );
         return;
       }
 
@@ -1078,9 +1128,17 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
         nextFakeNoBlink: face.fakeNoBlink,
       );
       postprocessSw.stop();
-      _framePerf.postprocessTotalMs += postprocessSw.elapsedMicroseconds / 1000.0;
+      dartPostMs = postprocessSw.elapsedMicroseconds / 1000.0;
+      pipelineValid = isValid;
+      _framePerf.postprocessTotalMs += dartPostMs;
       _framePerf.postprocessSamples++;
       _framePerf.processedCount++;
+      _emitPipelinePerfSample(
+        timestampMs: now,
+        dartPostMs: dartPostMs,
+        totalMs: totalSw.elapsedMicroseconds / 1000.0,
+        validFrame: pipelineValid,
+      );
       _maybeLogPerfSummary(now);
     } on PlatformException catch (e) {
       _visionChannelError = true;
@@ -1093,27 +1151,66 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
     }
   }
 
+  void _emitPipelinePerfSample({
+    required int timestampMs,
+    required double dartPostMs,
+    required double totalMs,
+    required bool validFrame,
+  }) {
+    if (!_lastFacePipelineTimed) return;
+    _lastFacePipelineTimed = false;
+    final snap = _pipelinePerf.ingest(
+      PipelineProcessedFrameSample(
+        timestampMs: timestampMs,
+        captureMs: _lastPipelineCaptureMs > 0 ? _lastPipelineCaptureMs : null,
+        encodeMs: _lastPipelineEncodeMs,
+        channelMs: _lastPipelineChannelMs,
+        nativeDecodeMs: _lastPipelineNativeDecodeMs,
+        nativeProcessMs: _lastPipelineNativeProcessMs,
+        nativeTotalMs: _lastPipelineNativeTotalMs,
+        dartPostMs: dartPostMs,
+        totalMs: totalMs,
+        validFrame: validFrame,
+      ),
+    );
+    _pipelinePerfSnapshot = snap;
+    if (mounted) setState(() {});
+  }
+
   Future<VisionFrame?> _processFace(CameraImage image) async {
     if (!mounted) return null;
+    final encodeStartMs = DateTime.now().millisecondsSinceEpoch;
+    _lastPipelineCaptureMs = _frameArrivalMs > 0
+        ? (encodeStartMs - _frameArrivalMs).toDouble()
+        : 0;
     final encodeSw = Stopwatch()..start();
     final bytes = cameraImageToJpegBytes(image);
     encodeSw.stop();
-    _framePerf.encodeTotalMs += encodeSw.elapsedMicroseconds / 1000.0;
+    _lastPipelineEncodeMs = encodeSw.elapsedMicroseconds / 1000.0;
+    _framePerf.encodeTotalMs += _lastPipelineEncodeMs;
     _framePerf.encodeSamples++;
     final channelSw = Stopwatch()..start();
     final face = await _bridge.processFrame(bytes);
     channelSw.stop();
-    _framePerf.channelTotalMs += channelSw.elapsedMicroseconds / 1000.0;
+    _lastPipelineChannelMs = channelSw.elapsedMicroseconds / 1000.0;
+    _framePerf.channelTotalMs += _lastPipelineChannelMs;
     _framePerf.channelSamples++;
+    _lastFacePipelineTimed = true;
+    _lastPipelineNativeDecodeMs = null;
+    _lastPipelineNativeProcessMs = null;
+    _lastPipelineNativeTotalMs = null;
     if (face == null) return null;
     if (face.nativeDecodeMs != null) {
       _framePerf.lastNativeDecodeMs = face.nativeDecodeMs!;
+      _lastPipelineNativeDecodeMs = face.nativeDecodeMs;
     }
     if (face.nativeProcessMs != null) {
       _framePerf.lastNativeProcessMs = face.nativeProcessMs!;
+      _lastPipelineNativeProcessMs = face.nativeProcessMs;
     }
     if (face.nativeTotalMs != null) {
       _framePerf.lastNativeTotalMs = face.nativeTotalMs!;
+      _lastPipelineNativeTotalMs = face.nativeTotalMs;
     }
     if (kDebugMode && _kVerbosePerFrameLogs) {
       final lStr =
@@ -2305,6 +2402,8 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
                               'fps=${(_verificationSnapshot.fpsConfidence * 100).toStringAsFixed(0)}% '
                               'blink=${(_verificationSnapshot.blinkConfidence * 100).toStringAsFixed(0)}%\n'
                               '${_verificationSnapshot.reason}\n'
+                              '--- Pipeline perf (observe) ---\n'
+                              '${_pipelinePerfSnapshot.hudLines}\n'
                               '${defaultTargetPlatform == TargetPlatform.android ? 'Long-press: head yaw only · Cal L/R/N: gaze + yaw₀.' : ''}',
                               style: const TextStyle(
                                 color: Colors.white70,
