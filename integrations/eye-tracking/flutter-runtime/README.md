@@ -11,6 +11,7 @@
 | **Original machine path** | `/Users/2023macbookpro/Desktop/IVAULT/DEMOS:REPOS/eye_tracking_app` |
 | **Provenance** | [`PROMOTION_MANIFEST.md`](PROMOTION_MANIFEST.md), [`DELTA_NOTES.md`](DELTA_NOTES.md) |
 | **Technical report** | [`../../../docs/technical/FLUTTER_RUNTIME_PROMOTION_REPORT.md`](../../../docs/technical/FLUTTER_RUNTIME_PROMOTION_REPORT.md) |
+| **Android smoke test** | [`../../../docs/technical/ANDROID_EYE_TRACKING_SMOKE_TEST_PLAN.md`](../../../docs/technical/ANDROID_EYE_TRACKING_SMOKE_TEST_PLAN.md) |
 
 ## What this runtime does
 
@@ -49,6 +50,8 @@ Future work: map `VisionFrame` / native attention fields to the five gates in `V
 
 ## How to test later (Android)
 
+**Full procedure:** [`../../../docs/technical/ANDROID_EYE_TRACKING_SMOKE_TEST_PLAN.md`](../../../docs/technical/ANDROID_EYE_TRACKING_SMOKE_TEST_PLAN.md) (preconditions, pass/fail, logcat, MVP gate mapping).
+
 From this directory:
 
 ```bash
@@ -59,7 +62,7 @@ flutter devices          # confirm Android device/emulator
 flutter run -d <device>  # smoke: camera permission, live attention HUD
 ```
 
-**Smoke checklist:** front camera opens → `vision_channel` returns maps with gaze/EAR → attention value updates on face present → no channel crash when face lost.
+**Smoke checklist:** front camera opens → `vision_channel` returns maps with gaze/EAR → attention value updates on face present → no channel crash when face lost → stable for 60s (see smoke test plan).
 
 ## Current limitations
 
