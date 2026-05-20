@@ -238,6 +238,16 @@ Redact faces if sharing externally.
 
 ---
 
+## 12. Follow-up — verification stability layer v1
+
+**2026-05-20 (post smoke):** On-device session confirmed **DWELL_READY: CENTER** with stable camera stream (~29–33 fps), processed fps ~5–10, and usable zone overlay after layout fix.
+
+**Next layer:** Dart-side **Verification Stability Layer v1** — observe-only rolling-window smoother for operator confidence bands (not fraud detection, not production scoring, not reward gating). See [`VERIFICATION_STABILITY_LAYER_V1.md`](VERIFICATION_STABILITY_LAYER_V1.md).
+
+**Code:** `integrations/eye-tracking/flutter-runtime/lib/verification/verification_stability_layer.dart` — wired to lab HUD only; gaze/dwell/intent behavior unchanged.
+
+---
+
 ## References
 
 | Doc | Path |

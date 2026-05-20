@@ -65,6 +65,7 @@ import 'core/stability/tracking_state.dart';
 import 'head_pitch_zone.dart';
 import 'user_engagement_state.dart';
 import 'debug_state.dart';
+import 'verification/verification_stability_layer.dart';
 
 /// Native 0–100 [nativeAttention] plus a small bonus when [fatigueLevel] is low (EAR fatigue).
 int attentionWithFatigueBonus({
@@ -304,6 +305,12 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
   int _lastLogTime = 0;
   int _lastPerfSummaryMs = 0;
   final FramePerfMetrics _framePerf = FramePerfMetrics();
+
+  /// Observe-only: smooths runtime signals for operator verification HUD (no dwell/reward control).
+  final VerificationStabilityLayer _verificationStability =
+      VerificationStabilityLayer();
+  VerificationStabilitySnapshot _verificationSnapshot =
+      VerificationStabilitySnapshot.empty;
 
   /// Reuse last good native frame for this long when detection drops (reduces flicker).
   static const int _faceHoldMs = 500;
@@ -742,6 +749,8 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
         _gazeFixation.reset();
         _pointerController.reset();
         _attentionKernel.reset();
+        _verificationStability.reset();
+        _verificationSnapshot = VerificationStabilitySnapshot.empty;
         _gazeSessionSamples = 0;
         smoothGazeX = 0;
         smoothGazeY = 0;
@@ -749,6 +758,12 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
         if (d.motion != EyeMotionState.noFace) {
           _debugNotifier.value = d.copyWith(motion: EyeMotionState.noFace);
         }
+        final verificationDirty = _feedVerificationStability(
+          nowMs: now,
+          blinkDetected: false,
+          validFrame: false,
+        );
+        if (verificationDirty && mounted) setState(() {});
         return;
       }
 
@@ -1032,6 +1047,17 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
       final intent = _detectIntent(blink['blinkCount']! as int);
       var nextCount = intent.nextCount;
       zoneOverlayDirty |= intent.dirty;
+
+      zoneOverlayDirty |= _feedVerificationStability(
+        nowMs: now,
+        zone: isValid ? (_currentZone ?? getZone(smoothGazeX)) : null,
+        gazeX: isValid ? smoothGazeX : driftGaze.rawX,
+        normalizedGazeX: norm.normalizedGazeX,
+        meanEar: ear,
+        blinkDetected: nextBlinking,
+        validFrame: isValid,
+        dwellReady: _dwellSatisfiedForStint,
+      );
 
       _updateFrameUi(
         zoneOverlayDirty: zoneOverlayDirty,
@@ -1908,6 +1934,44 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
     }
   }
 
+  double _processedFpsEstimate(int nowMs) {
+    _ensurePerfWindow(nowMs);
+    final windowMs = (nowMs - _framePerf.windowStartMs).clamp(1, 60000);
+    return _framePerf.processedCount / (windowMs / 1000.0);
+  }
+
+  /// Feeds the verification rolling window; does not alter gaze, dwell, or intent.
+  bool _feedVerificationStability({
+    required int nowMs,
+    String? zone,
+    double? gazeX,
+    double? normalizedGazeX,
+    double? meanEar,
+    required bool blinkDetected,
+    required bool validFrame,
+    bool dwellReady = false,
+  }) {
+    final snap = _verificationStability.ingest(
+      VerificationSignalSample(
+        timestampMs: nowMs,
+        zone: zone,
+        gazeX: gazeX,
+        normalizedGazeX: normalizedGazeX,
+        meanEar: meanEar,
+        blinkDetected: blinkDetected,
+        validFrame: validFrame,
+        processedFps: _processedFpsEstimate(nowMs),
+        dwellReady: dwellReady,
+      ),
+    );
+    final changed = snap.confidenceBand != _verificationSnapshot.confidenceBand ||
+        snap.stableZone != _verificationSnapshot.stableZone ||
+        (snap.validFrameRatio - _verificationSnapshot.validFrameRatio).abs() >
+            0.05;
+    _verificationSnapshot = snap;
+    return changed;
+  }
+
   void _maybeLogPerfSummary(int nowMs) {
     if (!kDebugMode) return;
     if (nowMs - _lastPerfSummaryMs < 1000) return;
@@ -2233,6 +2297,14 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
                               '${_currentZone != null && _zoneStart != null && !_selectedAnnouncedForStint ? (_dwellSatisfiedForStint ? ' (blink to select)' : ' (dwell…)') : ''}'
                               '${_selectedAnnouncedForStint && _currentZone != null ? ' ✓' : ''}\n'
                               'Pitch: ${_headPitchBand ?? '—'}\n'
+                              '--- Verification stability (observe) ---\n'
+                              'Band: ${_verificationSnapshot.confidenceBand.label} · '
+                              'stable=${_verificationSnapshot.stableZone.label}\n'
+                              'valid=${(_verificationSnapshot.validFrameRatio * 100).toStringAsFixed(0)}% '
+                              'zone=${(_verificationSnapshot.zoneConsistency * 100).toStringAsFixed(0)}% '
+                              'fps=${(_verificationSnapshot.fpsConfidence * 100).toStringAsFixed(0)}% '
+                              'blink=${(_verificationSnapshot.blinkConfidence * 100).toStringAsFixed(0)}%\n'
+                              '${_verificationSnapshot.reason}\n'
                               '${defaultTargetPlatform == TargetPlatform.android ? 'Long-press: head yaw only · Cal L/R/N: gaze + yaw₀.' : ''}',
                               style: const TextStyle(
                                 color: Colors.white70,
