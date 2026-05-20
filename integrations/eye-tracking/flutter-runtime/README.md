@@ -70,6 +70,10 @@ flutter run -d <device>  # smoke: camera permission, live attention HUD
 - **Backup artifact** — `MainActivity.kt.bak_step_fixation` left as-is from source
 - **Heavy UI / intent lab** — `main.dart` is a research shell, not the investor-demo skin (by design: no UI redesign in promotion)
 
+## Repository hygiene
+
+Generated Flutter outputs (`.dart_tool/`, `build/`, `.flutter-plugins-dependencies`, etc.) are **not** committed. A local [`.gitignore`](.gitignore) excludes them; after clone run `flutter pub get` and `flutter test` to recreate caches. Details: [`../../../docs/technical/FLUTTER_RUNTIME_REPO_HYGIENE.md`](../../../docs/technical/FLUTTER_RUNTIME_REPO_HYGIENE.md).
+
 ## Reversibility
 
 Delete `integrations/eye-tracking/flutter-runtime/` to undo; candidates under `source-runtime-candidates/` are untouched.
