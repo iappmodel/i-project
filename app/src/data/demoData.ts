@@ -83,6 +83,13 @@ export const VERIFICATION_GATES: VerificationGateDef[] = [
   },
 ]
 
+/** Consent gate proof-layer card — presenter-facing labels */
+export const CONSENT_PROOF_STATUS = {
+  reactDemo: 'simulated',
+  flutterRuntime: 'promoted',
+  androidSmokeTest: 'pending',
+} as const
+
 /** Proof layer — docs/technical/* + flutter-runtime promotion */
 export const PROOF_LAYER_STATUS: ProofLayerStatus = {
   demoMode: 'mocked-gaze',
@@ -134,6 +141,7 @@ export const SCREEN_FLOW = [
   'splash',
   'feed',
   'offer-detail',
+  'consent-camera-gate',
   'watch-verify',
   'verification-result',
   'reward-reveal',

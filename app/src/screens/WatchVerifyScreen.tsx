@@ -54,7 +54,7 @@ export function WatchVerifyScreen() {
 
   return (
     <PhoneFrame>
-      <BackRow label="Offer" onBack={() => setScreen('offer-detail')} />
+      <BackRow label="Consent" onBack={() => setScreen('consent-camera-gate')} />
       <div className="watch-screen-prot">
         <div className="watch-scrim-prot" aria-hidden />
         <div className="watch-hud-top-prot watch-hud-top-prot-ext">

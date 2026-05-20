@@ -343,3 +343,49 @@ button.pill {
 button.pill:not(.active) {
   background: transparent;
 }
+
+.consent-permissions {
+  margin-top: 12px;
+}
+
+.consent-perm-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: var(--icoin-primary);
+}
+
+.consent-proof-card {
+  margin-top: 14px;
+}
+
+.consent-proof-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.consent-proof-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 11px;
+}
+
+.consent-proof-row__label {
+  color: var(--text-secondary);
+}
+
+.consent-proof-row__val {
+  color: var(--text-primary);
+  text-transform: lowercase;
+}
+
+.consent-disclaimer {
+  font-size: 10px;
+  line-height: 1.45;
+  margin: 12px 0 16px;
+}

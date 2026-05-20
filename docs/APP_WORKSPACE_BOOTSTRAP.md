@@ -9,7 +9,7 @@
 | `app/` | Canonical runnable demo (replaces “future app workspace” placeholder) |
 | `app/src/components/` | Internal design system: `AppShell`, `PhoneFrame`, `BottomNav`, `HeaderBar`, `Button`, `Card`, `CurrencyChip`, `VerificationGate`, `ProgressBar`, `SourceEvidence` |
 | `app/src/data/demoData.ts` | Mock wallet, offer, campaign, gates, transactions, 60/30/10 split, proof-layer status |
-| `app/src/screens/` | Twelve screens with state-based routing in `App.tsx` (no React Router) |
+| `app/src/screens/` | Thirteen screens with state-based routing in `App.tsx` (no React Router) |
 | `app/src/state/` | `DemoProvider` session state (balances, selected offer, verification phase) |
 
 ## Relationship to prototype-app launcher
@@ -21,7 +21,7 @@
 
 `docs/MVP_CANONICAL_FLOW.md` maps rescued files to the ten-step investor narrative. This app implements that spine in React:
 
-`splash → feed → offer-detail → watch-verify → verification-result → reward-reveal → wallet → convert → withdraw-preview → creator-economics → proof-layer → roadmap`
+`splash → feed → offer-detail → consent-camera-gate → watch-verify → verification-result → reward-reveal → wallet → convert → withdraw-preview → creator-economics → proof-layer → roadmap`
 
 Each screen includes a **Source evidence** footer listing repo files used as reference.
 
@@ -51,6 +51,7 @@ npm run preview
 
 ## What is still mocked
 
+- Camera consent gate (`ConsentCameraGateScreen`) — mocked only; no `getUserMedia` in browser
 - Gaze / camera signals (oscillating attention score + timer only)
 - Five verification gates (cosmetic sequencing, no `process-earning` backend)
 - Wallet, convert, and withdraw (session-local state; no payment processor)

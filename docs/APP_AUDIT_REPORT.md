@@ -6,13 +6,15 @@
 **Scope:** Read-only product/code audit (no redesign, no large refactors).  
 **Reference:** `docs/MVP_CANONICAL_FLOW.md`, `docs/APP_WORKSPACE_BOOTSTRAP.md`
 
+**Post-audit fix (2026-05-20):** P1 consent / camera gate implemented — `ConsentCameraGateScreen` between `offer-detail` and `watch-verify`. See §Appendix B.
+
 ---
 
 ## 1. Summary verdict
 
 **Overall: PASS with caveats — suitable for a guided investor walkthrough.**
 
-The `app/` workspace delivers a coherent **Loop 1 (Watch → Verify → Earn → Wallet → Cash-out narrative → Economics → Proof layer)** spine with **12 state-routed screens**, **source evidence on every screen**, **canonical 60/30/10 economics** (fixed vs the legacy investor-demo React percentages), and **clean TypeScript + production build**.
+The `app/` workspace delivers a coherent **Loop 1 (Watch → Verify → Earn → Wallet → Cash-out narrative → Economics → Proof layer)** spine with **13 state-routed screens**, **source evidence on every screen**, **canonical 60/30/10 economics** (fixed vs the legacy investor-demo React percentages), and **clean TypeScript + production build**.
 
 **Strengths**
 
@@ -25,7 +27,7 @@ The `app/` workspace delivers a coherent **Loop 1 (Watch → Verify → Earn →
 
 - **Discover** bottom tab jumps to **Roadmap**, not a discover surface — easy presenter mistake.
 - **Pay** wallet action routes to **Convert** — label mismatch.
-- **No camera/consent gate** before watch (called out as Required in `MVP_CANONICAL_FLOW.md` for credibility).
+- ~~**No camera/consent gate** before watch~~ — **Fixed:** `consent-camera-gate` screen (mocked consent only).
 - **Offer copy** says “Watch 4:30 **minutes**” but `watchDuration` is `MM:SS` (4 minutes 30 seconds).
 - **Platform take rate** appears on offer detail (10% attention split) but **withdrawal fees** (bank vs instant) are not narrated alongside — investors may conflate the two fee contexts from the decision map.
 
@@ -48,8 +50,10 @@ Routing model: `DemoProvider` + `setScreen` / flow helpers — **no React Router
 | `feed` | Bottom: Discover | `roadmap` | **Misleading** — label ≠ destination |
 | `feed` | Bottom: Wallet | `wallet` | OK |
 | `offer-detail` | Back | `feed` | OK |
-| `offer-detail` | Start watching | `watch-verify` | OK |
-| `watch-verify` | Back | `offer-detail` | OK |
+| `offer-detail` | Start watching | `consent-camera-gate` | OK |
+| `consent-camera-gate` | Allow demo verification | `watch-verify` | OK |
+| `consent-camera-gate` | Back to offer | `offer-detail` | OK |
+| `watch-verify` | Back | `consent-camera-gate` | OK |
 | `watch-verify` | Complete & verify (enabled ~100% progress) | `verification-result` | OK |
 | `verification-result` | Collect reward (after gate animation) | `reward-reveal` | OK — no back row (forward-only by design) |
 | `reward-reveal` | See wallet update / Later | `wallet` (+ ledger update) | OK — both CTAs identical outcome |
@@ -89,13 +93,13 @@ Routing model: `DemoProvider` + `setScreen` / flow helpers — **no React Router
 Canonical spine from `MVP_CANONICAL_FLOW.md` (React reference: `integrations/eye-tracking/demos/investor-demo`).  
 **Implemented app order** (`APP_WORKSPACE_BOOTSTRAP.md`):
 
-`splash → feed → offer-detail → watch-verify → verification-result → reward-reveal → wallet → convert → withdraw-preview → creator-economics → proof-layer → roadmap`
+`splash → feed → offer-detail → consent-camera-gate → watch-verify → verification-result → reward-reveal → wallet → convert → withdraw-preview → creator-economics → proof-layer → roadmap`
 
 | MVP step | Required? | In `app/`? | Screen(s) | Gap / note |
 |----------|-----------|------------|-----------|------------|
 | 1 — Open feed | Required | Yes | `splash`, `feed` | Stories/filters are chrome; no live API (expected mock). |
 | 2 — Select paid content | Required | Yes | `feed` → `offer-detail` | Earn pill jumps straight to offer (skips re-tap card) — still Step 2. |
-| 3 — Watch | Required | Yes | `watch-verify` | **Missing consent/camera gate** (HTML Loop 1 Step 3; React investor-demo also skipped). |
+| 3 — Watch | Required | Yes | `consent-camera-gate` → `watch-verify` | Consent gate added (mocked; no live camera). |
 | 4 — Verify attention | Required | Yes | `verification-result` | Gates cosmetic; names differ slightly from masterplan (“Device signal” vs “Presence detected”). |
 | 5 — Earn | Required | Yes | `reward-reveal` | Credits iCoins + tx; no settlement pipeline (expected). |
 | 6 — Wallet updates | Required | Yes | `wallet` | Balance/tx update after reward; pending strip present. |
@@ -107,7 +111,7 @@ Canonical spine from `MVP_CANONICAL_FLOW.md` (React reference: `integrations/eye
 
 ### Missing required MVP steps
 
-1. **Camera / consent gate** before watch (documented gap in canonical flow §Step 3).
+1. ~~**Camera / consent gate** before watch~~ — **Resolved** (`ConsentCameraGateScreen`).
 2. **Explicit dual-fee narration** — attention platform share vs withdrawal/payment fees (§Step 9 open risk in decision map).
 
 ### Screens / features with non-MVP or later-stage ideas
@@ -132,6 +136,7 @@ Component: `app/src/components/SourceEvidence.tsx` — static path list per scre
 | `splash` | Yes | `index4.html`, legacy `SplashScreen.tsx` | Good — hub + lineage |
 | `feed` | Yes | `iapp_feed_screen.html`, `iapp_immersive_feed.html`, legacy Feed | Good — verified on disk |
 | `offer-detail` | Yes | Loop 1 HTML, legacy Offer | Good |
+| `consent-camera-gate` | Yes | EYE_TRACKING_INTEGRATION_MAP, Flutter promotion, Android smoke plan, Loop 1 HTML | Good |
 | `watch-verify` | Yes | Loop 1 HTML, legacy Watch | Good |
 | `verification-result` | Yes | Loop 1 HTML, masterplan ref, legacy | Good — masterplan is doc not file path |
 | `reward-reveal` | Yes | Loop 1, `acoins_earning_system.html`, legacy | Good |
@@ -144,7 +149,7 @@ Component: `app/src/components/SourceEvidence.tsx` — static path list per scre
 
 ### Cross-cutting notes
 
-- **All 12 screens include source evidence** — no missing footers.
+- **All screens include source evidence** — no missing footers (including `consent-camera-gate`).
 - Many paths reference **`integrations/eye-tracking/demos/investor-demo/...`** (superseded implementation). Still **useful for lineage**; consider adding `app/src/screens/<Name>.tsx` paths in a future pass so evidence points at the canonical app itself (already done on some screens).
 - `verification-result` cites `` `01_strategy_docs/i-app-masterplan.md (5-gate qualification)` `` — parenthetical qualifier is fine for presenters; not a clickable path.
 - **Proof layer** correctly cites `docs/technical/*` files that exist in this repo.
@@ -155,7 +160,7 @@ Component: `app/src/components/SourceEvidence.tsx` — static path list per scre
 |-----|----------------|
 | `convert` clearing phase omits legacy React path | Add `app/src/screens/ConvertScreen.tsx` to clearing-phase footer for parity |
 | Step 9 fee schedule | Add `04_wallet_payments/iapp_withdraw_screen.html` or `i-creator-pitch_1.html` to withdraw or offer footers when narrating fees |
-| Consent (missing screen) | When consent is added, cite Loop 1 HTML Step 3 |
+| — | Consent gate cites Loop 1 HTML + technical docs |
 
 ---
 
@@ -167,7 +172,7 @@ Component: `app/src/components/SourceEvidence.tsx` — static path list per scre
 |---|------------|---------------|-------|
 | 1 | User opens feed | **Yes** | Splash → feed; sponsored card labeled. |
 | 2 | Taps paid content | **Yes** | Sponsored card + Earn pill. |
-| 3 | Watches | **Mostly** | Timer/ring/earn bar work; **no consent step**; badge says “demo harness”. |
+| 3 | Watches | **Yes** | Consent gate explains mock vs production; watch HUD badge says “demo harness”. |
 | 4 | Attention verified | **Yes** | 5-gate screen with staged animation. |
 | 5 | Earns | **Yes** | Reward reveal with breakdown. |
 | 6 | Wallet updates | **Yes** | “See wallet update” credits balance + new tx. |
@@ -267,13 +272,13 @@ npm run build      → PASS (tsc -b && vite build, ~413ms)
 |---|--------|----------------------------|
 | 1 | Discover tab → roadmap | Rename tab to “Roadmap” or route to a stub discover sheet that links forward |
 | 2 | Pay → convert | Route to dedicated pay preview or rename label “Convert (preview)” / disable Pay |
-| 3 | Missing consent before watch | Port Loop 1 HTML Step 3 copy as a screen or modal before `watch-verify` |
+| 3 | ~~Missing consent before watch~~ | **Done** — `ConsentCameraGateScreen` |
 | 4 | “Watch 4:30 minutes” copy | Change to “Watch full spot (4:30)” or “Watch 4 min 30 sec” |
 | 5 | Dual fee context (10% attention vs withdraw fees) | One line on `withdraw-preview` + offer footnote or presenter card |
 | 6 | Withdraw confirm jumps to economics | Add brief toast/inline “Preview only — no funds moved” if keeping navigation |
 | 7 | `integrations/.../investor-demo` paths in evidence | Add parallel `app/src/screens/...` paths as canonical references |
 
-**P1 count: 7**
+**P1 count: 6** (was 7; consent gate resolved)
 
 ### P2 — polish
 
@@ -296,9 +301,7 @@ npm run build      → PASS (tsc -b && vite build, ~413ms)
 
 ## 9. Recommended next implementation task
 
-**Primary (engineering credibility):** Add a **minimal consent / camera gate screen** (content port from `06_feed_earning_loops/iapp_loop1_watch_verify_earn.html` Step 3) between `offer-detail` and `watch-verify`, with source evidence footer — satisfies MVP Step 3 without redesigning watch HUD.
-
-**Secondary (presenter ergonomics):** Port a lightweight **PresenterStrip** (Prev/Next + jump chips: Feed, Watch, Wallet, Economics) from `integrations/eye-tracking/demos/investor-demo` — reduces reliance on bottom nav Discover shortcut.
+**Primary (presenter ergonomics):** Port a lightweight **PresenterStrip** (Prev/Next + jump chips: Feed, Watch, Wallet, Economics) from `integrations/eye-tracking/demos/investor-demo` — reduces reliance on bottom nav Discover shortcut.
 
 **Tertiary (product truth):** Wire **flutter-runtime** gaze stub per `docs/technical/ANDROID_EYE_TRACKING_SMOKE_TEST_PLAN.md` into `WatchVerifyScreen` (read-only bridge; do not modify `flutter-runtime/` in place per bootstrap rules).
 
@@ -311,18 +314,23 @@ npm run build      → PASS (tsc -b && vite build, ~413ms)
 | 1 | `splash` | `screens/SplashScreen.tsx` |
 | 2 | `feed` | `screens/FeedScreen.tsx` |
 | 3 | `offer-detail` | `screens/OfferDetailScreen.tsx` |
-| 4 | `watch-verify` | `screens/WatchVerifyScreen.tsx` |
-| 5 | `verification-result` | `screens/VerificationResultScreen.tsx` |
-| 6 | `reward-reveal` | `screens/RewardRevealScreen.tsx` |
-| 7 | `wallet` | `screens/WalletScreen.tsx` |
-| 8 | `convert` | `screens/ConvertScreen.tsx` |
-| 9 | `withdraw-preview` | `screens/WithdrawPreviewScreen.tsx` |
-| 10 | `creator-economics` | `screens/CreatorEconomicsScreen.tsx` |
-| 11 | `proof-layer` | `screens/ProofLayerScreen.tsx` |
-| 12 | `roadmap` | `screens/RoadmapScreen.tsx` |
+| 4 | `consent-camera-gate` | `screens/ConsentCameraGateScreen.tsx` |
+| 5 | `watch-verify` | `screens/WatchVerifyScreen.tsx` |
+| 6 | `verification-result` | `screens/VerificationResultScreen.tsx` |
+| 7 | `reward-reveal` | `screens/RewardRevealScreen.tsx` |
+| 8 | `wallet` | `screens/WalletScreen.tsx` |
+| 9 | `convert` | `screens/ConvertScreen.tsx` |
+| 10 | `withdraw-preview` | `screens/WithdrawPreviewScreen.tsx` |
+| 11 | `creator-economics` | `screens/CreatorEconomicsScreen.tsx` |
+| 12 | `proof-layer` | `screens/ProofLayerScreen.tsx` |
+| 13 | `roadmap` | `screens/RoadmapScreen.tsx` |
 
 ---
 
-## Appendix B — Safe fixes applied during audit
+## Appendix B — Fixes applied after audit
 
-**None.** Audit was documentation-only; build remains passing.
+| Date | Fix | Files |
+|------|-----|-------|
+| 2026-05-20 | P1 consent / camera gate (`consent-camera-gate`) before watch | `ConsentCameraGateScreen.tsx`, `types.ts`, `demoContext.tsx`, `App.tsx`, `WatchVerifyScreen.tsx`, `demoData.ts`, `design-system.css` |
+
+Build/typecheck re-run after fix: expected **PASS**.

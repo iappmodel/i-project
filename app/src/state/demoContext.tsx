@@ -47,7 +47,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const startWatchFlow = useCallback(() => {
-    navigateTo('watch-verify')
+    navigateTo('consent-camera-gate')
   }, [navigateTo])
 
   const completeVerification = useCallback(() => {

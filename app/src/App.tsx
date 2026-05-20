@@ -6,6 +6,7 @@ import type { DemoScreenId } from './state/types'
 import { ConvertScreen } from './screens/ConvertScreen'
 import { CreatorEconomicsScreen } from './screens/CreatorEconomicsScreen'
 import { FeedScreen } from './screens/FeedScreen'
+import { ConsentCameraGateScreen } from './screens/ConsentCameraGateScreen'
 import { OfferDetailScreen } from './screens/OfferDetailScreen'
 import { ProofLayerScreen } from './screens/ProofLayerScreen'
 import { RewardRevealScreen } from './screens/RewardRevealScreen'
@@ -23,6 +24,7 @@ function ScreenRouter() {
     splash: <SplashScreen />,
     feed: <FeedScreen />,
     'offer-detail': <OfferDetailScreen />,
+    'consent-camera-gate': <ConsentCameraGateScreen />,
     'watch-verify': <WatchVerifyScreen />,
     'verification-result': <VerificationResultScreen />,
     'reward-reveal': <RewardRevealScreen />,

@@ -2,6 +2,7 @@ export type DemoScreenId =
   | 'splash'
   | 'feed'
   | 'offer-detail'
+  | 'consent-camera-gate'
   | 'watch-verify'
   | 'verification-result'
   | 'reward-reveal'
