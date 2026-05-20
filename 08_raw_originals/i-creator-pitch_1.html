@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] — Built for Creators</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-void:     #070709;
+    --bg-deep:     #0a0a0f;
+    --bg-surface:  #111118;
+    --bg-panel:    #16161f;
+    --bg-raised:   #1c1c28;
+    --border-subtle:  rgba(255,255,255,0.05);
+    --border-mid:     rgba(255,255,255,0.09);
+    --border-active:  rgba(255,255,255,0.18);
+    --text-primary:   #f0ede8;
+    --text-secondary: #9997a0;
+    --text-muted:     #4a4858;
+    --icoin-primary:  #4ade80;
+    --icoin-glow:     rgba(74,222,128,0.20);
+    --icoin-dim:      rgba(74,222,128,0.08);
+    --vcoin-primary:  #f59e0b;
+    --vcoin-glow:     rgba(245,158,11,0.20);
+    --accent-cyan:    #00e5ff;
+    --accent-lime:    #b4ff47;
+    --accent-amber:   #ffb300;
+    --accent-rose:    #ff4d6d;
+    --font-display:   'Syne', sans-serif;
+    --font-body:      'DM Sans', sans-serif;
+    --font-mono:      'JetBrains Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-void);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    pointer-events: none;
+  }
+  .orb-cyan  { width:500px;height:500px;background:radial-gradient(circle,rgba(0,229,255,0.07),transparent 70%);top:-100px;left:-100px; }
+  .orb-lime  { width:400px;height:400px;background:radial-gradient(circle,rgba(180,255,71,0.06),transparent 70%);bottom:-80px;right:-80px; }
+  .orb-amber { width:300px;height:300px;background:radial-gradient(circle,rgba(255,179,0,0.05),transparent 70%);top:40%;left:60%; }
+
+  .grid-texture {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+  }
+
+  .hero-logo {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 48px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--accent-lime);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+
+  .hero-headline {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 8vw, 72px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.4s forwards;
+    max-width: 800px;
+  }
+
+  .hero-headline .accent-lime { color: var(--accent-lime); }
+  .hero-headline .accent-cyan { color: var(--accent-cyan); }
+
+  .hero-sub {
+    margin-top: 24px;
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--text-secondary);
+    max-width: 520px;
+    line-height: 1.7;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.6s forwards;
+  }
+
+  .hero-cta {
+    margin-top: 48px;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.8s forwards;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: var(--accent-lime);
+    color: #070709;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.1s ease, box-shadow 0.2s ease;
+    box-shadow: 0 0 30px rgba(180,255,71,0.3);
+  }
+  .btn-primary:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 50px rgba(180,255,71,0.45);
+  }
+  .btn-primary:active { transform: scale(0.97); }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-family: var(--font-mono);
+    letter-spacing: 0.1em;
+    z-index: 1;
+    animation: bounce 2s ease infinite;
+  }
+  .scroll-hint svg { opacity: 0.4; }
+
+  /* ── SECTION BASE ── */
+  section {
+    padding: 100px 24px;
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--accent-cyan);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--border-mid), transparent);
+    max-width: 60px;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin-bottom: 20px;
+  }
+
+  .section-body {
+    font-size: 16px;
+    color: var(--text-secondary);
+    max-width: 580px;
+    line-height: 1.75;
+  }
+
+  /* ── SPLIT VISUALIZATION ── */
+  .split-vis {
+    margin-top: 64px;
+    display: grid;
+    gap: 16px;
+  }
+
+  .split-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s ease;
+  }
+  .split-row:hover { border-color: var(--border-active); }
+
+  .split-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    border-radius: 16px 0 0 16px;
+    opacity: 0.06;
+    transition: width 1.2s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  .split-fill.creator { background: var(--accent-lime); }
+  .split-fill.viewer  { background: var(--accent-cyan); }
+  .split-fill.platform{ background: var(--text-muted); }
+
+  .split-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .split-info { flex: 1; position: relative; z-index: 1; }
+  .split-name {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .split-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  .split-pct {
+    font-family: var(--font-mono);
+    font-size: 32px;
+    font-weight: 500;
+    position: relative;
+    z-index: 1;
+  }
+
+  .split-vs {
+    margin-top: 24px;
+    padding: 16px 20px;
+    background: rgba(255,77,109,0.06);
+    border: 1px solid rgba(255,77,109,0.15);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+  .split-vs .label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent-rose);
+    letter-spacing: 0.1em;
+  }
+
+  /* ── CARDS GRID ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-top: 48px;
+  }
+
+  .feature-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 20px;
+    padding: 28px 24px;
+    transition: border-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    cursor: default;
+  }
+  .feature-card:hover {
+    border-color: var(--border-active);
+    transform: translateY(-3px);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+  }
+
+  .card-icon {
+    width: 48px; height: 48px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+  .card-icon.lime { background: rgba(180,255,71,0.1); }
+  .card-icon.cyan { background: rgba(0,229,255,0.1); }
+  .card-icon.amber{ background: rgba(255,179,0,0.1); }
+  .card-icon.icoin{ background: var(--icoin-dim); }
+  .card-icon.vcoin{ background: var(--vcoin-glow); }
+
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    letter-spacing: -0.01em;
+  }
+  .card-body {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+  .card-stat {
+    margin-top: 16px;
+    font-family: var(--font-mono);
+    font-size: 22px;
+    font-weight: 500;
+  }
+  .stat-lime  { color: var(--accent-lime); }
+  .stat-cyan  { color: var(--accent-cyan); }
+  .stat-icoin { color: var(--icoin-primary); }
+  .stat-amber { color: var(--accent-amber); }
+
+  /* ── COMPARISON TABLE ── */
+  .compare-wrap {
+    margin-top: 56px;
+    overflow: auto;
+  }
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .compare-table th {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 16px 20px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+  }
+  .compare-table th.highlight {
+    color: var(--accent-lime);
+    background: rgba(180,255,71,0.04);
+    border-radius: 12px 12px 0 0;
+  }
+  .compare-table td {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+  }
+  .compare-table td:first-child {
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+  .compare-table td.highlight {
+    background: rgba(180,255,71,0.03);
+    color: var(--accent-lime);
+    font-family: var(--font-mono);
+    font-size: 13px;
+  }
+  .compare-table tr:hover td { background: rgba(255,255,255,0.015); }
+  .compare-table tr:hover td.highlight { background: rgba(180,255,71,0.06); }
+
+  .check { color: var(--icoin-primary); }
+  .cross { color: var(--accent-rose); }
+
+  /* ── TIMELINE ── */
+  .timeline {
+    margin-top: 56px;
+    position: relative;
+    padding-left: 32px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px; top: 8px; bottom: 8px;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--accent-cyan), var(--accent-lime), transparent);
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 40px;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -28px; top: 6px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--accent-cyan);
+    box-shadow: 0 0 12px rgba(0,229,255,0.5);
+  }
+  .timeline-item:nth-child(2)::before { background: var(--accent-lime); box-shadow: 0 0 12px rgba(180,255,71,0.5); }
+  .timeline-item:nth-child(3)::before { background: var(--accent-amber); box-shadow: 0 0 12px rgba(255,179,0,0.5); }
+  .timeline-item:nth-child(4)::before { background: var(--icoin-primary); box-shadow: 0 0 12px rgba(74,222,128,0.5); }
+
+  .timeline-stage {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .timeline-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .timeline-body {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    max-width: 520px;
+  }
+  .timeline-coins {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .coin-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    border: 1px solid;
+  }
+  .coin-tag.icoin { color: var(--icoin-primary); border-color: rgba(74,222,128,0.3); background: var(--icoin-dim); }
+  .coin-tag.vcoin { color: var(--vcoin-primary); border-color: rgba(245,158,11,0.3); background: var(--vcoin-glow); }
+  .coin-tag.lime  { color: var(--accent-lime);   border-color: rgba(180,255,71,0.3); background: rgba(180,255,71,0.06); }
+  .coin-tag.cyan  { color: var(--accent-cyan);   border-color: rgba(0,229,255,0.3);  background: rgba(0,229,255,0.06); }
+
+  /* ── MANIFESTO ── */
+  .manifesto {
+    padding: 100px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .manifesto-orb {
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    filter: blur(100px);
+    background: radial-gradient(circle, rgba(180,255,71,0.05), transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .manifesto-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .manifesto-quote {
+    font-family: var(--font-display);
+    font-size: clamp(22px, 4vw, 36px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    margin-bottom: 32px;
+  }
+  .manifesto-quote em {
+    font-style: normal;
+    color: var(--accent-lime);
+  }
+  .manifesto-sub {
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 48px;
+  }
+
+  /* ── CTA SECTION ── */
+  .cta-section {
+    padding: 80px 24px 120px;
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .cta-section .section-title { margin-bottom: 12px; }
+  .cta-section .section-body  { margin: 0 auto 40px; text-align: center; }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: transparent;
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 14px;
+    border: 1px solid var(--border-mid);
+    border-radius: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    margin-left: 12px;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .btn-ghost:hover { border-color: var(--border-active); background: rgba(255,255,255,0.03); }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border-mid), transparent);
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50%       { transform: translateX(-50%) translateY(6px); }
+  }
+
+  @keyframes fillBar {
+    from { width: 0; }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* stagger children */
+  .stagger .reveal:nth-child(1) { transition-delay: 0.0s; }
+  .stagger .reveal:nth-child(2) { transition-delay: 0.1s; }
+  .stagger .reveal:nth-child(3) { transition-delay: 0.2s; }
+  .stagger .reveal:nth-child(4) { transition-delay: 0.3s; }
+  .stagger .reveal:nth-child(5) { transition-delay: 0.4s; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg-void); }
+  ::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 2px; }
+
+  @media (max-width: 480px) {
+    section { padding: 70px 20px; }
+    .cards-grid { grid-template-columns: 1fr; }
+    .hero-headline { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="grid-texture"></div>
+  <div class="hero-orb orb-cyan"></div>
+  <div class="hero-orb orb-lime"></div>
+  <div class="hero-orb orb-amber"></div>
+
+  <div class="hero-logo">[ i ] — Attention Wallet & Media Marketplace</div>
+  <div class="hero-eyebrow">For creators who build here first</div>
+  <h1 class="hero-headline">
+    You're not a<br>
+    <span class="accent-lime">content supplier.</span><br>
+    You're a <span class="accent-cyan">co-owner.</span>
+  </h1>
+  <p class="hero-sub">
+    Every platform takes from you. [ i ] is the first platform where the value of your audience's attention flows back to you — verified, transparent, and permanent.
+  </p>
+  <div class="hero-cta">
+    <a href="#split" class="btn-primary">
+      See how it works
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    </a>
+  </div>
+
+  <div class="scroll-hint">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    scroll
+  </div>
+</div>
+
+<!-- ── SECTION 1: THE SPLIT ── -->
+<section id="split">
+  <div class="section-label reveal">01 — Revenue</div>
+  <h2 class="section-title reveal">The split that changes<br>everything.</h2>
+  <p class="section-body reveal">
+    Every sponsored impression your content generates splits automatically — no negotiation, no waiting, no middleman taking 45%.
+  </p>
+
+  <div class="split-vis stagger">
+    <div class="split-row reveal">
+      <div class="split-fill creator" style="width:0" data-width="60%"></div>
+      <div class="split-icon" style="background:rgba(180,255,71,0.1);font-size:22px;">🎨</div>
+      <div class="split-info">
+        <div class="split-name">You — the creator</div>
+        <div class="split-desc">Direct to your wallet. Instant at Tier 4.</div>
+      </div>
+      <div class="split-pct" style="color:var(--accent-lime)">60%</div>
+    </div>
+
+    <div class="split-row reveal">
+      <div class="split-fill viewer" style="width:0" data-width="30%"></div>
+      <div class="split-icon" style="background:rgba(0,229,255,0.1);font-size:22px;">👁</div>
+      <div class="split-info">
+        <div class="split-name">Your audience</div>
+        <div class="split-desc">Rewards for their verified attention — keeps them coming back to you.</div>
+      </div>
+      <div class="split-pct" style="color:var(--accent-cyan)">30%</div>
+    </div>
+
+    <div class="split-row reveal">
+      <div class="split-fill platform" style="width:0" data-width="10%"></div>
+      <div class="split-icon" style="background:rgba(255,255,255,0.04);font-size:22px;">⬡</div>
+      <div class="split-info">
+        <div class="split-name">[ i ] platform</div>
+        <div class="split-desc">Infrastructure, anti-fraud, payments, trust layer.</div>
+      </div>
+      <div class="split-pct" style="color:var(--text-muted)">10%</div>
+    </div>
+  </div>
+
+  <div class="split-vs reveal">
+    <div>
+      <div class="label">EVERYWHERE ELSE</div>
+      <div style="margin-top:4px">YouTube keeps ~45%. TikTok's creator fund pays fractions of a cent per view with no transparency. Instagram pays nothing on organic. You get a licensing fee. They keep the marketplace.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── SECTION 2: QUALITY NOT QUANTITY ── -->
+<section id="quality">
+  <div class="section-label reveal">02 — Recognition</div>
+  <h2 class="section-title reveal">Follower count is<br>not a factor. Ever.</h2>
+  <p class="section-body reveal">
+    Your creator tier is calculated entirely from the quality of your audience's engagement — not how many people clicked follow.
+  </p>
+
+  <div class="cards-grid stagger">
+    <div class="feature-card reveal">
+      <div class="card-icon lime">📈</div>
+      <div class="card-title">Watch completion rate</div>
+      <div class="card-body">What percentage of your audience actually finishes what you make? That's signal. A scroll-past is noise.</div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="card-icon cyan">👁</div>
+      <div class="card-title">Eye-tracking verified views</div>
+      <div class="card-body">When viewers pass attention verification on your content, your quality score gets a multiplier. Real eyes, real score.</div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="card-icon amber">🔁</div>
+      <div class="card-title">Return viewer rate</div>
+      <div class="card-body">How many people come back? Loyal audiences are worth more than viral spikes. Loyalty compounds.</div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="card-icon icoin">💬</div>
+      <div class="card-title">Comment-to-view ratio</div>
+      <div class="card-body">A comment requires thought. A comment-to-view ratio above baseline signals you made something worth responding to.</div>
+    </div>
+  </div>
+
+  <div class="cards-grid" style="margin-top:16px;grid-template-columns:1fr 1fr 1fr 1fr">
+    <div class="feature-card reveal" style="text-align:center;padding:20px 16px">
+      <div class="card-stat stat-lime">1.0×</div>
+      <div class="card-body" style="font-size:12px;margin-top:6px">Newcomer</div>
+    </div>
+    <div class="feature-card reveal" style="text-align:center;padding:20px 16px">
+      <div class="card-stat stat-cyan">1.25×</div>
+      <div class="card-body" style="font-size:12px;margin-top:6px">Rising</div>
+    </div>
+    <div class="feature-card reveal" style="text-align:center;padding:20px 16px">
+      <div class="card-stat stat-icoin">1.5×</div>
+      <div class="card-body" style="font-size:12px;margin-top:6px">Established</div>
+    </div>
+    <div class="feature-card reveal" style="text-align:center;padding:20px 16px">
+      <div class="card-stat stat-amber">2.0×</div>
+      <div class="card-body" style="font-size:12px;margin-top:6px">Signature</div>
+    </div>
+  </div>
+  <p class="reveal" style="font-size:13px;color:var(--text-muted);margin-top:12px;font-family:var(--font-mono)">
+    Revenue multipliers per tier — applied to every impression, automatically.
+  </p>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── SECTION 3: YOUR AUDIENCE EARNS FOR YOU ── -->
+<section id="audience">
+  <div class="section-label reveal">03 — The Flywheel</div>
+  <h2 class="section-title reveal">Your audience earning<br>is your engine.</h2>
+  <p class="section-body reveal">
+    The 30% that goes to viewer rewards isn't money leaving your ecosystem. It's the mechanism that keeps your audience watching longer, coming back more often, and earning you a higher quality score.
+  </p>
+
+  <div class="cards-grid stagger" style="margin-top:40px">
+    <div class="feature-card reveal" style="grid-column:span 2">
+      <div style="display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap">
+        <div style="flex:1;min-width:200px">
+          <div class="card-icon lime">♻️</div>
+          <div class="card-title">The compound loop</div>
+          <div class="card-body">Viewer earns iCoins watching your content → viewer stays longer → your quality score rises → your tier upgrades → your cut of every future impression increases. One loop. Infinite compounding.</div>
+        </div>
+        <div style="flex:1;min-width:200px;display:flex;flex-direction:column;gap:10px;margin-top:8px">
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--bg-panel);border-radius:12px;border:1px solid var(--border-subtle)">
+            <span style="font-size:18px">👁</span>
+            <span style="font-size:13px;color:var(--text-secondary)">Viewer watches verified</span>
+            <span style="margin-left:auto;font-family:var(--font-mono);font-size:12px;color:var(--icoin-primary)">+iCoins</span>
+          </div>
+          <div style="padding:4px 0 4px 28px;font-size:11px;color:var(--text-muted);font-family:var(--font-mono)">↓ stay longer</div>
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--bg-panel);border-radius:12px;border:1px solid var(--border-subtle)">
+            <span style="font-size:18px">📊</span>
+            <span style="font-size:13px;color:var(--text-secondary)">Quality score rises</span>
+            <span style="margin-left:auto;font-family:var(--font-mono);font-size:12px;color:var(--accent-cyan)">+QE score</span>
+          </div>
+          <div style="padding:4px 0 4px 28px;font-size:11px;color:var(--text-muted);font-family:var(--font-mono)">↓ tier upgrade</div>
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--bg-panel);border-radius:12px;border:1px solid rgba(180,255,71,0.2)">
+            <span style="font-size:18px">🎨</span>
+            <span style="font-size:13px;color:var(--text-secondary)">Your revenue multiplier</span>
+            <span style="margin-left:auto;font-family:var(--font-mono);font-size:12px;color:var(--accent-lime)">↑ 2.0×</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── SECTION 4: COMPARISON ── -->
+<section id="compare">
+  <div class="section-label reveal">04 — The Difference</div>
+  <h2 class="section-title reveal">[ i ] vs. everywhere else.</h2>
+  <p class="section-body reveal">Point by point. No spin.</p>
+
+  <div class="compare-wrap reveal">
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>What matters</th>
+          <th>YouTube</th>
+          <th>TikTok</th>
+          <th>Instagram</th>
+          <th class="highlight">[ i ] native</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Creator revenue cut</td>
+          <td>~55%</td>
+          <td>Fractions of ¢/view</td>
+          <td>Varies / none organic</td>
+          <td class="highlight">60% guaranteed</td>
+        </tr>
+        <tr>
+          <td>Ranking by</td>
+          <td>Views + watch time</td>
+          <td>Virality algorithm</td>
+          <td>Engagement + ads spend</td>
+          <td class="highlight">Quality engagement score</td>
+        </tr>
+        <tr>
+          <td>Follower count matters?</td>
+          <td><span class="check">✓</span> Yes</td>
+          <td><span class="check">✓</span> Yes</td>
+          <td><span class="check">✓</span> Yes</td>
+          <td class="highlight"><span class="cross">✗</span> Never</td>
+        </tr>
+        <tr>
+          <td>Audience earns too?</td>
+          <td><span class="cross">✗</span> No</td>
+          <td><span class="cross">✗</span> No</td>
+          <td><span class="cross">✗</span> No</td>
+          <td class="highlight"><span class="check">✓</span> 30% of every impression</td>
+        </tr>
+        <tr>
+          <td>Direct brand deal access</td>
+          <td>Manual / agents</td>
+          <td>Creator marketplace (curated)</td>
+          <td>Manual / agents</td>
+          <td class="highlight">Built-in, Tier 3+</td>
+        </tr>
+        <tr>
+          <td>Payout speed (top tier)</td>
+          <td>Monthly</td>
+          <td>Monthly</td>
+          <td>Monthly</td>
+          <td class="highlight">Instant (Tier 4)</td>
+        </tr>
+        <tr>
+          <td>Reputation is portable?</td>
+          <td><span class="cross">✗</span> No</td>
+          <td><span class="cross">✗</span> No</td>
+          <td><span class="cross">✗</span> No</td>
+          <td class="highlight"><span class="check">✓</span> xCoins bridge (Tier 4)</td>
+        </tr>
+        <tr>
+          <td>Platform cut</td>
+          <td>~45%</td>
+          <td>~50%+</td>
+          <td>~45%+</td>
+          <td class="highlight">10%. That's it.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── SECTION 5: TRUST BUILDS ASSET ── -->
+<section id="trust">
+  <div class="section-label reveal">05 — Your Asset</div>
+  <h2 class="section-title reveal">Your trust score is<br>equity you can't lose.</h2>
+  <p class="section-body reveal">
+    On every other platform, your account is a license they can revoke. Here, your trust score is a permanent record of your behavior — and it unlocks real economic advantages that compound over time.
+  </p>
+
+  <div class="timeline reveal">
+    <div class="timeline-item">
+      <div class="timeline-stage">Day 1</div>
+      <div class="timeline-title">You arrive. Three coins unlock.</div>
+      <div class="timeline-body">aCoins, iCoins, vCoins. Your earning starts immediately. Trust score begins at 50 — the highest neutral start of any platform.</div>
+      <div class="timeline-coins">
+        <span class="coin-tag icoin">i⬡ iCoins</span>
+        <span class="coin-tag vcoin">v◈ vCoins</span>
+        <span class="coin-tag cyan">aCoins</span>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-stage">Week 1 → Month 1</div>
+      <div class="timeline-title">Consistent creation compounds.</div>
+      <div class="timeline-body">Streak bonuses multiply your earnings 1.5×. Your quality engagement score builds. More coins unlock — eCoins, fCoins, sCoins — each adding a new earning dimension.</div>
+      <div class="timeline-coins">
+        <span class="coin-tag lime">eCoins</span>
+        <span class="coin-tag lime">fCoins</span>
+        <span class="coin-tag lime">sCoins 1.5×</span>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-stage">Month 2 — Tier 3</div>
+      <div class="timeline-title">Brand deal access opens. 3-day payouts.</div>
+      <div class="timeline-body">Quality engagement score crosses 60. You're Rising tier — 1.25× multiplier on every impression. Campaign marketplace becomes available. You set your terms, brands choose you.</div>
+      <div class="timeline-coins">
+        <span class="coin-tag icoin">1.25× multiplier</span>
+        <span class="coin-tag cyan">Brand marketplace</span>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-stage">Tier 4 — Signature</div>
+      <div class="timeline-title">Instant payouts. 2× earnings. Governance rights.</div>
+      <div class="timeline-body">Trust score 76+. You earn at 2× on every impression. Payouts hit your wallet instantly. xCoins unlock — your reputation is now portable across platforms. You have a vote in how the platform evolves.</div>
+      <div class="timeline-coins">
+        <span class="coin-tag lime">2.0× multiplier</span>
+        <span class="coin-tag icoin">Instant payout</span>
+        <span class="coin-tag cyan">xCoins bridge</span>
+        <span class="coin-tag vcoin">gCoins governance</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── MANIFESTO ── -->
+<div class="manifesto">
+  <div class="manifesto-orb"></div>
+  <div class="manifesto-inner reveal">
+    <p class="manifesto-quote">
+      "Other platforms treat creators as <em>content suppliers</em> for an attention marketplace they own.<br><br>[ i ] treats you as a <em>co-owner</em> of that marketplace."
+    </p>
+    <p class="manifesto-sub">
+      The creator who builds natively on [ i ] from day one is in a fundamentally different position than someone importing their TikTok feed. One is a user. The other is building something that belongs to them inside the ecosystem — and compounds every day they're here.
+    </p>
+  </div>
+</div>
+
+<!-- ── CTA ── -->
+<div class="cta-section reveal">
+  <div class="section-label" style="justify-content:center;text-align:center">Ready</div>
+  <h2 class="section-title">Build here first.</h2>
+  <p class="section-body">You've spent years building audiences that belong to other companies. Build one that compounds for you.</p>
+  <div style="margin-top:40px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+    <a href="#" class="btn-primary">
+      Apply for early access
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M7 7h10v10"/></svg>
+    </a>
+    <a href="#split" class="btn-ghost">Read it again</a>
+  </div>
+  <p style="margin-top:32px;font-family:var(--font-mono);font-size:11px;color:var(--text-muted);letter-spacing:0.08em">
+    [ i ] — Attention Wallet & Media Marketplace · Investor Preview
+  </p>
+</div>
+
+<script>
+  // Intersection observer for reveal animations
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(el => {
+      if (el.isIntersecting) {
+        el.target.classList.add('visible');
+        // animate split bars
+        const fill = el.target.querySelector('.split-fill');
+        if (fill) {
+          setTimeout(() => {
+            fill.style.width = fill.dataset.width;
+            fill.style.transition = 'width 1.4s cubic-bezier(0.34,1.56,0.64,1)';
+          }, 200);
+        }
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+  reveals.forEach(el => observer.observe(el));
+
+  // Also trigger split bars when their parent becomes visible
+  const splitRows = document.querySelectorAll('.split-row');
+  const splitObserver = new IntersectionObserver((entries) => {
+    entries.forEach(el => {
+      if (el.isIntersecting) {
+        const fill = el.target.querySelector('.split-fill');
+        if (fill && !fill.style.width) {
+          setTimeout(() => {
+            fill.style.width = fill.dataset.width;
+            fill.style.transition = 'width 1.4s cubic-bezier(0.34,1.56,0.64,1)';
+          }, 300);
+        }
+      }
+    });
+  }, { threshold: 0.3 });
+
+  splitRows.forEach(row => splitObserver.observe(row));
+</script>
+</body>
+</html>

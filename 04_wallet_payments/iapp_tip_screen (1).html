@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] App — Tip Screen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-void:        #070709;
+    --bg-deep:        #0a0a0f;
+    --bg-surface:     #111118;
+    --bg-panel:       #16161f;
+    --bg-raised:      #1c1c28;
+    --border-subtle:  rgba(255,255,255,0.05);
+    --border-mid:     rgba(255,255,255,0.09);
+    --border-active:  rgba(255,255,255,0.18);
+    --text-primary:   #f0ede8;
+    --text-secondary: #9997a0;
+    --text-muted:     #4a4858;
+    --icoin-primary:  #4ade80;
+    --font-display:   'Syne', sans-serif;
+    --font-body:      'DM Sans', sans-serif;
+    --font-mono:      'JetBrains Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg-deep);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    font-family: var(--font-body);
+  }
+
+  .phone-wrap {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .app-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -.02em;
+    margin-bottom: 6px;
+  }
+
+  .app-sub {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+  }
+
+  .phone {
+    width: 340px;
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 44px;
+    overflow: hidden;
+    background: var(--bg-surface);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(255,255,255,0.04);
+  }
+
+  .notch {
+    width: 88px;
+    height: 24px;
+    margin: 0 auto;
+    background: var(--bg-surface);
+    border-radius: 0 0 16px 16px;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-top: none;
+  }
+
+  .screen {
+    padding: 24px 20px 32px;
+    min-height: 700px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .back-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 22px;
+    cursor: pointer;
+    opacity: .55;
+    transition: opacity .12s;
+  }
+  .back-row:hover { opacity: 1; }
+
+  .back-box {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: var(--bg-panel);
+    border: 0.5px solid var(--border-mid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  .back-lbl {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .screen-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+    letter-spacing: -.02em;
+  }
+
+  .screen-sub {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 22px;
+  }
+
+  /* Creator card */
+  .creator-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--bg-panel);
+    border: 0.5px solid var(--border-mid);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 22px;
+  }
+
+  .avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--bg-raised);
+    border: 0.5px solid var(--border-mid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+
+  .cr-info { flex: 1; }
+
+  .cr-name {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+    letter-spacing: -.01em;
+  }
+
+  .cr-handle {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+  }
+
+  .cr-badge {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 9px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 20px;
+    background: rgba(74,222,128,0.08);
+    border: 0.5px solid rgba(74,222,128,0.2);
+    color: var(--icoin-primary);
+  }
+
+  /* Section label */
+  .sec-label {
+    font-family: var(--font-body);
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    margin-bottom: 10px;
+  }
+
+  /* Preset grid */
+  .preset-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 7px;
+    margin-bottom: 12px;
+  }
+
+  .preset {
+    padding: 13px 6px;
+    border-radius: 12px;
+    border: 0.5px solid var(--border-subtle);
+    background: var(--bg-panel);
+    text-align: center;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .preset:hover { border-color: var(--border-mid); }
+  .preset.on { background: var(--text-primary); border-color: var(--text-primary); }
+
+  .preset-amt {
+    font-family: var(--font-mono);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+  }
+  .preset.on .preset-amt { color: var(--bg-void); }
+
+  .preset-coin {
+    font-family: var(--font-body);
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+  .preset.on .preset-coin { color: rgba(7,7,9,0.6); }
+
+  /* Custom input */
+  .custom-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-panel);
+    border: 0.5px solid var(--border-mid);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+  }
+
+  .custom-input {
+    flex: 1;
+    font-family: var(--font-mono);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text-primary);
+    background: transparent;
+    border: none;
+    outline: none;
+    -moz-appearance: textfield;
+  }
+  .custom-input::-webkit-outer-spin-button,
+  .custom-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  .custom-sym {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* Coin selector */
+  .coin-selector {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .cs-btn {
+    flex: 1;
+    padding: 8px 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 400;
+    border-radius: 9px;
+    border: 0.5px solid var(--border-mid);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    text-align: center;
+    transition: all .12s;
+  }
+  .cs-btn:hover { border-color: var(--border-active); color: var(--text-secondary); }
+  .cs-btn.on { background: var(--text-primary); color: var(--bg-void); border-color: var(--text-primary); }
+
+  /* Note input */
+  .note-input {
+    width: 100%;
+    background: var(--bg-panel);
+    border: 0.5px solid var(--border-mid);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--text-primary);
+    resize: none;
+    outline: none;
+    margin-bottom: 14px;
+    line-height: 1.5;
+    transition: border-color .12s;
+  }
+  .note-input::placeholder { color: var(--text-muted); }
+  .note-input:focus { border-color: var(--border-active); }
+
+  /* Zero cut bar */
+  .zero-cut {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    padding: 10px 14px;
+    border: 0.5px solid rgba(74,222,128,0.18);
+    border-radius: 10px;
+    background: rgba(74,222,128,0.05);
+    margin-bottom: 16px;
+  }
+
+  .zc-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--icoin-primary);
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .zc-text {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--icoin-primary);
+    line-height: 1.5;
+  }
+
+  /* CTA */
+  .cta {
+    width: 100%;
+    padding: 15px;
+    border-radius: 14px;
+    background: var(--text-primary);
+    color: var(--bg-void);
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: opacity .12s;
+    margin-top: auto;
+    letter-spacing: -.01em;
+  }
+  .cta:hover { opacity: .88; }
+
+  /* Annotations */
+  .annotations {
+    max-width: 280px;
+    padding-top: 12px;
+  }
+
+  .ann { margin-bottom: 24px; }
+
+  .ann-tag {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 9px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin-bottom: 6px;
+    border: 0.5px solid var(--border-mid);
+    color: var(--text-muted);
+  }
+
+  .ann-title {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+  }
+
+  .ann-body {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-wrap">
+
+  <div>
+    <div class="app-title">[ i ]</div>
+    <div class="app-sub">Tip — Creator Support</div>
+
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen">
+
+        <div class="back-row">
+          <div class="back-box">←</div>
+          <div class="back-lbl">Wallet</div>
+        </div>
+
+        <div class="screen-title">Tip</div>
+        <div class="screen-sub">Send directly — zero platform cut</div>
+
+        <div class="creator-card">
+          <div class="avatar">MK</div>
+          <div class="cr-info">
+            <div class="cr-name">Maya Kato</div>
+            <div class="cr-handle">@mayakato · Established</div>
+            <div class="cr-badge">Signature tier creator</div>
+          </div>
+        </div>
+
+        <div class="sec-label">Quick amounts</div>
+        <div class="preset-grid">
+          <div class="preset" onclick="setPreset(10,this)">
+            <div class="preset-amt">10</div>
+            <div class="preset-coin">bcoins</div>
+          </div>
+          <div class="preset" onclick="setPreset(50,this)">
+            <div class="preset-amt">50</div>
+            <div class="preset-coin">bcoins</div>
+          </div>
+          <div class="preset on" onclick="setPreset(100,this)">
+            <div class="preset-amt">100</div>
+            <div class="preset-coin">bcoins</div>
+          </div>
+          <div class="preset" onclick="setPreset(5,this)">
+            <div class="preset-amt">5</div>
+            <div class="preset-coin">mcoins</div>
+          </div>
+          <div class="preset" onclick="setPreset(10,this)">
+            <div class="preset-amt">10</div>
+            <div class="preset-coin">mcoins</div>
+          </div>
+          <div class="preset" onclick="setPreset(1,this)">
+            <div class="preset-amt">1</div>
+            <div class="preset-coin">icoins</div>
+          </div>
+        </div>
+
+        <div class="custom-row">
+          <input class="custom-input" id="tip-amt" type="number" value="100" min="1" oninput="tipCalc()" placeholder="Custom amount">
+          <span class="custom-sym" id="tip-sym">bcoins</span>
+        </div>
+
+        <div class="coin-selector">
+          <div class="cs-btn on" onclick="setCoin('bcoins',this)">bcoins</div>
+          <div class="cs-btn" onclick="setCoin('mcoins',this)">mcoins</div>
+          <div class="cs-btn" onclick="setCoin('icoins',this)">icoins</div>
+        </div>
+
+        <textarea class="note-input" rows="2" placeholder="Add a note to Maya… (optional)"></textarea>
+
+        <div class="zero-cut">
+          <div class="zc-dot"></div>
+          <div class="zc-text" id="tip-summary">100 bcoins goes entirely to Maya. No platform fee.</div>
+        </div>
+
+        <button class="cta">Send tip</button>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="annotations">
+    <div class="ann">
+      <div class="ann-tag">Zero cut</div>
+      <div class="ann-title">Tips are sacred — 100% to creator</div>
+      <div class="ann-body">The green bar at the bottom isn't just UI — it's a promise. Every tip reaches the creator whole. The platform earns from attention, not from human generosity. This distinction matters enormously to creators choosing where to build.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">Coin choice</div>
+      <div class="ann-title">bcoins for small, icoins for meaningful</div>
+      <div class="ann-body">bcoins are the default — frictionless micro-tips that feel like a thumbs up with value. mcoins unlock content. icoins are a statement — tipping 1 icoin means something. The coin type signals the intent of the sender.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">Note field</div>
+      <div class="ann-title">A message with money attached</div>
+      <div class="ann-body">The note turns a transaction into a moment. "This video changed how I think about X" plus 100 bcoins is a completely different thing than just 100 bcoins. The note field costs nothing to build and creates enormous creator loyalty.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">Presets</div>
+      <div class="ann-title">Six amounts, two taps maximum</div>
+      <div class="ann-body">The preset grid covers the full range of tip intent — from a casual 10 bcoins to a meaningful 1 icoin. Most users will tap a preset and send. The custom input exists for edge cases, not for everyday use.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let tipCoin = 'bcoins';
+
+  function setCoin(c, el) {
+    tipCoin = c;
+    document.getElementById('tip-sym').textContent = c;
+    document.querySelectorAll('.cs-btn').forEach(b => b.classList.remove('on'));
+    el.classList.add('on');
+    tipCalc();
+  }
+
+  function setPreset(amt, el) {
+    document.getElementById('tip-amt').value = amt;
+    document.querySelectorAll('.preset').forEach(b => b.classList.remove('on'));
+    el.classList.add('on');
+    tipCalc();
+  }
+
+  function tipCalc() {
+    const amt = parseInt(document.getElementById('tip-amt').value) || 0;
+    document.getElementById('tip-summary').textContent =
+      `${amt.toLocaleString()} ${tipCoin} goes entirely to Maya. No platform fee.`;
+  }
+
+  tipCalc();
+</script>
+
+</body>
+</html>

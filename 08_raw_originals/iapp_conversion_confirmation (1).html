@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] App — Conversion Confirmation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-void:        #070709;
+    --bg-deep:        #0a0a0f;
+    --bg-surface:     #111118;
+    --bg-panel:       #16161f;
+    --bg-raised:      #1c1c28;
+    --border-subtle:  rgba(255,255,255,0.05);
+    --border-mid:     rgba(255,255,255,0.09);
+    --border-active:  rgba(255,255,255,0.18);
+    --text-primary:   #f0ede8;
+    --text-secondary: #9997a0;
+    --text-muted:     #4a4858;
+    --icoin-primary:  #4ade80;
+    --font-display:   'Syne', sans-serif;
+    --font-body:      'DM Sans', sans-serif;
+    --font-mono:      'JetBrains Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg-deep);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    font-family: var(--font-body);
+  }
+
+  .phone-wrap {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .app-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -.02em;
+    margin-bottom: 6px;
+  }
+
+  .app-sub {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+  }
+
+  .phone {
+    width: 340px;
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 44px;
+    overflow: hidden;
+    background: var(--bg-surface);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(255,255,255,0.04);
+  }
+
+  .notch {
+    width: 88px;
+    height: 24px;
+    margin: 0 auto;
+    background: var(--bg-surface);
+    border-radius: 0 0 16px 16px;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-top: none;
+  }
+
+  .screen {
+    padding: 28px 20px 36px;
+    min-height: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Animations */
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @keyframes scale-in {
+    0%   { opacity: 0; transform: scale(.6); }
+    60%  { transform: scale(1.1); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes ring-out {
+    0%   { opacity: .55; transform: translate(-50%,-50%) scale(.7); }
+    100% { opacity: 0;   transform: translate(-50%,-50%) scale(2.1); }
+  }
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Stages */
+  .stage {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+  .stage.active { display: flex; }
+
+  /* Processing stage */
+  .proc-ring {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    border: 2px solid var(--bg-raised);
+    border-top-color: var(--icoin-primary);
+    border-right-color: var(--icoin-primary);
+    animation: spin .7s linear infinite;
+    margin: 24px auto 20px;
+  }
+
+  .proc-label {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+    text-align: center;
+    letter-spacing: -.01em;
+  }
+
+  .proc-sub {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  /* Gate list */
+  .gate-list {
+    width: 100%;
+    border: 0.5px solid var(--border-subtle);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+
+  .gate {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 13px;
+    border-bottom: 0.5px solid var(--border-subtle);
+  }
+  .gate:last-child { border-bottom: none; }
+
+  .gate-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: var(--bg-panel);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 500;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    transition: background .3s, color .3s;
+  }
+
+  .gate-icon.pass {
+    background: rgba(74,222,128,0.1);
+    color: var(--icoin-primary);
+  }
+
+  .gate-name {
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    flex: 1;
+  }
+
+  .gate-status {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    transition: color .3s;
+  }
+
+  .gate-status.pass { color: var(--icoin-primary); }
+
+  /* Confirmed stage */
+  .confirm-wrap {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 24px auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .confirm-ring {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 1.5px solid var(--icoin-primary);
+    top: 50%;
+    left: 50%;
+    opacity: 0;
+  }
+
+  .confirm-ring.r1 { animation: ring-out 1.6s ease-out infinite; }
+  .confirm-ring.r2 { animation: ring-out 1.6s ease-out infinite .8s; }
+
+  .confirm-icon {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: rgba(74,222,128,0.08);
+    border: 1.5px solid rgba(74,222,128,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--icoin-primary);
+    animation: scale-in .55s cubic-bezier(.34,1.56,.64,1) both;
+    position: relative;
+    z-index: 1;
+  }
+
+  .amount-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 5px;
+    animation: fade-up .4s ease both;
+    animation-delay: .2s;
+    opacity: 0;
+    animation-fill-mode: forwards;
+  }
+
+  .amount-val {
+    font-family: var(--font-mono);
+    font-size: 40px;
+    font-weight: 500;
+    color: var(--icoin-primary);
+    letter-spacing: -.02em;
+  }
+
+  .amount-coin {
+    font-family: var(--font-mono);
+    font-size: 15px;
+    color: var(--text-muted);
+  }
+
+  .confirm-label {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 22px;
+    animation: fade-up .4s ease both;
+    animation-delay: .3s;
+    opacity: 0;
+    animation-fill-mode: forwards;
+  }
+
+  /* Wallet badge */
+  .wallet-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(74,222,128,0.05);
+    border: 0.5px solid rgba(74,222,128,0.18);
+    border-radius: 10px;
+    padding: 9px 13px;
+    width: 100%;
+    margin-bottom: 14px;
+    animation: fade-up .4s ease both;
+    animation-delay: .4s;
+    opacity: 0;
+    animation-fill-mode: forwards;
+  }
+
+  .wb-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--icoin-primary);
+    flex-shrink: 0;
+  }
+
+  .wb-text {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--icoin-primary);
+  }
+
+  /* Receipt */
+  .receipt {
+    width: 100%;
+    border: 0.5px solid var(--border-subtle);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 16px;
+    animation: fade-up .4s ease both;
+    animation-delay: .5s;
+    opacity: 0;
+    animation-fill-mode: forwards;
+  }
+
+  .receipt-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 14px;
+    border-bottom: 0.5px solid var(--border-subtle);
+  }
+  .receipt-row:last-child { border-bottom: none; }
+
+  .rl {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .rv {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .rv.green { color: var(--icoin-primary); font-size: 13px; }
+  .rv.muted { color: var(--text-muted); font-size: 10px; }
+
+  /* Button row */
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    margin-top: auto;
+    animation: fade-up .4s ease both;
+    animation-delay: .65s;
+    opacity: 0;
+    animation-fill-mode: forwards;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 13px 0;
+    border-radius: 13px;
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 0.5px solid var(--border-mid);
+    background: transparent;
+    color: var(--text-primary);
+    transition: background .12s;
+    letter-spacing: -.01em;
+  }
+  .btn:hover { background: var(--bg-panel); }
+
+  .btn.primary {
+    background: var(--text-primary);
+    color: var(--bg-void);
+    border-color: transparent;
+    box-shadow: 0 2px 14px rgba(240,237,232,0.08), 0 1px 4px rgba(0,0,0,0.3);
+  }
+  .btn.primary:hover { opacity: .9; }
+
+  /* Annotations */
+  .annotations {
+    max-width: 280px;
+    padding-top: 12px;
+  }
+
+  .ann { margin-bottom: 22px; }
+
+  .ann-tag {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 9px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin-bottom: 6px;
+    border: 0.5px solid var(--border-mid);
+    color: var(--text-muted);
+  }
+
+  .ann-title {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+  }
+
+  .ann-body {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+
+  .ann-divider {
+    height: 0.5px;
+    background: var(--border-subtle);
+    margin: 18px 0;
+  }
+
+  .replay-btn {
+    display: block;
+    margin: 16px auto 0;
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: 0.5px solid var(--border-mid);
+    background: transparent;
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-size: 11px;
+    cursor: pointer;
+    transition: color .12s, border-color .12s;
+  }
+  .replay-btn:hover { color: var(--text-secondary); border-color: var(--border-active); }
+</style>
+</head>
+<body>
+
+<div class="phone-wrap">
+
+  <div>
+    <div class="app-title">[ i ]</div>
+    <div class="app-sub">Conversion Confirmation</div>
+
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen">
+
+        <!-- Stage 1: Processing -->
+        <div class="stage active" id="stage-processing">
+          <div class="proc-ring"></div>
+          <div class="proc-label" id="proc-label">Clearing through rcoins pool…</div>
+          <div class="proc-sub">500 acoins · Tier 2 multiplier applying</div>
+          <div class="gate-list">
+            <div class="gate">
+              <div class="gate-icon" id="gi1">r</div>
+              <div class="gate-name">Pool entry</div>
+              <div class="gate-status" id="gs1">—</div>
+            </div>
+            <div class="gate">
+              <div class="gate-icon" id="gi2">×</div>
+              <div class="gate-name">Tier 2 multiplier (1.15×)</div>
+              <div class="gate-status" id="gs2">—</div>
+            </div>
+            <div class="gate">
+              <div class="gate-icon" id="gi3">%</div>
+              <div class="gate-name">Pool fee (5%)</div>
+              <div class="gate-status" id="gs3">—</div>
+            </div>
+            <div class="gate">
+              <div class="gate-icon" id="gi4">→</div>
+              <div class="gate-name">icoins output</div>
+              <div class="gate-status" id="gs4">—</div>
+            </div>
+            <div class="gate">
+              <div class="gate-icon" id="gi5">✓</div>
+              <div class="gate-name">Ledger write</div>
+              <div class="gate-status" id="gs5">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 2: Confirmed -->
+        <div class="stage" id="stage-confirmed">
+          <div class="confirm-wrap">
+            <div class="confirm-ring r1"></div>
+            <div class="confirm-ring r2"></div>
+            <div class="confirm-icon">i</div>
+          </div>
+          <div class="amount-row">
+            <div class="amount-val" id="out-amount">5</div>
+            <div class="amount-coin">icoins</div>
+          </div>
+          <div class="confirm-label">credited to your wallet</div>
+          <div class="wallet-badge">
+            <div class="wb-dot"></div>
+            <div class="wb-text" id="wallet-update">Wallet updated · balance now 852 icoins</div>
+          </div>
+          <div class="receipt">
+            <div class="receipt-row"><div class="rl">You sent</div><div class="rv" id="r-sent">500 acoins</div></div>
+            <div class="receipt-row"><div class="rl">Pool cleared</div><div class="rv" id="r-pool">575 rcoins</div></div>
+            <div class="receipt-row"><div class="rl">Pool fee (5%)</div><div class="rv" id="r-fee">−28 rcoins</div></div>
+            <div class="receipt-row"><div class="rl">Rate applied</div><div class="rv">100 : 1 (Tier 2)</div></div>
+            <div class="receipt-row"><div class="rl">You received</div><div class="rv green" id="r-recv">+5 icoins</div></div>
+            <div class="receipt-row"><div class="rl">Reference</div><div class="rv muted" id="r-ref">i·4c8d·9f2m</div></div>
+          </div>
+          <div class="btn-row">
+            <button class="btn" onclick="resetDemo()">Convert more</button>
+            <button class="btn primary">View wallet</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <button class="replay-btn" onclick="resetDemo()">Replay conversion</button>
+  </div>
+
+  <div class="annotations">
+    <div class="ann">
+      <div class="ann-tag">Processing</div>
+      <div class="ann-title">The pool is not instant by design</div>
+      <div class="ann-body">The 2-second clearing sequence shows all five steps — pool entry, multiplier, fee, output, ledger write. That brief pause makes the mechanics legible. Users understand exactly where their coins went and why the number is what it is.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">Receipt</div>
+      <div class="ann-title">Every number explained — before and after</div>
+      <div class="ann-body">The receipt mirrors exactly what the convert screen showed before the tap. No new numbers. No rounding surprises. The pre-confirmation breakdown and the post-confirmation receipt are identical — trust is built by consistency, not by hiding the math.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">Wallet badge</div>
+      <div class="ann-title">New absolute balance — not just the delta</div>
+      <div class="ann-body">The green strip states the new total balance, not just "+5 icoins." The user knows exactly where they stand. Delta is useful for the moment; absolute balance is useful for decisions.</div>
+    </div>
+    <div class="ann-divider"></div>
+    <div class="ann">
+      <div class="ann-title">Reference ID is the dispute anchor</div>
+      <div class="ann-body">Every conversion logs a permanent reference on both sides of the ledger. If a user ever questions a conversion, the ref links the acoins sent to the icoins received in one immutable record. No "I never received it" is possible with a verifiable on-platform ledger.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const SENT     = 500;
+  const MULT     = 1.15;
+  const FEE_RATE = 0.05;
+  const RATE     = 100;
+  const PREV_BAL = 847;
+
+  const pooled   = Math.round(SENT * MULT);
+  const fee      = Math.round(pooled * FEE_RATE);
+  const net      = pooled - fee;
+  const received = Math.floor(net / RATE);
+  const newBal   = PREV_BAL + received;
+
+  const steps = [
+    { gs: 'gs1', gi: 'gi1', text: SENT + ' acoins → pool',                 delay: 420  },
+    { gs: 'gs2', gi: 'gi2', text: pooled + ' rcoins (+' + (pooled-SENT) + ')', delay: 850  },
+    { gs: 'gs3', gi: 'gi3', text: '−' + fee + ' rcoins',                    delay: 1280 },
+    { gs: 'gs4', gi: 'gi4', text: received + ' icoins',                      delay: 1720 },
+    { gs: 'gs5', gi: 'gi5', text: 'Written',                                 delay: 2100 },
+  ];
+
+  function runProcessing() {
+    steps.forEach(s => {
+      setTimeout(() => {
+        const gs = document.getElementById(s.gs);
+        const gi = document.getElementById(s.gi);
+        gs.textContent = s.text;
+        gs.classList.add('pass');
+        gi.classList.add('pass');
+      }, s.delay);
+    });
+
+    setTimeout(() => {
+      document.getElementById('proc-label').textContent = 'Conversion complete';
+    }, 1900);
+
+    setTimeout(showConfirmed, 2600);
+  }
+
+  function showConfirmed() {
+    document.getElementById('stage-processing').classList.remove('active');
+    document.getElementById('stage-confirmed').classList.add('active');
+
+    document.getElementById('out-amount').textContent   = received;
+    document.getElementById('wallet-update').textContent = 'Wallet updated · balance now ' + newBal + ' icoins';
+    document.getElementById('r-sent').textContent  = SENT.toLocaleString() + ' acoins';
+    document.getElementById('r-pool').textContent  = pooled.toLocaleString() + ' rcoins';
+    document.getElementById('r-fee').textContent   = '−' + fee + ' rcoins';
+    document.getElementById('r-recv').textContent  = '+' + received + ' icoins';
+    document.getElementById('r-ref').textContent   =
+      'i·' + Math.random().toString(36).substr(2,4) + '·' + Math.random().toString(36).substr(2,4);
+  }
+
+  function resetDemo() {
+    document.getElementById('stage-confirmed').classList.remove('active');
+    document.getElementById('stage-processing').classList.add('active');
+
+    steps.forEach(s => {
+      const gs = document.getElementById(s.gs);
+      const gi = document.getElementById(s.gi);
+      gs.textContent = '—';
+      gs.classList.remove('pass');
+      gi.classList.remove('pass');
+    });
+
+    document.getElementById('proc-label').textContent = 'Clearing through rcoins pool…';
+    runProcessing();
+  }
+
+  runProcessing();
+</script>
+
+</body>
+</html>

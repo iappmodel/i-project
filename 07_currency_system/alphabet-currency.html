@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] Alphabet Currency — The Complete System</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #06060b;
+  --surface: #0d0d14;
+  --surface2: #13131d;
+  --border: rgba(255,255,255,0.06);
+  --text: #e8e5df;
+  --muted: rgba(232,229,223,0.45);
+  --dim: rgba(232,229,223,0.2);
+
+  /* Tier Colors */
+  --core: #c8a84b;
+  --core-glow: rgba(200,168,75,0.25);
+  --earn: #4bae7a;
+  --earn-glow: rgba(75,174,122,0.25);
+  --spend: #5b9bd5;
+  --spend-glow: rgba(91,155,213,0.25);
+  --social: #d46bb5;
+  --social-glow: rgba(212,107,181,0.25);
+  --system: #8a8a9a;
+  --system-glow: rgba(138,138,154,0.25);
+  --special: #e8455a;
+  --special-glow: rgba(232,69,90,0.25);
+  --external: #f09030;
+  --external-glow: rgba(240,144,48,0.25);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 14px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══ AMBIENT ═══ */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 50% 40% at 15% 20%, rgba(200,168,75,0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 50% at 85% 80%, rgba(91,155,213,0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 30% at 50% 50%, rgba(232,69,90,0.02) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 60px 24px 120px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ═══ HERO ═══ */
+.hero {
+  text-align: center;
+  margin-bottom: 80px;
+  padding: 60px 0;
+}
+
+.hero-badge {
+  display: inline-block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--core);
+  border: 1px solid rgba(200,168,75,0.3);
+  padding: 6px 18px;
+  border-radius: 100px;
+  margin-bottom: 32px;
+}
+
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(36px, 6vw, 72px);
+  font-weight: 800;
+  letter-spacing: -2px;
+  line-height: 1.05;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, var(--text) 0%, var(--core) 50%, var(--spend) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero p {
+  font-size: 16px;
+  color: var(--muted);
+  max-width: 640px;
+  margin: 0 auto;
+  line-height: 1.8;
+}
+
+/* ═══ SECTION HEADERS ═══ */
+.section-header {
+  margin: 80px 0 40px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-header h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.section-header p {
+  color: var(--muted);
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+/* ═══ TIER LABELS ═══ */
+.tier-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 6px;
+  margin-bottom: 24px;
+}
+
+.tier-core    { color: var(--core);    background: var(--core-glow); }
+.tier-earn    { color: var(--earn);    background: var(--earn-glow); }
+.tier-spend   { color: var(--spend);   background: var(--spend-glow); }
+.tier-social  { color: var(--social);  background: var(--social-glow); }
+.tier-system  { color: var(--system);  background: var(--system-glow); }
+.tier-special { color: var(--special); background: var(--special-glow); }
+.tier-external{ color: var(--external);background: var(--external-glow); }
+
+/* ═══ COIN CARDS ═══ */
+.coin-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.coin-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px 28px 24px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.coin-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.coin-card:hover { border-color: rgba(255,255,255,0.12); transform: translateY(-2px); }
+.coin-card:hover::before { opacity: 1; }
+
+.coin-card[data-tier="core"]::before     { background: var(--core); }
+.coin-card[data-tier="earn"]::before     { background: var(--earn); }
+.coin-card[data-tier="spend"]::before    { background: var(--spend); }
+.coin-card[data-tier="social"]::before   { background: var(--social); }
+.coin-card[data-tier="system"]::before   { background: var(--system); }
+.coin-card[data-tier="special"]::before  { background: var(--special); }
+.coin-card[data-tier="external"]::before { background: var(--external); }
+
+.coin-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 16px;
+}
+
+.coin-letter {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 42px;
+  line-height: 1;
+  min-width: 52px;
+  text-align: center;
+}
+
+.coin-card[data-tier="core"]    .coin-letter { color: var(--core); }
+.coin-card[data-tier="earn"]    .coin-letter { color: var(--earn); }
+.coin-card[data-tier="spend"]   .coin-letter { color: var(--spend); }
+.coin-card[data-tier="social"]  .coin-letter { color: var(--social); }
+.coin-card[data-tier="system"]  .coin-letter { color: var(--system); }
+.coin-card[data-tier="special"] .coin-letter { color: var(--special); }
+.coin-card[data-tier="external"].coin-letter { color: var(--external); }
+
+.coin-identity { flex: 1; }
+
+.coin-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.coin-word {
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.coin-desc {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.coin-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.meta-tag {
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.meta-tag.convertible { border-color: rgba(75,174,122,0.3); color: var(--earn); }
+.meta-tag.non-convertible { border-color: rgba(232,69,90,0.3); color: var(--special); }
+.meta-tag.earnable { border-color: rgba(200,168,75,0.3); color: var(--core); }
+.meta-tag.spendable { border-color: rgba(91,155,213,0.3); color: var(--spend); }
+.meta-tag.system-only { border-color: rgba(138,138,154,0.3); color: var(--system); }
+.meta-tag.external { border-color: rgba(240,144,48,0.3); color: var(--external); }
+
+/* ═══ FLOW DIAGRAM ═══ */
+.flow-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 40px 32px;
+  margin: 60px 0;
+}
+
+.flow-section h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.flow-chain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.flow-node {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.flow-arrow {
+  color: var(--dim);
+  font-size: 18px;
+}
+
+.fn-core    { background: var(--core-glow);    color: var(--core); }
+.fn-earn    { background: var(--earn-glow);    color: var(--earn); }
+.fn-spend   { background: var(--spend-glow);   color: var(--spend); }
+.fn-social  { background: var(--social-glow);  color: var(--social); }
+.fn-system  { background: var(--system-glow);  color: var(--system); }
+.fn-special { background: var(--special-glow); color: var(--special); }
+.fn-external{ background: var(--external-glow);color: var(--external); }
+
+/* ═══ TABLE ═══ */
+.rules-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 12px;
+}
+
+.rules-table th {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+}
+
+.rules-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  vertical-align: top;
+}
+
+.rules-table tr:hover td {
+  background: rgba(255,255,255,0.02);
+}
+
+/* ═══ NAVIGATION ═══ */
+.nav-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(6,6,11,0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+  padding: 12px 24px;
+}
+
+.nav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--core);
+}
+
+.nav-pills {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+}
+
+.nav-pill {
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 100px;
+  color: var(--muted);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.nav-pill:hover {
+  color: var(--text);
+  border-color: var(--border);
+  background: var(--surface);
+}
+
+/* ═══ COUNTER ═══ */
+.total-counter {
+  text-align: center;
+  padding: 40px 0 0;
+}
+
+.total-counter .big-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 96px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--core) 0%, var(--spend) 50%, var(--special) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1;
+}
+
+.total-counter .label {
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+/* ═══ EXTERNAL PLATFORM SECTION ═══ */
+.ext-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.ext-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.ext-card h4 {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--external);
+}
+
+.ext-card p {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 600px) {
+  .wrap { padding: 80px 16px 80px; }
+  .hero h1 { font-size: 32px; }
+  .coin-card { padding: 20px; }
+  .coin-letter { font-size: 32px; min-width: 40px; }
+  .coin-name { font-size: 17px; }
+  .nav-pills { display: none; }
+  .flow-chain { flex-direction: column; align-items: flex-start; }
+  .total-counter .big-num { font-size: 64px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav class="nav-bar">
+  <div class="nav-inner">
+    <div class="nav-logo">[ i ] Currency</div>
+    <div class="nav-pills">
+      <a href="#core" class="nav-pill">Core</a>
+      <a href="#earning" class="nav-pill">Earning</a>
+      <a href="#spending" class="nav-pill">Spending</a>
+      <a href="#social" class="nav-pill">Social</a>
+      <a href="#system" class="nav-pill">System</a>
+      <a href="#special" class="nav-pill">Special</a>
+      <a href="#external" class="nav-pill">External</a>
+      <a href="#flow" class="nav-pill">Flow</a>
+      <a href="#rules" class="nav-pill">Rules</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">Complete Currency Architecture</div>
+  <h1>The Alphabet<br>Currency</h1>
+  <p>26 letters. 26 coins. Every single one named, assigned, and connected — forming the complete internal economy of the [ i ] platform. Each coin starts with its letter. Each letter has a purpose.</p>
+  <div class="total-counter">
+    <div class="big-num">26</div>
+    <div class="label">Coins in the Ecosystem</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- TIER 1: CORE VALUE CURRENCIES              -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="core" class="section-header">
+  <span class="tier-label tier-core">◆ Tier 1 — Core Value</span>
+  <h2>The Foundation</h2>
+  <p>These are the primary currencies that anchor the entire economy. Every user interacts with these from day one.</p>
+</div>
+
+<div class="coin-grid">
+
+  <div class="coin-card" data-tier="core">
+    <div class="coin-top">
+      <div class="coin-letter">A</div>
+      <div class="coin-identity">
+        <div class="coin-name">aCoins</div>
+        <div class="coin-word">Attention</div>
+      </div>
+    </div>
+    <div class="coin-desc">The foundational earning currency. You earn aCoins by giving your attention — watching content, engaging with posts, completing view sessions. Attention is the raw material of the [ i ] economy. aCoins are the first thing every user earns and the primary input into the reward conversion pipeline. Earned passively through verified watch time, actively through engagement signals like dwell time, scroll velocity, and interaction depth.</div>
+    <div class="coin-meta">
+      <span class="meta-tag earnable">Earnable</span>
+      <span class="meta-tag convertible">Convertible → rCoins</span>
+      <span class="meta-tag">Day 1 Unlock</span>
+      <span class="meta-tag">Soft-Capped Daily</span>
+    </div>
+  </div>
+
+  <div class="coin-card" data-tier="core">
+    <div class="coin-top">
+      <div class="coin-letter">I</div>
+      <div class="coin-identity">
+        <div class="coin-name">iCoins</div>
+        <div class="coin-word">Individual / Identity</div>
+      </div>
+    </div>
+    <div class="coin-desc">The platform's hard currency — your personal value store. iCoins represent real, withdrawable value tied to USD. They sit at the center of the economy as the coin you actually cash out, tip with, subscribe with, and transact with. Earned through the rCoins conversion pipeline (never directly from engagement). The wheel mechanic: scroll down to claim iCoins as personal, inward energy. The coin that makes the [ i ] in [ i ] app literal.</div>
+    <div class="coin-meta">
+      <span class="meta-tag earnable">Via Conversion</span>
+      <span class="meta-tag spendable">Spendable</span>
+      <span class="meta-tag">Day 1 Unlock</span>
+      <span class="meta-tag">Cashable</span>
+    </div>
+  </div>
+
+  <div class="coin-card" data-tier="core">
+    <div class="coin-top">
+      <div class="coin-letter">V</div>
+      <div class="coin-identity">
+        <div class="coin-name">vCoins</div>
+        <div class="coin-word">Victory / Value / Vision</div>
+      </div>
+    </div>
+    <div class="coin-desc">The platform's social energy currency — collective, outward, aspirational. vCoins (also ViCoins) represent the community-facing economy. You earn them by giving upward energy through the wheel mechanic (scroll up). Used for boosting content, tipping creators publicly, voting in community decisions, and powering social features. vCoins are the opposite polarity of iCoins: where iCoins are personal and inward, vCoins are communal and outward.</div>
+    <div class="coin-meta">
+      <span class="meta-tag earnable">Via Wheel ↑</span>
+      <span class="meta-tag spendable">Spendable</span>
+      <span class="meta-tag">Day 1 Unlock</span>
+      <span class="meta-tag convertible">Convertible ↔ iCoins</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- TIER 2: EARNING CURRENCIES                 -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="earning" class="section-header">
+  <span class="tier-label tier-earn">◆ Tier 2 — Earning</span>
+  <h2>The Input Layer</h2>
+  <p>These coins are earned through specific behaviors and actions. They flow into the rCoins reward pool before converting to spendable currency. No direct cash path — always through the pipeline.</p>
+</div>
+
+<div class="coin-grid">
+
+  <div class="coin-card" data-tier="earn">
+    <div class="coin-top">
+      <div class="coin-letter">E</div>
+      <div class="coin-identity">
+        <div class="coin-name">eCoins</div>
+        <div class="coin-word">Engagement</div>
+      </div>
+    </div>
+    <div class="coin-desc">Earned through active engagement beyond passive watching — commenting, sharing, saving, replying, reacting. Every meaningful interaction generates eCoins. The deeper the engagement (long comment vs quick emoji), the more eCoins generated. This is the coin that rewards people for contributing to the conversation, not just consuming.</div>
+    <div class="coin-meta">
+      <span class="meta-tag earnable">Earnable</span>
+      <span class="meta-tag convertible">Convertible → rCoins</span>
+      <span class="meta-tag">Week 1 Unlock</span>
+    </div>
+  </div>
+
+  <div class="coin-card" data-tier="earn">
+    <div class="coin-top">
+      <div class="coin-letter">F</div>
+      <div class="coin-identity">
+        <div class="coin-name">fCoins</div>
+        <div class="coin-word">Focus</div>
+      </div>
+    </div>
+    <div class="coin-desc">The eye-tracking premium currency. fCoins are earned when the attention verification system confirms deep, sustained focus — high dwell time, consistent gaze, minimal distraction. Think of these as the "verified attention" bonus on top of regular aCoins. Particularly valuable during promotional content where advertisers pay for verified eyeballs. Multiplied by the 2× focus mode multiplier when activated.</div>
+    <div class="coin-meta">
+      <span class="meta-tag earnable">Earnable</span>
+      <span class="meta-tag convertible">Convertible → rCoins</span>
+      <span class="meta-tag">Week 2 Unlock</span>
+      <span class="meta-tag">Eye-Track Required</span>
+    </div>
+  </div>
+
+  <div class="coin-card" data-tier="earn">
+    <div class="coin-top">
+      <div class="coin-letter">W</div>
+      <div class="coin-identity">
+        <div class="coin-name">wCoins</div>
+        <div class="coin-word">Watch</div>
+      </div>
+    </div>
+    <div class="coin-desc">Earned specifically from watch session completion. Where aCoins drip in passively as you watch, wCoins reward the commitment of finishing content — hitting the 70%+ threshold, completing full videos, binge-watching series. The session-completion currency. Bonus wCoins for watching creators on consecutive days (watch streaks).</div>
+    <div class="coin-meta">
+      <span class="meta-tag earnable">Earnable</span>
+      <span class="meta-tag convertible">Convertible → rCoins</span>
+      <span class="meta-tag">Day 1 Unlock</span>
+    </div>
+  </div>
+
+  <div class="coin-card" data-tier="earn">
+    <div class="coin-top">
+      <div class="coin-letter">K</div>
+      <div class="coin-identity">
+        <div class="coin-name">kCoins</div>
+        <div class="coin-word">Knowledge</div>
+      </div>
+    </div>
+    <div class="coin-desc">Earned by engaging with educational, tutorial, or informational content. The platform's way of incentivizing learning and growth over mindless scrolling. kCoins are generated when users interact with content tagged as educational, complete learning modules, or engage in knowledge-sharing comments. They also reward quiz participation and course completions.</div>
+    <div class="coin-meta">
+      <span class="meta-tag earnable">Earnable</span>
+      <span class="meta-tag convertible">Convertible → rCoins</span>
+      <span class="meta-tag">Month 1 Unlock</span>
+    </div>
+  </div>
+
+  <div class="coin-card" data-tier="earn">
+    <div class="coin-top">
+      <div class="coin-letter">S</div>
+      <div class="coin-identity">
+        <div class="coin-name">sCoins</div>
+        <div class="coin-word">Streak</div>
+      </div>
+    </div>
+    <div class="coin-desc">The consistency currency. sCoins accumulate through daily login streaks, consecutive watch sessions, and regular posting cadence. 7-day streak = 2× sCoins for the day. 30-day streak = massive bonus + badge. The longer the streak, the higher the multiplier. Breaking a streak resets the multiplier but not the total — you never lose what you already earned.</div>
+    <div class="coin-meta">
+      <span class="meta-tag earnable">Earnable</span>
+      <span class="meta-tag convertible">Convertible → rCoins</span>
+      <span class="meta-tag">Week 1 Unlock</span>
+      <span class="meta-tag">Multiplier-Based</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- TIER 3: SPENDING / UTILITY CURRENCIES      -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="spending" class="section-header">
+  <span class="tier-label tier-spend">◆ Tier 3 — Spending & Utility</span>
+  <h2>The Output Layer</h2>
+  <p>These coins are what you spend. Converted from the reward pool, they unlock features, boost content, purchase access, and power transactions.</p>
+</div>
+
+<div class="coin-grid">
+
+  <div class="coin-card" data-tier="spend">
+    <div class="coin-top">
+      <div class="coin-letter">B</div>
+      <div class="coin-identity">
+        <div class="coin-name">bCoins</div>
+        <div class="coin-word">Boost</div>
+      </div>
+    </div>
+    <div class="coin-desc">The promotional amplification currency. bCoins are spent to boost your content — increasing its visibility, pushing it into feeds, and getting it in front of more eyeballs. One-way conversion from iCoins (1 iCoin = 100 bCoins). Once converted to bCoins, they can only be spent on boosting. This is the platform's native ad system run by creators for creators. Burns permanently on use.</div>
+    <div class="coin-meta">
+      <span class="meta-tag spendable">Spend-Only</span>
+      <span class="meta-tag non-convertible">One-Way from iCoins</span>
+      <span class="meta-tag">Month 1 Unlock</span>
+      <span class="meta-tag">Burns on Use</span>
+    </div>
+  </div>
+
+  <div class="coin-card" data-tier="spend">
+    <div class="coin-top">
+      <div class="coin-letter">M</div>
+      <div class="coin-identity">
+        <div class="coin-name">mCoins</div>
+        <div class="coin-word">Market / Merch</div>
+      </div>
+    </div>
+    <div class="coin-desc">The marketplace currency. mCoins are used in the in-app marketplace — purchasing digital goods, creator merch, exclusive content unlocks, profile themes, badges, stickers, and other digital collectibles. Converted from rCoins at a 60:1 rate. This creates a closed-loop economy for digital goods that doesn't require users to ever pull out their credit card.</div>
+    <div class="coin-meta">
+      <span class="meta-tag spendable">Spendable</span>
+      <span class="meta-tag convertible">Via rCoins (60:1)</span>
+      <span class="meta-tag">Week 2 Unlock</span>
+    </div>
+  </div>
+
+  <div class="coin-card" data-tier="spend">
+    <div class="coin-top">
+      <div class="coin-letter">U</div>
+      <div class="coin-identity">
+        <div class="coin-name">uCoins</div>
+        <div class="coin-word">Unlock</div>
+      </div>
+    </div>
+    <div class="coin-desc">The access currency. uCoins are spent to unlock premium content — gated videos, exclusive creator posts, pay-per-view events, behind-the-scenes access, early releases. Converted from rCoins at a 50:1 rate. Creators set uCoin prices for their premium content. The platform takes 0% cut on uCoin unlocks to incentivize premium content creation.</div>
+    <div class="coin-meta">
+      <span class="meta-tag spendable">Spendable</span>
+      <span class="meta-tag convertible">Via rCoins (50:1)</span>
+      <span class="meta-tag">Month 1 Unlock</span>
+    </div>
+  </div>
+
+  <div class="coin-card" data-tier="spend">
+    <div class="coin-top">
+      <div class="coin-letter">P</div>
+      <div class="coin-identity">
+        <div class="coin-name">pCoins</div>
+        <div class="coin-word">Power / Premium</div>
+      </div>
+    </div>
+    <div class="coin-desc">The premium subscription currency. pCoins power the subscription economy — fans spend pCoins monthly to subscribe to creators at three tiers (Fan / Super Fan / Patron). Subscribers get badges, exclusive content, early access, and DM access at higher tiers. Also used for premium platform features like advanced analytics, custom profiles, and priority support.</div>
+    <div class="coin-meta">
+      <span class="meta-tag spendable">Spendable</span>
+      <span class="meta-tag convertible">Via rCoins</span>
+      <span class="meta-tag">Month 1 Unlock</span>
+      <span class="meta-tag">Recurring</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- TIER 4: SOCIAL CURRENCIES                  -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="social" class="section-header">
+  <span class="tier-label tier-social">◆ Tier 4 — Social</span>
+  <h2>The Connection Layer</h2>
+  <p>These coins fuel relationships, community, and creator-audience connections. They measure and reward the human side of the platform.</p>
+</div>
+
+<div class="coin-grid">
+
+  <div class="coin-card" data-tier="social">
+    <div class="coin-top">
+      <div class="coin-letter">C</div>
+      <div class="coin-identity">
+        <div class="coin-name">cCoins</div>
+        <div class="coin-word">Creator</div>
+      </div>
+    </div>
+    <div class="coin-desc">The creator economy currency. cCoins are earned exclusively by creators based on their content performance — views, engagement rate, audience quality (not just follower count). The 60/30/10 attention split (creator/user/platform) flows through cCoins. Four creator tiers with multipliers: Newcomer (1×), Rising (1.3×), Established (1.6×), Signature (2×). cCoins represent your creative labor's value.</div>
+    <div class="coin-meta">
+      <span class="meta-tag earnable">Creator-Earnable</span>
+      <span class="meta-tag convertible">Convertible → iCoins</span>
+      <span class="meta-tag">Creator Account Required</span>
+    </div>
+  </div>
+
+  <div class="coin-card" data-tier="social">
+    <div class="coin-top">
+      <div class="coin-letter">D</div>
+      <div class="coin-identity">
+        <div class="coin-name">dCoins</div>
+        <div class="coin-word">Discovery</div>
+      </div>
+    </div>
+    <div class="coin-desc">Earned when you discover and share content before it goes viral — the early adopter reward. If you engage with a piece of content when it has under 1K views and it later trends, you earn dCoins retroactively. This incentivizes exploring new creators and undiscovered content instead of only engaging with what's already popular. The tastemaker currency.</div>
+    <div class="coin-meta">
+      <span class="meta-tag earnable">Earnable</span>
+      <span class="meta-tag convertible">Convertible → rCoins</span>
+      <span class="meta-tag">Month 2 Unlock</span>
+      <span class="meta-tag">Retroactive</span>
+    </div>
+  </div>
+
+  <div class="coin-card" data-tier="social">
+    <div class="coin-top">
+      <div class="coin-letter">H</div>
+      <div class="coin-identity">
+        <div class="coin-name">hCoins</div>
+        <div class="coin-word">Heart</div>
+      </div>
+    </div>
+    <div class="coin-desc">The like currency. Every heart/like generates hCoins — split between the giver and the receiver. This is tied directly to the heart button mechanic already built. Unlike other coins, hCoins are a dual-reward: the person who likes earns +1 hCoin, and the creator receives +1 hCoin. This makes liking feel generous rather than empty. hCoins convert to both vCoins and iCoins at low rates, bridging both economies.</div>
+    <div class="coin-meta">
+      <span class="meta-tag earnable">Dual-Earnable</span>
+      <span class="meta-tag convertible">Convertible → rCoins</span>
+      <span class="meta-tag">Day 1 Unlock</span>
+      <span class="meta-tag">Giver + Receiver</span>
+    </div>
+  </div>
+
+  <div class="coin-card" data-tier="social">
+    <div class="coin-top">
+      <div class="coin-letter">L</div>
+      <div class="coin-identity">
+        <div class="coin-name">lCoins</div>
+        <div class="coin-word">Loyalty</div>
+      </div>
+    </div>
+    <div class="coin-desc">The long-term relationship currency. lCoins accrue when users maintain sustained engagement with specific creators over time — following for 30+ days and still watching regularly, subscribing for consecutive months, being part of a creator's core audience. lCoins are the measurement of real fandom, not fleeting follows. Higher lCoin balance = better subscriber perks and access.</div>
+    <div class="coin-meta">
+      <span class="meta-tag earnable">Time-Earnable</span>
+      <span class="meta-tag non-convertible">Non-Convertible</span>
+      <span class="meta-tag">Month 2 Unlock</span>
+      <span class="meta-tag">Relationship Score</span>
+    </div>
+  </div>
+
+  <div class="coin-card" data-tier="social">
+    <div class="coin-top">
+      <div class="coin-letter">N</div>
+      <div class="coin-identity">
+        <div class="coin-name">nCoins</div>
+        <div class="coin-word">Network</div>
+      </div>
+    </div>
+    <div class="coin-desc">The referral and growth currency. nCoins are earned by bringing new users to the platform — the highest-reward tier in the funnel model. Also earned through collaboration: co-created content, duets, cross-creator features, and community events. nCoins reward you for making the network larger and more connected. Referral tiers increase with the quality of referred users (active > passive).</div>
+    <div class="coin-meta">
+      <span class="meta-tag earnable">Earnable</span>
+      <span class="meta-tag convertible">Convertible → rCoins</span>
+      <span class="meta-tag">Week 2 Unlock</span>
+      <span class="meta-tag">Referral-Based</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- TIER 5: SYSTEM / GOVERNANCE CURRENCIES     -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="system" class="section-header">
+  <span class="tier-label tier-system">◆ Tier 5 — System & Governance</span>
+  <h2>The Infrastructure Layer</h2>
+  <p>These coins govern the platform's health, trust, moderation, and internal mechanics. Users don't always see these directly, but they power everything behind the scenes.</p>
+</div>
+
+<div class="coin-grid">
+
+  <div class="coin-card" data-tier="system">
+    <div class="coin-top">
+      <div class="coin-letter">G</div>
+      <div class="coin-identity">
+        <div class="coin-name">gCoins</div>
+        <div class="coin-word">Governance</div>
+      </div>
+    </div>
+    <div class="coin-desc">The community governance token. gCoins give users voting power in platform decisions — feature requests, content policy changes, creator program rules, community guidelines updates. Earned by consistent positive participation and high trust scores. Cannot be bought or traded. This makes the platform community-governed over time. One gCoin = one vote. Never convertible to cash.</div>
+    <div class="coin-meta">
+      <span class="meta-tag system-only">System Currency</span>
+      <span class="meta-tag non-convertible">Never Convertible</span>
+      <span class="meta-tag">Month 3 Unlock</span>
+      <span class="meta-tag">Voting Power</span>
+    </div>
+  </div>
+
+  <div class="coin-card" data-tier="system">
+    <div class="coin-top">
+      <div class="coin-letter">T</div>
+      <div class="coin-identity">
+        <div class="coin-name">tCoins</div>
+        <div class="coin-word">Trust</div>
+      </div>
+    </div>
+    <div class="coin-desc">The trust score currency. Every account has a Trust Score (0–100) denominated in tCoins. Verified identity: +20. Consistent behavior: +15. Flagged action: −10. Abuse confirmed: −40. Long-term loyalty: +10/year. tCoins affect earning multipliers, cash-out speed, brand deal eligibility, and feature access. Never convertible — they are purely a reputation measurement. The immune system of the economy.</div>
+    <div class="coin-meta">
+      <span class="meta-tag system-only">System Currency</span>
+      <span class="meta-tag non-convertible">Never Convertible</span>
+      <span class="meta-tag">Always Active</span>
+      <span class="meta-tag">Reputation Score</span>
+    </div>
+  </div>
+
+  <div class="coin-card" data-tier="system">
+    <div class="coin-top">
+      <div class="coin-letter">R</div>
+      <div class="coin-identity">
+        <div class="coin-name">rCoins</div>
+        <div class="coin-word">Reward</div>
+      </div>
+    </div>
+    <div class="coin-desc">The central conversion hub. ALL earning coins (aCoins, eCoins, fCoins, wCoins, kCoins, sCoins, dCoins, hCoins, nCoins) must pass through the rCoins reward pool before converting to any spendable type. No direct earning-to-cash path exists. rCoins are the clearing house — they aggregate all earned value and then distribute it into iCoins, mCoins, uCoins, pCoins, or bCoins based on the user's conversion choices. The beating heart of the economy.</div>
+    <div class="coin-meta">
+      <span class="meta-tag system-only">Conversion Hub</span>
+      <span class="meta-tag convertible">→ iCoins (100:1) / mCoins (60:1) / uCoins (50:1)</span>
+      <span class="meta-tag">Always Active</span>
+    </div>
+  </div>
+
+  <div class="coin-card" data-tier="system">
+    <div class="coin-top">
+      <div class="coin-letter">Q</div>
+      <div class="coin-identity">
+        <div class="coin-name">qCoins</div>
+        <div class="coin-word">Quality</div>
+      </div>
+    </div>
+    <div class="coin-desc">The content quality score currency. qCoins are a system-level metric assigned to every piece of content based on production value, originality, engagement-to-view ratio, and audience retention. High qCoin content gets algorithmic priority. Creators see their qCoin score as feedback on content quality. This prevents the platform from becoming a race to the bottom — quality always gets rewarded over clickbait.</div>
+    <div class="coin-meta">
+      <span class="meta-tag system-only">System Currency</span>
+      <span class="meta-tag non-convertible">Non-Convertible</span>
+      <span class="meta-tag">Auto-Assigned</span>
+      <span class="meta-tag">Content Metric</span>
+    </div>
+  </div>
+
+  <div class="coin-card" data-tier="system">
+    <div class="coin-top">
+      <div class="coin-letter">O</div>
+      <div class="coin-identity">
+        <div class="coin-name">oCoins</div>
+        <div class="coin-word">Origin</div>
+      </div>
+    </div>
+    <div class="coin-desc">The content provenance currency. oCoins track where content was originally created and posted. Content made natively on the [ i ] platform earns an oCoins "native" tag, which gives it 2× reward multipliers across the ecosystem. Imported content from Instagram/TikTok gets a lower oCoins score. This is the mechanic that makes native content always more valuable than cross-posted content — driving the migration funnel.</div>
+    <div class="coin-meta">
+      <span class="meta-tag system-only">System Currency</span>
+      <span class="meta-tag non-convertible">Non-Convertible</span>
+      <span class="meta-tag">Auto-Assigned</span>
+      <span class="meta-tag">Provenance Tracker</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- TIER 6: SPECIAL / RARE CURRENCIES          -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="special" class="section-header">
+  <span class="tier-label tier-special">◆ Tier 6 — Special & Rare</span>
+  <h2>The Prestige Layer</h2>
+  <p>Limited, seasonal, or event-driven currencies that create scarcity, excitement, and FOMO. These appear and disappear. They can't be farmed. They're moments.</p>
+</div>
+
+<div class="coin-grid">
+
+  <div class="coin-card" data-tier="special">
+    <div class="coin-top">
+      <div class="coin-letter">Z</div>
+      <div class="coin-identity">
+        <div class="coin-name">zCoins</div>
+        <div class="coin-word">Zenith</div>
+      </div>
+    </div>
+    <div class="coin-desc">The rarest coin in the ecosystem. zCoins are only awarded for extraordinary achievements — first content to hit 1M views, community milestones, platform anniversaries, winning seasonal competitions. They never convert to cash. Instead, zCoins unlock permanent prestige badges, unique profile effects, and access to the Zenith Lounge — an exclusive creator/community space. Pure status. Pure flex.</div>
+    <div class="coin-meta">
+      <span class="meta-tag non-convertible">Never Convertible</span>
+      <span class="meta-tag">Ultra-Rare</span>
+      <span class="meta-tag">Achievement-Based</span>
+      <span class="meta-tag">Prestige Only</span>
+    </div>
+  </div>
+
+  <div class="coin-card" data-tier="special">
+    <div class="coin-top">
+      <div class="coin-letter">J</div>
+      <div class="coin-identity">
+        <div class="coin-name">jCoins</div>
+        <div class="coin-word">Jubilee</div>
+      </div>
+    </div>
+    <div class="coin-desc">The seasonal event currency. jCoins appear only during platform events — holiday celebrations, launch anniversaries, community challenges, creator festivals, and seasonal campaigns. They expire after the event window closes. What can you do with them? Exchange for limited-edition badges, event-exclusive merch, temporary profile effects, and entry into event-only creator competitions. Creates urgency and excitement.</div>
+    <div class="coin-meta">
+      <span class="meta-tag non-convertible">Non-Convertible</span>
+      <span class="meta-tag">Seasonal</span>
+      <span class="meta-tag">Time-Limited</span>
+      <span class="meta-tag">Burns on Expiry</span>
+    </div>
+  </div>
+
+  <div class="coin-card" data-tier="special">
+    <div class="coin-top">
+      <div class="coin-letter">Y</div>
+      <div class="coin-identity">
+        <div class="coin-name">yCoins</div>
+        <div class="coin-word">Yield</div>
+      </div>
+    </div>
+    <div class="coin-desc">The passive income currency. yCoins represent earned yield on staked/held iCoins. If users choose to hold iCoins in their wallet rather than cashing out immediately, they accrue yCoins over time — a passive interest system that rewards patience and long-term commitment to the ecosystem. Higher trust tier = higher yield rate. This keeps currency circulating inside the platform instead of being immediately withdrawn.</div>
+    <div class="coin-meta">
+      <span class="meta-tag earnable">Passive Earning</span>
+      <span class="meta-tag convertible">Convertible → iCoins</span>
+      <span class="meta-tag">Month 3 Unlock</span>
+      <span class="meta-tag">Staking Reward</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- TIER 7: EXTERNAL PLATFORM CURRENCIES       -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="external" class="section-header">
+  <span class="tier-label tier-external">◆ Tier 7 — External Platform Engagement</span>
+  <h2>The Bridge Layer</h2>
+  <p>These coins power the cross-platform integration — the full engagement of Instagram, TikTok, YouTube, and other external platforms. They track, reward, and incentivize the migration funnel from external to native.</p>
+</div>
+
+<div class="coin-grid">
+
+  <div class="coin-card" data-tier="external">
+    <div class="coin-top">
+      <div class="coin-letter">X</div>
+      <div class="coin-identity">
+        <div class="coin-name">xCoins</div>
+        <div class="coin-word">eXternal / eXchange</div>
+      </div>
+    </div>
+    <div class="coin-desc">The cross-platform bridge currency. xCoins are generated when users engage with imported content from Instagram, TikTok, YouTube, or other connected platforms. They earn at a lower rate than native engagement (by design — the funnel pushes native). xCoins can convert to rCoins but at a reduced rate compared to aCoins. They also gate access to external chain features at Trust Tier 4 — meaning you must prove yourself before bridging economies.</div>
+    <div class="coin-meta">
+      <span class="meta-tag external">External Bridge</span>
+      <span class="meta-tag convertible">Convertible → rCoins (reduced)</span>
+      <span class="meta-tag">Day 1 Unlock</span>
+      <span class="meta-tag">Trust-Gated (Tier 4)</span>
+    </div>
+  </div>
+
+  <div class="coin-card" data-tier="external">
+    <div class="coin-top">
+      <div class="coin-letter">Ω</div>
+      <div class="coin-identity">
+        <div class="coin-name">ωCoins</div>
+        <div class="coin-word">Omega — "O for Other platforms"</div>
+      </div>
+    </div>
+    <div class="coin-desc">Assigned to the letter concept of "Other" — this coin tracks cross-platform reputation. When a creator imports content, their external engagement metrics (IG followers, TikTok views, YouTube subscribers) are converted into ωCoins as a starting reputation score on [ i ]. This gives established creators a head start but doesn't give them the full earning power of native trust. ωCoins decay over time unless the creator builds native engagement — forcing migration.</div>
+    <div class="coin-meta">
+      <span class="meta-tag external">External Reputation</span>
+      <span class="meta-tag non-convertible">Non-Convertible</span>
+      <span class="meta-tag">Import-Based</span>
+      <span class="meta-tag">Decaying</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="ext-grid">
+  <div class="ext-card">
+    <h4>Instagram Integration</h4>
+    <p>Imported IG content earns xCoins at 0.3× the native rate. Stories, Reels, and Posts each have different xCoin generation rates. IG followers convert to ωCoins at 1000:1 as initial reputation credit.</p>
+  </div>
+  <div class="ext-card">
+    <h4>TikTok Integration</h4>
+    <p>TikTok imports earn xCoins at 0.4× native (slightly higher due to video-first nature matching [ i ]'s core). TikTok view counts seed ωCoin reputation. Duet-style co-creation generates bonus nCoins.</p>
+  </div>
+  <div class="ext-card">
+    <h4>YouTube Integration</h4>
+    <p>Long-form YouTube imports earn xCoins based on watch-time completion within [ i ]. YouTube subscriber counts convert to ωCoins at 500:1 (valued higher due to deeper audience commitment).</p>
+  </div>
+  <div class="ext-card">
+    <h4>Migration Incentive</h4>
+    <p>Creators who shift from import-only to native posting get a one-time "Native First" bonus: 5× their average xCoin rate in pure aCoins. The carrot that drives the funnel from external to native.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- CONVERSION FLOW                            -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="flow" class="section-header">
+  <h2>The Conversion Flow</h2>
+  <p>How coins move through the economy — from earning to spending to cashing out.</p>
+</div>
+
+<div class="flow-section">
+  <h3>Primary Flow: Earning → Reward Pool → Spending</h3>
+  <div class="flow-chain">
+    <span class="flow-node fn-earn">aCoins</span>
+    <span class="flow-node fn-earn">eCoins</span>
+    <span class="flow-node fn-earn">fCoins</span>
+    <span class="flow-node fn-earn">wCoins</span>
+    <span class="flow-node fn-earn">kCoins</span>
+    <span class="flow-node fn-earn">sCoins</span>
+    <span class="flow-node fn-social">dCoins</span>
+    <span class="flow-node fn-social">hCoins</span>
+    <span class="flow-node fn-social">nCoins</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-node fn-system" style="font-size: 15px; padding: 12px 20px;">rCoins (Reward Pool)</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-node fn-core">iCoins (100:1)</span>
+    <span class="flow-node fn-spend">mCoins (60:1)</span>
+    <span class="flow-node fn-spend">uCoins (50:1)</span>
+    <span class="flow-node fn-spend">pCoins</span>
+    <span class="flow-node fn-spend">bCoins (via iCoins)</span>
+  </div>
+</div>
+
+<div class="flow-section">
+  <h3>External Flow: Cross-Platform → Reduced Rewards</h3>
+  <div class="flow-chain">
+    <span class="flow-node fn-external">IG / TikTok / YT Content</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-node fn-external">xCoins (0.3–0.4× rate)</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-node fn-system">rCoins (reduced conversion)</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-node fn-core">iCoins / mCoins / uCoins</span>
+  </div>
+</div>
+
+<div class="flow-section">
+  <h3>Creator Flow: Content → Creator Economy</h3>
+  <div class="flow-chain">
+    <span class="flow-node fn-social">Native Content</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-node fn-social">cCoins (60/30/10 split)</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-node fn-core">iCoins (direct conversion)</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-node fn-core" style="background: rgba(200,168,75,0.15); border: 1px solid rgba(200,168,75,0.4);">Cash Out ($)</span>
+  </div>
+</div>
+
+<div class="flow-section">
+  <h3>System Coins: Never Leave the Platform</h3>
+  <div class="flow-chain">
+    <span class="flow-node fn-system">tCoins (Trust)</span>
+    <span class="flow-node fn-system">gCoins (Governance)</span>
+    <span class="flow-node fn-system">qCoins (Quality)</span>
+    <span class="flow-node fn-system">oCoins (Origin)</span>
+    <span class="flow-node fn-social">lCoins (Loyalty)</span>
+    <span class="flow-node fn-special">zCoins (Zenith)</span>
+    <span class="flow-node fn-external">ωCoins (External Rep)</span>
+    <span class="flow-arrow">⊘</span>
+    <span style="color: var(--muted); font-size: 12px;">No conversion. Internal measurement only.</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- RULES TABLE                                -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="rules" class="section-header">
+  <h2>Governing Rules</h2>
+  <p>The six immutable rules that keep the economy healthy.</p>
+</div>
+
+<table class="rules-table">
+  <thead>
+    <tr>
+      <th>Rule</th>
+      <th>Description</th>
+      <th>Why</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="color:var(--core); font-weight:600;">Rule 1</td>
+      <td>All earning coins must pass through rCoins before converting to any spendable type</td>
+      <td>Prevents direct earning-to-cash exploits. Creates a single control point for inflation management</td>
+    </tr>
+    <tr>
+      <td style="color:var(--core); font-weight:600;">Rule 2</td>
+      <td>tCoins, gCoins, qCoins, oCoins, and zCoins never convert to cash or other currencies</td>
+      <td>System integrity. These measure trust, quality, and reputation — they can't be bought</td>
+    </tr>
+    <tr>
+      <td style="color:var(--core); font-weight:600;">Rule 3</td>
+      <td>xCoins gate external chain access at Trust Tier 4 only</td>
+      <td>Prevents bad actors from gaming cross-platform bridges before proving trustworthiness</td>
+    </tr>
+    <tr>
+      <td style="color:var(--core); font-weight:600;">Rule 4</td>
+      <td>bCoins are one-way from iCoins and burn permanently on use</td>
+      <td>Anti-inflation mechanism. Every boost removes currency from circulation</td>
+    </tr>
+    <tr>
+      <td style="color:var(--core); font-weight:600;">Rule 5</td>
+      <td>Coin supply is tied to ad revenue — no revenue, no new coins minted</td>
+      <td>Prevents hyperinflation. The economy is backed by real money flowing in</td>
+    </tr>
+    <tr>
+      <td style="color:var(--core); font-weight:600;">Rule 6</td>
+      <td>Native content (high oCoins) always earns 2× what imported content earns</td>
+      <td>The migration funnel. External platforms are recruitment tools, not the endgame</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- MASTER INDEX                               -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="section-header">
+  <h2>Complete Index: A → Z</h2>
+  <p>Every coin at a glance. 26 letters, 26 purposes.</p>
+</div>
+
+<table class="rules-table">
+  <thead>
+    <tr>
+      <th style="width:40px;">Letter</th>
+      <th>Coin Name</th>
+      <th>Word</th>
+      <th>Tier</th>
+      <th>Convertible?</th>
+      <th>Unlock</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td style="color:var(--core);font-weight:700;">A</td><td>aCoins</td><td>Attention</td><td><span class="tier-label tier-core" style="margin:0;font-size:9px;padding:2px 8px;">Core</span></td><td>→ rCoins</td><td>Day 1</td></tr>
+    <tr><td style="color:var(--spend);font-weight:700;">B</td><td>bCoins</td><td>Boost</td><td><span class="tier-label tier-spend" style="margin:0;font-size:9px;padding:2px 8px;">Spending</span></td><td>← iCoins (one-way, burns)</td><td>Month 1</td></tr>
+    <tr><td style="color:var(--social);font-weight:700;">C</td><td>cCoins</td><td>Creator</td><td><span class="tier-label tier-social" style="margin:0;font-size:9px;padding:2px 8px;">Social</span></td><td>→ iCoins</td><td>Creator Account</td></tr>
+    <tr><td style="color:var(--social);font-weight:700;">D</td><td>dCoins</td><td>Discovery</td><td><span class="tier-label tier-social" style="margin:0;font-size:9px;padding:2px 8px;">Social</span></td><td>→ rCoins</td><td>Month 2</td></tr>
+    <tr><td style="color:var(--earn);font-weight:700;">E</td><td>eCoins</td><td>Engagement</td><td><span class="tier-label tier-earn" style="margin:0;font-size:9px;padding:2px 8px;">Earning</span></td><td>→ rCoins</td><td>Week 1</td></tr>
+    <tr><td style="color:var(--earn);font-weight:700;">F</td><td>fCoins</td><td>Focus</td><td><span class="tier-label tier-earn" style="margin:0;font-size:9px;padding:2px 8px;">Earning</span></td><td>→ rCoins</td><td>Week 2</td></tr>
+    <tr><td style="color:var(--system);font-weight:700;">G</td><td>gCoins</td><td>Governance</td><td><span class="tier-label tier-system" style="margin:0;font-size:9px;padding:2px 8px;">System</span></td><td>Never</td><td>Month 3</td></tr>
+    <tr><td style="color:var(--social);font-weight:700;">H</td><td>hCoins</td><td>Heart</td><td><span class="tier-label tier-social" style="margin:0;font-size:9px;padding:2px 8px;">Social</span></td><td>→ rCoins</td><td>Day 1</td></tr>
+    <tr><td style="color:var(--core);font-weight:700;">I</td><td>iCoins</td><td>Individual</td><td><span class="tier-label tier-core" style="margin:0;font-size:9px;padding:2px 8px;">Core</span></td><td>← rCoins / → Cash</td><td>Day 1</td></tr>
+    <tr><td style="color:var(--special);font-weight:700;">J</td><td>jCoins</td><td>Jubilee</td><td><span class="tier-label tier-special" style="margin:0;font-size:9px;padding:2px 8px;">Special</span></td><td>Never (expires)</td><td>Seasonal</td></tr>
+    <tr><td style="color:var(--earn);font-weight:700;">K</td><td>kCoins</td><td>Knowledge</td><td><span class="tier-label tier-earn" style="margin:0;font-size:9px;padding:2px 8px;">Earning</span></td><td>→ rCoins</td><td>Month 1</td></tr>
+    <tr><td style="color:var(--social);font-weight:700;">L</td><td>lCoins</td><td>Loyalty</td><td><span class="tier-label tier-social" style="margin:0;font-size:9px;padding:2px 8px;">Social</span></td><td>Never</td><td>Month 2</td></tr>
+    <tr><td style="color:var(--spend);font-weight:700;">M</td><td>mCoins</td><td>Market</td><td><span class="tier-label tier-spend" style="margin:0;font-size:9px;padding:2px 8px;">Spending</span></td><td>← rCoins (60:1)</td><td>Week 2</td></tr>
+    <tr><td style="color:var(--social);font-weight:700;">N</td><td>nCoins</td><td>Network</td><td><span class="tier-label tier-social" style="margin:0;font-size:9px;padding:2px 8px;">Social</span></td><td>→ rCoins</td><td>Week 2</td></tr>
+    <tr><td style="color:var(--system);font-weight:700;">O</td><td>oCoins</td><td>Origin</td><td><span class="tier-label tier-system" style="margin:0;font-size:9px;padding:2px 8px;">System</span></td><td>Never</td><td>Auto</td></tr>
+    <tr><td style="color:var(--spend);font-weight:700;">P</td><td>pCoins</td><td>Power</td><td><span class="tier-label tier-spend" style="margin:0;font-size:9px;padding:2px 8px;">Spending</span></td><td>← rCoins</td><td>Month 1</td></tr>
+    <tr><td style="color:var(--system);font-weight:700;">Q</td><td>qCoins</td><td>Quality</td><td><span class="tier-label tier-system" style="margin:0;font-size:9px;padding:2px 8px;">System</span></td><td>Never</td><td>Auto</td></tr>
+    <tr><td style="color:var(--system);font-weight:700;">R</td><td>rCoins</td><td>Reward</td><td><span class="tier-label tier-system" style="margin:0;font-size:9px;padding:2px 8px;">System</span></td><td>Hub → all spendable</td><td>Always Active</td></tr>
+    <tr><td style="color:var(--earn);font-weight:700;">S</td><td>sCoins</td><td>Streak</td><td><span class="tier-label tier-earn" style="margin:0;font-size:9px;padding:2px 8px;">Earning</span></td><td>→ rCoins</td><td>Week 1</td></tr>
+    <tr><td style="color:var(--system);font-weight:700;">T</td><td>tCoins</td><td>Trust</td><td><span class="tier-label tier-system" style="margin:0;font-size:9px;padding:2px 8px;">System</span></td><td>Never</td><td>Always Active</td></tr>
+    <tr><td style="color:var(--spend);font-weight:700;">U</td><td>uCoins</td><td>Unlock</td><td><span class="tier-label tier-spend" style="margin:0;font-size:9px;padding:2px 8px;">Spending</span></td><td>← rCoins (50:1)</td><td>Month 1</td></tr>
+    <tr><td style="color:var(--core);font-weight:700;">V</td><td>vCoins</td><td>Victory</td><td><span class="tier-label tier-core" style="margin:0;font-size:9px;padding:2px 8px;">Core</span></td><td>↔ iCoins</td><td>Day 1</td></tr>
+    <tr><td style="color:var(--earn);font-weight:700;">W</td><td>wCoins</td><td>Watch</td><td><span class="tier-label tier-earn" style="margin:0;font-size:9px;padding:2px 8px;">Earning</span></td><td>→ rCoins</td><td>Day 1</td></tr>
+    <tr><td style="color:var(--external);font-weight:700;">X</td><td>xCoins</td><td>eXternal</td><td><span class="tier-label tier-external" style="margin:0;font-size:9px;padding:2px 8px;">External</span></td><td>→ rCoins (reduced)</td><td>Day 1</td></tr>
+    <tr><td style="color:var(--special);font-weight:700;">Y</td><td>yCoins</td><td>Yield</td><td><span class="tier-label tier-special" style="margin:0;font-size:9px;padding:2px 8px;">Special</span></td><td>→ iCoins</td><td>Month 3</td></tr>
+    <tr><td style="color:var(--special);font-weight:700;">Z</td><td>zCoins</td><td>Zenith</td><td><span class="tier-label tier-special" style="margin:0;font-size:9px;padding:2px 8px;">Special</span></td><td>Never</td><td>Achievement</td></tr>
+  </tbody>
+</table>
+
+<div style="margin-top: 40px; padding: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px;">
+  <p style="font-size: 12px; color: var(--muted); text-align: center; margin-bottom: 8px;">NOTE ON THE 27th SYMBOL</p>
+  <p style="font-size: 13px; color: var(--text); text-align: center;"><strong style="color:var(--external);">ωCoins (Omega)</strong> — assigned to the concept of "Other platforms." Since no natural English word starting with a unique unused letter could represent external platform reputation, the Omega symbol (Ω) was chosen. It means "the end" — as in, the end of needing other platforms. The last step before you're fully native.</p>
+</div>
+
+<!-- FOOTER -->
+<div style="text-align: center; padding: 80px 0 0; color: var(--dim); font-size: 11px; letter-spacing: 2px; text-transform: uppercase;">
+  [ i ] Platform — Alphabet Currency System v1.0
+</div>
+
+</div>
+</body>
+</html>

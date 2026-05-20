@@ -1,0 +1,272 @@
+[
+  {
+    "path": "00_README/CURSOR_BOOTSTRAP_PROMPT.md",
+    "bytes": 1005,
+    "sha256_16": "40ab5e8f95268a98"
+  },
+  {
+    "path": "00_README/MIGRATION_PLAN.md",
+    "bytes": 1579,
+    "sha256_16": "e7eecb717a34c176"
+  },
+  {
+    "path": "00_README/PROJECT_TIMELINE_RECONSTRUCTED.md",
+    "bytes": 905,
+    "sha256_16": "21358dd1f97f543f"
+  },
+  {
+    "path": "00_README/README_FIRST.md",
+    "bytes": 1526,
+    "sha256_16": "2e55537fbecd4e01"
+  },
+  {
+    "path": "01_strategy_docs/i-app-masterplan.md",
+    "bytes": 25287,
+    "sha256_16": "ef1cb9101788a524"
+  },
+  {
+    "path": "02_clickable_prototypes/iapp_connect_platforms.html",
+    "bytes": 19394,
+    "sha256_16": "45b542c74fb557ed"
+  },
+  {
+    "path": "02_clickable_prototypes/index4.html",
+    "bytes": 60061,
+    "sha256_16": "ad0eca5d1e3da9b5"
+  },
+  {
+    "path": "03_pitch_pages/i-creator-pitch_1.html",
+    "bytes": 33885,
+    "sha256_16": "92288e8bfeafa440"
+  },
+  {
+    "path": "03_pitch_pages/i-user-pitch.html",
+    "bytes": 36599,
+    "sha256_16": "ab0af9dedafefc4d"
+  },
+  {
+    "path": "04_wallet_payments/iapp_conversion_confirmation (1).html",
+    "bytes": 18101,
+    "sha256_16": "e3cb6ee93d07f77d"
+  },
+  {
+    "path": "04_wallet_payments/iapp_convert_screen.html",
+    "bytes": 11281,
+    "sha256_16": "871a655ae6fdaaac"
+  },
+  {
+    "path": "04_wallet_payments/iapp_pay_screen (1).html",
+    "bytes": 20039,
+    "sha256_16": "d181898998f3a8c5"
+  },
+  {
+    "path": "04_wallet_payments/iapp_payment_architecture.html",
+    "bytes": 10307,
+    "sha256_16": "3165ee7bb8e21f84"
+  },
+  {
+    "path": "04_wallet_payments/iapp_payment_confirmation.html",
+    "bytes": 10950,
+    "sha256_16": "e0ea3f3eae17a751"
+  },
+  {
+    "path": "04_wallet_payments/iapp_tip_screen (1).html",
+    "bytes": 14220,
+    "sha256_16": "fc59f082db032f8f"
+  },
+  {
+    "path": "04_wallet_payments/iapp_wallet_dashboard.html",
+    "bytes": 35222,
+    "sha256_16": "e991a76f5196c4b4"
+  },
+  {
+    "path": "04_wallet_payments/iapp_wallet_ui (1).html",
+    "bytes": 14834,
+    "sha256_16": "03f4fb6eb89b8272"
+  },
+  {
+    "path": "04_wallet_payments/iapp_withdraw_screen (1).html",
+    "bytes": 15862,
+    "sha256_16": "7d3dcfca90ac6a4b"
+  },
+  {
+    "path": "04_wallet_payments/wallet_pending_tab.html",
+    "bytes": 31312,
+    "sha256_16": "83a5ef3902125b48"
+  },
+  {
+    "path": "05_creator_campaigns/campaign_builder_owner.html",
+    "bytes": 28702,
+    "sha256_16": "bf450498e98a1436"
+  },
+  {
+    "path": "05_creator_campaigns/iapp_creator_economy.html",
+    "bytes": 11075,
+    "sha256_16": "f2059c914ce76159"
+  },
+  {
+    "path": "05_creator_campaigns/studio_video_editor.html",
+    "bytes": 62478,
+    "sha256_16": "57f5ff24143c2801"
+  },
+  {
+    "path": "06_feed_earning_loops/click_and_earn_prototype.html",
+    "bytes": 20503,
+    "sha256_16": "a9ab4f712b1b8c46"
+  },
+  {
+    "path": "06_feed_earning_loops/iapp_feed_screen.html",
+    "bytes": 26376,
+    "sha256_16": "5a3310f7e0c03e37"
+  },
+  {
+    "path": "06_feed_earning_loops/iapp_immersive_feed.html",
+    "bytes": 36084,
+    "sha256_16": "33f4ae569d2a1f8d"
+  },
+  {
+    "path": "06_feed_earning_loops/iapp_loop1_watch_verify_earn.html",
+    "bytes": 42245,
+    "sha256_16": "c234af04185f32f5"
+  },
+  {
+    "path": "06_feed_earning_loops/iapp_three_loops.html",
+    "bytes": 6920,
+    "sha256_16": "b1e0e85ee7419d94"
+  },
+  {
+    "path": "07_currency_system/acoins_earning_system.html",
+    "bytes": 7964,
+    "sha256_16": "3c63ba17140bab8d"
+  },
+  {
+    "path": "07_currency_system/alphabet-currency.html",
+    "bytes": 57398,
+    "sha256_16": "71e04b0b07400bb6"
+  },
+  {
+    "path": "08_raw_originals/acoins_earning_system.html",
+    "bytes": 7964,
+    "sha256_16": "3c63ba17140bab8d"
+  },
+  {
+    "path": "08_raw_originals/alphabet-currency.html",
+    "bytes": 57398,
+    "sha256_16": "71e04b0b07400bb6"
+  },
+  {
+    "path": "08_raw_originals/campaign_builder_owner.html",
+    "bytes": 28702,
+    "sha256_16": "bf450498e98a1436"
+  },
+  {
+    "path": "08_raw_originals/click_and_earn_prototype.html",
+    "bytes": 20503,
+    "sha256_16": "a9ab4f712b1b8c46"
+  },
+  {
+    "path": "08_raw_originals/i-app-masterplan.md",
+    "bytes": 25287,
+    "sha256_16": "ef1cb9101788a524"
+  },
+  {
+    "path": "08_raw_originals/i-creator-pitch_1.html",
+    "bytes": 33885,
+    "sha256_16": "92288e8bfeafa440"
+  },
+  {
+    "path": "08_raw_originals/i-user-pitch.html",
+    "bytes": 36599,
+    "sha256_16": "ab0af9dedafefc4d"
+  },
+  {
+    "path": "08_raw_originals/iapp_connect_platforms.html",
+    "bytes": 19394,
+    "sha256_16": "45b542c74fb557ed"
+  },
+  {
+    "path": "08_raw_originals/iapp_conversion_confirmation (1).html",
+    "bytes": 18101,
+    "sha256_16": "e3cb6ee93d07f77d"
+  },
+  {
+    "path": "08_raw_originals/iapp_convert_screen.html",
+    "bytes": 11281,
+    "sha256_16": "871a655ae6fdaaac"
+  },
+  {
+    "path": "08_raw_originals/iapp_creator_economy.html",
+    "bytes": 11075,
+    "sha256_16": "f2059c914ce76159"
+  },
+  {
+    "path": "08_raw_originals/iapp_feed_screen.html",
+    "bytes": 26376,
+    "sha256_16": "5a3310f7e0c03e37"
+  },
+  {
+    "path": "08_raw_originals/iapp_immersive_feed.html",
+    "bytes": 36084,
+    "sha256_16": "33f4ae569d2a1f8d"
+  },
+  {
+    "path": "08_raw_originals/iapp_loop1_watch_verify_earn.html",
+    "bytes": 42245,
+    "sha256_16": "c234af04185f32f5"
+  },
+  {
+    "path": "08_raw_originals/iapp_pay_screen (1).html",
+    "bytes": 20039,
+    "sha256_16": "d181898998f3a8c5"
+  },
+  {
+    "path": "08_raw_originals/iapp_payment_architecture.html",
+    "bytes": 10307,
+    "sha256_16": "3165ee7bb8e21f84"
+  },
+  {
+    "path": "08_raw_originals/iapp_payment_confirmation.html",
+    "bytes": 10950,
+    "sha256_16": "e0ea3f3eae17a751"
+  },
+  {
+    "path": "08_raw_originals/iapp_three_loops.html",
+    "bytes": 6920,
+    "sha256_16": "b1e0e85ee7419d94"
+  },
+  {
+    "path": "08_raw_originals/iapp_tip_screen (1).html",
+    "bytes": 14220,
+    "sha256_16": "fc59f082db032f8f"
+  },
+  {
+    "path": "08_raw_originals/iapp_wallet_dashboard.html",
+    "bytes": 35222,
+    "sha256_16": "e991a76f5196c4b4"
+  },
+  {
+    "path": "08_raw_originals/iapp_wallet_ui (1).html",
+    "bytes": 14834,
+    "sha256_16": "03f4fb6eb89b8272"
+  },
+  {
+    "path": "08_raw_originals/iapp_withdraw_screen (1).html",
+    "bytes": 15862,
+    "sha256_16": "7d3dcfca90ac6a4b"
+  },
+  {
+    "path": "08_raw_originals/index4.html",
+    "bytes": 60061,
+    "sha256_16": "ad0eca5d1e3da9b5"
+  },
+  {
+    "path": "08_raw_originals/studio_video_editor.html",
+    "bytes": 62478,
+    "sha256_16": "57f5ff24143c2801"
+  },
+  {
+    "path": "08_raw_originals/wallet_pending_tab.html",
+    "bytes": 31312,
+    "sha256_16": "83a5ef3902125b48"
+  }
+]

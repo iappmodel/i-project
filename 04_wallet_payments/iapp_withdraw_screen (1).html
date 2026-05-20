@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] App — Withdraw Screen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-void:        #070709;
+    --bg-deep:        #0a0a0f;
+    --bg-surface:     #111118;
+    --bg-panel:       #16161f;
+    --bg-raised:      #1c1c28;
+    --border-subtle:  rgba(255,255,255,0.05);
+    --border-mid:     rgba(255,255,255,0.09);
+    --border-active:  rgba(255,255,255,0.18);
+    --text-primary:   #f0ede8;
+    --text-secondary: #9997a0;
+    --text-muted:     #4a4858;
+    --icoin-primary:  #4ade80;
+    --accent-rose:    #ff4d6d;
+    --accent-amber:   #f59e0b;
+    --font-display:   'Syne', sans-serif;
+    --font-body:      'DM Sans', sans-serif;
+    --font-mono:      'JetBrains Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg-deep);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    font-family: var(--font-body);
+  }
+
+  .phone-wrap {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .phone-col {}
+
+  .app-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -.02em;
+    margin-bottom: 6px;
+  }
+
+  .app-sub {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+  }
+
+  .phone {
+    width: 340px;
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 44px;
+    overflow: hidden;
+    background: var(--bg-surface);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(255,255,255,0.04);
+  }
+
+  .notch {
+    width: 88px;
+    height: 24px;
+    margin: 0 auto;
+    background: var(--bg-surface);
+    border-radius: 0 0 16px 16px;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-top: none;
+  }
+
+  .screen {
+    padding: 24px 20px 32px;
+    min-height: 680px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .back-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 22px;
+    cursor: pointer;
+    opacity: .55;
+    transition: opacity .12s;
+  }
+  .back-row:hover { opacity: 1; }
+
+  .back-box {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: var(--bg-panel);
+    border: 0.5px solid var(--border-mid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  .back-lbl {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .screen-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+    letter-spacing: -.02em;
+  }
+
+  .screen-sub {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+  }
+
+  /* From card */
+  .card {
+    background: var(--bg-panel);
+    border: 0.5px solid var(--border-mid);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 10px;
+  }
+
+  .card-label {
+    font-family: var(--font-body);
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    margin-bottom: 10px;
+  }
+
+  .card-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .coin-dot {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .coin-name {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    flex: 1;
+  }
+
+  .coin-avail {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .big-input {
+    font-family: var(--font-mono);
+    font-size: 40px;
+    font-weight: 500;
+    color: var(--text-primary);
+    background: transparent;
+    border: none;
+    outline: none;
+    width: 100%;
+    margin: 14px 0 8px;
+    -moz-appearance: textfield;
+  }
+  .big-input::-webkit-outer-spin-button,
+  .big-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  .pct-row {
+    display: flex;
+    gap: 6px;
+  }
+
+  .pct-btn {
+    flex: 1;
+    padding: 6px 0;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: 8px;
+    border: 0.5px solid var(--border-mid);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    text-align: center;
+    transition: all .12s;
+  }
+  .pct-btn:hover { border-color: var(--border-active); color: var(--text-secondary); }
+  .pct-btn.on { background: var(--text-primary); color: var(--bg-void); border-color: var(--text-primary); }
+
+  /* Destination label */
+  .dest-label {
+    font-family: var(--font-body);
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    margin: 14px 0 8px;
+  }
+
+  /* Destination options */
+  .dest {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 16px;
+    border: 0.5px solid var(--border-subtle);
+    border-radius: 12px;
+    background: var(--bg-panel);
+    cursor: pointer;
+    margin-bottom: 7px;
+    transition: border-color .12s;
+  }
+  .dest:hover { border-color: var(--border-mid); }
+  .dest.on { border-color: var(--border-active); }
+
+  .dest-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    background: var(--bg-raised);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  .dest-info { flex: 1; }
+
+  .dest-name {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+  }
+
+  .dest-detail {
+    font-family: var(--font-body);
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .dest-check {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-mid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .15s;
+    flex-shrink: 0;
+  }
+
+  .dest.on .dest-check {
+    background: var(--text-primary);
+    border-color: var(--text-primary);
+  }
+
+  .dest-check-inner {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--bg-void);
+    opacity: 0;
+    transition: opacity .15s;
+  }
+
+  .dest.on .dest-check-inner { opacity: 1; }
+
+  /* Breakdown */
+  .breakdown {
+    border: 0.5px solid var(--border-subtle);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 14px 0;
+  }
+
+  .bk-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 9px 14px;
+    border-bottom: 0.5px solid var(--border-subtle);
+  }
+  .bk-row:last-child { border-bottom: none; }
+
+  .bk-l {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .bk-v {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .bk-row.total .bk-l {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .bk-row.total .bk-v {
+    font-size: 14px;
+    color: var(--icoin-primary);
+  }
+
+  /* Pill */
+  .pill {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    background: var(--bg-panel);
+    border: 0.5px solid var(--border-subtle);
+    border-radius: 10px;
+    padding: 9px 12px;
+    margin-bottom: 16px;
+  }
+
+  .pill-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .pill-text {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* CTA */
+  .cta {
+    width: 100%;
+    padding: 15px;
+    border-radius: 14px;
+    background: var(--text-primary);
+    color: var(--bg-void);
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: opacity .12s;
+    margin-top: auto;
+    letter-spacing: -.01em;
+  }
+  .cta:hover { opacity: .88; }
+  .cta:disabled { opacity: .3; cursor: not-allowed; }
+
+  /* Annotations */
+  .annotations {
+    max-width: 280px;
+    padding-top: 12px;
+  }
+
+  .ann { margin-bottom: 24px; }
+
+  .ann-tag {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 9px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin-bottom: 6px;
+    border: 0.5px solid var(--border-mid);
+    color: var(--text-muted);
+  }
+
+  .ann-title {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+  }
+
+  .ann-body {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-wrap">
+
+  <div class="phone-col">
+    <div class="app-title">[ i ]</div>
+    <div class="app-sub">Withdraw — Cash Out</div>
+
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen">
+
+        <div class="back-row">
+          <div class="back-box">←</div>
+          <div class="back-lbl">Wallet</div>
+        </div>
+
+        <div class="screen-title">Withdraw</div>
+        <div class="screen-sub">Move icoins to your bank or card</div>
+
+        <div class="card">
+          <div class="card-label">From</div>
+          <div class="card-row">
+            <div class="coin-dot" style="background:rgba(249,115,22,0.12);color:#f97316">i</div>
+            <div class="coin-name">icoins</div>
+            <div class="coin-avail" id="w-avail">847 available</div>
+          </div>
+          <input class="big-input" id="w-amt" type="number" value="200" min="1" max="847" oninput="wcalc()">
+          <div class="pct-row">
+            <div class="pct-btn" onclick="wset(25,this)">25%</div>
+            <div class="pct-btn" onclick="wset(50,this)">50%</div>
+            <div class="pct-btn" onclick="wset(75,this)">75%</div>
+            <div class="pct-btn" onclick="wset(100,this)">Max</div>
+          </div>
+        </div>
+
+        <div class="dest-label">To</div>
+
+        <div class="dest on" id="dest-bank" onclick="selectDest('bank')">
+          <div class="dest-icon">B</div>
+          <div class="dest-info">
+            <div class="dest-name">Bank account</div>
+            <div class="dest-detail">Chase ···4821 · 1–2 business days · free</div>
+          </div>
+          <div class="dest-check"><div class="dest-check-inner"></div></div>
+        </div>
+
+        <div class="dest" id="dest-card" onclick="selectDest('card')">
+          <div class="dest-icon">C</div>
+          <div class="dest-info">
+            <div class="dest-name">Debit card</div>
+            <div class="dest-detail">Visa ···9204 · instant · 1.5% fee</div>
+          </div>
+          <div class="dest-check"><div class="dest-check-inner"></div></div>
+        </div>
+
+        <div class="dest" id="dest-ext" onclick="selectDest('ext')">
+          <div class="dest-icon">X</div>
+          <div class="dest-info">
+            <div class="dest-name">External wallet</div>
+            <div class="dest-detail">Requires xcoins · Trust Tier 4 only</div>
+          </div>
+          <div class="dest-check"><div class="dest-check-inner"></div></div>
+        </div>
+
+        <div class="breakdown" id="w-breakdown"></div>
+
+        <div class="pill">
+          <div class="pill-dot" id="pill-dot" style="background:var(--icoin-primary)"></div>
+          <div class="pill-text" id="w-pill">Bank transfer: arrives in 1–2 business days. No platform fee.</div>
+        </div>
+
+        <button class="cta" id="w-cta">Withdraw</button>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="annotations">
+    <div class="ann">
+      <div class="ann-tag">Destination</div>
+      <div class="ann-title">Three exits, one screen</div>
+      <div class="ann-body">Bank (1–2 days, no fee), debit card (instant, small fee), external wallet (xcoins required, Tier 4 gate). Slow is free, fast costs a little, external is earned. The hierarchy is deliberate.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">Fee logic</div>
+      <div class="ann-title">Instant costs — slow is free</div>
+      <div class="ann-body">Bank withdrawals carry no platform fee. Instant debit card charges 1.5%. This is the real cost of instant settlement passed through honestly. Users who plan ahead pay nothing.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">External wallet</div>
+      <div class="ann-title">xcoins gate the exit</div>
+      <div class="ann-body">External crypto or partner wallet withdrawal requires xcoins and trust Tier 4. The lock protects the pool from being drained by low-trust actors who haven't proven longevity on the platform.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">Amount input</div>
+      <div class="ann-title">Max is the most common action</div>
+      <div class="ann-body">The percentage shortcuts mean users never need to type a number. The large numeric input is there for precision — but most users will tap Max or 50% and be done in two taps.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let wDest = 'bank';
+
+  const wFees    = { bank: 0,     card: 0.015, ext: 0.025 };
+  const wTimes   = { bank: '1–2 business days', card: 'Instant', ext: '~10 minutes' };
+  const wPills   = {
+    bank: 'Bank transfer: arrives in 1–2 business days. No platform fee.',
+    card: 'Instant to debit card. 1.5% settlement fee applies.',
+    ext:  'External wallet via xcoins bridge. Requires Trust Tier 4. 2.5% fee.'
+  };
+  const wColors  = { bank: '#4ade80', card: '#f59e0b', ext: '#ff4d6d' };
+  const MAX = 847;
+
+  function selectDest(d) {
+    wDest = d;
+    ['bank','card','ext'].forEach(x => {
+      document.getElementById('dest-' + x).classList.toggle('on', x === d);
+    });
+    document.getElementById('w-pill').textContent = wPills[d];
+    document.getElementById('pill-dot').style.background = wColors[d];
+    wcalc();
+  }
+
+  function wset(pct, el) {
+    document.getElementById('w-amt').value = Math.floor(MAX * pct / 100);
+    document.querySelectorAll('.pct-btn').forEach(b => b.classList.remove('on'));
+    el.classList.add('on');
+    wcalc();
+  }
+
+  function wcalc() {
+    const amt = parseInt(document.getElementById('w-amt').value) || 0;
+    const fee = Math.round(amt * wFees[wDest]);
+    const net = amt - fee;
+    const usd = (net * 0.01).toFixed(2);
+
+    const feeRow = fee > 0
+      ? `<div class="bk-row"><div class="bk-l">Settlement fee</div><div class="bk-v" style="color:#ff4d6d">−${fee.toLocaleString()} icoins</div></div>`
+      : `<div class="bk-row"><div class="bk-l">Platform fee</div><div class="bk-v" style="color:#4ade80">Free</div></div>`;
+
+    document.getElementById('w-breakdown').innerHTML = `
+      <div class="bk-row"><div class="bk-l">You send</div><div class="bk-v">${amt.toLocaleString()} icoins</div></div>
+      ${feeRow}
+      <div class="bk-row"><div class="bk-l">Arrival</div><div class="bk-v">${wTimes[wDest]}</div></div>
+      <div class="bk-row total"><div class="bk-l">You receive</div><div class="bk-v">$${usd} USD</div></div>
+    `;
+
+    document.getElementById('w-cta').disabled = amt <= 0 || amt > MAX;
+  }
+
+  wcalc();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,300 @@
+
+<style>
+@keyframes earn-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+@keyframes float-coin{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-38px) scale(0.7)}}
+@keyframes wave-bar{0%,100%{height:6px}50%{height:28px}}
+@keyframes ghost-breathe{0%,100%{border-color:rgba(255,255,255,0.14);background:rgba(255,255,255,0.03)}50%{border-color:rgba(255,255,255,0.28);background:rgba(255,255,255,0.07)}}
+@keyframes slide-up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes dot-spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+</style>
+
+<div style="display:flex;justify-content:center;align-items:flex-start;padding:1.5rem 0">
+<div id="phone" style="width:358px;height:710px;position:relative;overflow:hidden;background:#0f0f0f;border-radius:34px;border:0.5px solid rgba(255,255,255,0.1)">
+
+<!-- ═══ FEED VIEW ═══ -->
+<div id="v-feed" style="position:absolute;inset:0;overflow-y:auto;background:#0f0f0f">
+  <!-- header -->
+  <div style="padding:18px 18px 10px;display:flex;justify-content:space-between;align-items:center;background:#0f0f0f;border-bottom:0.5px solid rgba(255,255,255,0.06)">
+    <div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:1px">DISCOVER</div>
+      <div style="font-size:17px;font-weight:500;color:#f0f0f0">Your Feed</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:5px;background:rgba(239,159,39,0.1);border:0.5px solid rgba(239,159,39,0.28);border-radius:20px;padding:5px 11px">
+      <div style="width:7px;height:7px;border-radius:50%;background:#EF9F27;animation:earn-pulse 2s ease-in-out infinite"></div>
+      <span id="wallet-bal" style="font-size:13px;font-weight:500;color:#EF9F27;font-family:monospace">$2.40</span>
+    </div>
+  </div>
+
+  <!-- card: guitar -->
+  <div onclick="enterImmersive('guitar')" style="margin:14px 14px 0;border-radius:18px;overflow:hidden;background:#191919;cursor:pointer;border:0.5px solid rgba(255,255,255,0.05)">
+    <div style="height:196px;background:#0a1c17;position:relative;display:flex;align-items:center;justify-content:center">
+      <!-- waveform visualizer -->
+      <div style="display:flex;gap:4px;align-items:flex-end;height:36px">
+        <div style="width:4px;background:#1D9E75;border-radius:3px;animation:wave-bar 0.9s ease-in-out infinite;animation-delay:0s"></div>
+        <div style="width:4px;background:#1D9E75;border-radius:3px;animation:wave-bar 0.9s ease-in-out infinite;animation-delay:0.12s"></div>
+        <div style="width:4px;background:#5DCAA5;border-radius:3px;animation:wave-bar 0.9s ease-in-out infinite;animation-delay:0.24s"></div>
+        <div style="width:4px;background:#1D9E75;border-radius:3px;animation:wave-bar 0.9s ease-in-out infinite;animation-delay:0.36s"></div>
+        <div style="width:4px;background:#5DCAA5;border-radius:3px;animation:wave-bar 0.9s ease-in-out infinite;animation-delay:0.18s"></div>
+        <div style="width:4px;background:#1D9E75;border-radius:3px;animation:wave-bar 0.9s ease-in-out infinite;animation-delay:0.06s"></div>
+        <div style="width:4px;background:#1D9E75;border-radius:3px;animation:wave-bar 0.9s ease-in-out infinite;animation-delay:0.3s"></div>
+        <div style="width:4px;background:#5DCAA5;border-radius:3px;animation:wave-bar 0.9s ease-in-out infinite;animation-delay:0.42s"></div>
+        <div style="width:4px;background:#1D9E75;border-radius:3px;animation:wave-bar 0.9s ease-in-out infinite;animation-delay:0.15s"></div>
+      </div>
+      <div style="position:absolute;top:12px;left:12px;width:34px;height:34px;border-radius:50%;background:#1D9E75;display:flex;align-items:center;justify-content:center;font-size:15px;color:#04342C;font-weight:500">M</div>
+      <div style="position:absolute;top:12px;right:12px;background:#EF9F27;border-radius:16px;padding:2px 9px;font-size:11px;color:#2a1500;font-weight:500">Earn $0.25</div>
+      <div style="position:absolute;bottom:10px;right:12px;font-size:11px;color:rgba(255,255,255,0.3)">tap to watch &amp; earn →</div>
+    </div>
+    <div style="padding:13px">
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px">
+        <span style="font-size:14px;font-weight:500;color:#f0f0f0">@melodymae</span>
+        <span style="font-size:11px;color:rgba(255,255,255,0.28)">2.1k followers</span>
+        <span style="margin-left:auto;font-size:11px;color:#1D9E75;border:0.5px solid rgba(29,158,117,0.3);border-radius:10px;padding:1px 7px">live</span>
+      </div>
+      <p style="font-size:12px;color:rgba(255,255,255,0.45);margin:0;line-height:1.5">Follow me to unlock an exclusive acoustic cover this weekend 🎸</p>
+    </div>
+  </div>
+
+  <!-- card: pizza -->
+  <div onclick="enterImmersive('pizza')" style="margin:12px 14px 20px;border-radius:18px;overflow:hidden;background:#191919;cursor:pointer;border:0.5px solid rgba(255,255,255,0.05)">
+    <div style="height:196px;background:#18100400;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center">
+      <div style="position:absolute;inset:0;background:#180f03"></div>
+      <div style="position:absolute;width:110px;height:110px;border-radius:50%;background:#2a1800;border:0.5px solid rgba(239,159,39,0.15)"></div>
+      <div style="position:absolute;width:75px;height:75px;border-radius:50%;background:#EF9F27;opacity:0.12;top:35px;left:95px"></div>
+      <div style="position:absolute;width:50px;height:50px;border-radius:50%;background:#BA7517;opacity:0.1;top:80px;left:60px"></div>
+      <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:6px">
+        <div style="font-size:32px;opacity:0.8">🍕</div>
+        <div style="font-size:11px;color:rgba(239,159,39,0.5);letter-spacing:0.05em">FREE SAMPLE OFFER</div>
+      </div>
+      <div style="position:absolute;top:12px;left:12px;width:34px;height:34px;border-radius:10px;background:#EF9F27;display:flex;align-items:center;justify-content:center;font-size:12px;color:#2a1500;font-weight:500">MP</div>
+      <div style="position:absolute;top:12px;right:12px;background:#EF9F27;border-radius:16px;padding:2px 9px;font-size:11px;color:#2a1500;font-weight:500">Earn $1.00</div>
+      <div style="position:absolute;bottom:10px;right:12px;font-size:11px;color:rgba(255,255,255,0.3)">tap to watch &amp; earn →</div>
+    </div>
+    <div style="padding:13px">
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px">
+        <span style="font-size:14px;font-weight:500;color:#f0f0f0">Mario's Pizza</span>
+        <span style="font-size:11px;color:rgba(239,159,39,0.45)">free slice · today only</span>
+        <span style="margin-left:auto;font-size:11px;color:#EF9F27;border:0.5px solid rgba(239,159,39,0.3);border-radius:10px;padding:1px 7px">offer</span>
+      </div>
+      <p style="font-size:12px;color:rgba(255,255,255,0.45);margin:0;line-height:1.5">Stop by &amp; try our new Truffle Margherita — earn $1 when you check in 🍕</p>
+    </div>
+  </div>
+</div><!-- /feed -->
+
+<!-- ═══ IMMERSIVE VIEW ═══ -->
+<div id="v-immersive" style="position:absolute;inset:0;display:none">
+  <!-- video bg -->
+  <div id="imm-bg" style="position:absolute;inset:0"></div>
+  <!-- noise-like overlay via pattern -->
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.2);pointer-events:none"></div>
+
+  <!-- top bar -->
+  <div style="position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:16px;z-index:10">
+    <div onclick="exitImmersive()" style="width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,0.35);border:0.5px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(255,255,255,0.8);font-size:18px;line-height:1">‹</div>
+    <!-- earn counter -->
+    <div style="display:flex;align-items:center;gap:6px;background:rgba(0,0,0,0.45);border:0.5px solid rgba(239,159,39,0.35);border-radius:20px;padding:5px 12px">
+      <div style="width:6px;height:6px;border-radius:50%;background:#EF9F27;animation:earn-pulse 1.2s ease-in-out infinite"></div>
+      <span style="font-size:11px;color:rgba(239,159,39,0.6);letter-spacing:0.04em">watching</span>
+      <span id="earn-counter" style="font-size:14px;font-weight:500;color:#EF9F27;font-family:monospace;min-width:56px">$0.000</span>
+    </div>
+  </div>
+
+  <!-- visual content area (center) -->
+  <div id="imm-visual" style="position:absolute;top:80px;left:0;right:0;display:flex;align-items:center;justify-content:center;height:280px"></div>
+
+  <!-- coin float layer -->
+  <div id="coin-layer" style="position:absolute;inset:0;pointer-events:none;z-index:20;overflow:hidden"></div>
+
+  <!-- bottom overlay -->
+  <div style="position:absolute;bottom:0;left:0;right:0;z-index:10;background:rgba(0,0,0,0.62);border-top:0.5px solid rgba(255,255,255,0.04);padding:16px 18px 20px">
+    <!-- user info -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <div id="imm-avatar" style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:15px;flex-shrink:0"></div>
+      <div>
+        <div id="imm-uname" style="font-size:14px;font-weight:500;color:#f0f0f0"></div>
+        <div id="imm-desc" style="font-size:12px;color:rgba(255,255,255,0.45);margin-top:1px"></div>
+      </div>
+    </div>
+
+    <!-- ghost action section -->
+    <div id="ghost-wrap" style="opacity:0;transition:opacity 0.7s ease">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:9px">
+        <div style="flex:1;height:0.5px;background:rgba(255,255,255,0.08)"></div>
+        <span style="font-size:10px;color:rgba(255,255,255,0.25);letter-spacing:0.06em;white-space:nowrap">ACTION TO EARN</span>
+        <div style="flex:1;height:0.5px;background:rgba(255,255,255,0.08)"></div>
+      </div>
+      <button id="ghost-btn" onclick="claimReward()" style="width:100%;padding:15px 18px;border-radius:14px;font-size:16px;font-weight:500;letter-spacing:0.03em;cursor:pointer;transition:all 0.25s;animation:ghost-breathe 2.5s ease-in-out infinite;display:block"></button>
+      <div id="ghost-earn-hint" style="text-align:center;margin-top:8px;font-size:11px;color:rgba(239,159,39,0.45)"></div>
+    </div>
+
+    <!-- waiting msg (shown before ghost) -->
+    <div id="wait-msg" style="text-align:center;font-size:12px;color:rgba(255,255,255,0.25);padding:4px 0">
+      <span id="wait-dots">watching • counting your time •</span> earning now
+    </div>
+  </div>
+</div><!-- /immersive -->
+
+<!-- ═══ REWARD VIEW ═══ -->
+<div id="v-reward" style="position:absolute;inset:0;display:none;background:#0f0f0f;overflow-y:auto">
+  <div style="padding:22px 18px 30px">
+    <div id="reward-body"></div>
+    <button onclick="backToFeed()" style="width:100%;margin-top:20px;padding:14px;border-radius:14px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.5);font-size:14px;cursor:pointer">← Back to feed</button>
+  </div>
+</div>
+
+</div><!-- /phone -->
+</div>
+
+<script>
+const CARDS = {
+  guitar: {
+    bg:'#0a1c17', avatarBg:'#1D9E75', avatarTxt:'M', avatarColor:'#04342C',
+    uname:'@melodymae', desc:'Playing original songs live right now',
+    btnTxt:'Follow', earnHint:'earn $0.25 instantly when you follow',
+    rewardType:'instant', rewardAmt:0.25,
+    visual:'guitar'
+  },
+  pizza: {
+    bg:'#180f03', avatarBg:'#EF9F27', avatarTxt:'MP', avatarColor:'#2a1500',
+    uname:"Mario's Pizza", desc:'Free sample — stop by today only',
+    btnTxt:"I'm Going!", earnHint:'earn $1.00 held until you check in',
+    rewardType:'pending', rewardAmt:1.00,
+    visual:'pizza'
+  }
+};
+
+let current=null, earnTimer=null, earnAmt=0, ghostShown=false, balance=2.40;
+
+function sv(name){
+  ['feed','immersive','reward'].forEach(v=>{
+    document.getElementById('v-'+v).style.display=v===name?'block':'none';
+  });
+}
+
+function enterImmersive(card){
+  current=card; earnAmt=0; ghostShown=false;
+  const c=CARDS[card];
+  document.getElementById('imm-bg').style.background=c.bg;
+  const av=document.getElementById('imm-avatar');
+  av.style.background=c.avatarBg; av.style.color=c.avatarColor; av.textContent=c.avatarTxt;
+  document.getElementById('imm-uname').textContent=c.uname;
+  document.getElementById('imm-desc').textContent=c.desc;
+  const btn=document.getElementById('ghost-btn');
+  btn.textContent=c.btnTxt;
+  btn.style.cssText='width:100%;padding:15px 18px;border-radius:14px;font-size:16px;font-weight:500;letter-spacing:0.03em;cursor:pointer;transition:all 0.25s;animation:ghost-breathe 2.5s ease-in-out infinite;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.7)';
+  document.getElementById('ghost-earn-hint').textContent=c.earnHint;
+  document.getElementById('ghost-wrap').style.opacity='0';
+  document.getElementById('wait-msg').style.display='block';
+  document.getElementById('earn-counter').textContent='$0.000';
+  buildVisual(c.visual);
+  sv('immersive');
+  let ms=0;
+  earnTimer=setInterval(()=>{
+    ms+=90; earnAmt+=0.00045;
+    document.getElementById('earn-counter').textContent='$'+earnAmt.toFixed(3);
+    if(ms%700<90) spawnCoin();
+    if(ms>=2400&&!ghostShown){
+      ghostShown=true;
+      document.getElementById('ghost-wrap').style.opacity='1';
+      document.getElementById('wait-msg').style.display='none';
+    }
+  },90);
+}
+
+function buildVisual(type){
+  const el=document.getElementById('imm-visual');
+  if(type==='guitar'){
+    el.innerHTML=`<div style="text-align:center">
+      <div style="display:flex;gap:5px;align-items:flex-end;height:60px;justify-content:center;margin-bottom:14px">
+        ${[0,0.15,0.3,0.45,0.22,0.08,0.37,0.52,0.18,0.04,0.26].map((d,i)=>`<div style="width:5px;background:#1D9E75;border-radius:3px;opacity:${0.5+i*0.04};animation:wave-bar ${0.7+i*0.08}s ease-in-out infinite;animation-delay:${d}s"></div>`).join('')}
+      </div>
+      <div style="width:64px;height:64px;border-radius:50%;background:rgba(29,158,117,0.15);border:0.5px solid rgba(29,158,117,0.3);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto">🎸</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.3);margin-top:10px;letter-spacing:0.04em">LIVE PERFORMANCE</div>
+    </div>`;
+  } else {
+    el.innerHTML=`<div style="text-align:center">
+      <div style="width:80px;height:80px;border-radius:50%;background:rgba(239,159,39,0.1);border:0.5px solid rgba(239,159,39,0.25);display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto">🍕</div>
+      <div style="font-size:13px;color:rgba(239,159,39,0.6);margin-top:12px;font-weight:500">Truffle Margherita</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:4px">Free sample · visit to claim</div>
+    </div>`;
+  }
+}
+
+function spawnCoin(){
+  const c=document.getElementById('coin-layer');
+  const d=document.createElement('div');
+  d.style.cssText=`position:absolute;right:${55+Math.random()*30}px;top:${40+Math.random()*25}px;font-size:12px;color:#EF9F27;pointer-events:none;animation:float-coin 0.95s ease-out forwards;white-space:nowrap;font-family:monospace`;
+  d.textContent='+◈';
+  c.appendChild(d);
+  setTimeout(()=>d.remove(),1000);
+}
+
+function exitImmersive(){clearInterval(earnTimer);sv('feed');}
+
+function claimReward(){
+  clearInterval(earnTimer);
+  const c=CARDS[current];
+  let html='';
+  if(c.rewardType==='instant'){
+    balance=parseFloat((balance+c.rewardAmt).toFixed(2));
+    document.getElementById('wallet-bal').textContent='$'+balance.toFixed(2);
+    html=`
+      <div style="text-align:center;margin-bottom:22px;animation:slide-up 0.4s ease">
+        <div style="width:60px;height:60px;border-radius:50%;background:rgba(29,158,117,0.12);border:0.5px solid rgba(29,158,117,0.35);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:22px;color:#1D9E75">✓</div>
+        <div style="font-size:19px;font-weight:500;color:#f0f0f0;margin-bottom:5px">You followed @melodymae!</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.4)">Action confirmed — reward released instantly</div>
+      </div>
+      <div style="background:rgba(29,158,117,0.07);border:0.5px solid rgba(29,158,117,0.22);border-radius:14px;padding:18px;text-align:center;margin-bottom:14px">
+        <div style="font-size:11px;color:rgba(29,158,117,0.55);letter-spacing:0.06em;margin-bottom:4px">CREDITED TO WALLET</div>
+        <div style="font-size:32px;font-weight:500;color:#1D9E75;font-family:monospace">+$${c.rewardAmt.toFixed(2)}</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.25);margin-top:5px">new balance: $${balance.toFixed(2)}</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03);border:0.5px solid rgba(255,255,255,0.06);border-radius:12px;padding:14px;display:flex;align-items:center;gap:10px">
+        <div style="width:38px;height:38px;border-radius:50%;background:#1D9E75;display:flex;align-items:center;justify-content:center;color:#04342C;font-weight:500;flex-shrink:0">M</div>
+        <div>
+          <div style="font-size:13px;color:#f0f0f0;font-weight:500">Now following @melodymae</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:2px">You'll see her exclusive cover this weekend</div>
+        </div>
+      </div>`;
+  } else {
+    html=`
+      <div style="text-align:center;margin-bottom:20px;animation:slide-up 0.4s ease">
+        <div style="width:60px;height:60px;border-radius:50%;background:rgba(239,159,39,0.1);border:0.5px solid rgba(239,159,39,0.3);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:20px;color:#EF9F27">◎</div>
+        <div style="font-size:19px;font-weight:500;color:#f0f0f0;margin-bottom:5px">You're going to Mario's!</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.4)">Complete the steps below to release your reward</div>
+      </div>
+      <div style="background:rgba(239,159,39,0.06);border:0.5px solid rgba(239,159,39,0.2);border-radius:14px;padding:16px;text-align:center;margin-bottom:16px">
+        <div style="font-size:11px;color:rgba(239,159,39,0.5);letter-spacing:0.06em;margin-bottom:4px">PENDING RELEASE</div>
+        <div style="font-size:32px;font-weight:500;color:#EF9F27;font-family:monospace">$1.00</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:4px">held until all conditions are met</div>
+      </div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.25);letter-spacing:0.06em;margin-bottom:10px">CONDITIONS TO RELEASE</div>
+      ${pstep(1,'Offer claimed',true,"You tapped \"I'm Going!\" — locked in")}
+      ${pstep(2,'Visit the store',false,'Go to Mario\'s Pizza in person today')}
+      ${pstep(3,'GPS check-in',false,'Auto-detects within 50m of the store')}
+      ${pstep(4,'Try the sample',false,'Staff confirms → $1.00 releases to wallet')}
+      <div style="margin-top:14px;background:rgba(255,255,255,0.02);border:0.5px solid rgba(255,255,255,0.05);border-radius:10px;padding:12px">
+        <div style="font-size:11px;color:rgba(255,255,255,0.22);line-height:1.7">Offer expires in 24h · Designed by Mario's Pizza · If you can't make it, cancel before expiry to void the hold. No charge applied to your wallet.</div>
+      </div>`;
+  }
+  document.getElementById('reward-body').innerHTML=html;
+  sv('reward');
+}
+
+function pstep(n,title,done,detail){
+  const gc=done?'rgba(29,158,117,0.18)':'rgba(255,255,255,0.04)';
+  const bc=done?'rgba(29,158,117,0.35)':'rgba(255,255,255,0.08)';
+  const tc=done?'#1D9E75':'rgba(255,255,255,0.2)';
+  const lc=done?'#f0f0f0':'rgba(255,255,255,0.38)';
+  const dt=done?'rgba(255,255,255,0.3)':'rgba(255,255,255,0.22)';
+  const mark=done?'✓':n;
+  return `<div style="display:flex;gap:11px;margin-bottom:10px;align-items:flex-start">
+    <div style="flex-shrink:0;width:28px;height:28px;border-radius:50%;background:${gc};border:0.5px solid ${bc};display:flex;align-items:center;justify-content:center;font-size:12px;color:${tc};margin-top:1px">${mark}</div>
+    <div style="padding-top:1px">
+      <div style="font-size:13px;font-weight:500;color:${lc}">${title}</div>
+      <div style="font-size:11px;color:${dt};margin-top:2px">${detail}</div>
+    </div>
+  </div>`;
+}
+
+function backToFeed(){sv('feed');}
+</script>

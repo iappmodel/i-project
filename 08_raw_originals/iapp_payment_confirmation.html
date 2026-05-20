@@ -1,0 +1,204 @@
+
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+.w { font-family:var(--font-sans); padding:20px 0; }
+.row { display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; }
+.phone { width:280px; flex-shrink:0; border:1.5px solid #333; border-radius:38px; overflow:hidden; background:#1a1a1a; color:#fff; }
+.notch { width:72px; height:20px; margin:0 auto; background:#1a1a1a; border-radius:0 0 12px 12px; border:1.5px solid #333; border-top:none; }
+.screen { padding:24px 18px 32px; min-height:580px; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; }
+
+@keyframes scale-in { 0%{opacity:0;transform:scale(.7)} 60%{transform:scale(1.08)} 100%{opacity:1;transform:scale(1)} }
+@keyframes fade-up  { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+@keyframes ring-out { 0%{opacity:.5;transform:scale(.8)} 100%{opacity:0;transform:scale(2)} }
+@keyframes countdown { from{stroke-dashoffset:0} to{stroke-dashoffset:88} }
+
+.confirm-icon { width:80px; height:80px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:500; margin:24px auto 20px; position:relative; animation:scale-in .5s cubic-bezier(.34,1.56,.64,1) both; }
+.ring { position:absolute; width:100%; height:100%; border-radius:50%; border:1.5px solid currentColor; animation:ring-out 1.2s ease-out infinite; }
+.ring2 { animation-delay:.6s; }
+
+.pay-amount { font-size:36px; font-weight:500; color:#fff; margin-bottom:4px; animation:fade-up .4s ease both; animation-delay:.3s; opacity:0; animation-fill-mode:forwards; }
+.pay-coin { font-size:13px; color:#888; margin-bottom:6px; animation:fade-up .4s ease both; animation-delay:.4s; opacity:0; animation-fill-mode:forwards; }
+.pay-to { font-size:13px; color:#aaa; margin-bottom:28px; animation:fade-up .4s ease both; animation-delay:.5s; opacity:0; animation-fill-mode:forwards; }
+.pay-to span { color:#fff; font-weight:500; }
+
+.countdown-wrap { position:relative; width:64px; height:64px; margin-bottom:20px; animation:fade-up .4s ease both; animation-delay:.6s; opacity:0; animation-fill-mode:forwards; }
+.countdown-svg { transform:rotate(-90deg); }
+.countdown-track { stroke:var(--color-border-tertiary,#2a2a2a); fill:none; }
+.countdown-fill { stroke:#4ade80; fill:none; stroke-linecap:round; stroke-dasharray:88; animation:countdown 30s linear forwards; animation-delay:.8s; }
+.countdown-num { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:500; color:#fff; }
+
+.undo-label { font-size:11px; color:#888; margin-bottom:24px; text-align:center; animation:fade-up .4s ease both; animation-delay:.7s; opacity:0; animation-fill-mode:forwards; }
+
+.detail-card { width:100%; background:#242424; border:0.5px solid #333; border-radius:12px; overflow:hidden; margin-bottom:16px; animation:fade-up .4s ease both; animation-delay:.8s; opacity:0; animation-fill-mode:forwards; }
+.dc-row { display:flex; justify-content:space-between; padding:9px 14px; border-bottom:0.5px solid #2a2a2a; }
+.dc-row:last-child { border-bottom:none; }
+.dc-l { font-size:11px; color:#888; }
+.dc-v { font-size:11px; font-weight:500; color:#fff; }
+
+.btn-row { display:flex; gap:8px; width:100%; animation:fade-up .4s ease both; animation-delay:.9s; opacity:0; animation-fill-mode:forwards; margin-top:auto; }
+.btn-cancel { flex:1; padding:12px 0; border-radius:12px; border:0.5px solid #333; background:transparent; color:#fff; font-size:13px; font-weight:500; cursor:pointer; transition:background .12s; }
+.btn-cancel:hover { background:#2a2a2a; }
+.btn-done { flex:2; padding:12px 0; border-radius:12px; background:#fff; color:#000; font-size:13px; font-weight:500; border:none; cursor:pointer; transition:opacity .12s; }
+.btn-done:hover { opacity:.88; }
+
+.ann-col { flex:1; min-width:200px; padding-top:4px; }
+.ann { margin-bottom:20px; }
+.ann-tag { display:inline-block; font-size:9px; font-weight:500; padding:2px 7px; border-radius:10px; margin-bottom:5px; background:var(--color-background-secondary); color:var(--color-text-tertiary); }
+.ann-title { font-size:12px; font-weight:500; color:var(--color-text-primary); margin-bottom:3px; }
+.ann-body { font-size:11px; color:var(--color-text-secondary); line-height:1.6; }
+
+.steps { border:0.5px solid var(--color-border-tertiary); border-radius:10px; overflow:hidden; margin-top:20px; }
+.step { display:flex; gap:10px; padding:10px 13px; border-bottom:0.5px solid var(--color-border-tertiary); align-items:flex-start; }
+.step:last-child { border-bottom:none; }
+.step-dot { width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:500; flex-shrink:0; margin-top:1px; background:var(--color-background-secondary); color:var(--color-text-tertiary); }
+.step-dot.done { background:#0d1f13; color:#4ade80; }
+.step-body { flex:1; }
+.step-title { font-size:12px; font-weight:500; color:var(--color-text-primary); margin-bottom:1px; }
+.step-sub { font-size:10px; color:var(--color-text-tertiary); line-height:1.4; }
+</style>
+
+<div class="w">
+<div class="row">
+
+<div class="phone">
+  <div class="notch"></div>
+  <div class="screen">
+
+    <div class="confirm-icon" style="background:#0d1f13;color:#4ade80">
+      <div class="ring" style="color:#4ade80"></div>
+      <div class="ring ring2" style="color:#4ade80"></div>
+      i
+    </div>
+
+    <div class="pay-amount" id="p-amt">5 icoins</div>
+    <div class="pay-coin">= $0.05 USD · from your wallet</div>
+    <div class="pay-to">to <span id="p-to">Blue Bottle Coffee</span></div>
+
+    <div class="countdown-wrap">
+      <svg class="countdown-svg" width="64" height="64" viewBox="0 0 32 32">
+        <circle class="countdown-track" cx="16" cy="16" r="14" stroke-width="2"/>
+        <circle class="countdown-fill" cx="16" cy="16" r="14" stroke-width="2"/>
+      </svg>
+      <div class="countdown-num" id="c-num">30</div>
+    </div>
+    <div class="undo-label">Cancel within 30 seconds · no questions asked</div>
+
+    <div class="detail-card">
+      <div class="dc-row"><div class="dc-l">Method</div><div class="dc-v" id="p-method">NFC tap</div></div>
+      <div class="dc-row"><div class="dc-l">Merchant</div><div class="dc-v">Blue Bottle Coffee</div></div>
+      <div class="dc-row"><div class="dc-l">Status</div><div class="dc-v" style="color:#4ade80" id="p-status">Confirmed — held in escrow</div></div>
+      <div class="dc-row"><div class="dc-l">Ref</div><div class="dc-v" style="color:#555;font-family:monospace;font-size:10px" id="p-ref">i·8f2a·3k9p</div></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-cancel" id="cancel-btn" onclick="cancelPay()">Cancel</button>
+      <button class="btn-done" onclick="sendPrompt('Payment confirmed — show me my updated wallet balance')">Done</button>
+    </div>
+
+  </div>
+</div>
+
+<div class="ann-col">
+  <div class="ann">
+    <div class="ann-tag">Confirmation moment</div>
+    <div class="ann-title">Escrow before transfer</div>
+    <div class="ann-body">Coins are held — not moved — the instant confirm is tapped. The merchant sees "confirmed" immediately. The user has 30 seconds to reverse. After the window closes, escrow releases and the transfer is permanent. This sequence eliminates the anxiety of irreversible payments.</div>
+  </div>
+  <div class="ann">
+    <div class="ann-tag">Countdown ring</div>
+    <div class="ann-title">The reversal window is visible</div>
+    <div class="ann-body">The green ring drains in real time. Users can see exactly how long they have. This isn't just UX — it's a trust mechanism. Making the window visible means users know it exists. Apps that hide reversal windows still have them but get less trust for it.</div>
+  </div>
+  <div class="ann">
+    <div class="ann-tag">Reference ID</div>
+    <div class="ann-title">Every payment has a permanent receipt</div>
+    <div class="ann-body">The ref ID is logged to both wallets forever. It's the dispute resolution anchor — if anything goes wrong, both parties have the same reference. No "I never received it" with a verifiable on-platform ledger.</div>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-dot done">1</div>
+      <div class="step-body">
+        <div class="step-title">Payment token generated</div>
+        <div class="step-sub">Signed, single-use, 60-second validity</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-dot done">2</div>
+      <div class="step-body">
+        <div class="step-title">Biometric verified</div>
+        <div class="step-sub">Face ID or fingerprint cleared</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-dot done">3</div>
+      <div class="step-body">
+        <div class="step-title">Coins held in escrow</div>
+        <div class="step-sub">Balance frozen · merchant notified</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-dot" id="step4">4</div>
+      <div class="step-body">
+        <div class="step-title">30-second window</div>
+        <div class="step-sub" id="step4-sub">Counting down · either party can cancel</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-dot" id="step5">5</div>
+      <div class="step-body">
+        <div class="step-title">Transfer complete</div>
+        <div class="step-sub" id="step5-sub">Coins move · receipt logged to both wallets</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<script>
+let secs = 30;
+let cancelled = false;
+const numEl = document.getElementById('c-num');
+const statusEl = document.getElementById('p-status');
+const cancelBtn = document.getElementById('cancel-btn');
+const step4 = document.getElementById('step4');
+const step5 = document.getElementById('step5');
+const step4sub = document.getElementById('step4-sub');
+const step5sub = document.getElementById('step5-sub');
+
+const timer = setInterval(() => {
+  if (cancelled) return;
+  secs--;
+  numEl.textContent = secs;
+  if (secs <= 10) numEl.style.color = '#f87171';
+  if (secs <= 0) {
+    clearInterval(timer);
+    step4.classList.add('done');
+    step5.classList.add('done');
+    step4sub.textContent = 'Window closed';
+    step5sub.textContent = 'Complete — receipt in wallet activity';
+    statusEl.textContent = 'Transfer complete';
+    statusEl.style.color = '#4ade80';
+    cancelBtn.disabled = true;
+    cancelBtn.style.opacity = '.3';
+    cancelBtn.style.cursor = 'not-allowed';
+    numEl.textContent = '✓';
+    numEl.style.color = '#4ade80';
+    numEl.style.fontSize = '18px';
+  }
+}, 1000);
+
+function cancelPay() {
+  cancelled = true;
+  clearInterval(timer);
+  statusEl.textContent = 'Cancelled — no coins moved';
+  statusEl.style.color = '#f87171';
+  cancelBtn.textContent = 'Cancelled';
+  cancelBtn.disabled = true;
+  cancelBtn.style.opacity = '.4';
+  numEl.textContent = '✕';
+  numEl.style.color = '#f87171';
+}
+</script>

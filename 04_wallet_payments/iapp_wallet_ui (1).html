@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] App — Wallet UI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-void:     #070709;
+    --bg-deep:     #0a0a0f;
+    --bg-surface:  #111118;
+    --bg-panel:    #16161f;
+    --bg-raised:   #1c1c28;
+    --border-subtle:  rgba(255,255,255,0.05);
+    --border-mid:     rgba(255,255,255,0.09);
+    --border-active:  rgba(255,255,255,0.18);
+    --text-primary:   #f0ede8;
+    --text-secondary: #9997a0;
+    --text-muted:     #4a4858;
+    --icoin-primary:  #4ade80;
+    --icoin-dim:      rgba(74,222,128,0.08);
+    --vcoin-primary:  #f59e0b;
+    --accent-cyan:    #00e5ff;
+    --accent-lime:    #b4ff47;
+    --font-display:   'Syne', sans-serif;
+    --font-body:      'DM Sans', sans-serif;
+    --font-mono:      'JetBrains Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg-deep);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    font-family: var(--font-body);
+  }
+
+  .phone-wrap {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .phone {
+    width: 340px;
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 44px;
+    overflow: hidden;
+    background: var(--bg-surface);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(255,255,255,0.04);
+  }
+
+  .notch {
+    width: 88px;
+    height: 24px;
+    margin: 0 auto;
+    background: var(--bg-surface);
+    border-radius: 0 0 16px 16px;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-top: none;
+  }
+
+  .screen {
+    padding: 24px 20px 32px;
+  }
+
+  .greeting {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+  }
+
+  .balance-label {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    margin-top: 20px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+
+  .balance-num {
+    font-family: var(--font-mono);
+    font-size: 48px;
+    font-weight: 500;
+    color: var(--text-primary);
+    letter-spacing: -.02em;
+    margin-bottom: 4px;
+    line-height: 1;
+  }
+
+  .balance-sub {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 28px;
+  }
+
+  .balance-sub span {
+    color: var(--icoin-primary);
+  }
+
+  .action-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .act-btn {
+    border: 0.5px solid var(--border-mid);
+    border-radius: 14px;
+    padding: 14px 8px;
+    text-align: center;
+    cursor: pointer;
+    background: var(--bg-panel);
+    transition: background .15s, border-color .15s;
+  }
+
+  .act-btn:hover {
+    background: var(--bg-raised);
+    border-color: var(--border-active);
+  }
+
+  .act-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    margin: 0 auto 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .act-lbl {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  .section-hdr {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+
+  .sec-title {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .sec-link {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color .12s;
+  }
+
+  .sec-link:hover { color: var(--text-secondary); }
+
+  .coin-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 0.5px solid var(--border-subtle);
+    cursor: pointer;
+    transition: opacity .12s;
+  }
+
+  .coin-row:hover { opacity: .75; }
+  .coin-row:last-child { border-bottom: none; }
+
+  .coin-dot {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .coin-info { flex: 1; min-width: 0; }
+
+  .coin-name {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+  }
+
+  .coin-activity {
+    font-family: var(--font-body);
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .coin-amount { text-align: right; }
+
+  .coin-bal {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .coin-change {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    margin-top: 2px;
+  }
+
+  .sparkline { width: 48px; height: 20px; }
+
+  .activity-card {
+    border: 0.5px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    cursor: pointer;
+    background: var(--bg-panel);
+    transition: border-color .12s;
+  }
+
+  .activity-card:hover { border-color: var(--border-mid); }
+
+  .act-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  .act-body { flex: 1; }
+
+  .act-title {
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+  }
+
+  .act-time {
+    font-family: var(--font-body);
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .act-amount {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .tab-bar {
+    display: flex;
+    border-top: 0.5px solid var(--border-subtle);
+    margin-top: 24px;
+    padding-top: 16px;
+  }
+
+  .tab {
+    flex: 1;
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 10px;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px 0;
+    transition: color .12s;
+  }
+
+  .tab:hover { color: var(--text-secondary); }
+  .tab.active { color: var(--text-primary); font-weight: 500; }
+
+  .tab-pip {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--icoin-primary);
+    margin: 4px auto 0;
+    opacity: 0;
+  }
+
+  .tab.active .tab-pip { opacity: 1; }
+
+  /* Ambient orbs */
+  .orb-wrap {
+    position: relative;
+  }
+
+  .annotations {
+    max-width: 280px;
+    padding-top: 12px;
+  }
+
+  .ann { margin-bottom: 24px; }
+
+  .ann-tag {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 9px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin-bottom: 6px;
+    border: 0.5px solid var(--border-mid);
+    color: var(--text-muted);
+  }
+
+  .ann-title {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+  }
+
+  .ann-body {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+
+  .app-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -.02em;
+    margin-bottom: 6px;
+  }
+
+  .app-sub {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 40px;
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-wrap">
+
+  <div>
+    <div class="app-title">[ i ]</div>
+    <div class="app-sub">Attention Wallet & Media Marketplace</div>
+
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen">
+
+        <div class="greeting">Good evening, Alex</div>
+
+        <div class="balance-label">total wallet value</div>
+        <div class="balance-num">847</div>
+        <div class="balance-sub">icoins · <span>+34 today</span></div>
+
+        <div class="action-row">
+          <div class="act-btn">
+            <div class="act-icon" style="background:rgba(249,115,22,0.12);color:#f97316">W</div>
+            <div class="act-lbl">Withdraw</div>
+          </div>
+          <div class="act-btn">
+            <div class="act-icon" style="background:rgba(139,92,246,0.12);color:#a78bfa">C</div>
+            <div class="act-lbl">Convert</div>
+          </div>
+          <div class="act-btn">
+            <div class="act-icon" style="background:rgba(74,222,128,0.12);color:#4ade80">T</div>
+            <div class="act-lbl">Tip</div>
+          </div>
+        </div>
+
+        <div class="section-hdr">
+          <div class="sec-title">My coins</div>
+          <div class="sec-link">see all</div>
+        </div>
+
+        <div class="coin-row">
+          <div class="coin-dot" style="background:rgba(249,115,22,0.12);color:#f97316">i</div>
+          <div class="coin-info">
+            <div class="coin-name">icoins</div>
+            <div class="coin-activity">Cash value · 3 recent moves</div>
+          </div>
+          <svg class="sparkline" viewBox="0 0 48 20">
+            <polyline points="0,16 10,13 20,11 30,7 38,9 48,4" fill="none" stroke="#f97316" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="coin-amount">
+            <div class="coin-bal">847</div>
+            <div class="coin-change" style="color:#4ade80">+34</div>
+          </div>
+        </div>
+
+        <div class="coin-row">
+          <div class="coin-dot" style="background:rgba(74,222,128,0.1);color:#4ade80">a</div>
+          <div class="coin-info">
+            <div class="coin-name">acoins</div>
+            <div class="coin-activity">Earning now · focus mode on</div>
+          </div>
+          <svg class="sparkline" viewBox="0 0 48 20">
+            <polyline points="0,18 10,15 20,12 30,9 38,5 48,2" fill="none" stroke="#4ade80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="coin-amount">
+            <div class="coin-bal">1,240</div>
+            <div class="coin-change" style="color:#4ade80">+142</div>
+          </div>
+        </div>
+
+        <div class="coin-row">
+          <div class="coin-dot" style="background:rgba(0,229,255,0.1);color:#00e5ff">m</div>
+          <div class="coin-info">
+            <div class="coin-name">mcoins</div>
+            <div class="coin-activity">Media spend · 2 unlocked creators</div>
+          </div>
+          <svg class="sparkline" viewBox="0 0 48 20">
+            <polyline points="0,8 10,11 20,7 30,13 38,9 48,12" fill="none" stroke="#00e5ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="coin-amount">
+            <div class="coin-bal">320</div>
+            <div class="coin-change" style="color:#ff4d6d">-18</div>
+          </div>
+        </div>
+
+        <div class="coin-row">
+          <div class="coin-dot" style="background:rgba(139,92,246,0.1);color:#a78bfa">f</div>
+          <div class="coin-info">
+            <div class="coin-name">fcoins</div>
+            <div class="coin-activity">7-day streak · 1.5× active</div>
+          </div>
+          <svg class="sparkline" viewBox="0 0 48 20">
+            <polyline points="0,18 10,15 20,13 30,10 38,7 48,3" fill="none" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="coin-amount">
+            <div class="coin-bal">88</div>
+            <div class="coin-change" style="color:#4ade80">+12</div>
+          </div>
+        </div>
+
+        <div style="height:20px"></div>
+
+        <div class="section-hdr">
+          <div class="sec-title">Recent activity</div>
+          <div class="sec-link">history</div>
+        </div>
+
+        <div class="activity-card">
+          <div class="act-dot" style="background:#4ade80"></div>
+          <div class="act-body">
+            <div class="act-title">Focus session complete</div>
+            <div class="act-time">2 minutes ago · 14 min session</div>
+          </div>
+          <div class="act-amount" style="color:#4ade80">+28 a</div>
+        </div>
+
+        <div class="activity-card">
+          <div class="act-dot" style="background:#f97316"></div>
+          <div class="act-body">
+            <div class="act-title">Brand moment watched</div>
+            <div class="act-time">18 minutes ago · Nike campaign</div>
+          </div>
+          <div class="act-amount" style="color:#4ade80">+6 a</div>
+        </div>
+
+        <div class="activity-card">
+          <div class="act-dot" style="background:#a78bfa"></div>
+          <div class="act-body">
+            <div class="act-title">Converted to icoins</div>
+            <div class="act-time">1 hour ago · 3,400 rcoins</div>
+          </div>
+          <div class="act-amount" style="color:#4ade80">+34 i</div>
+        </div>
+
+        <div class="tab-bar">
+          <div class="tab">Home</div>
+          <div class="tab active">Wallet<div class="tab-pip"></div></div>
+          <div class="tab">Discover</div>
+          <div class="tab">Profile</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="annotations">
+    <div class="ann">
+      <div class="ann-tag">Balance area</div>
+      <div class="ann-title">icoins is the headline number</div>
+      <div class="ann-body">Only icoins appear at the top — the cash-equivalent value. Everything else is secondary. Users shouldn't need to do mental math to know what their wallet is worth.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">Coin list</div>
+      <div class="ann-title">Sparklines replace static balances</div>
+      <div class="ann-body">Every coin shows a 7-day mini chart instead of just a number. A rising line feels alive. Users can see their attention paying off in real time — not just a static count.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">Status line</div>
+      <div class="ann-title">Contextual coin state</div>
+      <div class="ann-body">"Earning now · focus mode on" — the coin tells you what it's doing right now. Not just a balance but a live status. The wallet feels like a dashboard, not a ledger.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">Activity feed</div>
+      <div class="ann-title">Every earn has a story</div>
+      <div class="ann-body">Activity items name the source — "Nike campaign", "Focus session", "Conversion". The user always knows why their balance changed. Opacity builds trust faster than any onboarding flow.</div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

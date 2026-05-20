@@ -1,0 +1,178 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.w { font-family: var(--font-sans); padding: 20px 0; }
+.lbl { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .08em; color: var(--color-text-tertiary); margin-bottom: 12px; }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+.side { border: 0.5px solid var(--color-border-tertiary); border-radius: 12px; padding: 16px; background: var(--color-background-secondary); }
+.side-hdr { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.side-sub { font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 14px; line-height: 1.5; }
+.flow-item { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; }
+.step-dot { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 500; flex-shrink: 0; margin-top: 1px; }
+.flow-text { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+.flow-text b { color: var(--color-text-primary); font-weight: 500; }
+
+.user-dot { background: #E1F5EE; color: #085041; }
+.creator-dot { background: #EEEDFE; color: #3C3489; }
+@media (prefers-color-scheme: dark) {
+  .user-dot { background: #085041; color: #9FE1CB; }
+  .creator-dot { background: #3C3489; color: #CECBF6; }
+}
+
+.bridge { border: 0.5px solid var(--color-border-secondary); border-radius: 12px; padding: 16px; background: var(--color-background-primary); margin-bottom: 24px; }
+.bridge-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.bridge-row:last-child { margin-bottom: 0; }
+.b-from { font-size: 12px; font-weight: 500; color: var(--color-text-primary); min-width: 72px; }
+.b-arrow { font-size: 11px; color: var(--color-text-tertiary); flex: 1; }
+.b-to { font-size: 12px; font-weight: 500; min-width: 72px; text-align: right; }
+.b-note { font-size: 10px; color: var(--color-text-tertiary); width: 100%; padding-left: 82px; margin-top: -4px; margin-bottom: 6px; line-height: 1.4; }
+.divider { height: 0.5px; background: var(--color-border-tertiary); margin: 10px 0; }
+
+.split-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 24px; }
+.split-card { border: 0.5px solid var(--color-border-tertiary); border-radius: 9px; padding: 12px; background: var(--color-background-secondary); cursor: pointer; transition: border-color .12s; }
+.split-card:hover { border-color: var(--color-border-primary); }
+.split-pct { font-size: 22px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 3px; }
+.split-who { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 2px; }
+.split-what { font-size: 10px; color: var(--color-text-tertiary); line-height: 1.4; }
+
+.tiers { border: 0.5px solid var(--color-border-tertiary); border-radius: 10px; overflow: hidden; margin-bottom: 24px; }
+.tier-row { display: grid; grid-template-columns: 100px 80px 80px 1fr; gap: 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.tier-row:last-child { border-bottom: none; }
+.tier-row.hdr { background: var(--color-background-secondary); }
+.tc { font-size: 11px; padding: 9px 12px; color: var(--color-text-secondary); border-right: 0.5px solid var(--color-border-tertiary); }
+.tc:last-child { border-right: none; }
+.tc.hdr { font-weight: 500; font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: var(--color-text-tertiary); }
+.tc b { color: var(--color-text-primary); font-weight: 500; }
+
+.sim-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+.sim-label { font-size: 12px; color: var(--color-text-secondary); min-width: 120px; }
+.sim-val { font-size: 14px; font-weight: 500; color: var(--color-text-primary); min-width: 48px; }
+.out-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.out-card { background: var(--color-background-secondary); border-radius: 8px; padding: 10px 12px; }
+.out-lbl { font-size: 10px; color: var(--color-text-tertiary); margin-bottom: 3px; }
+.out-num { font-size: 18px; font-weight: 500; color: var(--color-text-primary); }
+</style>
+
+<div class="w">
+
+<div class="lbl">Two sides of every content moment</div>
+<div class="two-col">
+  <div class="side">
+    <div class="side-hdr" style="color:#085041">User side</div>
+    <div class="side-sub">Every second of genuine attention generates value</div>
+    <div class="flow-item"><div class="step-dot user-dot">1</div><div class="flow-text"><b>Opens the app</b> — enters an attention session. Timer starts on verified dwell.</div></div>
+    <div class="flow-item"><div class="step-dot user-dot">2</div><div class="flow-text"><b>Watches content</b> — earns acoins per minute. Multipliers apply for focus, streaks, featured hours.</div></div>
+    <div class="flow-item"><div class="step-dot user-dot">3</div><div class="flow-text"><b>Engages actively</b> — tips, shares, comments. Each action burns a small amount of mcoins or bcoins back into the creator pool.</div></div>
+    <div class="flow-item"><div class="step-dot user-dot">4</div><div class="flow-text"><b>Converts earnings</b> — acoins → rcoins → icoins or mcoins via the reward pool.</div></div>
+    <div class="flow-item"><div class="step-dot user-dot">5</div><div class="flow-text"><b>Spends or withdraws</b> — mcoins fund more content; icoins can be withdrawn as real value.</div></div>
+  </div>
+  <div class="side">
+    <div class="side-hdr" style="color:#3C3489">Creator side</div>
+    <div class="side-sub">Attention on your content pays directly into your wallet</div>
+    <div class="flow-item"><div class="step-dot creator-dot">1</div><div class="flow-text"><b>Publishes content</b> — sets a content tier (free, premium, gated). Each tier affects earnings rate.</div></div>
+    <div class="flow-item"><div class="step-dot creator-dot">2</div><div class="flow-text"><b>Attention accrues</b> — every verified minute a user spends on your content mints creator-acoins into your wallet automatically.</div></div>
+    <div class="flow-item"><div class="step-dot creator-dot">3</div><div class="flow-text"><b>Tips received</b> — user bcoins and mcoins spent on engagement land directly in your pool with zero platform cut.</div></div>
+    <div class="flow-item"><div class="step-dot creator-dot">4</div><div class="flow-text"><b>Converts earnings</b> — same pool mechanics as users but with a creator multiplier based on audience quality, not just size.</div></div>
+    <div class="flow-item"><div class="step-dot creator-dot">5</div><div class="flow-text"><b>Grows reach</b> — higher earnings unlock promoted slots, discovery boosts, and collab features.</div></div>
+  </div>
+</div>
+
+<div class="lbl">Where the value splits at the moment of attention</div>
+<div class="split-grid">
+  <div class="split-card" onclick="sendPrompt('How does the creator share of attention work in the i app?')">
+    <div class="split-pct" style="color:#3C3489">60%</div>
+    <div class="split-who">Creator</div>
+    <div class="split-what">Direct to creator wallet for every verified minute watched</div>
+  </div>
+  <div class="split-card" onclick="sendPrompt('What does the platform do with its share of attention revenue?')">
+    <div class="split-pct" style="color:#085041">30%</div>
+    <div class="split-who">User</div>
+    <div class="split-what">Back to the watching user as acoins — the watching reward</div>
+  </div>
+  <div class="split-card" onclick="sendPrompt('How does the platform fee work in the i app economy?')">
+    <div class="split-pct" style="color:#888780">10%</div>
+    <div class="split-who">Platform</div>
+    <div class="split-what">[ i ] operating fee — funds the reward pool and infrastructure</div>
+  </div>
+</div>
+
+<div class="lbl">Creator tier system — earnings scale with audience quality</div>
+<div class="tiers">
+  <div class="tier-row hdr">
+    <div class="tc hdr">Tier</div>
+    <div class="tc hdr">Multiplier</div>
+    <div class="tc hdr">Unlocks at</div>
+    <div class="tc hdr">Extra benefits</div>
+  </div>
+  <div class="tier-row">
+    <div class="tc"><b>Newcomer</b></div>
+    <div class="tc">1×</div>
+    <div class="tc">0 followers</div>
+    <div class="tc">Basic analytics, standard pool rate</div>
+  </div>
+  <div class="tier-row">
+    <div class="tc"><b>Rising</b></div>
+    <div class="tc">1.3×</div>
+    <div class="tc">500 engaged</div>
+    <div class="tc">Discovery placement, collab requests</div>
+  </div>
+  <div class="tier-row">
+    <div class="tc"><b>Established</b></div>
+    <div class="tc">1.6×</div>
+    <div class="tc">5k engaged</div>
+    <div class="tc">Featured hours, brand deal access</div>
+  </div>
+  <div class="tier-row">
+    <div class="tc"><b>Signature</b></div>
+    <div class="tc">2×</div>
+    <div class="tc">25k engaged</div>
+    <div class="tc">Custom coin drops, white-glove support</div>
+  </div>
+</div>
+
+<div class="lbl">Earnings simulator — creator view</div>
+<div class="sim-row">
+  <span class="sim-label">Minutes watched / day</span>
+  <input type="range" min="100" max="50000" value="5000" step="100" id="mins" style="flex:1" oninput="sim()">
+  <span class="sim-val" id="mins-out">5,000</span>
+</div>
+<div class="sim-row">
+  <span class="sim-label">Creator tier</span>
+  <input type="range" min="1" max="4" value="2" step="1" id="ctier" style="flex:1" oninput="sim()">
+  <span class="sim-val" id="ctier-out">Rising</span>
+</div>
+<div class="sim-row">
+  <span class="sim-label">Avg tip rate</span>
+  <input type="range" min="0" max="20" value="5" step="1" id="tips" style="flex:1" oninput="sim()">
+  <span class="sim-val" id="tips-out">5%</span>
+</div>
+<div class="out-grid">
+  <div class="out-card"><div class="out-lbl">acoins / day</div><div class="out-num" id="s-ac">—</div></div>
+  <div class="out-card"><div class="out-lbl">icoins / day</div><div class="out-num" id="s-ic">—</div></div>
+  <div class="out-card"><div class="out-lbl">tip bonus</div><div class="out-num" id="s-tip">—</div></div>
+</div>
+
+</div>
+
+<script>
+const tierNames = ['Newcomer','Rising','Established','Signature'];
+const tierMult  = [1, 1.3, 1.6, 2.0];
+function sim() {
+  const mins  = parseInt(document.getElementById('mins').value);
+  const ct    = parseInt(document.getElementById('ctier').value);
+  const tipR  = parseInt(document.getElementById('tips').value);
+  document.getElementById('mins-out').textContent  = mins.toLocaleString();
+  document.getElementById('ctier-out').textContent = tierNames[ct-1];
+  document.getElementById('tips-out').textContent  = tipR + '%';
+  const base  = mins * 3;
+  const mult  = tierMult[ct-1];
+  const ac    = Math.round(base * mult * 0.6);
+  const ic    = Math.floor(ac / 100);
+  const tip   = Math.round(mins * (tipR / 100) * 5);
+  document.getElementById('s-ac').textContent  = ac.toLocaleString();
+  document.getElementById('s-ic').textContent  = ic.toLocaleString();
+  document.getElementById('s-tip').textContent = '+' + tip.toLocaleString();
+}
+sim();
+</script>

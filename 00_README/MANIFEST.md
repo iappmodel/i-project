@@ -1,0 +1,56 @@
+# Manifest
+
+- `00_README/CURSOR_BOOTSTRAP_PROMPT.md` — 1005 bytes — 40ab5e8f95268a98
+- `00_README/MIGRATION_PLAN.md` — 1579 bytes — e7eecb717a34c176
+- `00_README/PROJECT_TIMELINE_RECONSTRUCTED.md` — 905 bytes — 21358dd1f97f543f
+- `00_README/README_FIRST.md` — 1526 bytes — 2e55537fbecd4e01
+- `01_strategy_docs/i-app-masterplan.md` — 25287 bytes — ef1cb9101788a524
+- `02_clickable_prototypes/iapp_connect_platforms.html` — 19394 bytes — 45b542c74fb557ed
+- `02_clickable_prototypes/index4.html` — 60061 bytes — ad0eca5d1e3da9b5
+- `03_pitch_pages/i-creator-pitch_1.html` — 33885 bytes — 92288e8bfeafa440
+- `03_pitch_pages/i-user-pitch.html` — 36599 bytes — ab0af9dedafefc4d
+- `04_wallet_payments/iapp_conversion_confirmation (1).html` — 18101 bytes — e3cb6ee93d07f77d
+- `04_wallet_payments/iapp_convert_screen.html` — 11281 bytes — 871a655ae6fdaaac
+- `04_wallet_payments/iapp_pay_screen (1).html` — 20039 bytes — d181898998f3a8c5
+- `04_wallet_payments/iapp_payment_architecture.html` — 10307 bytes — 3165ee7bb8e21f84
+- `04_wallet_payments/iapp_payment_confirmation.html` — 10950 bytes — e0ea3f3eae17a751
+- `04_wallet_payments/iapp_tip_screen (1).html` — 14220 bytes — fc59f082db032f8f
+- `04_wallet_payments/iapp_wallet_dashboard.html` — 35222 bytes — e991a76f5196c4b4
+- `04_wallet_payments/iapp_wallet_ui (1).html` — 14834 bytes — 03f4fb6eb89b8272
+- `04_wallet_payments/iapp_withdraw_screen (1).html` — 15862 bytes — 7d3dcfca90ac6a4b
+- `04_wallet_payments/wallet_pending_tab.html` — 31312 bytes — 83a5ef3902125b48
+- `05_creator_campaigns/campaign_builder_owner.html` — 28702 bytes — bf450498e98a1436
+- `05_creator_campaigns/iapp_creator_economy.html` — 11075 bytes — f2059c914ce76159
+- `05_creator_campaigns/studio_video_editor.html` — 62478 bytes — 57f5ff24143c2801
+- `06_feed_earning_loops/click_and_earn_prototype.html` — 20503 bytes — a9ab4f712b1b8c46
+- `06_feed_earning_loops/iapp_feed_screen.html` — 26376 bytes — 5a3310f7e0c03e37
+- `06_feed_earning_loops/iapp_immersive_feed.html` — 36084 bytes — 33f4ae569d2a1f8d
+- `06_feed_earning_loops/iapp_loop1_watch_verify_earn.html` — 42245 bytes — c234af04185f32f5
+- `06_feed_earning_loops/iapp_three_loops.html` — 6920 bytes — b1e0e85ee7419d94
+- `07_currency_system/acoins_earning_system.html` — 7964 bytes — 3c63ba17140bab8d
+- `07_currency_system/alphabet-currency.html` — 57398 bytes — 71e04b0b07400bb6
+- `08_raw_originals/acoins_earning_system.html` — 7964 bytes — 3c63ba17140bab8d
+- `08_raw_originals/alphabet-currency.html` — 57398 bytes — 71e04b0b07400bb6
+- `08_raw_originals/campaign_builder_owner.html` — 28702 bytes — bf450498e98a1436
+- `08_raw_originals/click_and_earn_prototype.html` — 20503 bytes — a9ab4f712b1b8c46
+- `08_raw_originals/i-app-masterplan.md` — 25287 bytes — ef1cb9101788a524
+- `08_raw_originals/i-creator-pitch_1.html` — 33885 bytes — 92288e8bfeafa440
+- `08_raw_originals/i-user-pitch.html` — 36599 bytes — ab0af9dedafefc4d
+- `08_raw_originals/iapp_connect_platforms.html` — 19394 bytes — 45b542c74fb557ed
+- `08_raw_originals/iapp_conversion_confirmation (1).html` — 18101 bytes — e3cb6ee93d07f77d
+- `08_raw_originals/iapp_convert_screen.html` — 11281 bytes — 871a655ae6fdaaac
+- `08_raw_originals/iapp_creator_economy.html` — 11075 bytes — f2059c914ce76159
+- `08_raw_originals/iapp_feed_screen.html` — 26376 bytes — 5a3310f7e0c03e37
+- `08_raw_originals/iapp_immersive_feed.html` — 36084 bytes — 33f4ae569d2a1f8d
+- `08_raw_originals/iapp_loop1_watch_verify_earn.html` — 42245 bytes — c234af04185f32f5
+- `08_raw_originals/iapp_pay_screen (1).html` — 20039 bytes — d181898998f3a8c5
+- `08_raw_originals/iapp_payment_architecture.html` — 10307 bytes — 3165ee7bb8e21f84
+- `08_raw_originals/iapp_payment_confirmation.html` — 10950 bytes — e0ea3f3eae17a751
+- `08_raw_originals/iapp_three_loops.html` — 6920 bytes — b1e0e85ee7419d94
+- `08_raw_originals/iapp_tip_screen (1).html` — 14220 bytes — fc59f082db032f8f
+- `08_raw_originals/iapp_wallet_dashboard.html` — 35222 bytes — e991a76f5196c4b4
+- `08_raw_originals/iapp_wallet_ui (1).html` — 14834 bytes — 03f4fb6eb89b8272
+- `08_raw_originals/iapp_withdraw_screen (1).html` — 15862 bytes — 7d3dcfca90ac6a4b
+- `08_raw_originals/index4.html` — 60061 bytes — ad0eca5d1e3da9b5
+- `08_raw_originals/studio_video_editor.html` — 62478 bytes — 57f5ff24143c2801
+- `08_raw_originals/wallet_pending_tab.html` — 31312 bytes — 83a5ef3902125b48

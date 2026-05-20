@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] App — Pay Screen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-void:        #070709;
+    --bg-deep:        #0a0a0f;
+    --bg-surface:     #111118;
+    --bg-panel:       #16161f;
+    --bg-raised:      #1c1c28;
+    --border-subtle:  rgba(255,255,255,0.05);
+    --border-mid:     rgba(255,255,255,0.09);
+    --border-active:  rgba(255,255,255,0.18);
+    --text-primary:   #f0ede8;
+    --text-secondary: #9997a0;
+    --text-muted:     #4a4858;
+    --icoin-primary:  #4ade80;
+    --font-display:   'Syne', sans-serif;
+    --font-body:      'DM Sans', sans-serif;
+    --font-mono:      'JetBrains Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg-deep);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    font-family: var(--font-body);
+  }
+
+  .phone-wrap {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .app-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -.02em;
+    margin-bottom: 6px;
+  }
+
+  .app-sub {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+  }
+
+  .phone {
+    width: 340px;
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 44px;
+    overflow: hidden;
+    background: var(--bg-surface);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(255,255,255,0.04);
+  }
+
+  .notch {
+    width: 88px;
+    height: 24px;
+    margin: 0 auto;
+    background: var(--bg-surface);
+    border-radius: 0 0 16px 16px;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-top: none;
+  }
+
+  .screen {
+    padding: 24px 20px 32px;
+    min-height: 700px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .back-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 22px;
+    cursor: pointer;
+    opacity: .55;
+    transition: opacity .12s;
+  }
+  .back-row:hover { opacity: 1; }
+
+  .back-box {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: var(--bg-panel);
+    border: 0.5px solid var(--border-mid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  .back-lbl {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .screen-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+    letter-spacing: -.02em;
+  }
+
+  .screen-sub {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 22px;
+  }
+
+  /* Mode tabs */
+  .mode-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 10px 0;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 10px;
+    border: 0.5px solid var(--border-mid);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    text-align: center;
+    transition: all .15s;
+  }
+  .tab:hover { border-color: var(--border-active); color: var(--text-secondary); }
+  .tab.on { background: var(--text-primary); color: var(--bg-void); border-color: var(--text-primary); }
+
+  /* Amount section */
+  .amount-section { margin-bottom: 16px; }
+
+  .amt-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .amt-label {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-muted);
+    min-width: 64px;
+  }
+
+  .amt-input {
+    flex: 1;
+    background: var(--bg-panel);
+    border: 0.5px solid var(--border-mid);
+    border-radius: 10px;
+    padding: 9px 14px;
+    font-family: var(--font-mono);
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color .12s;
+    -moz-appearance: textfield;
+  }
+  .amt-input::-webkit-outer-spin-button,
+  .amt-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .amt-input:focus { border-color: var(--border-active); }
+
+  .amt-sym {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    min-width: 48px;
+  }
+
+  .coin-sel {
+    display: flex;
+    gap: 6px;
+  }
+
+  .cs {
+    flex: 1;
+    padding: 7px 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    border-radius: 8px;
+    border: 0.5px solid var(--border-mid);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    text-align: center;
+    transition: all .12s;
+  }
+  .cs:hover { border-color: var(--border-active); color: var(--text-secondary); }
+  .cs.on { background: var(--text-primary); color: var(--bg-void); border-color: var(--text-primary); }
+
+  /* NFC zone */
+  .nfc-zone {
+    background: var(--bg-panel);
+    border: 0.5px solid var(--border-mid);
+    border-radius: 16px;
+    padding: 32px 20px;
+    text-align: center;
+    margin-bottom: 14px;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+  }
+  .nfc-zone:hover { border-color: var(--border-active); }
+  .nfc-zone.ready { border-color: rgba(74,222,128,0.4); background: rgba(74,222,128,0.04); }
+
+  @keyframes nfc-pulse { 0%{transform:scale(1);opacity:.55} 100%{transform:scale(1.9);opacity:0} }
+
+  .nfc-ring-wrap {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-mid);
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: border-color .2s;
+  }
+  .nfc-zone.ready .nfc-ring-wrap { border-color: rgba(74,222,128,0.5); }
+
+  .nfc-pulse-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 1px solid var(--icoin-primary);
+    opacity: 0;
+  }
+  .nfc-zone.ready .nfc-pulse-ring { animation: nfc-pulse 1.5s ease-out infinite; }
+  .nfc-zone.ready .nfc-pulse-ring:nth-child(2) { animation-delay: .75s; }
+
+  .nfc-letter {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-muted);
+    transition: color .2s;
+    position: relative;
+    z-index: 1;
+  }
+  .nfc-zone.ready .nfc-letter { color: var(--icoin-primary); }
+
+  .nfc-label {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+    letter-spacing: -.01em;
+    transition: color .2s;
+  }
+  .nfc-zone.ready .nfc-label { color: var(--icoin-primary); }
+
+  .nfc-sub {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* QR zone */
+  .qr-zone {
+    background: var(--bg-panel);
+    border: 0.5px solid var(--border-mid);
+    border-radius: 16px;
+    padding: 24px 20px;
+    text-align: center;
+    margin-bottom: 14px;
+  }
+
+  .qr-box {
+    width: 130px;
+    height: 130px;
+    background: var(--text-primary);
+    border-radius: 10px;
+    margin: 0 auto 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+  }
+
+  .qr-label {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+
+  .qr-id {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* Link zone */
+  .link-zone {
+    background: var(--bg-panel);
+    border: 0.5px solid var(--border-mid);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 14px;
+  }
+
+  .link-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .link-display {
+    flex: 1;
+    background: var(--bg-raised);
+    border: 0.5px solid var(--border-subtle);
+    border-radius: 9px;
+    padding: 9px 14px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .link-copy-btn {
+    padding: 9px 16px;
+    border-radius: 9px;
+    border: 0.5px solid var(--border-mid);
+    background: transparent;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .12s;
+  }
+  .link-copy-btn:hover { background: var(--bg-raised); }
+
+  .link-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .link-opt {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 0.5px solid var(--border-subtle);
+    background: var(--bg-raised);
+    cursor: pointer;
+    transition: border-color .12s;
+  }
+  .link-opt:hover { border-color: var(--border-mid); }
+
+  .link-opt-name {
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+  }
+
+  .link-opt-sub {
+    font-family: var(--font-body);
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  /* Pay pill */
+  .pay-pill {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    background: var(--bg-panel);
+    border: 0.5px solid var(--border-subtle);
+    border-radius: 10px;
+    padding: 9px 13px;
+    margin-bottom: 16px;
+  }
+
+  .pp-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--icoin-primary);
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .pp-text {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* CTA */
+  .cta {
+    width: 100%;
+    padding: 15px;
+    border-radius: 14px;
+    background: var(--text-primary);
+    color: var(--bg-void);
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: opacity .12s;
+    margin-top: auto;
+    letter-spacing: -.01em;
+  }
+  .cta:hover { opacity: .88; }
+
+  /* Annotations */
+  .annotations {
+    max-width: 280px;
+    padding-top: 12px;
+  }
+
+  .ann { margin-bottom: 24px; }
+
+  .ann-tag {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 9px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin-bottom: 6px;
+    border: 0.5px solid var(--border-mid);
+    color: var(--text-muted);
+  }
+
+  .ann-title {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+  }
+
+  .ann-body {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-wrap">
+
+  <div>
+    <div class="app-title">[ i ]</div>
+    <div class="app-sub">Pay — In Person &amp; Online</div>
+
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen">
+
+        <div class="back-row">
+          <div class="back-box">←</div>
+          <div class="back-lbl">Wallet</div>
+        </div>
+
+        <div class="screen-title">Pay</div>
+        <div class="screen-sub">In person or anywhere online</div>
+
+        <div class="mode-tabs">
+          <div class="tab on" id="tab-nfc"  onclick="setMode('nfc')">Tap to pay</div>
+          <div class="tab"    id="tab-qr"   onclick="setMode('qr')">QR code</div>
+          <div class="tab"    id="tab-link" onclick="setMode('link')">Pay link</div>
+        </div>
+
+        <div class="amount-section">
+          <div class="amt-row">
+            <span class="amt-label">Amount</span>
+            <input class="amt-input" id="pay-amt" type="number" value="5" min="1" oninput="payCalc()">
+            <span class="amt-sym" id="pay-sym">icoins</span>
+          </div>
+          <div class="coin-sel">
+            <div class="cs on" onclick="payCoin('icoins',this)">icoins</div>
+            <div class="cs"    onclick="payCoin('mcoins',this)">mcoins</div>
+            <div class="cs"    onclick="payCoin('bcoins',this)">bcoins</div>
+          </div>
+        </div>
+
+        <!-- NFC mode -->
+        <div id="mode-nfc">
+          <div class="nfc-zone" id="nfc-z" onclick="toggleNFC()">
+            <div class="nfc-ring-wrap">
+              <div class="nfc-pulse-ring"></div>
+              <div class="nfc-pulse-ring"></div>
+              <div class="nfc-letter">N</div>
+            </div>
+            <div class="nfc-label" id="nfc-lbl">Hold near terminal to pay</div>
+            <div class="nfc-sub"   id="nfc-sub">Tap to activate · works with any [ i ] terminal</div>
+          </div>
+        </div>
+
+        <!-- QR mode -->
+        <div id="mode-qr" style="display:none">
+          <div class="qr-zone">
+            <div class="qr-box">
+              <svg width="110" height="110" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+                <!-- Top-left finder -->
+                <rect x="5"  y="5"  width="38" height="38" rx="4" fill="none" stroke="#070709" stroke-width="3"/>
+                <rect x="14" y="14" width="20" height="20" fill="#070709"/>
+                <!-- Top-right finder -->
+                <rect x="67" y="5"  width="38" height="38" rx="4" fill="none" stroke="#070709" stroke-width="3"/>
+                <rect x="76" y="14" width="20" height="20" fill="#070709"/>
+                <!-- Bottom-left finder -->
+                <rect x="5"  y="67" width="38" height="38" rx="4" fill="none" stroke="#070709" stroke-width="3"/>
+                <rect x="14" y="76" width="20" height="20" fill="#070709"/>
+                <!-- Data dots -->
+                <rect x="67" y="67" width="9" height="9" fill="#070709"/>
+                <rect x="80" y="67" width="9" height="9" fill="#070709"/>
+                <rect x="93" y="67" width="9" height="9" fill="#070709"/>
+                <rect x="67" y="80" width="9" height="9" fill="#070709"/>
+                <rect x="93" y="80" width="9" height="9" fill="#070709"/>
+                <rect x="67" y="93" width="9" height="9" fill="#070709"/>
+                <rect x="80" y="93" width="22" height="9" fill="#070709"/>
+              </svg>
+            </div>
+            <div class="qr-label">Scan to pay — expires in 5 min</div>
+            <div class="qr-id" id="qr-id">[ i ] · alex · 5 icoins</div>
+          </div>
+        </div>
+
+        <!-- Link mode -->
+        <div id="mode-link" style="display:none">
+          <div class="link-zone">
+            <div class="link-row">
+              <div class="link-display" id="link-url">iapp.pay/alex/5i</div>
+              <button class="link-copy-btn" onclick="copyLink()">Copy</button>
+            </div>
+            <div class="link-options">
+              <div class="link-opt">
+                <div class="link-opt-name">Message</div>
+                <div class="link-opt-sub">iMessage, WhatsApp</div>
+              </div>
+              <div class="link-opt">
+                <div class="link-opt-name">Email</div>
+                <div class="link-opt-sub">Any email client</div>
+              </div>
+              <div class="link-opt">
+                <div class="link-opt-name">Social</div>
+                <div class="link-opt-sub">Post, story, bio</div>
+              </div>
+              <div class="link-opt">
+                <div class="link-opt-name">Embed</div>
+                <div class="link-opt-sub">Website button</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pay-pill">
+          <div class="pp-dot"></div>
+          <div class="pp-text" id="pay-pill">Payment protected · confirmed on both sides before coins move</div>
+        </div>
+
+        <button class="cta" id="pay-cta" onclick="handleCTA()">Activate &amp; pay</button>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="annotations">
+    <div class="ann">
+      <div class="ann-tag">Tap to pay</div>
+      <div class="ann-title">NFC — same gesture as Apple Pay</div>
+      <div class="ann-body">In-person payments use NFC. The user sets an amount, taps activate, holds to the terminal. Any merchant with a [ i ] terminal or app accepts it. The gesture is already muscle memory from contactless cards — zero re-learning required.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">QR code</div>
+      <div class="ann-title">Offline-capable, expires in 5 min</div>
+      <div class="ann-body">QR codes work without merchant infrastructure — a street vendor, a market stall, a friend splitting dinner. Each code is single-use and time-limited. The 5-minute expiry prevents replay attacks without adding friction to honest payments.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">Pay link</div>
+      <div class="ann-title">The virtual payment primitive</div>
+      <div class="ann-body">A URL that pays. Shareable anywhere — messages, emails, social bios, website buttons. A creator puts iapp.pay/maya/10i in their Instagram bio and fans pay directly. This is the viral growth vector for merchant adoption.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">Coin choice</div>
+      <div class="ann-title">icoins for real purchases, mcoins for content</div>
+      <div class="ann-body">Merchants price in icoins — the cash-equivalent. mcoins work peer-to-peer within the ecosystem. bcoins for splits and micro-purchases. The coin type the payer chooses converts automatically to what the receiver holds.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let payMode = 'nfc';
+  let payCoinType = 'icoins';
+  let nfcActive = false;
+
+  function setMode(m) {
+    payMode = m;
+    ['nfc','qr','link'].forEach(x => {
+      document.getElementById('tab-' + x).classList.toggle('on', x === m);
+      document.getElementById('mode-' + x).style.display = x === m ? 'block' : 'none';
+    });
+    const cta = document.getElementById('pay-cta');
+    if (m === 'nfc')  cta.textContent = nfcActive ? 'Ready — hold to terminal' : 'Activate & pay';
+    if (m === 'qr')   cta.textContent = 'Regenerate QR';
+    if (m === 'link') cta.textContent = 'Generate new link';
+    payCalc();
+  }
+
+  function payCoin(c, el) {
+    payCoinType = c;
+    document.getElementById('pay-sym').textContent = c;
+    document.querySelectorAll('.cs').forEach(b => b.classList.remove('on'));
+    el.classList.add('on');
+    payCalc();
+  }
+
+  function toggleNFC() {
+    nfcActive = !nfcActive;
+    const z   = document.getElementById('nfc-z');
+    const lbl = document.getElementById('nfc-lbl');
+    const sub = document.getElementById('nfc-sub');
+    const cta = document.getElementById('pay-cta');
+    z.classList.toggle('ready', nfcActive);
+    lbl.textContent = nfcActive ? 'Ready — hold near terminal' : 'Hold near terminal to pay';
+    sub.textContent = nfcActive ? 'Listening for terminal…' : 'Tap to activate · works with any [ i ] terminal';
+    cta.textContent = nfcActive ? 'Ready — hold to terminal' : 'Activate & pay';
+  }
+
+  function handleCTA() {
+    if (payMode === 'nfc') toggleNFC();
+  }
+
+  function copyLink() {
+    const url = document.getElementById('link-url').textContent;
+    navigator.clipboard?.writeText(url).catch(() => {});
+    const btn = document.querySelector('.link-copy-btn');
+    btn.textContent = 'Copied';
+    setTimeout(() => btn.textContent = 'Copy', 1800);
+  }
+
+  function payCalc() {
+    const amt = parseInt(document.getElementById('pay-amt').value) || 0;
+    document.getElementById('pay-pill').textContent =
+      `Sending ${amt} ${payCoinType} · confirmed on both sides before coins move`;
+    document.getElementById('qr-id').textContent =
+      `[ i ] · alex · ${amt} ${payCoinType}`;
+    document.getElementById('link-url').textContent =
+      `iapp.pay/alex/${amt}${payCoinType.charAt(0)}`;
+  }
+
+  payCalc();
+</script>
+
+</body>
+</html>

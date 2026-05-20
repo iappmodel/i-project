@@ -1,0 +1,198 @@
+
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+.w { font-family:var(--font-sans); padding:20px 0; }
+.phone-wrap { display:flex; gap:24px; align-items:flex-start; flex-wrap:wrap; }
+.phone { width:300px; flex-shrink:0; border:1.5px solid var(--color-border-secondary); border-radius:38px; overflow:hidden; background:var(--color-background-primary); }
+.notch { width:80px; height:22px; margin:0 auto; background:var(--color-background-primary); border-radius:0 0 14px 14px; border:1.5px solid var(--color-border-secondary); border-top:none; }
+.screen { padding:22px 18px 28px; min-height:580px; display:flex; flex-direction:column; }
+
+.back-row { display:flex; align-items:center; gap:6px; margin-bottom:20px; cursor:pointer; }
+.back-arrow { width:18px; height:18px; border-radius:5px; background:var(--color-background-secondary); display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--color-text-secondary); }
+.back-lbl { font-size:12px; color:var(--color-text-secondary); }
+
+.screen-title { font-size:18px; font-weight:500; color:var(--color-text-primary); margin-bottom:4px; }
+.screen-sub { font-size:12px; color:var(--color-text-tertiary); margin-bottom:24px; }
+
+.from-card { border:0.5px solid var(--color-border-secondary); border-radius:12px; padding:14px; background:var(--color-background-secondary); margin-bottom:8px; }
+.fc-label { font-size:10px; color:var(--color-text-tertiary); margin-bottom:8px; }
+.fc-row { display:flex; align-items:center; gap:10px; }
+.fc-coin { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:500; flex-shrink:0; }
+.fc-name { font-size:13px; font-weight:500; color:var(--color-text-primary); flex:1; }
+.fc-bal { font-size:11px; color:var(--color-text-tertiary); text-align:right; }
+
+.amount-row { display:flex; align-items:baseline; gap:6px; margin:12px 0 4px; }
+.amount-input { font-size:32px; font-weight:500; color:var(--color-text-primary); background:transparent; border:none; outline:none; width:140px; }
+.amount-sym { font-size:14px; color:var(--color-text-tertiary); }
+
+.pct-row { display:flex; gap:6px; margin-bottom:4px; }
+.pct-btn { flex:1; padding:5px 0; font-size:10px; font-weight:500; border-radius:6px; border:0.5px solid var(--color-border-secondary); background:transparent; color:var(--color-text-secondary); cursor:pointer; text-align:center; transition:all .12s; }
+.pct-btn:hover, .pct-btn.active { background:var(--color-text-primary); color:var(--color-background-primary); border-color:var(--color-text-primary); }
+
+.swap-btn { width:32px; height:32px; border-radius:50%; border:0.5px solid var(--color-border-secondary); background:var(--color-background-primary); display:flex; align-items:center; justify-content:center; margin:0 auto; font-size:14px; cursor:pointer; color:var(--color-text-secondary); transition:transform .2s; }
+.swap-btn:hover { transform:rotate(180deg); }
+
+.to-card { border:0.5px solid var(--color-border-secondary); border-radius:12px; padding:14px; background:var(--color-background-secondary); margin-bottom:16px; }
+
+.breakdown { border:0.5px solid var(--color-border-tertiary); border-radius:10px; overflow:hidden; margin-bottom:16px; }
+.bk-row { display:flex; justify-content:space-between; padding:8px 12px; border-bottom:0.5px solid var(--color-border-tertiary); }
+.bk-row:last-child { border-bottom:none; }
+.bk-label { font-size:11px; color:var(--color-text-secondary); }
+.bk-val { font-size:11px; font-weight:500; color:var(--color-text-primary); }
+.bk-row.total .bk-label { font-weight:500; color:var(--color-text-primary); }
+.bk-row.total .bk-val { font-size:13px; color:#1D9E75; }
+
+.confirm-btn { width:100%; padding:13px; border-radius:12px; background:var(--color-text-primary); color:var(--color-background-primary); font-size:13px; font-weight:500; border:none; cursor:pointer; transition:opacity .12s; margin-top:auto; }
+.confirm-btn:hover { opacity:.85; }
+.confirm-btn:disabled { opacity:.35; cursor:not-allowed; }
+
+.trust-pill { display:flex; align-items:center; gap:6px; background:var(--color-background-secondary); border-radius:8px; padding:6px 10px; margin-bottom:16px; }
+.trust-dot { width:6px; height:6px; border-radius:50%; background:#1D9E75; flex-shrink:0; }
+.trust-text { font-size:10px; color:var(--color-text-secondary); }
+
+.annotations { flex:1; min-width:220px; padding-top:8px; }
+.ann { margin-bottom:22px; }
+.ann-tag { display:inline-block; font-size:9px; font-weight:500; padding:2px 7px; border-radius:10px; margin-bottom:5px; }
+.ann-title { font-size:12px; font-weight:500; color:var(--color-text-primary); margin-bottom:4px; }
+.ann-body { font-size:11px; color:var(--color-text-secondary); line-height:1.6; }
+</style>
+
+<div class="w">
+<div class="phone-wrap">
+
+<div class="phone">
+  <div class="notch"></div>
+  <div class="screen">
+
+    <div class="back-row" onclick="sendPrompt('Go back to the wallet screen in the i app')">
+      <div class="back-arrow">←</div>
+      <div class="back-lbl">Wallet</div>
+    </div>
+
+    <div class="screen-title">Convert</div>
+    <div class="screen-sub">Your trust tier: <span style="color:var(--color-text-primary);font-weight:500">Tier 2</span> · 1.15× multiplier active</div>
+
+    <div class="from-card">
+      <div class="fc-label">FROM</div>
+      <div class="fc-row">
+        <div class="fc-coin" style="background:#E1F5EE;color:#085041">a</div>
+        <div class="fc-name">acoins</div>
+        <div class="fc-bal">1,240 available</div>
+      </div>
+      <div class="amount-row">
+        <input class="amount-input" id="amt-in" type="number" value="500" min="1" max="1240" oninput="calc()">
+        <span class="amount-sym">acoins</span>
+      </div>
+      <div class="pct-row">
+        <div class="pct-btn" onclick="setPct(25)">25%</div>
+        <div class="pct-btn" onclick="setPct(50)">50%</div>
+        <div class="pct-btn" onclick="setPct(75)">75%</div>
+        <div class="pct-btn" onclick="setPct(100)" id="max-btn">Max</div>
+      </div>
+    </div>
+
+    <div class="swap-btn" onclick="sendPrompt('What other conversion directions are available in the i app?')">⇅</div>
+
+    <div class="to-card">
+      <div class="fc-label">TO</div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;" id="to-selector">
+        <div class="pct-btn active" style="font-size:11px;padding:6px 0;" onclick="setTo('icoins','#FAECE7','#712B13','i')">icoins</div>
+        <div class="pct-btn" style="font-size:11px;padding:6px 0;" onclick="setTo('mcoins','#E6F1FB','#0C447C','m')">mcoins</div>
+        <div class="pct-btn" style="font-size:11px;padding:6px 0;" onclick="setTo('ucoins','#F1EFE8','#444441','u')">ucoins</div>
+      </div>
+      <div class="fc-row">
+        <div class="fc-coin" id="to-icon" style="background:#FAECE7;color:#712B13">i</div>
+        <div class="fc-name" id="to-name">icoins</div>
+        <div class="fc-bal" id="to-receive" style="color:#1D9E75;font-weight:500">— receiving</div>
+      </div>
+    </div>
+
+    <div class="breakdown" id="breakdown"></div>
+
+    <div class="trust-pill">
+      <div class="trust-dot"></div>
+      <div class="trust-text">Tier 2 bonus: +15% on pool clearing · next tier at 90-day milestone</div>
+    </div>
+
+    <button class="confirm-btn" id="confirm-btn" onclick="sendPrompt('Confirm this coin conversion in the i app')">Confirm conversion</button>
+
+  </div>
+</div>
+
+<div class="annotations">
+  <div class="ann">
+    <div class="ann-tag" style="background:#E1F5EE;color:#085041">From card</div>
+    <div class="ann-title">Percentage shortcuts kill friction</div>
+    <div class="ann-body">25 / 50 / 75 / Max means users never need to type a number. Max is the most common action — one tap. The input is there for precision, not for default use.</div>
+  </div>
+  <div class="ann">
+    <div class="ann-tag" style="background:#FAECE7;color:#712B13">To selector</div>
+    <div class="ann-title">Three destinations, always visible</div>
+    <div class="ann-body">icoins, mcoins, ucoins — the three conversion targets are always shown together so users can see the rate difference and make an informed choice without navigating away.</div>
+  </div>
+  <div class="ann">
+    <div class="ann-tag" style="background:#EEEDFE;color:#3C3489">Breakdown</div>
+    <div class="ann-title">Show every number before confirm</div>
+    <div class="ann-body">Pool fee, trust multiplier, and final receive amount are all shown before the user taps confirm. No surprises. The moment of clarity before commitment is where trust is built.</div>
+  </div>
+  <div class="ann">
+    <div class="ann-tag" style="background:#E6F1FB;color:#0C447C">Trust pill</div>
+    <div class="ann-title">Tier progress is always in view</div>
+    <div class="ann-body">The trust pill reminds the user what their tier is doing for them right now — and what the next milestone unlocks. Progress is motivating only when it's visible.</div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<script>
+const rates = { icoins: 100, mcoins: 60, ucoins: 50 };
+const tierMult = 1.15;
+const fee = 0.05;
+let toType = 'icoins';
+let toBg = '#FAECE7'; let toColor = '#712B13'; let toSym = 'i';
+
+function setTo(type, bg, col, sym) {
+  toType = type; toBg = bg; toColor = col; toSym = sym;
+  document.getElementById('to-icon').style.background = bg;
+  document.getElementById('to-icon').style.color = col;
+  document.getElementById('to-icon').textContent = sym;
+  document.getElementById('to-name').textContent = type;
+  document.querySelectorAll('#to-selector .pct-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  calc();
+}
+
+function setPct(pct) {
+  const max = 1240;
+  document.getElementById('amt-in').value = Math.floor(max * pct / 100);
+  document.querySelectorAll('.pct-row .pct-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  calc();
+}
+
+function calc() {
+  const amt = parseInt(document.getElementById('amt-in').value) || 0;
+  const pooled = Math.round(amt * tierMult);
+  const feeAmt = Math.round(pooled * fee);
+  const net = pooled - feeAmt;
+  const received = Math.floor(net / rates[toType]);
+  document.getElementById('to-receive').textContent = received.toLocaleString() + ' ' + toType;
+
+  const cheaper = toType !== 'icoins'
+    ? `<div class="bk-row"><div class="bk-label">In-app discount</div><div class="bk-val" style="color:#1D9E75">-${Math.round((1 - rates[toType]/100)*100)}% vs cash rate</div></div>`
+    : '';
+
+  document.getElementById('breakdown').innerHTML = `
+    <div class="bk-row"><div class="bk-label">You send</div><div class="bk-val">${amt.toLocaleString()} acoins</div></div>
+    <div class="bk-row"><div class="bk-label">Tier 2 multiplier (1.15×)</div><div class="bk-val" style="color:#1D9E75">+${(pooled - amt).toLocaleString()} rcoins</div></div>
+    <div class="bk-row"><div class="bk-label">Pool fee (5%)</div><div class="bk-val" style="color:var(--color-text-tertiary)">−${feeAmt.toLocaleString()} rcoins</div></div>
+    ${cheaper}
+    <div class="bk-row total"><div class="bk-label">You receive</div><div class="bk-val">${received.toLocaleString()} ${toType}</div></div>
+  `;
+
+  document.getElementById('confirm-btn').disabled = amt <= 0 || amt > 1240;
+}
+
+calc();
+</script>

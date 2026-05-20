@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] App — Immersive Feed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-void:       #070709;
+    --bg-deep:       #0a0a0f;
+    --bg-surface:    #111118;
+    --bg-panel:      #16161f;
+    --text-primary:  #f0ede8;
+    --text-secondary:#9997a0;
+    --text-muted:    #4a4858;
+    --icoin-primary: #4ade80;
+    --accent-cyan:   #00e5ff;
+    --accent-lime:   #b4ff47;
+    --font-display:  'Syne', sans-serif;
+    --font-body:     'DM Sans', sans-serif;
+    --font-mono:     'JetBrains Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg-deep);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 20px;
+    font-family: var(--font-body);
+  }
+
+  .outer {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 1100px;
+    width: 100%;
+  }
+
+  .left-col { display: flex; flex-direction: column; gap: 0; align-items: center; }
+
+  .page-label {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -.02em;
+    margin-bottom: 6px;
+    align-self: flex-start;
+  }
+
+  .page-sub {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+    align-self: flex-start;
+  }
+
+  /* ── State switcher ── */
+  .state-switcher {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+    align-self: flex-start;
+  }
+
+  .state-btn {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 0.5px solid rgba(255,255,255,0.09);
+    background: transparent;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(240,237,232,0.4);
+    cursor: pointer;
+    transition: all .15s;
+  }
+
+  .state-btn.active {
+    background: var(--text-primary);
+    color: var(--bg-void);
+    border-color: var(--text-primary);
+  }
+
+  /* ── Phone ── */
+  .phone {
+    width: 320px;
+    height: 680px;
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 44px;
+    overflow: hidden;
+    background: #000;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.7), 0 0 0 0.5px rgba(255,255,255,0.04);
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .notch {
+    width: 88px;
+    height: 24px;
+    margin: 0 auto;
+    background: #000;
+    border-radius: 0 0 16px 16px;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-top: none;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+  }
+
+  /* ── Full-bleed video background ── */
+  .video-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    transition: background .5s;
+  }
+
+  /* scrim — always present, subtle */
+  .scrim-top {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 140px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%);
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .scrim-bottom {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 260px;
+    background: linear-gradient(to top, rgba(0,0,0,0.80) 0%, rgba(0,0,0,0.3) 60%, transparent 100%);
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  /* ── PERSISTENT LAYER — always visible ── */
+  .persistent {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  /* Wallet chip — top left */
+  .wallet-chip {
+    position: absolute;
+    top: 36px;
+    left: 18px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(7,7,9,0.5);
+    border: 0.5px solid rgba(74,222,128,0.3);
+    border-radius: 20px;
+    padding: 5px 10px;
+    pointer-events: all;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: background .15s;
+  }
+
+  .wallet-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--icoin-primary);
+  }
+
+  @keyframes wallet-pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+  .wallet-dot.earning { animation: wallet-pulse 1.4s ease-in-out infinite; }
+
+  .wallet-val {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--icoin-primary);
+  }
+
+  /* Mute — top right */
+  .mute-btn {
+    position: absolute;
+    top: 36px;
+    right: 18px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(7,7,9,0.5);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: all;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: background .12s;
+  }
+
+  /* Reward badge — sponsored only, top center */
+  .reward-badge {
+    position: absolute;
+    top: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(7,7,9,0.55);
+    border: 0.5px solid rgba(74,222,128,0.35);
+    border-radius: 20px;
+    padding: 5px 11px;
+    pointer-events: none;
+    backdrop-filter: blur(8px);
+    opacity: 0;
+    transition: opacity .3s;
+  }
+
+  .reward-badge.visible { opacity: 1; }
+
+  .reward-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--icoin-primary);
+  }
+
+  .reward-val {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--icoin-primary);
+  }
+
+  /* Creator strip — bottom left */
+  .creator-strip {
+    position: absolute;
+    bottom: 96px;
+    left: 18px;
+    right: 72px;
+    pointer-events: all;
+    cursor: pointer;
+  }
+
+  .creator-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .creator-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(240,237,232,0.9);
+    flex-shrink: 0;
+  }
+
+  .creator-name {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -.01em;
+  }
+
+  .creator-handle {
+    font-family: var(--font-body);
+    font-size: 10px;
+    color: rgba(255,255,255,0.5);
+    margin-top: 1px;
+  }
+
+  .platform-tag {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 6px;
+    color: rgba(240,237,232,0.6);
+    background: rgba(240,237,232,0.08);
+    align-self: flex-start;
+  }
+
+  /* Caption */
+  .caption {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: rgba(240,237,232,0.75);
+    line-height: 1.5;
+    max-lines: 2;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  /* Action cluster — bottom right */
+  .action-cluster {
+    position: absolute;
+    bottom: 90px;
+    right: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    pointer-events: all;
+  }
+
+  .action-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+  }
+
+  .action-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(7,7,9,0.45);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    transition: background .12s, transform .1s;
+    font-size: 16px;
+  }
+
+  .action-icon:active { transform: scale(.9); }
+  .action-icon.liked { background: rgba(255,77,109,0.25); border-color: rgba(255,77,109,0.4); }
+  .action-icon.saved { background: rgba(0,229,255,0.15); border-color: rgba(0,229,255,0.3); }
+
+  .action-count {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: rgba(240,237,232,0.55);
+  }
+
+  /* Sponsored progress bar — bottom, thin line */
+  .sponsored-bar {
+    position: absolute;
+    bottom: 72px;
+    left: 18px;
+    right: 18px;
+    height: 2px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 1px;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity .3s;
+  }
+
+  .sponsored-bar.visible { opacity: 1; }
+
+  .sponsored-fill {
+    height: 100%;
+    border-radius: 1px;
+    background: linear-gradient(90deg, var(--accent-lime), var(--icoin-primary));
+    width: 0%;
+    transition: width .3s;
+  }
+
+  /* Details handle */
+  .details-handle {
+    position: absolute;
+    bottom: 54px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    background: rgba(240,237,232,0.07);
+    border: 0.5px solid rgba(240,237,232,0.1);
+    cursor: pointer;
+    pointer-events: all;
+    backdrop-filter: blur(4px);
+    transition: background .12s;
+  }
+
+  .handle-nub {
+    width: 24px;
+    height: 2px;
+    border-radius: 1px;
+    background: rgba(240,237,232,0.25);
+  }
+
+  .handle-label {
+    font-family: var(--font-body);
+    font-size: 10px;
+    color: rgba(240,237,232,0.4);
+  }
+
+  /* ── REVEALED LAYER — tap to show ── */
+  .revealed {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .2s;
+  }
+
+  .revealed.visible { opacity: 1; pointer-events: all; }
+
+  /* Tap-dismiss area */
+  .dismiss-area {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+  }
+
+  /* Revealed top: platform source + tracking indicator */
+  .revealed-top {
+    position: absolute;
+    top: 36px;
+    left: 18px;
+    right: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .platform-source {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(7,7,9,0.6);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 6px 12px;
+    backdrop-filter: blur(10px);
+  }
+
+  .platform-logo {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .platform-source-name {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: rgba(240,237,232,0.7);
+  }
+
+  .tracking-pill {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(7,7,9,0.6);
+    border: 0.5px solid rgba(0,229,255,0.25);
+    border-radius: 10px;
+    padding: 6px 12px;
+    backdrop-filter: blur(10px);
+  }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  .tracking-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent-cyan);
+    animation: blink 1.4s ease-in-out infinite;
+  }
+
+  .tracking-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--accent-cyan);
+  }
+
+  /* Revealed center: pause state */
+  .play-state {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(240,237,232,0.12);
+    border: 1.5px solid rgba(240,237,232,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    cursor: pointer;
+    transition: background .12s, transform .1s;
+    pointer-events: all;
+  }
+
+  .play-state:active { transform: translate(-50%,-50%) scale(.9); }
+
+  .play-icon {
+    width: 0;
+    height: 0;
+    border-top: 9px solid transparent;
+    border-bottom: 9px solid transparent;
+    border-left: 16px solid rgba(240,237,232,0.9);
+    margin-left: 3px;
+  }
+
+  .pause-icon {
+    display: flex;
+    gap: 4px;
+  }
+
+  .pause-bar {
+    width: 4px;
+    height: 18px;
+    border-radius: 2px;
+    background: rgba(240,237,232,0.9);
+  }
+
+  /* Revealed bottom: full caption + earn detail */
+  .revealed-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(7,7,9,0.92) 0%, rgba(7,7,9,0.6) 70%, transparent 100%);
+    padding: 40px 18px 80px;
+    pointer-events: all;
+  }
+
+  .full-caption {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: rgba(240,237,232,0.85);
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+
+  .earn-detail {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(74,222,128,0.07);
+    border: 0.5px solid rgba(74,222,128,0.2);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+  }
+
+  .ed-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(74,222,128,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--icoin-primary);
+    flex-shrink: 0;
+  }
+
+  .ed-info { flex: 1; }
+
+  .ed-label {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-bottom: 1px;
+  }
+
+  .ed-val {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--icoin-primary);
+  }
+
+  .ed-time {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  /* Tab bar */
+  .tab-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: rgba(7,7,9,0.85);
+    border-top: 0.5px solid rgba(255,255,255,0.06);
+    display: flex;
+    z-index: 5;
+    backdrop-filter: blur(16px);
+  }
+
+  .tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    cursor: pointer;
+    padding-bottom: 8px;
+  }
+
+  .tab-icon {
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tab-label {
+    font-family: var(--font-body);
+    font-size: 9px;
+    color: rgba(240,237,232,0.3);
+  }
+
+  .tab.active .tab-label { color: rgba(240,237,232,0.9); }
+
+  .tab-pip {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--icoin-primary);
+    margin-top: 2px;
+    opacity: 0;
+  }
+
+  .tab.active .tab-pip { opacity: 1; }
+
+  /* ── Right panel: layer map ── */
+  .right-col {
+    flex: 1;
+    min-width: 260px;
+    max-width: 360px;
+    padding-top: 80px;
+  }
+
+  .layer-section { margin-bottom: 28px; }
+
+  .layer-title {
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  .layer-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 10px 14px;
+    border: 0.5px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    background: rgba(22,22,31,0.5);
+    margin-bottom: 6px;
+  }
+
+  .layer-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+
+  .layer-body { flex: 1; }
+
+  .layer-name {
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+  }
+
+  .layer-desc {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  .layer-rule {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--text-muted);
+    margin-top: 3px;
+  }
+
+  .divider {
+    height: 0.5px;
+    background: rgba(255,255,255,0.05);
+    margin: 20px 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="outer">
+<div class="left-col">
+
+  <div class="page-label">[ i ]</div>
+  <div class="page-sub">Immersive feed — interaction model</div>
+
+  <div class="state-switcher">
+    <div class="state-btn active" onclick="setState('organic', this)">Organic content</div>
+    <div class="state-btn" onclick="setState('sponsored', this)">Sponsored · earning</div>
+    <div class="state-btn" onclick="setState('revealed', this)">Tap revealed</div>
+  </div>
+
+  <div class="phone" id="phone" onclick="handlePhoneTap(event)">
+    <div class="notch"></div>
+
+    <!-- Video background -->
+    <div class="video-bg" id="video-bg" style="background:linear-gradient(160deg,#0d0820 0%,#0a1a1a 40%,#0d1505 100%)"></div>
+
+    <!-- Scrims -->
+    <div class="scrim-top"></div>
+    <div class="scrim-bottom"></div>
+
+    <!-- ── PERSISTENT LAYER ── -->
+    <div class="persistent">
+
+      <!-- Wallet chip -->
+      <div class="wallet-chip" onclick="event.stopPropagation()">
+        <div class="wallet-dot" id="wallet-dot"></div>
+        <div class="wallet-val" id="wallet-val">847</div>
+      </div>
+
+      <!-- Mute -->
+      <div class="mute-btn" id="mute-btn" onclick="toggleMute(event)">
+        <svg id="mute-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M2 5h2.5l3.5-3v10L4.5 9H2V5z" fill="rgba(240,237,232,0.8)"/>
+          <path d="M10 4.5a3.5 3.5 0 010 5" stroke="rgba(240,237,232,0.8)" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M11.5 3a5.5 5.5 0 010 8" stroke="rgba(240,237,232,0.5)" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <!-- Reward badge (sponsored only) -->
+      <div class="reward-badge" id="reward-badge">
+        <div class="reward-dot"></div>
+        <div class="reward-val">+2.00 icoins</div>
+      </div>
+
+      <!-- Creator strip -->
+      <div class="creator-strip" onclick="event.stopPropagation()">
+        <div class="creator-row">
+          <div class="creator-avatar" id="creator-avatar" style="background:rgba(180,255,71,0.08)">MK</div>
+          <div>
+            <div class="creator-name" id="creator-name">Maya Kato</div>
+            <div class="creator-handle" id="creator-handle">@mayakato</div>
+          </div>
+          <div class="platform-tag" id="platform-tag">Instagram</div>
+        </div>
+        <div class="caption" id="caption">New collection dropping this weekend — DM for early access before the public drop ✨</div>
+      </div>
+
+      <!-- Action cluster -->
+      <div class="action-cluster" onclick="event.stopPropagation()">
+        <div class="action-item" onclick="toggleLike(this)">
+          <div class="action-icon" id="like-icon">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M9 15s-6-4.5-6-8.5a4 4 0 018 0 4 4 0 018 0c0 4-6 8.5-6 8.5z" stroke="rgba(240,237,232,0.8)" stroke-width="1.3" fill="none" id="heart-path"/>
+            </svg>
+          </div>
+          <div class="action-count" id="like-count">9.1k</div>
+        </div>
+        <div class="action-item" onclick="toggleSave(this)">
+          <div class="action-icon" id="save-icon">
+            <svg width="16" height="18" viewBox="0 0 16 18" fill="none">
+              <path d="M2 2h12v14l-6-4-6 4V2z" stroke="rgba(240,237,232,0.8)" stroke-width="1.3" fill="none" id="save-path"/>
+            </svg>
+          </div>
+          <div class="action-count">save</div>
+        </div>
+        <div class="action-item">
+          <div class="action-icon">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="13" cy="3" r="1.8" stroke="rgba(240,237,232,0.8)" stroke-width="1.2"/>
+              <circle cx="3" cy="8" r="1.8" stroke="rgba(240,237,232,0.8)" stroke-width="1.2"/>
+              <circle cx="13" cy="13" r="1.8" stroke="rgba(240,237,232,0.8)" stroke-width="1.2"/>
+              <line x1="4.7" y1="7.1" x2="11.3" y2="3.9" stroke="rgba(240,237,232,0.5)" stroke-width="1"/>
+              <line x1="4.7" y1="8.9" x2="11.3" y2="12.1" stroke="rgba(240,237,232,0.5)" stroke-width="1"/>
+            </svg>
+          </div>
+          <div class="action-count">share</div>
+        </div>
+      </div>
+
+      <!-- Sponsored progress bar -->
+      <div class="sponsored-bar" id="sponsored-bar">
+        <div class="sponsored-fill" id="sponsored-fill"></div>
+      </div>
+
+      <!-- Details handle -->
+      <div class="details-handle" onclick="event.stopPropagation(); toggleReveal()">
+        <div class="handle-nub"></div>
+        <div class="handle-label">details</div>
+      </div>
+
+    </div>
+
+    <!-- ── REVEALED LAYER ── -->
+    <div class="revealed" id="revealed">
+      <div class="dismiss-area" onclick="hideReveal()"></div>
+
+      <!-- Platform source + tracking -->
+      <div class="revealed-top">
+        <div class="platform-source">
+          <div class="platform-logo" id="rev-platform-logo" style="background:#E1306C">IG</div>
+          <div class="platform-source-name" id="rev-platform-name">Imported from Instagram</div>
+        </div>
+        <div class="tracking-pill" id="tracking-pill" style="display:none">
+          <div class="tracking-dot"></div>
+          <div class="tracking-label">tracking</div>
+        </div>
+      </div>
+
+      <!-- Play/pause -->
+      <div class="play-state" onclick="event.stopPropagation(); togglePlay()">
+        <div id="play-pause-icon"><div class="pause-icon"><div class="pause-bar"></div><div class="pause-bar"></div></div></div>
+      </div>
+
+      <!-- Revealed bottom -->
+      <div class="revealed-bottom">
+        <div class="full-caption" id="full-caption">New collection dropping this weekend — DM for early access before the public drop ✨ #fashion #drop #newcollection</div>
+        <div class="earn-detail" id="earn-detail" style="display:none">
+          <div class="ed-icon">i</div>
+          <div class="ed-info">
+            <div class="ed-label">Watching earns you</div>
+            <div class="ed-val">+2.00 icoins</div>
+          </div>
+          <div class="ed-time" id="ed-time">1:12 left</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab bar -->
+    <div class="tab-bar" onclick="event.stopPropagation()">
+      <div class="tab active">
+        <div class="tab-icon">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <rect x="2" y="2" width="6" height="6" rx="1.5" fill="rgba(240,237,232,0.9)"/>
+            <rect x="10" y="2" width="6" height="6" rx="1.5" fill="rgba(240,237,232,0.9)"/>
+            <rect x="2" y="10" width="6" height="6" rx="1.5" fill="rgba(240,237,232,0.9)"/>
+            <rect x="10" y="10" width="6" height="6" rx="1.5" fill="rgba(240,237,232,0.35)"/>
+          </svg>
+        </div>
+        <div class="tab-label">Feed</div>
+        <div class="tab-pip"></div>
+      </div>
+      <div class="tab">
+        <div class="tab-icon">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <circle cx="9" cy="9" r="6" stroke="rgba(240,237,232,0.35)" stroke-width="1.3"/>
+            <path d="M9 6v3l2 2" stroke="rgba(240,237,232,0.35)" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="tab-label">Earn</div>
+        <div class="tab-pip"></div>
+      </div>
+      <div class="tab">
+        <div class="tab-icon">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <rect x="3" y="5" width="12" height="9" rx="2" stroke="rgba(240,237,232,0.35)" stroke-width="1.3"/>
+            <path d="M6 5V4a3 3 0 016 0v1" stroke="rgba(240,237,232,0.35)" stroke-width="1.3"/>
+          </svg>
+        </div>
+        <div class="tab-label">Wallet</div>
+        <div class="tab-pip"></div>
+      </div>
+      <div class="tab">
+        <div class="tab-icon">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <circle cx="9" cy="7" r="3" stroke="rgba(240,237,232,0.35)" stroke-width="1.3"/>
+            <path d="M3 15a6 6 0 0112 0" stroke="rgba(240,237,232,0.35)" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="tab-label">Profile</div>
+        <div class="tab-pip"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Right col: layer map -->
+<div class="right-col">
+
+  <div class="layer-section">
+    <div class="layer-title">Always visible — persistent</div>
+
+    <div class="layer-item">
+      <div class="layer-dot" style="background:var(--icoin-primary)"></div>
+      <div class="layer-body">
+        <div class="layer-name">Wallet chip</div>
+        <div class="layer-desc">Balance always in view. Dot pulses when earning is active. Tap opens wallet.</div>
+        <div class="layer-rule">Jakob's Law — familiar fintech pattern</div>
+      </div>
+    </div>
+
+    <div class="layer-item">
+      <div class="layer-dot" style="background:rgba(240,237,232,0.4)"></div>
+      <div class="layer-body">
+        <div class="layer-name">Creator + platform tag</div>
+        <div class="layer-desc">Who made this and where it came from. Source platform always declared. Never hidden.</div>
+        <div class="layer-rule">Nielsen — visibility of system status</div>
+      </div>
+    </div>
+
+    <div class="layer-item">
+      <div class="layer-dot" style="background:var(--icoin-primary)"></div>
+      <div class="layer-body">
+        <div class="layer-name">Reward badge</div>
+        <div class="layer-desc">Sponsored content only. Shows earn amount at top center. Absent on organic content.</div>
+        <div class="layer-rule">Fitts's Law — centered, reachable, unambiguous</div>
+      </div>
+    </div>
+
+    <div class="layer-item">
+      <div class="layer-dot" style="background:rgba(240,237,232,0.4)"></div>
+      <div class="layer-body">
+        <div class="layer-name">Like / save / share</div>
+        <div class="layer-desc">Right-side cluster. Thumb-reachable zone. Always present — action should never require a tap to reveal.</div>
+        <div class="layer-rule">Fitts's Law — critical targets visible and reachable</div>
+      </div>
+    </div>
+
+    <div class="layer-item">
+      <div class="layer-dot" style="background:rgba(240,237,232,0.3)"></div>
+      <div class="layer-body">
+        <div class="layer-name">Mute</div>
+        <div class="layer-desc">Top right. Single tap. State preserved across content. Icon changes to reflect current state.</div>
+        <div class="layer-rule">Persistence — user shouldn't re-mute every video</div>
+      </div>
+    </div>
+
+    <div class="layer-item">
+      <div class="layer-dot" style="background:var(--accent-lime)"></div>
+      <div class="layer-body">
+        <div class="layer-name">Earn progress bar</div>
+        <div class="layer-desc">Sponsored only. Thin 2px line above tab bar. Fills as watch time accumulates. Absent on organic.</div>
+        <div class="layer-rule">Nielsen — system status without breaking immersion</div>
+      </div>
+    </div>
+
+    <div class="layer-item">
+      <div class="layer-dot" style="background:rgba(240,237,232,0.2)"></div>
+      <div class="layer-body">
+        <div class="layer-name">Details handle</div>
+        <div class="layer-desc">Minimal pill at bottom center. Suggests more exists without demanding attention. Tap reveals.</div>
+        <div class="layer-rule">Progressive disclosure — depth on demand</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="layer-section">
+    <div class="layer-title">Tap to reveal — temporary overlay</div>
+
+    <div class="layer-item">
+      <div class="layer-dot" style="background:var(--accent-cyan)"></div>
+      <div class="layer-body">
+        <div class="layer-name">Platform source + tracking status</div>
+        <div class="layer-desc">Where the content originated. Whether eye-tracking is active. Both declared clearly — no ambiguity about what the app is doing.</div>
+        <div class="layer-rule">Nielsen — user control and transparency</div>
+      </div>
+    </div>
+
+    <div class="layer-item">
+      <div class="layer-dot" style="background:rgba(240,237,232,0.4)"></div>
+      <div class="layer-body">
+        <div class="layer-name">Play / pause</div>
+        <div class="layer-desc">Center of frame on reveal. Disappears after 2s of inactivity. Tap anywhere else to dismiss.</div>
+        <div class="layer-rule">Immersion first — controls appear only when sought</div>
+      </div>
+    </div>
+
+    <div class="layer-item">
+      <div class="layer-dot" style="background:var(--icoin-primary)"></div>
+      <div class="layer-body">
+        <div class="layer-name">Full caption + earn detail</div>
+        <div class="layer-desc">Complete text, hashtags, earn breakdown (amount + time remaining). Slides up from bottom on reveal.</div>
+        <div class="layer-rule">Progressive disclosure — detail without clutter</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+  let muted = false;
+  let revealed = false;
+  let playing = true;
+  let isSponsored = false;
+  let earnProgress = 0;
+  let earnInterval = null;
+  let walletCount = 847;
+  let revealTimeout = null;
+
+  const contents = {
+    organic: {
+      bg: 'linear-gradient(160deg,#0d0820 0%,#0a1a1a 40%,#0d1505 100%)',
+      avatar: 'MK', name: 'Maya Kato', handle: '@mayakato', platform: 'Instagram',
+      platformColor: '#E1306C', platformCode: 'IG',
+      caption: 'New collection dropping this weekend — DM for early access before the public drop ✨',
+      fullCaption: 'New collection dropping this weekend — DM for early access before the public drop ✨ #fashion #drop #newcollection',
+      sponsored: false,
+    },
+    sponsored: {
+      bg: 'linear-gradient(160deg,#050d0a 0%,#0a1505 40%,#050d0a 100%)',
+      avatar: 'NK', name: 'Nike Running', handle: '@nike', platform: 'YouTube',
+      platformColor: '#FF0000', platformCode: 'YT',
+      caption: 'Run the world — new Pegasus 41. Watch to earn 2 icoins.',
+      fullCaption: 'Run the world — new Pegasus 41. Watch the full video and earn 2.00 icoins into your wallet. Eye-tracking verified. #Nike #running #Pegasus41',
+      sponsored: true, earn: '+2.00 icoins',
+    },
+    revealed: {
+      bg: 'linear-gradient(160deg,#0a0d18 0%,#050a14 40%,#0a0d18 100%)',
+      avatar: 'JR', name: 'Jake Rivera', handle: '@jakexr', platform: 'TikTok',
+      platformColor: '#000000', platformCode: 'TK',
+      caption: 'POV: you learned how to make pasta from scratch on year 2 of the channel',
+      fullCaption: 'POV: you learned how to make pasta from scratch on year 2 of the channel 🍝 Full recipe in bio. #cooking #pasta #learnontiktok #foodtok',
+      sponsored: false,
+    },
+  };
+
+  function setState(state, btn) {
+    document.querySelectorAll('.state-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const c = contents[state];
+    document.getElementById('video-bg').style.background = c.bg;
+    document.getElementById('creator-avatar').textContent = c.avatar;
+    document.getElementById('creator-name').textContent = c.name;
+    document.getElementById('creator-handle').textContent = c.handle;
+    document.getElementById('platform-tag').textContent = c.platform;
+    document.getElementById('caption').textContent = c.caption;
+    document.getElementById('full-caption').textContent = c.fullCaption;
+    document.getElementById('rev-platform-logo').textContent = c.platformCode;
+    document.getElementById('rev-platform-logo').style.background = c.platformColor;
+    document.getElementById('rev-platform-name').textContent = 'Imported from ' + c.platform;
+
+    isSponsored = c.sponsored;
+
+    const badge = document.getElementById('reward-badge');
+    const bar = document.getElementById('sponsored-bar');
+    const tracking = document.getElementById('tracking-pill');
+    const earnDetail = document.getElementById('earn-detail');
+    const walletDot = document.getElementById('wallet-dot');
+
+    if (c.sponsored) {
+      badge.classList.add('visible');
+      bar.classList.add('visible');
+      tracking.style.display = 'flex';
+      earnDetail.style.display = 'flex';
+      walletDot.classList.add('earning');
+      startEarnProgress();
+    } else {
+      badge.classList.remove('visible');
+      bar.classList.remove('visible');
+      tracking.style.display = 'none';
+      earnDetail.style.display = 'none';
+      walletDot.classList.remove('earning');
+      stopEarnProgress();
+    }
+
+    if (state === 'revealed') {
+      hideReveal();
+      setTimeout(() => showReveal(), 300);
+    } else {
+      hideReveal();
+    }
+  }
+
+  function handlePhoneTap(e) {
+    if (revealed) {
+      hideReveal();
+    } else {
+      showReveal();
+    }
+  }
+
+  function showReveal() {
+    revealed = true;
+    document.getElementById('revealed').classList.add('visible');
+    clearTimeout(revealTimeout);
+    revealTimeout = setTimeout(hideReveal, 3500);
+  }
+
+  function hideReveal() {
+    revealed = false;
+    document.getElementById('revealed').classList.remove('visible');
+  }
+
+  function toggleReveal() {
+    if (revealed) hideReveal();
+    else showReveal();
+  }
+
+  function toggleMute(e) {
+    e.stopPropagation();
+    muted = !muted;
+    const icon = document.getElementById('mute-icon');
+    if (muted) {
+      icon.innerHTML = `<path d="M2 5h2.5l3.5-3v10L4.5 9H2V5z" fill="rgba(240,237,232,0.8)"/>
+        <line x1="10" y1="4" x2="14" y2="8" stroke="rgba(240,237,232,0.8)" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="14" y1="4" x2="10" y2="8" stroke="rgba(240,237,232,0.8)" stroke-width="1.5" stroke-linecap="round"/>`;
+    } else {
+      icon.innerHTML = `<path d="M2 5h2.5l3.5-3v10L4.5 9H2V5z" fill="rgba(240,237,232,0.8)"/>
+        <path d="M10 4.5a3.5 3.5 0 010 5" stroke="rgba(240,237,232,0.8)" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M11.5 3a5.5 5.5 0 010 8" stroke="rgba(240,237,232,0.5)" stroke-width="1.2" stroke-linecap="round"/>`;
+    }
+  }
+
+  function toggleLike(item) {
+    const icon = item.querySelector('.action-icon');
+    const count = item.querySelector('.action-count');
+    const liked = icon.classList.toggle('liked');
+    const heart = icon.querySelector('#heart-path');
+    if (liked) {
+      heart.setAttribute('fill', '#ff4d6d');
+      heart.setAttribute('stroke', '#ff4d6d');
+      count.textContent = '9.2k';
+    } else {
+      heart.setAttribute('fill', 'none');
+      heart.setAttribute('stroke', 'rgba(240,237,232,0.8)');
+      count.textContent = '9.1k';
+    }
+  }
+
+  function toggleSave(item) {
+    const icon = item.querySelector('.action-icon');
+    const saved = icon.classList.toggle('saved');
+    const path = icon.querySelector('#save-path');
+    if (saved) {
+      path.setAttribute('fill', 'rgba(0,229,255,0.6)');
+      path.setAttribute('stroke', 'rgba(0,229,255,0.9)');
+    } else {
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke', 'rgba(240,237,232,0.8)');
+    }
+  }
+
+  function togglePlay() {
+    playing = !playing;
+    const icon = document.getElementById('play-pause-icon');
+    if (playing) {
+      icon.innerHTML = `<div class="pause-icon"><div class="pause-bar"></div><div class="pause-bar"></div></div>`;
+    } else {
+      icon.innerHTML = `<div class="play-icon"></div>`;
+    }
+  }
+
+  function startEarnProgress() {
+    stopEarnProgress();
+    earnProgress = 0;
+    earnInterval = setInterval(() => {
+      earnProgress = Math.min(earnProgress + 0.8, 100);
+      document.getElementById('sponsored-fill').style.width = earnProgress + '%';
+      const remaining = Math.round((100 - earnProgress) / 100 * 270);
+      const mins = Math.floor(remaining / 60);
+      const secs = remaining % 60;
+      document.getElementById('ed-time').textContent = mins + ':' + String(secs).padStart(2,'0') + ' left';
+      if (earnProgress >= 100) {
+        stopEarnProgress();
+        walletCount += 2;
+        document.getElementById('wallet-val').textContent = walletCount;
+        document.getElementById('ed-time').textContent = 'Earned!';
+      }
+    }, 120);
+  }
+
+  function stopEarnProgress() {
+    if (earnInterval) { clearInterval(earnInterval); earnInterval = null; }
+    document.getElementById('sponsored-fill').style.width = '0%';
+    earnProgress = 0;
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,165 @@
+
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+.w { font-family:var(--font-sans); padding:20px 0; }
+.lbl { font-size:11px; font-weight:500; text-transform:uppercase; letter-spacing:.08em; color:var(--color-text-tertiary); margin-bottom:12px; }
+
+.arch { display:grid; grid-template-columns:1fr 2px 1fr 2px 1fr; gap:0; margin-bottom:28px; align-items:start; }
+.arch-divider { background:var(--color-border-tertiary); margin:0 10px; align-self:stretch; }
+.arch-col { padding:0 8px; }
+.arch-col-title { font-size:10px; font-weight:500; text-transform:uppercase; letter-spacing:.07em; color:var(--color-text-tertiary); margin-bottom:12px; text-align:center; }
+
+.method { border:0.5px solid var(--color-border-tertiary); border-radius:10px; padding:12px; background:var(--color-background-secondary); margin-bottom:8px; cursor:pointer; transition:border-color .12s; }
+.method:hover { border-color:var(--color-border-primary); }
+.method-name { font-size:12px; font-weight:500; color:var(--color-text-primary); margin-bottom:2px; }
+.method-how  { font-size:10px; color:var(--color-text-secondary); margin-bottom:4px; line-height:1.4; }
+.method-meta { font-size:9px; color:var(--color-text-tertiary); }
+.meta-green { color:#1D9E75; }
+.meta-amber { color:#BA7517; }
+.meta-red   { color:#A32D2D; }
+
+.rules { border:0.5px solid var(--color-border-tertiary); border-radius:10px; overflow:hidden; margin-bottom:28px; }
+.rule { display:flex; gap:10px; padding:10px 14px; border-bottom:0.5px solid var(--color-border-tertiary); align-items:flex-start; }
+.rule:last-child { border-bottom:none; }
+.rd { width:6px; height:6px; border-radius:50%; flex-shrink:0; margin-top:5px; }
+.rt { font-size:12px; color:var(--color-text-secondary); line-height:1.55; }
+.rt b { color:var(--color-text-primary); font-weight:500; }
+
+.limits-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:28px; }
+.lim { border:0.5px solid var(--color-border-tertiary); border-radius:10px; padding:12px; background:var(--color-background-secondary); }
+.lim-tier { font-size:10px; color:var(--color-text-tertiary); margin-bottom:6px; }
+.lim-name { font-size:12px; font-weight:500; color:var(--color-text-primary); margin-bottom:10px; }
+.lim-row { display:flex; justify-content:space-between; margin-bottom:4px; }
+.lim-label { font-size:10px; color:var(--color-text-secondary); }
+.lim-val   { font-size:10px; font-weight:500; color:var(--color-text-primary); }
+
+.security { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.sec-card { border:0.5px solid var(--color-border-tertiary); border-radius:10px; padding:12px; background:var(--color-background-secondary); cursor:pointer; transition:border-color .12s; }
+.sec-card:hover { border-color:var(--color-border-primary); }
+.sec-name { font-size:12px; font-weight:500; color:var(--color-text-primary); margin-bottom:3px; }
+.sec-desc { font-size:10px; color:var(--color-text-secondary); line-height:1.5; }
+</style>
+
+<div class="w">
+
+<div class="lbl">Payment methods — full system</div>
+<div class="arch">
+  <div class="arch-col">
+    <div class="arch-col-title">In person</div>
+    <div class="method" onclick="sendPrompt('How does NFC tap to pay work in the i app?')">
+      <div class="method-name">NFC tap</div>
+      <div class="method-how">Activate in app, hold to any [ i ] terminal. Same gesture as contactless card.</div>
+      <div class="method-meta meta-green">Instant · no fee</div>
+    </div>
+    <div class="method" onclick="sendPrompt('How does QR code payment work in person with the i app?')">
+      <div class="method-name">QR code</div>
+      <div class="method-how">Show code, merchant scans. Works without terminal hardware — any phone camera.</div>
+      <div class="method-meta meta-green">Instant · no fee · 5 min expiry</div>
+    </div>
+    <div class="method" onclick="sendPrompt('How does scan to pay work in the i app?')">
+      <div class="method-name">Scan to pay</div>
+      <div class="method-how">Reverse QR — you scan the merchant's code. Useful for fixed-price merchants.</div>
+      <div class="method-meta meta-green">Instant · no fee</div>
+    </div>
+  </div>
+
+  <div class="arch-divider"></div>
+
+  <div class="arch-col">
+    <div class="arch-col-title">Online / virtual</div>
+    <div class="method" onclick="sendPrompt('How does the i app pay link work for online payments?')">
+      <div class="method-name">Pay link</div>
+      <div class="method-how">A URL that collects payment. Bio, email, website button, message. No app install required for payer.</div>
+      <div class="method-meta meta-green">Instant · no fee · shareable everywhere</div>
+    </div>
+    <div class="method" onclick="sendPrompt('How does the i app checkout button work for online stores?')">
+      <div class="method-name">Checkout button</div>
+      <div class="method-how">Embed on any website. One-tap payment from [ i ] wallet. Merchant SDK in 3 lines of code.</div>
+      <div class="method-meta meta-amber">Instant · 0.5% merchant fee</div>
+    </div>
+    <div class="method" onclick="sendPrompt('How do recurring payments work in the i app?')">
+      <div class="method-name">Recurring payment</div>
+      <div class="method-how">Subscriptions and scheduled transfers. User authorizes once, coins move on schedule.</div>
+      <div class="method-meta meta-amber">Scheduled · 0.5% fee</div>
+    </div>
+    <div class="method" onclick="sendPrompt('How does the i app API payment work for developers?')">
+      <div class="method-name">API payment</div>
+      <div class="method-how">Developers trigger payments programmatically. Powers automated rewards, game economies, B2B flows.</div>
+      <div class="method-meta meta-amber">Instant · developer fee applies</div>
+    </div>
+  </div>
+
+  <div class="arch-divider"></div>
+
+  <div class="arch-col">
+    <div class="arch-col-title">Cash out</div>
+    <div class="method" onclick="sendPrompt('How does bank withdrawal work in the i app?')">
+      <div class="method-name">Bank transfer</div>
+      <div class="method-how">icoins → USD/GBP/EUR to any linked bank. ACH or SEPA routing.</div>
+      <div class="method-meta meta-green">1–2 days · free</div>
+    </div>
+    <div class="method" onclick="sendPrompt('How does instant debit card withdrawal work in the i app?')">
+      <div class="method-name">Instant to card</div>
+      <div class="method-how">icoins → linked Visa or Mastercard debit. Instant settlement.</div>
+      <div class="method-meta meta-amber">Instant · 1.5% fee</div>
+    </div>
+    <div class="method" onclick="sendPrompt('How does external wallet withdrawal work in the i app?')">
+      <div class="method-name">External wallet</div>
+      <div class="method-how">icoins → external crypto or partner wallet via xcoins bridge.</div>
+      <div class="method-meta meta-red">~10 min · Tier 4 · 2.5% fee</div>
+    </div>
+  </div>
+</div>
+
+<div class="lbl">Spending limits by trust tier</div>
+<div class="limits-grid">
+  <div class="lim">
+    <div class="lim-tier">Tier 1–2</div>
+    <div class="lim-name">Standard</div>
+    <div class="lim-row"><div class="lim-label">Per transaction</div><div class="lim-val">500 icoins</div></div>
+    <div class="lim-row"><div class="lim-label">Daily spend</div><div class="lim-val">2,000 icoins</div></div>
+    <div class="lim-row"><div class="lim-label">Monthly withdraw</div><div class="lim-val">$200 USD</div></div>
+    <div class="lim-row"><div class="lim-label">Pay link</div><div class="lim-val">Enabled</div></div>
+    <div class="lim-row"><div class="lim-label">NFC</div><div class="lim-val">Enabled</div></div>
+  </div>
+  <div class="lim">
+    <div class="lim-tier">Tier 3</div>
+    <div class="lim-name">Trusted</div>
+    <div class="lim-row"><div class="lim-label">Per transaction</div><div class="lim-val">5,000 icoins</div></div>
+    <div class="lim-row"><div class="lim-label">Daily spend</div><div class="lim-val">20,000 icoins</div></div>
+    <div class="lim-row"><div class="lim-label">Monthly withdraw</div><div class="lim-val">$2,000 USD</div></div>
+    <div class="lim-row"><div class="lim-label">Recurring</div><div class="lim-val">Enabled</div></div>
+    <div class="lim-row"><div class="lim-label">API access</div><div class="lim-val">Enabled</div></div>
+  </div>
+  <div class="lim">
+    <div class="lim-tier">Tier 4</div>
+    <div class="lim-name">Power</div>
+    <div class="lim-row"><div class="lim-label">Per transaction</div><div class="lim-val">Unlimited</div></div>
+    <div class="lim-row"><div class="lim-label">Daily spend</div><div class="lim-val">Unlimited</div></div>
+    <div class="lim-row"><div class="lim-label">Monthly withdraw</div><div class="lim-val">Unlimited</div></div>
+    <div class="lim-row"><div class="lim-label">External wallet</div><div class="lim-val">Enabled</div></div>
+    <div class="lim-row"><div class="lim-label">xcoins bridge</div><div class="lim-val">Enabled</div></div>
+  </div>
+</div>
+
+<div class="lbl">Security layer</div>
+<div class="security">
+  <div class="sec-card" onclick="sendPrompt('How does payment confirmation work in the i app?')">
+    <div class="sec-name">Dual confirmation</div>
+    <div class="sec-desc">Coins never move until both sender and receiver confirm. A 30-second window where either party can cancel with zero penalty.</div>
+  </div>
+  <div class="sec-card" onclick="sendPrompt('How does biometric auth work for i app payments?')">
+    <div class="sec-name">Biometric auth</div>
+    <div class="sec-desc">Every payment over 50 icoins requires Face ID or fingerprint. Under 50 — tap and go. The threshold is user-configurable.</div>
+  </div>
+  <div class="sec-card" onclick="sendPrompt('How does the i app detect suspicious payment activity?')">
+    <div class="sec-name">Anomaly detection</div>
+    <div class="sec-desc">Unusual spend patterns — new merchant, foreign location, off-hours — trigger a soft pause and in-app confirmation before coins move.</div>
+  </div>
+  <div class="sec-card" onclick="sendPrompt('How does payment reversal work in the i app?')">
+    <div class="sec-name">30-sec reversal</div>
+    <div class="sec-desc">Any payment can be reversed within 30 seconds of confirmation, no questions asked. After 30 seconds, reversal requires merchant cooperation.</div>
+  </div>
+</div>
+
+</div>

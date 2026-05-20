@@ -1,0 +1,507 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0a;--s1:#111;--s2:#181818;--s3:#202020;--s4:#2a2a2a;
+  --brd:rgba(255,255,255,0.06);--brd2:rgba(255,255,255,0.11);
+  --txt:#f0f0f0;--muted:rgba(255,255,255,0.4);--hint:rgba(255,255,255,0.18);
+  --gold:#EF9F27;--gold-l:rgba(239,159,39,0.09);--gold-b:rgba(239,159,39,0.28);
+  --green:#1D9E75;--green-l:rgba(29,158,117,0.09);--green-b:rgba(29,158,117,0.28);
+  --blue:#378ADD;--blue-l:rgba(55,138,221,0.09);--blue-b:rgba(55,138,221,0.28);
+  --red:#E24B4A;--red-l:rgba(226,75,74,0.09);--red-b:rgba(226,75,74,0.28);
+  --purple:#7F77DD;
+}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.85)}}
+@keyframes count-up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slide-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmer{0%{left:-100%}100%{left:100%}}
+@keyframes ring-fill{from{stroke-dashoffset:220}to{stroke-dashoffset:var(--target-offset)}}
+@keyframes badge-pop{0%{transform:scale(0.7)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+@keyframes fade-in{from{opacity:0}to{opacity:1}}
+@keyframes step-reveal{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+@keyframes toast-in{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:translateX(0)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+
+.tab-pill{flex:1;padding:9px 0;text-align:center;font-size:12px;font-weight:500;cursor:pointer;border-radius:10px;transition:all 0.2s;color:var(--muted)}
+.tab-pill.active{background:var(--s3);color:var(--txt)}
+
+.tx-row{display:flex;align-items:center;gap:11px;padding:13px 0;border-bottom:0.5px solid var(--brd);cursor:pointer;transition:background 0.15s;border-radius:8px;padding-left:8px;padding-right:8px}
+.tx-row:hover{background:var(--s2)}
+.tx-row:last-child{border-bottom:none}
+
+.pending-card{background:var(--s2);border:0.5px solid var(--brd2);border-radius:16px;margin-bottom:10px;overflow:hidden;cursor:pointer;transition:all 0.2s;animation:slide-in 0.3s ease}
+.pending-card:hover{border-color:var(--gold-b)}
+.pending-card.expanded{border-color:var(--gold-b)}
+
+.step-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;animation:step-reveal 0.25s ease}
+
+.action-btn{flex:1;padding:12px;border-radius:12px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all 0.18s;letter-spacing:0.02em}
+.action-btn:active{transform:scale(0.97)}
+
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:500;white-space:nowrap}
+
+.withdraw-opt{flex:1;padding:12px 8px;border-radius:11px;border:0.5px solid var(--brd2);background:none;cursor:pointer;text-align:center;transition:all 0.18s;display:flex;flex-direction:column;align-items:center;gap:5px}
+.withdraw-opt:hover{border-color:var(--gold-b);background:var(--gold-l)}
+.withdraw-opt.sel{border-color:var(--gold-b);background:var(--gold-l)}
+
+.shimmer-line{position:relative;overflow:hidden;background:var(--s3);border-radius:4px}
+.shimmer-line::after{content:'';position:absolute;top:0;bottom:0;width:60%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.04),transparent);animation:shimmer 1.4s infinite}
+</style>
+
+<div style="display:flex;justify-content:center;padding:1.2rem 0;background:var(--bg)">
+<div style="width:360px;min-height:680px;background:var(--bg);border-radius:32px;border:0.5px solid rgba(255,255,255,0.08);overflow:hidden;position:relative;display:flex;flex-direction:column">
+
+<!-- STATUS BAR -->
+<div style="padding:14px 20px 0;display:flex;justify-content:space-between;align-items:center">
+  <div style="font-size:11px;color:var(--hint)">9:41</div>
+  <div style="display:flex;gap:5px;align-items:center">
+    <div style="width:14px;height:8px;border:0.5px solid var(--hint);border-radius:2px;position:relative"><div style="position:absolute;inset:1px;background:var(--hint);border-radius:1px;width:70%"></div></div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div style="padding:10px 20px 0">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+    <div>
+      <div style="font-size:11px;color:var(--hint);letter-spacing:0.07em;margin-bottom:2px">YOUR WALLET</div>
+      <div style="font-size:22px;font-weight:500;color:var(--txt)">Earnings</div>
+    </div>
+    <div onclick="showWithdraw()" style="width:36px;height:36px;border-radius:50%;background:var(--s2);border:0.5px solid var(--brd2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;color:var(--muted);transition:all 0.18s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--brd2)'">↑</div>
+  </div>
+
+  <!-- BALANCE CARD -->
+  <div id="balance-card" style="background:var(--s2);border:0.5px solid var(--brd2);border-radius:20px;padding:18px;margin-bottom:14px;position:relative;overflow:hidden">
+    <!-- subtle grid texture -->
+    <div style="position:absolute;inset:0;opacity:0.03;background-image:repeating-linear-gradient(0deg,rgba(255,255,255,0.5) 0,rgba(255,255,255,0.5) 1px,transparent 1px,transparent 28px),repeating-linear-gradient(90deg,rgba(255,255,255,0.5) 0,rgba(255,255,255,0.5) 1px,transparent 1px,transparent 28px);pointer-events:none"></div>
+
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;position:relative">
+      <div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Available balance</div>
+        <div style="display:flex;align-items:baseline;gap:5px">
+          <span style="font-size:11px;color:var(--muted)">$</span>
+          <span id="bal-main" style="font-size:36px;font-weight:500;color:var(--txt);font-family:monospace;letter-spacing:-0.02em;animation:count-up 0.5s ease">3.65</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:6px">
+          <div style="background:var(--green-l);border:0.5px solid var(--green-b);border-radius:20px;padding:2px 9px;display:flex;align-items:center;gap:4px">
+            <div style="width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse-dot 1.8s infinite"></div>
+            <span style="font-size:10px;color:var(--green)">+$0.35 today</span>
+          </div>
+          <span style="font-size:10px;color:var(--hint)">$14.20 all time</span>
+        </div>
+      </div>
+      <!-- ring chart -->
+      <div style="position:relative;width:68px;height:68px;flex-shrink:0">
+        <svg width="68" height="68" viewBox="0 0 68 68" style="transform:rotate(-90deg)">
+          <circle cx="34" cy="34" r="28" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="7"/>
+          <circle cx="34" cy="34" r="28" fill="none" stroke="var(--green)" stroke-width="7" stroke-linecap="round" stroke-dasharray="176" stroke-dashoffset="44" style="transition:stroke-dashoffset 1s ease"/>
+          <circle cx="34" cy="34" r="28" fill="none" stroke="var(--gold)" stroke-width="7" stroke-linecap="round" stroke-dasharray="176" stroke-dashoffset="132" style="opacity:0.7;transition:stroke-dashoffset 1s ease"/>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+          <div style="font-size:9px;color:var(--hint)">avail</div>
+          <div style="font-size:11px;font-weight:500;color:var(--txt)">75%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- mini stat row -->
+    <div style="display:flex;gap:0;margin-top:14px;border-top:0.5px solid var(--brd);padding-top:12px">
+      <div style="flex:1;text-align:center">
+        <div style="font-size:10px;color:var(--hint);margin-bottom:3px">pending</div>
+        <div style="font-size:14px;font-weight:500;color:var(--gold);font-family:monospace" id="pending-total">$2.25</div>
+      </div>
+      <div style="width:0.5px;background:var(--brd)"></div>
+      <div style="flex:1;text-align:center">
+        <div style="font-size:10px;color:var(--hint);margin-bottom:3px">withdrawn</div>
+        <div style="font-size:14px;font-weight:500;color:var(--muted);font-family:monospace">$8.30</div>
+      </div>
+      <div style="width:0.5px;background:var(--brd)"></div>
+      <div style="flex:1;text-align:center">
+        <div style="font-size:10px;color:var(--hint);margin-bottom:3px">campaigns</div>
+        <div style="font-size:14px;font-weight:500;color:var(--blue);font-family:monospace">12</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div style="display:flex;gap:4px;background:var(--s2);border-radius:13px;padding:4px;margin-bottom:0">
+    <div class="tab-pill active" id="tab-history" onclick="switchTab('history')">History</div>
+    <div class="tab-pill" id="tab-pending" onclick="switchTab('pending')">
+      Pending
+      <span id="pending-badge" style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;background:var(--gold);color:#1a0d00;font-size:9px;font-weight:500;border-radius:50%;margin-left:4px;animation:badge-pop 0.4s ease">3</span>
+    </div>
+    <div class="tab-pill" id="tab-insights" onclick="switchTab('insights')">Insights</div>
+  </div>
+</div>
+
+<!-- SCROLL BODY -->
+<div style="flex:1;overflow-y:auto;padding:14px 18px 24px" id="scroll-body">
+
+  <!-- ═══ HISTORY TAB ═══ -->
+  <div id="view-history" style="animation:fade-in 0.25s ease">
+    <!-- filter chips -->
+    <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;scrollbar-width:none">
+      <div class="chip" id="hf-all" onclick="filterHistory('all',this)" style="background:var(--s3);border:0.5px solid var(--brd2);color:var(--txt);cursor:pointer">All</div>
+      <div class="chip" id="hf-instant" onclick="filterHistory('instant',this)" style="background:none;border:0.5px solid var(--brd2);color:var(--muted);cursor:pointer">Instant</div>
+      <div class="chip" id="hf-released" onclick="filterHistory('released',this)" style="background:none;border:0.5px solid var(--brd2);color:var(--muted);cursor:pointer">Released</div>
+      <div class="chip" id="hf-withdrew" onclick="filterHistory('withdrew',this)" style="background:none;border:0.5px solid var(--brd2);color:var(--muted);cursor:pointer">Withdrawn</div>
+    </div>
+
+    <div id="history-list">
+      <!-- rows injected by JS -->
+    </div>
+  </div>
+
+  <!-- ═══ PENDING TAB ═══ -->
+  <div id="view-pending" style="display:none;animation:fade-in 0.25s ease">
+    <div style="font-size:11px;color:var(--hint);margin-bottom:12px;line-height:1.6">These rewards are held until you complete the required actions. Tap a card to see your progress.</div>
+    <div id="pending-list"></div>
+  </div>
+
+  <!-- ═══ INSIGHTS TAB ═══ -->
+  <div id="view-insights" style="display:none;animation:fade-in 0.25s ease">
+    <!-- weekly bar chart -->
+    <div style="background:var(--s2);border:0.5px solid var(--brd2);border-radius:14px;padding:16px;margin-bottom:12px">
+      <div style="font-size:11px;color:var(--hint);margin-bottom:12px;letter-spacing:0.05em">THIS WEEK</div>
+      <div style="display:flex;align-items:flex-end;gap:8px;height:72px;margin-bottom:8px">
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+          <div style="flex:1;width:100%;background:var(--s3);border-radius:4px 4px 0 0;display:flex;align-items:flex-end">
+            <div style="width:100%;background:var(--green-b);border-radius:4px 4px 0 0;height:40%;transition:height 0.8s ease"></div>
+          </div>
+          <div style="font-size:9px;color:var(--hint)">M</div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+          <div style="flex:1;width:100%;background:var(--s3);border-radius:4px 4px 0 0;display:flex;align-items:flex-end">
+            <div style="width:100%;background:var(--green-b);border-radius:4px 4px 0 0;height:65%;transition:height 0.8s ease"></div>
+          </div>
+          <div style="font-size:9px;color:var(--hint)">T</div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+          <div style="flex:1;width:100%;background:var(--s3);border-radius:4px 4px 0 0;display:flex;align-items:flex-end">
+            <div style="width:100%;background:var(--green-b);border-radius:4px 4px 0 0;height:30%;"></div>
+          </div>
+          <div style="font-size:9px;color:var(--hint)">W</div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+          <div style="flex:1;width:100%;background:var(--s3);border-radius:4px 4px 0 0;display:flex;align-items:flex-end">
+            <div style="width:100%;background:var(--green-b);border-radius:4px 4px 0 0;height:80%;"></div>
+          </div>
+          <div style="font-size:9px;color:var(--hint)">T</div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+          <div style="flex:1;width:100%;background:var(--s3);border-radius:4px 4px 0 0;display:flex;align-items:flex-end">
+            <div style="width:100%;background:var(--green-b);border-radius:4px 4px 0 0;height:55%;"></div>
+          </div>
+          <div style="font-size:9px;color:var(--hint)">F</div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+          <div style="flex:1;width:100%;background:var(--s3);border-radius:4px 4px 0 0;display:flex;align-items:flex-end">
+            <div style="width:100%;background:var(--gold-b);border-radius:4px 4px 0 0;height:90%;"></div>
+          </div>
+          <div style="font-size:9px;color:var(--hint)">S</div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+          <div style="flex:1;width:100%;background:var(--s3);border-radius:4px 4px 0 0;display:flex;align-items:flex-end">
+            <div style="width:100%;background:var(--gold);border-radius:4px 4px 0 0;height:35%;animation:float 2s ease-in-out infinite"></div>
+          </div>
+          <div style="font-size:9px;color:var(--gold)">S</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px">
+        <span style="color:var(--muted)">$0.35 today</span>
+        <span style="color:var(--green)">$2.10 this week ↑</span>
+      </div>
+    </div>
+
+    <!-- top earners -->
+    <div style="background:var(--s2);border:0.5px solid var(--brd2);border-radius:14px;padding:16px;margin-bottom:12px">
+      <div style="font-size:11px;color:var(--hint);margin-bottom:12px;letter-spacing:0.05em">TOP EARNING TYPES</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px"><span style="color:var(--muted)">Follow campaigns</span><span style="color:var(--txt);font-family:monospace">$4.75</span></div>
+          <div style="height:5px;background:var(--s3);border-radius:3px;overflow:hidden"><div style="height:100%;background:var(--green);border-radius:3px;width:67%;transition:width 1s ease"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px"><span style="color:var(--muted)">Visit & check-in</span><span style="color:var(--txt);font-family:monospace">$6.00</span></div>
+          <div style="height:5px;background:var(--s3);border-radius:3px;overflow:hidden"><div style="height:100%;background:var(--gold);border-radius:3px;width:84%;transition:width 1s ease"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px"><span style="color:var(--muted)">Purchase actions</span><span style="color:var(--txt);font-family:monospace">$3.45</span></div>
+          <div style="height:5px;background:var(--s3);border-radius:3px;overflow:hidden"><div style="height:100%;background:var(--blue);border-radius:3px;width:49%;transition:width 1s ease"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- streak -->
+    <div style="background:var(--gold-l);border:0.5px solid var(--gold-b);border-radius:14px;padding:16px;display:flex;align-items:center;gap:14px">
+      <div style="font-size:32px;animation:float 2.2s ease-in-out infinite">🔥</div>
+      <div>
+        <div style="font-size:14px;font-weight:500;color:var(--txt)">7-day streak</div>
+        <div style="font-size:11px;color:var(--gold);margin-top:2px">Keep earning daily to unlock bonus multipliers</div>
+      </div>
+      <div style="margin-left:auto;text-align:right">
+        <div style="font-size:18px;font-weight:500;color:var(--gold);font-family:monospace">1.2×</div>
+        <div style="font-size:9px;color:rgba(239,159,39,0.5)">bonus</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /scroll body -->
+
+<!-- ══ WITHDRAW SHEET ══ -->
+<div id="withdraw-sheet" style="display:none;position:absolute;inset:0;z-index:50">
+  <div onclick="hideWithdraw()" style="position:absolute;inset:0;background:rgba(0,0,0,0.6)"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;background:var(--s1);border-radius:24px 24px 0 0;border-top:0.5px solid var(--brd2);padding:20px 20px 32px;animation:slide-in 0.28s ease">
+    <div style="width:36px;height:4px;background:var(--s4);border-radius:2px;margin:0 auto 18px"></div>
+    <div style="font-size:15px;font-weight:500;color:var(--txt);margin-bottom:4px">Withdraw funds</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:18px">Available: <span style="color:var(--green);font-family:monospace">$3.65</span></div>
+
+    <div style="background:var(--s2);border:0.5px solid var(--brd2);border-radius:12px;padding:14px;margin-bottom:14px;display:flex;align-items:center;gap:8px">
+      <span style="font-size:22px;color:var(--muted)">$</span>
+      <input id="withdraw-amt" type="number" placeholder="0.00" step="0.01" max="3.65" style="background:none;border:none;color:var(--txt);font-size:24px;font-weight:500;font-family:monospace;outline:none;flex:1;width:100%" oninput="updateWithdrawPreview()">
+      <button onclick="setWithdrawAll()" style="background:var(--s4);border:none;border-radius:7px;padding:5px 10px;font-size:11px;color:var(--muted);cursor:pointer">All</button>
+    </div>
+
+    <div style="font-size:10px;color:var(--hint);margin-bottom:8px;letter-spacing:0.06em">DESTINATION</div>
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <button class="withdraw-opt sel" id="wo-bank" onclick="selectWithdraw('bank',this)">
+        <span style="font-size:20px;color:var(--muted)">⊞</span>
+        <span style="font-size:11px;color:var(--txt)">Bank</span>
+        <span style="font-size:9px;color:var(--hint)">1–2 days</span>
+      </button>
+      <button class="withdraw-opt" id="wo-paypal" onclick="selectWithdraw('paypal',this)">
+        <span style="font-size:20px;color:var(--muted)">⊙</span>
+        <span style="font-size:11px;color:var(--txt)">PayPal</span>
+        <span style="font-size:9px;color:var(--hint)">instant</span>
+      </button>
+      <button class="withdraw-opt" id="wo-crypto" onclick="selectWithdraw('crypto',this)">
+        <span style="font-size:20px;color:var(--muted)">◈</span>
+        <span style="font-size:11px;color:var(--txt)">Crypto</span>
+        <span style="font-size:9px;color:var(--hint)">~1 hr</span>
+      </button>
+      <button class="withdraw-opt" id="wo-gift" onclick="selectWithdraw('gift',this)">
+        <span style="font-size:20px;color:var(--muted)">⊟</span>
+        <span style="font-size:11px;color:var(--txt)">Gift card</span>
+        <span style="font-size:9px;color:var(--hint)">instant</span>
+      </button>
+    </div>
+
+    <div id="withdraw-fee" style="font-size:11px;color:var(--hint);margin-bottom:14px">Fee: <span style="color:var(--muted)">$0.00 · No minimum</span></div>
+
+    <button id="confirm-withdraw-btn" onclick="confirmWithdraw()" style="width:100%;padding:15px;border-radius:14px;background:var(--s4);border:none;color:var(--muted);font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s">Enter amount to withdraw</button>
+  </div>
+</div>
+
+<!-- ══ TOAST ══ -->
+<div id="toast" style="display:none;position:absolute;top:18px;right:14px;background:var(--s2);border:0.5px solid var(--green-b);border-radius:12px;padding:10px 14px;font-size:12px;color:var(--green);z-index:200;animation:toast-in 0.3s ease;white-space:nowrap"></div>
+
+</div>
+</div>
+
+<script>
+const HISTORY=[
+  {id:1,type:'instant',icon:'🎸',title:'Followed @melodymae',sub:'Watch & Earn',amt:'+$0.25',color:'var(--green)',time:'Today 2:14pm',tag:'instant'},
+  {id:2,type:'released',icon:'🍕',title:"Mario's Pizza check-in",sub:'Visit completed · GPS verified',amt:'+$1.00',color:'var(--gold)',time:'Today 11:30am',tag:'released'},
+  {id:3,type:'instant',icon:'👟',title:'Followed @kicksculture',sub:'Watch & Earn',amt:'+$0.10',color:'var(--green)',time:'Yesterday 7:55pm',tag:'instant'},
+  {id:4,type:'withdrew',icon:'↑',title:'Withdrawal to PayPal',sub:'Processed · 2 confirmations',amt:'-$2.00',color:'var(--muted)',time:'Yesterday 6:00pm',tag:'withdrew'},
+  {id:5,type:'released',icon:'☕',title:"Blue Bottle check-in",sub:'Visit completed',amt:'+$0.50',color:'var(--gold)',time:'2 days ago',tag:'released'},
+  {id:6,type:'instant',icon:'🎵',title:'Followed @jaybeats',sub:'Watch & Earn',amt:'+$0.25',color:'var(--green)',time:'3 days ago',tag:'instant'},
+  {id:7,type:'withdrew',icon:'↑',title:'Withdrawal to bank',sub:'Processed · ACH transfer',amt:'-$6.30',color:'var(--muted)',time:'5 days ago',tag:'withdrew'},
+  {id:8,type:'released',icon:'🏋',title:'GymX membership promo',sub:'App install verified',amt:'+$2.00',color:'var(--gold)',time:'6 days ago',tag:'released'},
+];
+
+const PENDING=[
+  {
+    id:'p1',icon:'🍣',title:"Sakura Sushi — free appetizer",
+    brand:'Sakura Sushi Bar',brandColor:'var(--red)',
+    reward:'$1.50',expires:'5h 22m',expiresUrgent:true,
+    steps:[
+      {done:true, label:'Offer claimed', detail:'You tapped "I\'m Going!" · 2:14pm'},
+      {done:false, label:'Visit the restaurant', detail:'Stop by Sakura Sushi Bar today'},
+      {done:false, label:'GPS check-in', detail:'Auto-detects within 50m · 5th Ave location'},
+      {done:false, label:'Staff confirms order', detail:'Show your app to staff to unlock'}
+    ]
+  },
+  {
+    id:'p2',icon:'👟',title:"KicksCulture — loyalty reward",
+    brand:'@kicksculture',brandColor:'var(--blue)',
+    reward:'$0.50',expires:'3 days',expiresUrgent:false,
+    steps:[
+      {done:true, label:'Followed @kicksculture', detail:'Confirmed · yesterday 7:55pm'},
+      {done:true, label:'Watched 3 drop videos', detail:'2 of 3 complete · 1 remaining'},
+      {done:false, label:'Engage with new drop post', detail:'Like or comment when next drop goes live'}
+    ]
+  },
+  {
+    id:'p3',icon:'🎬',title:"FilmFest — early access ticket",
+    brand:'NYC Film Festival',brandColor:'var(--purple)',
+    reward:'$0.25',expires:'2 days',expiresUrgent:false,
+    steps:[
+      {done:true, label:'Campaign accepted', detail:'You confirmed interest · 1 day ago'},
+      {done:false, label:'Share event story', detail:'Post the festival story to your profile'},
+      {done:false, label:'Attend opening night', detail:'Check in at venue to release reward'}
+    ]
+  }
+];
+
+let expandedCards={}, activeTab='history', historyFilter='all', withdrawDest='bank';
+
+function buildHistory(filter){
+  const list=document.getElementById('history-list');
+  const items=filter==='all'?HISTORY:HISTORY.filter(h=>h.tag===filter);
+  if(items.length===0){list.innerHTML='<div style="text-align:center;padding:28px 0;font-size:12px;color:var(--hint)">No transactions here</div>';return;}
+  list.innerHTML=items.map(h=>`
+    <div class="tx-row">
+      <div style="width:38px;height:38px;border-radius:12px;background:var(--s3);border:0.5px solid var(--brd2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">${h.icon}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:500;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${h.title}</div>
+        <div style="font-size:10px;color:var(--hint);margin-top:2px">${h.sub}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:13px;font-weight:500;color:${h.color};font-family:monospace">${h.amt}</div>
+        <div style="font-size:10px;color:var(--hint);margin-top:2px">${h.time}</div>
+      </div>
+    </div>`).join('');
+}
+
+function buildPending(){
+  const list=document.getElementById('pending-list');
+  list.innerHTML='';
+  PENDING.forEach(p=>{
+    const completedSteps=p.steps.filter(s=>s.done).length;
+    const totalSteps=p.steps.length;
+    const pct=Math.round(completedSteps/totalSteps*100);
+    const isExp=expandedCards[p.id];
+    const card=document.createElement('div');
+    card.className='pending-card'+(isExp?' expanded':'');
+    card.id='pc-'+p.id;
+
+    let stepsHtml='';
+    if(isExp){
+      stepsHtml=`<div style="padding:0 14px 14px;border-top:0.5px solid var(--brd);margin-top:4px">
+        <div style="font-size:10px;color:var(--hint);letter-spacing:0.06em;padding-top:12px;margin-bottom:8px">STEPS TO RELEASE</div>
+        ${p.steps.map((s,i)=>`
+        <div class="step-row" style="animation-delay:${i*0.06}s">
+          <div style="width:24px;height:24px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;margin-top:2px;${s.done?'background:var(--green-l);border:0.5px solid var(--green-b);color:var(--green)':'background:var(--s3);border:0.5px solid var(--brd2);color:var(--hint)'}">
+            ${s.done?'✓':i+1}
+          </div>
+          <div style="flex:1">
+            <div style="font-size:12px;font-weight:500;color:${s.done?'var(--muted)':'var(--txt)'};${s.done?'text-decoration:line-through;text-decoration-color:rgba(255,255,255,0.15)':''}">${s.label}</div>
+            <div style="font-size:10px;color:var(--hint);margin-top:2px;line-height:1.5">${s.detail}</div>
+          </div>
+        </div>`).join('')}
+        <div style="display:flex;gap:8px;margin-top:14px">
+          <button class="action-btn" onclick="cancelPending('${p.id}',event)" style="background:var(--s3);color:var(--muted);border:0.5px solid var(--brd2)">Cancel hold</button>
+          <button class="action-btn" onclick="navigateToBusiness('${p.id}',event)" style="background:var(--gold);color:#1a0d00">Navigate →</button>
+        </div>
+      </div>`;
+    }
+
+    card.innerHTML=`
+      <div onclick="togglePending('${p.id}')" style="padding:13px 14px;display:flex;align-items:center;gap:11px">
+        <div style="width:40px;height:40px;border-radius:12px;background:var(--s3);border:0.5px solid var(--brd2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${p.icon}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:500;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.title}</div>
+          <div style="display:flex;align-items:center;gap:5px;margin-top:4px">
+            <div style="flex:1;height:3px;background:var(--s4);border-radius:2px;overflow:hidden">
+              <div style="height:100%;background:var(--gold);border-radius:2px;width:${pct}%;transition:width 0.6s ease"></div>
+            </div>
+            <span style="font-size:9px;color:var(--hint);flex-shrink:0">${completedSteps}/${totalSteps}</span>
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:14px;font-weight:500;color:var(--gold);font-family:monospace">${p.reward}</div>
+          <div style="font-size:9px;color:${p.expiresUrgent?'var(--red)':'var(--hint)'};margin-top:3px;${p.expiresUrgent?'animation:pulse-dot 1.2s infinite;display:inline-block':''}">${p.expiresUrgent?'⏳ ':''}${p.expires}</div>
+        </div>
+      </div>
+      ${stepsHtml}`;
+    list.appendChild(card);
+  });
+}
+
+function togglePending(id){
+  expandedCards[id]=!expandedCards[id];
+  buildPending();
+}
+
+function cancelPending(id,e){
+  e.stopPropagation();
+  const idx=PENDING.findIndex(p=>p.id===id);
+  if(idx>-1){PENDING.splice(idx,1);}
+  document.getElementById('pending-badge').textContent=PENDING.length;
+  document.getElementById('pending-total').textContent='$'+(PENDING.reduce((a,p)=>a+parseFloat(p.reward.replace('$','')),0)).toFixed(2);
+  buildPending();
+  showToast('Hold cancelled — no charge applied');
+}
+
+function navigateToBusiness(id,e){
+  e.stopPropagation();
+  showToast('Opening Maps… GPS tracking active');
+}
+
+function filterHistory(f,el){
+  document.querySelectorAll('[id^="hf-"]').forEach(c=>{
+    c.style.background='none';c.style.color='var(--muted)';c.style.borderColor='var(--brd2)';
+  });
+  el.style.background='var(--s3)';el.style.color='var(--txt)';
+  historyFilter=f;
+  buildHistory(f);
+}
+
+function switchTab(t){
+  ['history','pending','insights'].forEach(tab=>{
+    document.getElementById('tab-'+tab).classList.remove('active');
+    document.getElementById('view-'+tab).style.display='none';
+  });
+  document.getElementById('tab-'+t).classList.add('active');
+  document.getElementById('view-'+t).style.display='block';
+  activeTab=t;
+  if(t==='pending') buildPending();
+}
+
+function showWithdraw(){document.getElementById('withdraw-sheet').style.display='block';}
+function hideWithdraw(){document.getElementById('withdraw-sheet').style.display='none';}
+
+function setWithdrawAll(){
+  document.getElementById('withdraw-amt').value='3.65';
+  updateWithdrawPreview();
+}
+
+function selectWithdraw(dest, el){
+  document.querySelectorAll('.withdraw-opt').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  withdrawDest=dest;
+  const fees={bank:'$0.00 · 1–2 business days',paypal:'$0.00 · Instant transfer',crypto:'0.5% network fee · ~1 hour',gift:'$0.00 · Instant'};
+  document.getElementById('withdraw-fee').innerHTML='Fee: <span style="color:var(--muted)">'+fees[dest]+'</span>';
+}
+
+function updateWithdrawPreview(){
+  const val=parseFloat(document.getElementById('withdraw-amt').value);
+  const btn=document.getElementById('confirm-withdraw-btn');
+  if(val>0&&val<=3.65){
+    btn.style.background='var(--gold)';btn.style.color='#1a0d00';
+    btn.textContent='Withdraw $'+val.toFixed(2)+' →';
+  } else {
+    btn.style.background='var(--s4)';btn.style.color='var(--muted)';
+    btn.textContent=val>3.65?'Exceeds available balance':'Enter amount to withdraw';
+  }
+}
+
+function confirmWithdraw(){
+  const val=parseFloat(document.getElementById('withdraw-amt').value);
+  if(!val||val>3.65) return;
+  hideWithdraw();
+  const newBal=(3.65-val).toFixed(2);
+  document.getElementById('bal-main').textContent=newBal;
+  showToast('$'+val.toFixed(2)+' withdrawal initiated ✓');
+  document.getElementById('withdraw-amt').value='';
+  updateWithdrawPreview();
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.display='block';
+  setTimeout(()=>t.style.display='none',2800);
+}
+
+buildHistory('all');
+</script>

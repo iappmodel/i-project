@@ -1,0 +1,131 @@
+
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+.w { font-family:var(--font-sans); padding:20px 0; }
+.loops { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:20px; }
+.loop { border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-lg); overflow:hidden; }
+.loop-hdr { padding:14px 16px 10px; border-bottom:0.5px solid var(--color-border-tertiary); }
+.loop-num { font-size:10px; font-weight:500; letter-spacing:.07em; text-transform:uppercase; color:var(--color-text-tertiary); margin-bottom:4px; }
+.loop-name { font-size:14px; font-weight:500; color:var(--color-text-primary); }
+.loop-tag { font-size:11px; color:var(--color-text-secondary); margin-top:2px; }
+.steps-col { padding:12px 0; }
+.step { display:flex; gap:10px; align-items:flex-start; padding:6px 16px; cursor:pointer; transition:background .1s; border-radius:0; }
+.step:hover { background:var(--color-background-secondary); }
+.step-n { width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:500; flex-shrink:0; margin-top:1px; }
+.step-text { font-size:12px; color:var(--color-text-secondary); line-height:1.4; }
+.step-text b { font-weight:500; color:var(--color-text-primary); }
+.loop-footer { padding:10px 16px; border-top:0.5px solid var(--color-border-tertiary); }
+.outcome { font-size:11px; font-weight:500; }
+.rule { font-size:11px; color:var(--color-text-tertiary); margin-top:16px; padding:10px 14px; border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-md); }
+.rule b { font-weight:500; color:var(--color-text-primary); }
+</style>
+<div class="w">
+<h2 class="sr-only">The three core product loops of the i app: Watch-Verify-Earn, Browse-Save-Return, and Balance-Convert-Use</h2>
+<div class="loops">
+
+  <div class="loop">
+    <div class="loop-hdr">
+      <div class="loop-num">Loop 1 · flagship</div>
+      <div class="loop-name">Watch → Verify → Earn</div>
+      <div class="loop-tag">The money loop</div>
+    </div>
+    <div class="steps-col">
+      <div class="step" onclick="sendPrompt('Design the Earn marketplace screen for the i app')">
+        <div class="step-n" style="background:#EAF3DE;color:#27500A">1</div>
+        <div class="step-text"><b>Open Earn</b> — marketplace of available offers</div>
+      </div>
+      <div class="step" onclick="sendPrompt('Design the offer detail screen for the i app')">
+        <div class="step-n" style="background:#EAF3DE;color:#27500A">2</div>
+        <div class="step-text"><b>Tap offer</b> — see reward, duration, requirements</div>
+      </div>
+      <div class="step">
+        <div class="step-n" style="background:#EAF3DE;color:#27500A">3</div>
+        <div class="step-text"><b>Complete</b> — watch, survey, or GPS check-in</div>
+      </div>
+      <div class="step">
+        <div class="step-n" style="background:#EAF3DE;color:#27500A">4</div>
+        <div class="step-text"><b>Verify</b> — 5-gate engine confirms genuine attention</div>
+      </div>
+      <div class="step">
+        <div class="step-n" style="background:#EAF3DE;color:#27500A">5</div>
+        <div class="step-text"><b>Reward hits wallet</b> — icoins or acoins credited</div>
+      </div>
+      <div class="step">
+        <div class="step-n" style="background:#EAF3DE;color:#27500A">6</div>
+        <div class="step-text"><b>Cash out, convert, or spend</b> — loop closes</div>
+      </div>
+    </div>
+    <div class="loop-footer">
+      <div class="outcome" style="color:#3B6D11">Retention driver: every session has a payoff</div>
+    </div>
+  </div>
+
+  <div class="loop">
+    <div class="loop-hdr">
+      <div class="loop-num">Loop 2 · retention</div>
+      <div class="loop-name">Browse → Save → Return</div>
+      <div class="loop-tag">The habit loop</div>
+    </div>
+    <div class="steps-col">
+      <div class="step" onclick="sendPrompt('Design the immersive feed screen for the i app')">
+        <div class="step-n" style="background:#EEEDFE;color:#3C3489">1</div>
+        <div class="step-text"><b>Consume media</b> — feed from all connected platforms</div>
+      </div>
+      <div class="step">
+        <div class="step-n" style="background:#EEEDFE;color:#3C3489">2</div>
+        <div class="step-text"><b>Save</b> — creators, offers, content to a board</div>
+      </div>
+      <div class="step">
+        <div class="step-n" style="background:#EEEDFE;color:#3C3489">3</div>
+        <div class="step-text"><b>Notifications</b> — relevant new offers from saved creators</div>
+      </div>
+      <div class="step">
+        <div class="step-n" style="background:#EEEDFE;color:#3C3489">4</div>
+        <div class="step-text"><b>Return</b> — pick up a saved offer or continue watching</div>
+      </div>
+      <div class="step">
+        <div class="step-n" style="background:#EEEDFE;color:#3C3489">5</div>
+        <div class="step-text"><b>Earn again</b> — loop feeds back into Loop 1</div>
+      </div>
+    </div>
+    <div class="loop-footer">
+      <div class="outcome" style="color:#534AB7">Retention driver: saved content pulls users back</div>
+    </div>
+  </div>
+
+  <div class="loop">
+    <div class="loop-hdr">
+      <div class="loop-num">Loop 3 · fintech</div>
+      <div class="loop-name">Balance → Convert → Use</div>
+      <div class="loop-tag">The value loop</div>
+    </div>
+    <div class="steps-col">
+      <div class="step" onclick="sendPrompt('Design the wallet screen for the i app')">
+        <div class="step-n" style="background:#FAECE7;color:#712B13">1</div>
+        <div class="step-text"><b>See wallet grow</b> — balance visible at all times</div>
+      </div>
+      <div class="step">
+        <div class="step-n" style="background:#FAECE7;color:#712B13">2</div>
+        <div class="step-text"><b>Convert</b> — acoins → icoins at trust-tier rate</div>
+      </div>
+      <div class="step">
+        <div class="step-n" style="background:#FAECE7;color:#712B13">3</div>
+        <div class="step-text"><b>Withdraw or spend</b> — bank, card, NFC, pay link</div>
+      </div>
+      <div class="step">
+        <div class="step-n" style="background:#FAECE7;color:#712B13">4</div>
+        <div class="step-text"><b>Trust deepens</b> — tier rises, limits expand</div>
+      </div>
+      <div class="step">
+        <div class="step-n" style="background:#FAECE7;color:#712B13">5</div>
+        <div class="step-text"><b>Habitual</b> — wallet becomes primary fintech layer</div>
+      </div>
+    </div>
+    <div class="loop-footer">
+      <div class="outcome" style="color:#993C1D">Retention driver: trust score is sunk cost</div>
+    </div>
+  </div>
+
+</div>
+<div class="rule"><b>Filter:</b> if a feature does not strengthen one of these three loops, it is probably noise. Every screen, every interaction, every coin type maps to exactly one loop — or it ships without justification.</div>
+</div>

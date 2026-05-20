@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] App — Loop 1: Watch → Verify → Earn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-void:       #070709;
+  --bg-deep:       #0a0a0f;
+  --bg-surface:    #111118;
+  --bg-panel:      #16161f;
+  --bg-raised:     #1c1c28;
+  --border-subtle: rgba(255,255,255,0.05);
+  --border-mid:    rgba(255,255,255,0.09);
+  --border-active: rgba(255,255,255,0.18);
+  --text-primary:  #f0ede8;
+  --text-secondary:#9997a0;
+  --text-muted:    #4a4858;
+  --icoin-primary: #4ade80;
+  --accent-cyan:   #00e5ff;
+  --accent-lime:   #b4ff47;
+  --accent-amber:  #ffb300;
+  --accent-rose:   #ff4d6d;
+
+  /* Soft depth — neumorphic. Only on interactive surfaces */
+  --neu-out: -3px -3px 8px rgba(255,255,255,0.025), 3px 3px 10px rgba(0,0,0,0.5);
+  --neu-in:  inset -2px -2px 5px rgba(255,255,255,0.02), inset 2px 2px 7px rgba(0,0,0,0.45);
+  --neu-hover: -4px -4px 12px rgba(255,255,255,0.03), 4px 4px 14px rgba(0,0,0,0.6);
+
+  --font-display: 'Syne', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+}
+
+* { box-sizing:border-box; margin:0; padding:0; }
+
+body {
+  background: var(--bg-deep);
+  min-height: 100vh;
+  font-family: var(--font-body);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+/* ── Header ── */
+.page-header { text-align:center; margin-bottom:36px; }
+.page-title { font-family:var(--font-display); font-size:28px; font-weight:700; color:var(--text-primary); letter-spacing:-.02em; margin-bottom:6px; }
+.page-sub { font-size:13px; color:var(--text-muted); margin-bottom:20px; }
+
+/* ── Step nav ── */
+.step-nav {
+  display:flex; gap:0; margin-bottom:32px;
+  border:0.5px solid var(--border-mid); border-radius:14px; overflow:hidden;
+  max-width:680px; width:100%;
+}
+
+.step-pill {
+  flex:1; padding:10px 4px; text-align:center; cursor:pointer;
+  border-right:0.5px solid var(--border-mid);
+  background:transparent; transition:background .15s;
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+}
+.step-pill:last-child { border-right:none; }
+
+.sp-num {
+  font-family:var(--font-mono); font-size:9px;
+  color:var(--text-muted); font-weight:500;
+}
+
+.sp-label {
+  font-family:var(--font-body); font-size:10px; font-weight:500;
+  color:var(--text-muted); line-height:1.2;
+}
+
+.step-pill.active {
+  background:var(--bg-raised);
+  /* soft depth on active nav item */
+  box-shadow:var(--neu-in);
+}
+.step-pill.active .sp-num { color:var(--icoin-primary); }
+.step-pill.active .sp-label { color:var(--text-primary); }
+.step-pill.done .sp-num { color:var(--icoin-primary); }
+.step-pill.done .sp-label { color:var(--text-secondary); }
+
+/* ── Main layout ── */
+.main { display:flex; gap:32px; align-items:flex-start; max-width:900px; width:100%; flex-wrap:wrap; justify-content:center; }
+
+/* ── Phone ── */
+.phone {
+  width:300px; flex-shrink:0;
+  border:1.5px solid rgba(255,255,255,0.12);
+  border-radius:44px; overflow:hidden;
+  background:var(--bg-surface);
+  box-shadow:0 40px 80px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(255,255,255,0.04);
+}
+
+.notch {
+  width:80px; height:22px; margin:0 auto;
+  background:var(--bg-surface);
+  border-radius:0 0 14px 14px;
+  border:1.5px solid rgba(255,255,255,0.08); border-top:none;
+}
+
+.screen { padding:20px 16px 28px; min-height:580px; display:flex; flex-direction:column; }
+
+/* ── Screen panels ── */
+.panel { display:none; flex:1; flex-direction:column; }
+.panel.active { display:flex; }
+
+/* ── Common screen elements ── */
+.back-row {
+  display:flex; align-items:center; gap:7px; margin-bottom:18px;
+  cursor:pointer; opacity:.5; transition:opacity .12s;
+}
+.back-row:hover { opacity:1; }
+.back-box {
+  width:22px; height:22px; border-radius:6px;
+  background:var(--bg-panel); border:0.5px solid var(--border-mid);
+  display:flex; align-items:center; justify-content:center;
+  font-size:10px; color:var(--text-secondary);
+  /* No depth on nav chrome */
+}
+.back-lbl { font-family:var(--font-body); font-size:12px; color:var(--text-secondary); }
+
+.screen-title {
+  font-family:var(--font-display); font-size:20px; font-weight:600;
+  color:var(--text-primary); letter-spacing:-.02em; margin-bottom:4px;
+}
+.screen-sub { font-family:var(--font-body); font-size:12px; color:var(--text-muted); margin-bottom:18px; }
+
+/* ── EARN MARKETPLACE (Step 1) ── */
+.balance-strip {
+  display:flex; gap:8px; margin-bottom:16px;
+}
+.bal-card {
+  flex:1; border-radius:12px; padding:12px 14px;
+  background:var(--bg-raised);
+  /* Soft depth — wallet cards get it */
+  box-shadow:var(--neu-out);
+  border:0.5px solid var(--border-subtle);
+}
+.bal-label { font-family:var(--font-body); font-size:10px; color:var(--text-muted); margin-bottom:4px; }
+.bal-val { font-family:var(--font-mono); font-size:18px; font-weight:500; }
+.bal-sub { font-family:var(--font-body); font-size:9px; color:var(--text-muted); margin-top:2px; }
+
+.offer-list { flex:1; overflow:hidden; }
+
+/* ── OFFER CARD — gets soft depth as interactive earn surface ── */
+.offer-card {
+  border-radius:14px; overflow:hidden; margin-bottom:9px;
+  background:var(--bg-raised);
+  box-shadow:var(--neu-out);
+  border:0.5px solid var(--border-subtle);
+  cursor:pointer; transition:box-shadow .15s;
+}
+.offer-card:hover { box-shadow:var(--neu-hover); }
+
+.offer-thumb {
+  width:100%; height:80px; position:relative;
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden;
+}
+.offer-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(7,7,9,0.8) 0%,transparent 60%); }
+.offer-earn-badge {
+  position:absolute; bottom:8px; right:8px;
+  display:flex; align-items:center; gap:4px;
+  background:rgba(74,222,128,0.15); border:0.5px solid rgba(74,222,128,0.3);
+  border-radius:8px; padding:3px 8px; z-index:1;
+}
+.oeb-dot { width:4px; height:4px; border-radius:50%; background:var(--icoin-primary); }
+.oeb-val { font-family:var(--font-mono); font-size:10px; font-weight:500; color:var(--icoin-primary); }
+.offer-platform {
+  position:absolute; top:8px; left:8px;
+  font-family:var(--font-mono); font-size:9px; font-weight:600; color:#fff;
+  background:rgba(7,7,9,0.55); border-radius:5px; padding:3px 6px; z-index:1;
+}
+
+.offer-body { padding:10px 12px; }
+.offer-brand { font-family:var(--font-display); font-size:12px; font-weight:600; color:var(--text-primary); margin-bottom:2px; }
+.offer-desc { font-family:var(--font-body); font-size:10px; color:var(--text-secondary); line-height:1.4; margin-bottom:6px; }
+.offer-meta { display:flex; gap:10px; align-items:center; }
+.offer-tag { font-family:var(--font-body); font-size:9px; color:var(--text-muted); }
+.offer-tag span { color:var(--text-secondary); }
+
+/* ── OFFER DETAIL (Step 2) ── */
+.detail-hero {
+  width:100%; height:120px; border-radius:14px; overflow:hidden;
+  margin-bottom:14px; position:relative;
+  display:flex; align-items:center; justify-content:center;
+}
+.detail-hero-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(7,7,9,0.85) 0%,transparent 50%); }
+
+.req-list { margin-bottom:16px; }
+.req-item {
+  display:flex; gap:10px; align-items:flex-start;
+  padding:8px 0; border-bottom:0.5px solid var(--border-subtle);
+}
+.req-item:last-child { border-bottom:none; }
+.req-icon { width:22px; height:22px; border-radius:6px; background:var(--bg-raised); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.req-text { flex:1; }
+.req-title { font-family:var(--font-display); font-size:11px; font-weight:500; color:var(--text-primary); margin-bottom:1px; }
+.req-sub { font-family:var(--font-body); font-size:10px; color:var(--text-muted); }
+
+.earn-summary {
+  border-radius:12px; padding:14px;
+  background:var(--bg-raised);
+  /* Earn offer card — soft depth appropriate */
+  box-shadow:var(--neu-out);
+  border:0.5px solid rgba(74,222,128,0.12);
+  margin-bottom:16px;
+}
+.es-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+.es-row:last-child { margin-bottom:0; }
+.es-label { font-family:var(--font-body); font-size:11px; color:var(--text-secondary); }
+.es-val { font-family:var(--font-mono); font-size:12px; font-weight:500; color:var(--text-primary); }
+.es-val.green { color:var(--icoin-primary); }
+
+/* ── CONSENT (Step 3) ── */
+.consent-icon {
+  width:60px; height:60px; border-radius:50%; margin:0 auto 14px;
+  background:var(--bg-raised); border:0.5px solid var(--border-mid);
+  box-shadow:var(--neu-out);
+  display:flex; align-items:center; justify-content:center;
+}
+.consent-text { font-family:var(--font-body); font-size:12px; color:var(--text-secondary); text-align:center; line-height:1.6; margin-bottom:16px; padding:0 8px; }
+.consent-points { border:0.5px solid var(--border-subtle); border-radius:10px; overflow:hidden; margin-bottom:16px; }
+.consent-row { display:flex; gap:10px; align-items:flex-start; padding:10px 12px; border-bottom:0.5px solid var(--border-subtle); }
+.consent-row:last-child { border-bottom:none; }
+.cd { width:5px; height:5px; border-radius:50%; background:var(--icoin-primary); flex-shrink:0; margin-top:4px; }
+.ct { font-family:var(--font-body); font-size:11px; color:var(--text-secondary); line-height:1.4; }
+
+/* ── ACTIVE WATCH (Step 4) ── */
+.watch-screen {
+  flex:1; border-radius:14px; overflow:hidden; margin-bottom:12px;
+  background:linear-gradient(160deg,#050d0a,#0a1505);
+  position:relative; min-height:200px;
+  display:flex; align-items:center; justify-content:center;
+}
+.watch-scrim { position:absolute; inset:0; background:linear-gradient(to top,rgba(7,7,9,0.8) 0%,transparent 60%); }
+.watch-hud-top { position:absolute; top:10px; left:12px; right:12px; display:flex; justify-content:space-between; align-items:center; z-index:2; }
+.tracking-badge {
+  display:flex; align-items:center; gap:5px;
+  background:rgba(0,229,255,0.1); border:0.5px solid rgba(0,229,255,0.25);
+  border-radius:8px; padding:4px 9px;
+}
+.tb-dot { width:5px; height:5px; border-radius:50%; background:var(--accent-cyan); }
+.tb-label { font-family:var(--font-mono); font-size:9px; color:var(--accent-cyan); }
+.timer-badge {
+  font-family:var(--font-mono); font-size:10px; color:rgba(240,237,232,0.6);
+  background:rgba(7,7,9,0.5); padding:4px 8px; border-radius:6px;
+}
+.attention-ring-wrap { position:relative; z-index:1; }
+.watch-hud-bottom { position:absolute; bottom:10px; left:12px; right:12px; z-index:2; }
+.watch-earn-bar { height:2px; background:rgba(255,255,255,0.08); border-radius:1px; overflow:hidden; margin-bottom:6px; }
+.web-fill { height:100%; border-radius:1px; background:linear-gradient(90deg,var(--accent-lime),var(--icoin-primary)); transition:width .3s; }
+.watch-earn-row { display:flex; justify-content:space-between; }
+.wer-label { font-family:var(--font-body); font-size:9px; color:rgba(240,237,232,0.4); }
+.wer-val { font-family:var(--font-mono); font-size:9px; color:var(--icoin-primary); }
+
+@keyframes pulse-ring { 0%,100%{opacity:1} 50%{opacity:.4} }
+.attention-score-ring { animation:pulse-ring 2s ease-in-out infinite; }
+
+/* ── VERIFICATION (Step 5) ── */
+.gate-list { flex:1; }
+.gate-item {
+  display:flex; gap:10px; align-items:center;
+  padding:10px 0; border-bottom:0.5px solid var(--border-subtle);
+}
+.gate-item:last-child { border-bottom:none; }
+.gate-icon { width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.gate-text { flex:1; }
+.gate-name { font-family:var(--font-display); font-size:12px; font-weight:500; color:var(--text-primary); margin-bottom:1px; }
+.gate-status { font-family:var(--font-mono); font-size:10px; }
+.gate-tick { font-size:12px; font-weight:500; }
+
+@keyframes check-in { from{opacity:0;transform:scale(.5)} to{opacity:1;transform:scale(1)} }
+.gate-icon.pass { animation:check-in .3s cubic-bezier(.34,1.56,.64,1) both; }
+
+/* ── REWARD (Step 6) ── */
+@keyframes reward-drop { 0%{opacity:0;transform:scale(.5) translateY(-20px)} 60%{transform:scale(1.12) translateY(4px)} 100%{opacity:1;transform:scale(1) translateY(0)} }
+@keyframes ring-expand { from{opacity:.6;transform:scale(.6)} to{opacity:0;transform:scale(2.2)} }
+
+.reward-center { display:flex; flex-direction:column; align-items:center; flex:1; justify-content:center; }
+.reward-ring-wrap { position:relative; width:100px; height:100px; margin-bottom:20px; display:flex; align-items:center; justify-content:center; }
+.reward-ring { position:absolute; width:100%; height:100%; border-radius:50%; border:1px solid var(--icoin-primary); opacity:0; }
+.reward-ring.r1 { animation:ring-expand 1.6s ease-out infinite; }
+.reward-ring.r2 { animation:ring-expand 1.6s ease-out infinite .8s; }
+.reward-coin {
+  width:88px; height:88px; border-radius:50%;
+  background:rgba(74,222,128,0.08); border:2px solid rgba(74,222,128,0.25);
+  display:flex; align-items:center; justify-content:center; position:relative; z-index:1;
+  animation:reward-drop .6s cubic-bezier(.34,1.56,.64,1) both;
+}
+.reward-i { font-family:var(--font-display); font-size:28px; font-weight:700; color:var(--icoin-primary); }
+.reward-amount { font-family:var(--font-mono); font-size:32px; font-weight:500; color:var(--icoin-primary); margin-bottom:4px; }
+.reward-label { font-family:var(--font-body); font-size:12px; color:var(--text-secondary); margin-bottom:20px; }
+.reward-breakdown { width:100%; border:0.5px solid var(--border-subtle); border-radius:10px; overflow:hidden; margin-bottom:14px; }
+.rb-row { display:flex; justify-content:space-between; padding:8px 12px; border-bottom:0.5px solid var(--border-subtle); }
+.rb-row:last-child { border-bottom:none; }
+.rb-l { font-family:var(--font-body); font-size:11px; color:var(--text-secondary); }
+.rb-v { font-family:var(--font-mono); font-size:11px; font-weight:500; color:var(--text-primary); }
+
+/* ── WALLET UPDATE (Step 7) ── */
+.updated-chip {
+  display:flex; align-items:center; gap:6px; margin-bottom:16px;
+  background:rgba(74,222,128,0.06); border:0.5px solid rgba(74,222,128,0.15);
+  border-radius:8px; padding:8px 12px;
+}
+.uc-dot { width:6px; height:6px; border-radius:50%; background:var(--icoin-primary); }
+.uc-text { font-family:var(--font-body); font-size:11px; color:var(--icoin-primary); }
+
+/* ── CASH OUT (Step 8) — forms: no depth ── */
+.cashout-options { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:16px; }
+.co-option {
+  border:0.5px solid var(--border-subtle); border-radius:12px; padding:14px 10px;
+  background:var(--bg-panel); text-align:center; cursor:pointer;
+  transition:border-color .12s;
+  /* No shadow — this is a selection form, not an earn surface */
+}
+.co-option:hover { border-color:var(--border-mid); }
+.co-option.selected { border-color:var(--text-primary); }
+.co-name { font-family:var(--font-display); font-size:12px; font-weight:500; color:var(--text-primary); margin-bottom:2px; }
+.co-sub { font-family:var(--font-body); font-size:10px; color:var(--text-muted); }
+
+.amount-input-wrap {
+  border:0.5px solid var(--border-mid); border-radius:12px; padding:14px;
+  background:var(--bg-panel); margin-bottom:14px;
+  /* Form field — no depth */
+}
+.ai-label { font-family:var(--font-body); font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px; }
+.ai-val { font-family:var(--font-mono); font-size:32px; font-weight:500; color:var(--text-primary); }
+.ai-sub { font-family:var(--font-body); font-size:10px; color:var(--text-muted); margin-top:2px; }
+
+/* ── CTA BUTTON — soft depth on confirmation ── */
+.cta {
+  width:100%; padding:15px; border-radius:14px;
+  background:var(--text-primary); color:var(--bg-void);
+  font-family:var(--font-display); font-size:14px; font-weight:600;
+  border:none; cursor:pointer; letter-spacing:-.01em;
+  /* Confirmation button gets soft depth */
+  box-shadow:0 2px 16px rgba(240,237,232,0.08), 0 1px 4px rgba(0,0,0,0.3);
+  transition:opacity .12s, box-shadow .12s;
+  margin-top:auto;
+}
+.cta:hover { opacity:.9; box-shadow:0 4px 20px rgba(240,237,232,0.12), 0 2px 6px rgba(0,0,0,0.4); }
+.cta:active { box-shadow:0 1px 6px rgba(240,237,232,0.05), 0 1px 2px rgba(0,0,0,0.5); }
+
+.cta.secondary {
+  background:transparent; color:var(--text-primary);
+  border:0.5px solid var(--border-mid); box-shadow:none;
+  margin-top:8px;
+}
+
+/* ── Depth legend ── */
+.right-col { flex:1; min-width:220px; max-width:300px; padding-top:8px; }
+.depth-section { margin-bottom:24px; }
+.ds-title { font-family:var(--font-display); font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.07em; color:var(--text-muted); margin-bottom:10px; }
+.ds-item { margin-bottom:8px; }
+.ds-name { font-family:var(--font-display); font-size:12px; font-weight:500; color:var(--text-primary); margin-bottom:2px; }
+.ds-why { font-family:var(--font-body); font-size:11px; color:var(--text-secondary); line-height:1.5; }
+.ds-divider { height:0.5px; background:var(--border-subtle); margin:16px 0; }
+
+.nav-row { display:flex; gap:8px; margin-top:28px; }
+.nav-btn {
+  flex:1; padding:11px 0; border-radius:12px; font-family:var(--font-display);
+  font-size:13px; font-weight:600; border:0.5px solid var(--border-mid);
+  background:transparent; color:var(--text-primary); cursor:pointer;
+  transition:background .12s; letter-spacing:-.01em;
+}
+.nav-btn:hover { background:var(--bg-raised); }
+.nav-btn.primary {
+  background:var(--text-primary); color:var(--bg-void); border-color:transparent;
+  box-shadow:0 2px 16px rgba(240,237,232,0.08);
+}
+.nav-btn.primary:hover { opacity:.9; }
+.step-indicator { font-family:var(--font-mono); font-size:11px; color:var(--text-muted); text-align:center; margin-top:10px; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="page-title">[ i ]</div>
+  <div class="page-sub">Loop 1 — Watch → Verify → Earn</div>
+  <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;max-width:680px;">
+    <div style="font-family:var(--font-body);font-size:11px;color:var(--text-muted);background:rgba(74,222,128,0.06);border:0.5px solid rgba(74,222,128,0.15);border-radius:20px;padding:4px 12px;">Soft depth: earn cards · wallet cards · confirm buttons</div>
+    <div style="font-family:var(--font-body);font-size:11px;color:var(--text-muted);background:rgba(255,255,255,0.04);border:0.5px solid var(--border-subtle);border-radius:20px;padding:4px 12px;">No depth: forms · history · security · compliance</div>
+  </div>
+</div>
+
+<div class="step-nav" id="step-nav"></div>
+
+<div class="main">
+  <div>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen">
+
+        <!-- Step 1: Earn Marketplace -->
+        <div class="panel active" id="p1">
+          <div class="screen-title">Earn</div>
+          <div class="screen-sub">Available now · 12 offers</div>
+          <div class="balance-strip">
+            <div class="bal-card">
+              <div class="bal-label">icoins</div>
+              <div class="bal-val" style="color:var(--icoin-primary)">847</div>
+              <div class="bal-sub">+34 today</div>
+            </div>
+            <div class="bal-card">
+              <div class="bal-label">acoins</div>
+              <div class="bal-val" style="color:#9FE1CB">1,240</div>
+              <div class="bal-sub">earning now</div>
+            </div>
+          </div>
+          <div class="offer-list">
+            <div class="offer-card" onclick="goStep(2)">
+              <div class="offer-thumb" style="background:linear-gradient(135deg,#050d0a,#0a1505)">
+                <div class="offer-overlay"></div>
+                <div class="offer-platform">YT</div>
+                <div class="offer-earn-badge"><div class="oeb-dot"></div><div class="oeb-val">+2.00 icoins</div></div>
+              </div>
+              <div class="offer-body">
+                <div class="offer-brand">Nike Running</div>
+                <div class="offer-desc">Pegasus 41 — new campaign · eye-tracking verified</div>
+                <div class="offer-meta">
+                  <div class="offer-tag">Duration: <span>4:30</span></div>
+                  <div class="offer-tag">Type: <span>Watch</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="offer-card" onclick="goStep(2)">
+              <div class="offer-thumb" style="background:linear-gradient(135deg,#0d0a1a,#0d1a1a)">
+                <div class="offer-overlay"></div>
+                <div class="offer-platform">IG</div>
+                <div class="offer-earn-badge"><div class="oeb-dot"></div><div class="oeb-val">+320 acoins</div></div>
+              </div>
+              <div class="offer-body">
+                <div class="offer-brand">Notion</div>
+                <div class="offer-desc">Your second brain, organized — product demo</div>
+                <div class="offer-meta">
+                  <div class="offer-tag">Duration: <span>2:00</span></div>
+                  <div class="offer-tag">Type: <span>Watch</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Offer Detail -->
+        <div class="panel" id="p2">
+          <div class="back-row" onclick="goStep(1)"><div class="back-box">←</div><div class="back-lbl">Earn</div></div>
+          <div class="detail-hero" style="background:linear-gradient(135deg,#050d0a,#0a1505)">
+            <div class="detail-hero-overlay"></div>
+            <svg width="32" height="32" viewBox="0 0 32 32" style="position:relative;z-index:1"><polygon points="10,6 26,16 10,26" fill="rgba(240,237,232,0.7)"/></svg>
+          </div>
+          <div class="screen-title" style="font-size:16px">Nike Running</div>
+          <div class="screen-sub">Pegasus 41 launch campaign</div>
+          <div class="req-list">
+            <div class="req-item">
+              <div class="req-icon"><svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" stroke="var(--text-muted)" stroke-width="1" fill="none"/><polyline points="3,6 5.5,8.5 9,4" stroke="var(--icoin-primary)" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg></div>
+              <div class="req-text"><div class="req-title">Watch 4:30 minutes</div><div class="req-sub">Full video · skipping pauses earn timer</div></div>
+            </div>
+            <div class="req-item">
+              <div class="req-icon"><svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" stroke="var(--text-muted)" stroke-width="1" fill="none"/><polyline points="3,6 5.5,8.5 9,4" stroke="var(--icoin-primary)" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg></div>
+              <div class="req-text"><div class="req-title">Eye-tracking verified</div><div class="req-sub">Camera on · gaze must stay on screen</div></div>
+            </div>
+            <div class="req-item">
+              <div class="req-icon"><svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" stroke="var(--text-muted)" stroke-width="1" fill="none"/><polyline points="3,6 5.5,8.5 9,4" stroke="var(--icoin-primary)" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg></div>
+              <div class="req-text"><div class="req-title">Attention score ≥ 70</div><div class="req-sub">Composite score from dwell + gaze data</div></div>
+            </div>
+          </div>
+          <div class="earn-summary">
+            <div class="es-row"><div class="es-label">You earn</div><div class="es-val green">+2.00 icoins</div></div>
+            <div class="es-row"><div class="es-label">Creator earns</div><div class="es-val">60% of ad value</div></div>
+            <div class="es-row"><div class="es-label">Platform fee</div><div class="es-val">10%</div></div>
+          </div>
+          <button class="cta" onclick="goStep(3)">Start watching</button>
+        </div>
+
+        <!-- Step 3: Consent -->
+        <div class="panel" id="p3">
+          <div class="back-row" onclick="goStep(2)"><div class="back-box">←</div><div class="back-lbl">Offer</div></div>
+          <div class="screen-title">Camera access</div>
+          <div class="screen-sub">Required for eye-tracking verification</div>
+          <div class="consent-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="7" stroke="var(--accent-cyan)" stroke-width="1.5"/>
+              <circle cx="12" cy="12" r="3" fill="var(--accent-cyan)" opacity=".4"/>
+              <circle cx="12" cy="12" r="1.5" fill="var(--accent-cyan)"/>
+            </svg>
+          </div>
+          <div class="consent-text">[ i ] uses on-device eye-tracking to verify genuine attention. Your camera feed never leaves your phone.</div>
+          <div class="consent-points">
+            <div class="consent-row"><div class="cd"></div><div class="ct">Raw video is processed locally — never transmitted</div></div>
+            <div class="consent-row"><div class="cd"></div><div class="ct">Only a pass/fail attention score is recorded</div></div>
+            <div class="consent-row"><div class="cd"></div><div class="ct">You can skip eye-tracking — earn rate drops to 0.5×</div></div>
+            <div class="consent-row"><div class="cd"></div><div class="ct">Revoke camera access any time in settings</div></div>
+          </div>
+          <button class="cta" onclick="goStep(4)">Allow camera &amp; start</button>
+          <button class="cta secondary" onclick="goStep(4)">Skip eye-tracking (0.5×)</button>
+        </div>
+
+        <!-- Step 4: Active Watch -->
+        <div class="panel" id="p4">
+          <div class="watch-screen" id="watch-screen">
+            <div class="watch-scrim"></div>
+            <div class="watch-hud-top">
+              <div class="tracking-badge">
+                <div class="tb-dot"></div>
+                <div class="tb-label">tracking</div>
+              </div>
+              <div class="timer-badge" id="watch-timer">4:30</div>
+            </div>
+            <svg class="attention-score-ring" width="80" height="80" viewBox="0 0 80 80" style="position:relative;z-index:1">
+              <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="3"/>
+              <circle cx="40" cy="40" r="34" fill="none" stroke="var(--icoin-primary)" stroke-width="3" stroke-linecap="round"
+                stroke-dasharray="213" stroke-dashoffset="43" transform="rotate(-90 40 40)" id="attention-arc"/>
+              <text x="40" y="36" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" font-weight="500" fill="var(--icoin-primary)" id="attn-val">80</text>
+              <text x="40" y="50" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="rgba(240,237,232,0.4)">attention</text>
+            </svg>
+            <div class="watch-hud-bottom">
+              <div class="watch-earn-bar"><div class="web-fill" id="earn-fill" style="width:0%"></div></div>
+              <div class="watch-earn-row">
+                <div class="wer-label">Watch &amp; earn</div>
+                <div class="wer-val" id="earn-counter">+0.00 i</div>
+              </div>
+            </div>
+          </div>
+          <div style="height:10px"></div>
+          <button class="cta" onclick="goStep(5)" style="padding:12px">Complete &amp; verify</button>
+        </div>
+
+        <!-- Step 5: Verification -->
+        <div class="panel" id="p5">
+          <div class="screen-title">Verifying</div>
+          <div class="screen-sub">5-gate qualification · takes 2–3 seconds</div>
+          <div class="gate-list" id="gate-list">
+            <div class="gate-item" id="g1">
+              <div class="gate-icon" style="background:var(--bg-raised)"><svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" stroke="var(--text-muted)" stroke-width="1" fill="none"/></svg></div>
+              <div class="gate-text"><div class="gate-name">Device signal</div><div class="gate-status" style="color:var(--text-muted)" id="gs1">Checking…</div></div>
+              <div class="gate-tick" id="gt1" style="color:var(--text-muted)">·</div>
+            </div>
+            <div class="gate-item" id="g2">
+              <div class="gate-icon" style="background:var(--bg-raised)"><svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" stroke="var(--text-muted)" stroke-width="1" fill="none"/></svg></div>
+              <div class="gate-text"><div class="gate-name">Dwell threshold</div><div class="gate-status" style="color:var(--text-muted)" id="gs2">Pending</div></div>
+              <div class="gate-tick" id="gt2" style="color:var(--text-muted)">·</div>
+            </div>
+            <div class="gate-item" id="g3">
+              <div class="gate-icon" style="background:var(--bg-raised)"><svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" stroke="var(--text-muted)" stroke-width="1" fill="none"/></svg></div>
+              <div class="gate-text"><div class="gate-name">Attention score</div><div class="gate-status" style="color:var(--text-muted)" id="gs3">Pending</div></div>
+              <div class="gate-tick" id="gt3" style="color:var(--text-muted)">·</div>
+            </div>
+            <div class="gate-item" id="g4">
+              <div class="gate-icon" style="background:var(--bg-raised)"><svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" stroke="var(--text-muted)" stroke-width="1" fill="none"/></svg></div>
+              <div class="gate-text"><div class="gate-name">Completion event</div><div class="gate-status" style="color:var(--text-muted)" id="gs4">Pending</div></div>
+              <div class="gate-tick" id="gt4" style="color:var(--text-muted)">·</div>
+            </div>
+            <div class="gate-item" id="g5">
+              <div class="gate-icon" style="background:var(--bg-raised)"><svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" stroke="var(--text-muted)" stroke-width="1" fill="none"/></svg></div>
+              <div class="gate-text"><div class="gate-name">Fraud check</div><div class="gate-status" style="color:var(--text-muted)" id="gs5">Pending</div></div>
+              <div class="gate-tick" id="gt5" style="color:var(--text-muted)">·</div>
+            </div>
+          </div>
+          <button class="cta" id="verify-cta" onclick="goStep(6)" style="opacity:.3;cursor:not-allowed" disabled>All gates passing…</button>
+        </div>
+
+        <!-- Step 6: Reward -->
+        <div class="panel" id="p6">
+          <div class="reward-center">
+            <div class="reward-ring-wrap">
+              <div class="reward-ring r1"></div>
+              <div class="reward-ring r2"></div>
+              <div class="reward-coin"><div class="reward-i">i</div></div>
+            </div>
+            <div class="reward-amount" id="reward-amount">+2.00</div>
+            <div class="reward-label">icoins credited to your wallet</div>
+            <div class="reward-breakdown">
+              <div class="rb-row"><div class="rb-l">Source</div><div class="rb-v">Nike campaign</div></div>
+              <div class="rb-row"><div class="rb-l">Attention score</div><div class="rb-v" style="color:var(--icoin-primary)">80 / 100</div></div>
+              <div class="rb-row"><div class="rb-l">Watch time</div><div class="rb-v">4:30 complete</div></div>
+              <div class="rb-row"><div class="rb-l">Ref</div><div class="rb-v" style="color:var(--text-muted);font-size:10px">i·2f9b·7m4k</div></div>
+            </div>
+            <button class="cta" onclick="goStep(7)">See wallet update</button>
+          </div>
+        </div>
+
+        <!-- Step 7: Wallet Update -->
+        <div class="panel" id="p7">
+          <div class="screen-title">Wallet</div>
+          <div class="screen-sub">Updated just now</div>
+          <div class="updated-chip">
+            <div class="uc-dot"></div>
+            <div class="uc-text">+2.00 icoins from Nike campaign</div>
+          </div>
+          <div class="balance-strip" style="margin-bottom:14px">
+            <div class="bal-card">
+              <div class="bal-label">icoins</div>
+              <div class="bal-val" style="color:var(--icoin-primary)">849</div>
+              <div class="bal-sub" style="color:var(--icoin-primary)">+2.00 just now</div>
+            </div>
+            <div class="bal-card">
+              <div class="bal-label">Lifetime</div>
+              <div class="bal-val" style="color:var(--text-secondary)">4,893</div>
+              <div class="bal-sub">total earned</div>
+            </div>
+          </div>
+          <div style="border:0.5px solid var(--border-subtle);border-radius:10px;overflow:hidden;margin-bottom:14px;">
+            <div class="rb-row" style="padding:9px 12px;border-bottom:0.5px solid var(--border-subtle)"><div class="rb-l">Nike campaign</div><div class="rb-v" style="color:var(--icoin-primary)">+2.00 i · just now</div></div>
+            <div class="rb-row" style="padding:9px 12px;border-bottom:0.5px solid var(--border-subtle)"><div class="rb-l">Focus session</div><div class="rb-v" style="color:var(--text-secondary)">+28 a · 20m ago</div></div>
+            <div class="rb-row" style="padding:9px 12px"><div class="rb-l">Converted</div><div class="rb-v" style="color:var(--text-secondary)">+34 i · 1h ago</div></div>
+          </div>
+          <button class="cta" onclick="goStep(8)">Cash out or spend</button>
+          <button class="cta secondary" onclick="goStep(1)">Earn more</button>
+        </div>
+
+        <!-- Step 8: Cash Out -->
+        <div class="panel" id="p8">
+          <div class="back-row" onclick="goStep(7)"><div class="back-box">←</div><div class="back-lbl">Wallet</div></div>
+          <div class="screen-title">Use your icoins</div>
+          <div class="screen-sub">849 icoins available</div>
+          <div class="cashout-options">
+            <div class="co-option selected" onclick="selectCO(this)">
+              <div class="co-name">Withdraw</div>
+              <div class="co-sub">Bank · card · instant</div>
+            </div>
+            <div class="co-option" onclick="selectCO(this)">
+              <div class="co-name">Convert</div>
+              <div class="co-sub">acoins · mcoins</div>
+            </div>
+            <div class="co-option" onclick="selectCO(this)">
+              <div class="co-name">Pay</div>
+              <div class="co-sub">NFC · QR · link</div>
+            </div>
+            <div class="co-option" onclick="selectCO(this)">
+              <div class="co-name">Tip</div>
+              <div class="co-sub">Creator direct</div>
+            </div>
+          </div>
+          <div class="amount-input-wrap">
+            <div class="ai-label">Amount</div>
+            <div class="ai-val">849</div>
+            <div class="ai-sub">= $8.49 USD · no fee via bank</div>
+          </div>
+          <div style="border:0.5px solid var(--border-subtle);border-radius:10px;overflow:hidden;margin-bottom:14px;">
+            <div class="rb-row" style="padding:8px 12px;border-bottom:0.5px solid var(--border-subtle)"><div class="rb-l">You send</div><div class="rb-v">849 icoins</div></div>
+            <div class="rb-row" style="padding:8px 12px;border-bottom:0.5px solid var(--border-subtle)"><div class="rb-l">Platform fee</div><div class="rb-v" style="color:var(--icoin-primary)">Free</div></div>
+            <div class="rb-row" style="padding:8px 12px"><div class="rb-l">You receive</div><div class="rb-v" style="color:var(--icoin-primary)">$8.49 USD</div></div>
+          </div>
+          <button class="cta" onclick="goStep(1)">Confirm · loop again</button>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="nav-btn" id="btn-prev" onclick="goStep(currentStep-1)">← Back</button>
+      <button class="nav-btn primary" id="btn-next" onclick="goStep(currentStep+1)">Next →</button>
+    </div>
+    <div class="step-indicator" id="step-indicator">Step 1 of 8</div>
+  </div>
+
+  <div class="right-col">
+    <div class="depth-section">
+      <div class="ds-title">Soft depth · used here</div>
+      <div class="ds-item">
+        <div class="ds-name">Wallet balance cards</div>
+        <div class="ds-why">The user's money has physical weight. Depth signals value, not just data.</div>
+      </div>
+      <div class="ds-item">
+        <div class="ds-name">Earn offer cards</div>
+        <div class="ds-why">Offers are interactive rewards — depth makes them feel tappable and desirable.</div>
+      </div>
+      <div class="ds-item">
+        <div class="ds-name">Earn summary block</div>
+        <div class="ds-why">The reward breakdown is the moment of commitment. Depth amplifies its importance.</div>
+      </div>
+      <div class="ds-item">
+        <div class="ds-name">Consent icon</div>
+        <div class="ds-why">Camera permission is a significant moment. The raised icon signals gravity without alarm.</div>
+      </div>
+      <div class="ds-item">
+        <div class="ds-name">Confirmation CTA</div>
+        <div class="ds-why">The primary action button gets subtle lift — it's the most important tap on the screen.</div>
+      </div>
+    </div>
+    <div class="ds-divider"></div>
+    <div class="depth-section">
+      <div class="ds-title">No depth · intentional</div>
+      <div class="ds-item">
+        <div class="ds-name">Verification gates</div>
+        <div class="ds-why">Security and compliance steps read as flat system information — depth would feel decorative and wrong here.</div>
+      </div>
+      <div class="ds-item">
+        <div class="ds-name">Cash out form</div>
+        <div class="ds-why">The destination selector and amount input are data entry — flat surfaces for focused, unambiguous input.</div>
+      </div>
+      <div class="ds-item">
+        <div class="ds-name">Transaction history</div>
+        <div class="ds-why">Dense ledger data needs maximum legibility. Depth creates visual noise on rows of equal weight.</div>
+      </div>
+      <div class="ds-item">
+        <div class="ds-name">Consent bullet points</div>
+        <div class="ds-why">Legal disclosures must feel neutral and honest. Depth would feel like marketing — exactly wrong for trust moments.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentStep = 1;
+const totalSteps = 8;
+const stepLabels = ['Earn','Detail','Consent','Watch','Verify','Reward','Wallet','Use'];
+
+function buildNav() {
+  const nav = document.getElementById('step-nav');
+  nav.innerHTML = stepLabels.map((l,i) => `
+    <div class="step-pill${i+1===currentStep?' active':i+1<currentStep?' done':''}" onclick="goStep(${i+1})">
+      <div class="sp-num">${i+1<currentStep?'✓':i+1}</div>
+      <div class="sp-label">${l}</div>
+    </div>
+  `).join('');
+}
+
+function goStep(n) {
+  if (n < 1 || n > totalSteps) return;
+  document.getElementById('p'+currentStep).classList.remove('active');
+  currentStep = n;
+  document.getElementById('p'+currentStep).classList.add('active');
+  buildNav();
+  document.getElementById('step-indicator').textContent = `Step ${currentStep} of ${totalSteps}`;
+  document.getElementById('btn-prev').style.opacity = currentStep === 1 ? '.3' : '1';
+  document.getElementById('btn-prev').disabled = currentStep === 1;
+  document.getElementById('btn-next').textContent = currentStep === totalSteps ? 'Restart ↺' : 'Next →';
+
+  if (n === 4) startWatch();
+  if (n === 5) runVerification();
+}
+
+// Watch simulation
+let watchInterval = null;
+function startWatch() {
+  clearInterval(watchInterval);
+  let elapsed = 0;
+  const total = 270;
+  watchInterval = setInterval(() => {
+    elapsed++;
+    const pct = Math.min(elapsed / total * 100, 100);
+    document.getElementById('earn-fill').style.width = pct + '%';
+    const earned = (pct / 100 * 2).toFixed(2);
+    document.getElementById('earn-counter').textContent = '+' + earned + ' i';
+    const remaining = total - elapsed;
+    const m = Math.floor(remaining / 60), s = remaining % 60;
+    document.getElementById('watch-timer').textContent = m + ':' + String(s).padStart(2,'0');
+    const score = Math.round(75 + Math.sin(elapsed * 0.1) * 12);
+    document.getElementById('attn-val').textContent = score;
+    const offset = 213 - (213 * score / 100);
+    document.getElementById('attention-arc').setAttribute('stroke-dashoffset', offset);
+    if (elapsed >= total) clearInterval(watchInterval);
+  }, 50);
+}
+
+// Verification simulation
+function runVerification() {
+  const gates = ['gs1','gs2','gs3','gs4','gs5'];
+  const ticks = ['gt1','gt2','gt3','gt4','gt5'];
+  const labels = ['Valid · on-device','Met · 4:30 watched','Score 80 · passed','Received · complete','Clean · no flags'];
+  gates.forEach((g,i) => {
+    document.getElementById(g).textContent = 'Pending';
+    document.getElementById(g).style.color = 'var(--text-muted)';
+    document.getElementById(ticks[i]).textContent = '·';
+    document.getElementById(ticks[i]).style.color = 'var(--text-muted)';
+  });
+  const cta = document.getElementById('verify-cta');
+  cta.style.opacity = '.3'; cta.disabled = true; cta.textContent = 'Verifying…';
+
+  gates.forEach((g,i) => {
+    setTimeout(() => {
+      document.getElementById(g).textContent = labels[i];
+      document.getElementById(g).style.color = 'var(--icoin-primary)';
+      document.getElementById(ticks[i]).textContent = '✓';
+      document.getElementById(ticks[i]).style.color = 'var(--icoin-primary)';
+      if (i === gates.length - 1) {
+        setTimeout(() => {
+          cta.style.opacity = '1'; cta.disabled = false; cta.textContent = 'Collect reward';
+        }, 300);
+      }
+    }, (i + 1) * 550);
+  });
+}
+
+function selectCO(el) {
+  document.querySelectorAll('.co-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+buildNav();
+document.getElementById('btn-prev').style.opacity = '.3';
+document.getElementById('btn-prev').disabled = true;
+</script>
+
+</body>
+</html>

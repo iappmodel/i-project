@@ -1,0 +1,437 @@
+
+<style>
+*{box-sizing:border-box}
+:root{--bg:#0d0d0d;--s1:#161616;--s2:#1e1e1e;--s3:#272727;--brd:rgba(255,255,255,0.07);--brd2:rgba(255,255,255,0.12);--txt:#f0f0f0;--muted:rgba(255,255,255,0.38);--hint:rgba(255,255,255,0.2);--gold:#EF9F27;--gold-l:rgba(239,159,39,0.12);--gold-b:rgba(239,159,39,0.28);--green:#1D9E75;--green-l:rgba(29,158,117,0.1);--green-b:rgba(29,158,117,0.28);--blue:#378ADD;--blue-l:rgba(55,138,221,0.1);--blue-b:rgba(55,138,221,0.28);--red:#E24B4A;--red-l:rgba(226,75,74,0.1)}
+@keyframes earn-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+@keyframes ghost-breathe{0%,100%{border-color:rgba(255,255,255,0.14);background:rgba(255,255,255,0.03)}50%{border-color:rgba(255,255,255,0.28);background:rgba(255,255,255,0.07)}}
+@keyframes slide-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes wave-bar{0%,100%{height:5px}50%{height:22px}}
+@keyframes cond-add{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+</style>
+
+<div style="background:var(--bg);min-height:660px;color:var(--txt);font-size:14px;display:flex;flex-direction:column">
+
+<!-- TOP NAV -->
+<div style="border-bottom:0.5px solid var(--brd);padding:13px 20px;display:flex;align-items:center;justify-content:space-between">
+  <div style="display:flex;align-items:center;gap:10px">
+    <div style="width:26px;height:26px;border-radius:7px;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:11px;color:#2a1500;font-weight:500">◈</div>
+    <span style="font-size:13px;font-weight:500;color:var(--txt)">Campaign Builder</span>
+    <span style="font-size:11px;color:var(--hint)">/ new</span>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <div id="status-dot" style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)">
+      <div style="width:5px;height:5px;border-radius:50%;background:var(--hint)"></div>
+      draft
+    </div>
+    <button onclick="publishCampaign()" style="background:var(--gold);border:none;border-radius:9px;padding:7px 16px;font-size:12px;font-weight:500;color:#1a0d00;cursor:pointer;letter-spacing:0.03em">Publish →</button>
+  </div>
+</div>
+
+<!-- BODY: builder + preview -->
+<div style="display:flex;flex:1;overflow:hidden">
+
+  <!-- LEFT: BUILDER -->
+  <div style="flex:1;overflow-y:auto;padding:18px 20px;border-right:0.5px solid var(--brd);min-width:0">
+
+    <!-- STEP 1: MEDIA -->
+    <div class="section" style="margin-bottom:22px;animation:slide-in 0.3s ease">
+      <div style="font-size:10px;letter-spacing:0.07em;color:var(--hint);margin-bottom:10px;text-transform:uppercase">01 · Media</div>
+      <div id="media-drop" onclick="selectMedia()" style="border:0.5px dashed var(--brd2);border-radius:14px;padding:22px;text-align:center;cursor:pointer;background:var(--s1);transition:all 0.2s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--brd2)'">
+        <div style="font-size:22px;margin-bottom:6px;opacity:0.4">▶</div>
+        <div style="font-size:13px;font-weight:500;color:var(--muted)">Tap to select your video</div>
+        <div style="font-size:11px;color:var(--hint);margin-top:3px">MP4 · up to 60s · or paste URL</div>
+      </div>
+      <!-- after select -->
+      <div id="media-selected" style="display:none;background:var(--s1);border:0.5px solid var(--brd);border-radius:14px;padding:13px;display:none;align-items:center;gap:10px">
+        <div id="media-thumb" style="width:48px;height:48px;border-radius:9px;background:var(--s3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px"></div>
+        <div style="flex:1;min-width:0">
+          <div id="media-name" style="font-size:13px;font-weight:500;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+          <div id="media-dur" style="font-size:11px;color:var(--muted);margin-top:2px"></div>
+        </div>
+        <div onclick="clearMedia()" style="font-size:18px;color:var(--hint);cursor:pointer;padding:4px">×</div>
+      </div>
+    </div>
+
+    <!-- STEP 2: ACTION BUTTON -->
+    <div class="section" style="margin-bottom:22px">
+      <div style="font-size:10px;letter-spacing:0.07em;color:var(--hint);margin-bottom:10px;text-transform:uppercase">02 · Action Button</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px">
+        <div class="btn-preset" id="preset-follow" onclick="selectPreset('Follow','creator')" style="border:0.5px solid var(--brd2);border-radius:10px;padding:10px 12px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all 0.18s">
+          <div style="width:6px;height:6px;border-radius:50%;background:var(--green)"></div>
+          <span style="font-size:13px;color:var(--txt)">Follow</span>
+          <span style="font-size:10px;color:var(--hint);margin-left:auto">creator</span>
+        </div>
+        <div class="btn-preset" id="preset-going" onclick="selectPreset(\"I'm Going!\", 'visit')" style="border:0.5px solid var(--brd2);border-radius:10px;padding:10px 12px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all 0.18s">
+          <div style="width:6px;height:6px;border-radius:50%;background:var(--gold)"></div>
+          <span style="font-size:13px;color:var(--txt)">I'm Going!</span>
+          <span style="font-size:10px;color:var(--hint);margin-left:auto">visit</span>
+        </div>
+        <div class="btn-preset" id="preset-shop" onclick="selectPreset('Shop Now','purchase')" style="border:0.5px solid var(--brd2);border-radius:10px;padding:10px 12px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all 0.18s">
+          <div style="width:6px;height:6px;border-radius:50%;background:var(--blue)"></div>
+          <span style="font-size:13px;color:var(--txt)">Shop Now</span>
+          <span style="font-size:10px;color:var(--hint);margin-left:auto">purchase</span>
+        </div>
+        <div class="btn-preset" id="preset-custom" onclick="selectPreset('custom','custom')" style="border:0.5px solid var(--brd2);border-radius:10px;padding:10px 12px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all 0.18s">
+          <div style="width:6px;height:6px;border-radius:50%;background:var(--muted)"></div>
+          <span style="font-size:13px;color:var(--txt)">Custom…</span>
+          <span style="font-size:10px;color:var(--hint);margin-left:auto">write it</span>
+        </div>
+      </div>
+      <div id="custom-btn-wrap" style="display:none;margin-top:4px">
+        <input id="custom-btn-input" oninput="updatePreview()" placeholder="e.g. Claim Free Ticket" style="width:100%;background:var(--s2);border:0.5px solid var(--brd2);border-radius:9px;padding:10px 13px;color:var(--txt);font-size:13px;outline:none" />
+      </div>
+    </div>
+
+    <!-- STEP 3: REWARD -->
+    <div class="section" style="margin-bottom:22px">
+      <div style="font-size:10px;letter-spacing:0.07em;color:var(--hint);margin-bottom:10px;text-transform:uppercase">03 · Reward</div>
+      <!-- type toggle -->
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <div id="type-instant" onclick="setRewardType('instant')" style="flex:1;border:0.5px solid var(--green-b);border-radius:10px;padding:11px 13px;cursor:pointer;background:var(--green-l);transition:all 0.18s">
+          <div style="font-size:12px;font-weight:500;color:var(--green)">Instant</div>
+          <div style="font-size:10px;color:rgba(29,158,117,0.55);margin-top:2px">paid on action</div>
+        </div>
+        <div id="type-pending" onclick="setRewardType('pending')" style="flex:1;border:0.5px solid var(--brd2);border-radius:10px;padding:11px 13px;cursor:pointer;transition:all 0.18s">
+          <div style="font-size:12px;font-weight:500;color:var(--muted)">Conditional</div>
+          <div style="font-size:10px;color:var(--hint);margin-top:2px">held until verified</div>
+        </div>
+      </div>
+      <!-- amount -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <div style="flex:1;background:var(--s2);border:0.5px solid var(--brd2);border-radius:9px;padding:10px 13px;display:flex;align-items:center;gap:6px">
+          <span style="font-size:14px;color:var(--muted)">$</span>
+          <input id="reward-amt" type="number" value="0.25" min="0.01" step="0.01" oninput="updatePreview()" style="background:none;border:none;color:var(--txt);font-size:15px;font-weight:500;font-family:monospace;outline:none;width:80px" />
+          <span style="font-size:11px;color:var(--hint);margin-left:auto">USD per user</span>
+        </div>
+        <div style="background:var(--s2);border:0.5px solid var(--brd2);border-radius:9px;padding:10px 13px;min-width:100px;text-align:center">
+          <div style="font-size:10px;color:var(--hint);margin-bottom:2px">budget cap</div>
+          <div style="display:flex;align-items:center;gap:4px;justify-content:center">
+            <span style="font-size:12px;color:var(--muted)">$</span>
+            <input id="budget-cap" type="number" value="100" oninput="updatePreview()" style="background:none;border:none;color:var(--txt);font-size:14px;font-weight:500;font-family:monospace;outline:none;width:52px" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4: WATCH THRESHOLD -->
+    <div class="section" style="margin-bottom:22px">
+      <div style="font-size:10px;letter-spacing:0.07em;color:var(--hint);margin-bottom:10px;text-transform:uppercase">04 · Watch Threshold</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Ghost button appears after</div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <input type="range" id="threshold-slider" min="2" max="30" value="5" step="1" oninput="updateThreshold()" style="flex:1;accent-color:var(--gold)" />
+        <div style="font-family:monospace;font-size:15px;font-weight:500;color:var(--gold);min-width:44px;text-align:right"><span id="threshold-val">5</span>s</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--hint);margin-top:4px"><span>2s quick</span><span>30s deep</span></div>
+    </div>
+
+    <!-- STEP 5: CONDITIONS (shown if pending) -->
+    <div id="conditions-wrap" class="section" style="margin-bottom:22px;display:none">
+      <div style="font-size:10px;letter-spacing:0.07em;color:var(--hint);margin-bottom:10px;text-transform:uppercase">05 · Conditions to Release</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px">User must complete these steps before $<span id="cond-amt">0.25</span> is released from hold.</div>
+      <div id="cond-list" style="display:flex;flex-direction:column;gap:7px;margin-bottom:10px"></div>
+      <button onclick="addCondition()" style="width:100%;background:var(--s2);border:0.5px dashed var(--brd2);border-radius:9px;padding:10px;color:var(--muted);font-size:12px;cursor:pointer">+ Add condition</button>
+      <div style="margin-top:10px;padding:10px 12px;background:var(--s1);border:0.5px solid var(--brd);border-radius:9px;font-size:11px;color:var(--hint);line-height:1.65">
+        <span style="color:var(--gold)">Tip:</span> The first condition is always "User taps the action button" — added automatically. Keep the list short (3–4 steps) for best conversion.
+      </div>
+    </div>
+
+    <!-- STEP 6: SCHEDULE -->
+    <div class="section" style="margin-bottom:22px">
+      <div id="sched-num" style="font-size:10px;letter-spacing:0.07em;color:var(--hint);margin-bottom:10px;text-transform:uppercase">05 · Schedule</div>
+      <div style="display:flex;gap:8px">
+        <div style="flex:1;background:var(--s2);border:0.5px solid var(--brd2);border-radius:9px;padding:10px 13px">
+          <div style="font-size:10px;color:var(--hint);margin-bottom:4px">starts</div>
+          <div style="font-size:13px;color:var(--txt);font-weight:500">Today · Now</div>
+        </div>
+        <div style="flex:1;background:var(--s2);border:0.5px solid var(--brd2);border-radius:9px;padding:10px 13px">
+          <div style="font-size:10px;color:var(--hint);margin-bottom:4px">expires</div>
+          <div id="expiry-toggle" onclick="cycleExpiry()" style="font-size:13px;color:var(--txt);font-weight:500;cursor:pointer">24 hours ↕</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /builder -->
+
+  <!-- RIGHT: LIVE PREVIEW -->
+  <div style="width:218px;flex-shrink:0;background:var(--s1);display:flex;flex-direction:column;overflow:hidden">
+    <!-- preview tab bar -->
+    <div style="display:flex;border-bottom:0.5px solid var(--brd)">
+      <div id="tab-card" onclick="switchPreviewTab('card')" style="flex:1;padding:9px;text-align:center;font-size:11px;font-weight:500;cursor:pointer;color:var(--txt);border-bottom:1.5px solid var(--gold)">Feed card</div>
+      <div id="tab-imm" onclick="switchPreviewTab('imm')" style="flex:1;padding:9px;text-align:center;font-size:11px;color:var(--muted);cursor:pointer;border-bottom:1.5px solid transparent">In-video</div>
+      <div id="tab-earn" onclick="switchPreviewTab('earn')" style="flex:1;padding:9px;text-align:center;font-size:11px;color:var(--muted);cursor:pointer;border-bottom:1.5px solid transparent">Earning</div>
+    </div>
+
+    <!-- PREVIEW: FEED CARD -->
+    <div id="pv-card" style="flex:1;padding:12px;overflow-y:auto">
+      <div style="font-size:10px;letter-spacing:0.05em;color:var(--hint);margin-bottom:8px;text-align:center">FEED PREVIEW</div>
+      <div style="background:#191919;border-radius:14px;overflow:hidden;border:0.5px solid rgba(255,255,255,0.05)">
+        <div id="pv-card-thumb" style="height:116px;background:var(--s3);position:relative;display:flex;align-items:center;justify-content:center">
+          <div style="font-size:22px;opacity:0.25">▶</div>
+          <div id="pv-earn-badge" style="position:absolute;top:8px;right:8px;background:var(--gold);border-radius:12px;padding:2px 8px;font-size:10px;color:#1a0d00;font-weight:500">Earn $0.25</div>
+          <div style="position:absolute;bottom:7px;right:9px;font-size:10px;color:rgba(255,255,255,0.25)">tap & earn →</div>
+        </div>
+        <div style="padding:10px">
+          <div style="font-size:12px;font-weight:500;color:var(--txt);margin-bottom:3px" id="pv-uname">Your Campaign</div>
+          <div style="font-size:10px;color:var(--muted)" id="pv-btn-name">Action: <span style="color:var(--gold)">Follow</span></div>
+        </div>
+      </div>
+      <!-- stats preview -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px">
+        <div style="background:var(--s2);border-radius:9px;padding:9px;text-align:center">
+          <div style="font-size:10px;color:var(--hint);margin-bottom:3px">reach est.</div>
+          <div style="font-size:15px;font-weight:500;color:var(--txt)" id="pv-reach">400</div>
+        </div>
+        <div style="background:var(--s2);border-radius:9px;padding:9px;text-align:center">
+          <div style="font-size:10px;color:var(--hint);margin-bottom:3px">budget left</div>
+          <div style="font-size:15px;font-weight:500;color:var(--green)" id="pv-budget">$100</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PREVIEW: IN-VIDEO -->
+    <div id="pv-imm" style="flex:1;padding:12px;display:none;overflow-y:auto">
+      <div style="font-size:10px;letter-spacing:0.05em;color:var(--hint);margin-bottom:8px;text-align:center">IN-VIDEO PREVIEW</div>
+      <div style="background:#111;border-radius:14px;overflow:hidden;min-height:230px;position:relative;border:0.5px solid var(--brd)">
+        <!-- fake video bg -->
+        <div id="pv-imm-bg" style="position:absolute;inset:0;background:#0a1c17;opacity:0.6"></div>
+        <!-- content -->
+        <div style="position:relative;height:230px;display:flex;flex-direction:column;justify-content:space-between;padding:10px">
+          <!-- top earn bar -->
+          <div style="display:flex;align-items:center;gap:5px;background:rgba(0,0,0,0.45);border:0.5px solid var(--gold-b);border-radius:12px;padding:4px 9px;width:fit-content;width:-webkit-fit-content">
+            <div style="width:5px;height:5px;border-radius:50%;background:var(--gold);animation:earn-pulse 1.2s infinite"></div>
+            <span style="font-size:9px;color:rgba(239,159,39,0.6)">watching</span>
+            <span style="font-size:11px;color:var(--gold);font-family:monospace">$0.000</span>
+          </div>
+          <!-- threshold indicator -->
+          <div style="background:rgba(0,0,0,0.5);border-radius:8px;padding:7px 9px;margin:auto 0">
+            <div style="font-size:9px;color:var(--hint);margin-bottom:4px">button appears after <span id="pv-thresh">5</span>s</div>
+            <div style="height:3px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden">
+              <div id="pv-thresh-bar" style="height:100%;background:var(--gold);border-radius:3px;width:20%;transition:width 0.3s"></div>
+            </div>
+          </div>
+          <!-- ghost button -->
+          <div>
+            <div style="font-size:9px;color:var(--hint);margin-bottom:5px;letter-spacing:0.05em">ACTION BUTTON (GHOST)</div>
+            <div id="pv-ghost-btn" style="width:100%;padding:11px;border-radius:10px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.7);font-size:12px;font-weight:500;text-align:center;animation:ghost-breathe 2.5s infinite">Follow</div>
+            <div id="pv-earn-hint" style="text-align:center;font-size:9px;color:rgba(239,159,39,0.45);margin-top:4px">earn $0.25 instantly</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PREVIEW: EARNING STATE -->
+    <div id="pv-earn" style="flex:1;padding:12px;display:none;overflow-y:auto">
+      <div style="font-size:10px;letter-spacing:0.05em;color:var(--hint);margin-bottom:8px;text-align:center">REWARD STATE</div>
+      <div id="pv-earn-content" style="background:var(--s2);border-radius:12px;padding:13px;border:0.5px solid var(--brd)">
+        <!-- instant preview -->
+        <div id="pv-instant" style="text-align:center">
+          <div style="width:40px;height:40px;border-radius:50%;background:var(--green-l);border:0.5px solid var(--green-b);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-size:16px;color:var(--green)">✓</div>
+          <div style="font-size:13px;font-weight:500;color:var(--txt);margin-bottom:3px">Earned!</div>
+          <div style="font-size:22px;font-weight:500;color:var(--green);font-family:monospace" id="pv-instant-amt">+$0.25</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:4px">added to wallet instantly</div>
+        </div>
+        <!-- pending preview -->
+        <div id="pv-pending" style="display:none">
+          <div style="text-align:center;margin-bottom:10px">
+            <div style="width:40px;height:40px;border-radius:50%;background:var(--gold-l);border:0.5px solid var(--gold-b);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-size:14px;color:var(--gold)">◎</div>
+            <div style="font-size:13px;font-weight:500;color:var(--txt);margin-bottom:2px">Pending hold</div>
+            <div style="font-size:20px;font-weight:500;color:var(--gold);font-family:monospace" id="pv-pending-amt">$1.00</div>
+          </div>
+          <div id="pv-cond-preview" style="display:flex;flex-direction:column;gap:5px"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /preview -->
+</div><!-- /body -->
+
+<!-- PUBLISH TOAST -->
+<div id="publish-toast" style="display:none;position:absolute;bottom:18px;left:50%;transform:translateX(-50%);background:#1a0d00;border:0.5px solid var(--gold-b);border-radius:14px;padding:12px 20px;font-size:13px;color:var(--gold);white-space:nowrap;z-index:100;animation:slide-in 0.3s ease">Campaign published! Going live now ◈</div>
+
+</div>
+
+<script>
+let rewardType='instant', btnLabel='Follow', selectedPreset='creator', conditions=[], expiryOpts=['24 hours','48 hours','7 days','No expiry'], expiryIdx=0, mediaSet=false;
+
+const MEDIA_SAMPLES=[
+  {n:'guitar_live_session.mp4',e:'🎸',d:'0:47 · 24.3 MB',bg:'#0a1c17'},
+  {n:"marios_pizza_promo.mp4",e:'🍕',d:'0:32 · 18.1 MB',bg:'#180f03'},
+  {n:'product_drop_video.mp4',e:'📦',d:'1:05 · 41.2 MB',bg:'#0f1622'}
+];
+let mediaIdx=0;
+
+const DEFAULT_CONDS=[
+  {txt:"Visit the store in person",editable:true},
+  {txt:"GPS check-in within 50m",editable:true},
+  {txt:"Staff confirms completion",editable:true}
+];
+
+function init(){
+  selectPreset('Follow','creator');
+  renderConditions();
+}
+
+function selectPreset(lbl,type){
+  document.querySelectorAll('.btn-preset').forEach(el=>{
+    el.style.borderColor='var(--brd2)';el.style.background='transparent';
+  });
+  document.getElementById('custom-btn-wrap').style.display='none';
+  if(lbl==='custom'){
+    const el=document.getElementById('preset-custom');
+    el.style.borderColor='var(--gold)';el.style.background='var(--gold-l)';
+    document.getElementById('custom-btn-wrap').style.display='block';
+    btnLabel=document.getElementById('custom-btn-input').value||'Custom';
+  } else {
+    const map={'Follow':'preset-follow',"I'm Going!":'preset-going','Shop Now':'preset-shop'};
+    const el=document.getElementById(map[lbl]);
+    if(el){el.style.borderColor='var(--gold)';el.style.background='var(--gold-l)';}
+    btnLabel=lbl;
+  }
+  selectedPreset=type;
+  updatePreview();
+}
+
+function setRewardType(t){
+  rewardType=t;
+  const ti=document.getElementById('type-instant');
+  const tp=document.getElementById('type-pending');
+  const cw=document.getElementById('conditions-wrap');
+  if(t==='instant'){
+    ti.style.borderColor='var(--green-b)';ti.style.background='var(--green-l)';
+    ti.querySelector('div').style.color='var(--green)';
+    tp.style.borderColor='var(--brd2)';tp.style.background='transparent';
+    tp.querySelector('div').style.color='var(--muted)';
+    cw.style.display='none';
+    document.getElementById('sched-num').textContent='05 · Schedule';
+  } else {
+    tp.style.borderColor='var(--gold-b)';tp.style.background='var(--gold-l)';
+    tp.querySelector('div').style.color='var(--gold)';
+    ti.style.borderColor='var(--brd2)';ti.style.background='transparent';
+    ti.querySelector('div').style.color='var(--muted)';
+    cw.style.display='block';
+    document.getElementById('sched-num').textContent='06 · Schedule';
+    if(conditions.length===0) conditions=[...DEFAULT_CONDS.map(c=>({...c}))];
+    renderConditions();
+  }
+  updatePreview();
+}
+
+function addCondition(){
+  conditions.push({txt:'Tap to describe step…',editable:true});
+  renderConditions();
+  updatePreview();
+}
+
+function removeCondition(i){conditions.splice(i,1);renderConditions();updatePreview();}
+
+function renderConditions(){
+  const el=document.getElementById('cond-list');
+  const amt=parseFloat(document.getElementById('reward-amt').value||0.25).toFixed(2);
+  document.getElementById('cond-amt').textContent=amt;
+  let html=`<div style="display:flex;gap:9px;align-items:flex-start;opacity:0.45;margin-bottom:2px">
+    <div style="width:22px;height:22px;border-radius:50%;border:0.5px solid var(--brd2);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted);flex-shrink:0;margin-top:1px">1</div>
+    <div style="flex:1;font-size:12px;color:var(--muted);padding-top:3px">User taps the action button</div>
+  </div>`;
+  conditions.forEach((c,i)=>{
+    html+=`<div style="display:flex;gap:9px;align-items:flex-start;animation:cond-add 0.25s ease">
+      <div style="width:22px;height:22px;border-radius:50%;border:0.5px solid var(--brd2);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted);flex-shrink:0;margin-top:5px">${i+2}</div>
+      <input value="${c.txt}" onchange="conditions[${i}].txt=this.value;updatePreview()" onfocus="this.select()" style="flex:1;background:var(--s2);border:0.5px solid var(--brd2);border-radius:8px;padding:8px 10px;color:var(--txt);font-size:12px;outline:none" />
+      <div onclick="removeCondition(${i})" style="color:var(--hint);cursor:pointer;padding:9px 4px;font-size:15px;flex-shrink:0">×</div>
+    </div>`;
+  });
+  el.innerHTML=html;
+}
+
+function updateThreshold(){
+  const v=document.getElementById('threshold-slider').value;
+  document.getElementById('threshold-val').textContent=v;
+  document.getElementById('pv-thresh').textContent=v;
+  const pct=Math.min(100,((v-2)/(30-2))*100);
+  document.getElementById('pv-thresh-bar').style.width=pct+'%';
+}
+
+function updatePreview(){
+  const amt=parseFloat(document.getElementById('reward-amt').value||0.25);
+  const cap=parseFloat(document.getElementById('budget-cap').value||100);
+  const lbl=document.getElementById('custom-btn-input')?.value&&selectedPreset==='custom'?document.getElementById('custom-btn-input').value:btnLabel;
+  const reach=Math.floor(cap/amt);
+
+  document.getElementById('pv-earn-badge').textContent='Earn $'+amt.toFixed(2);
+  document.getElementById('pv-btn-name').innerHTML='Action: <span style="color:var(--gold)">'+lbl+'</span>';
+  document.getElementById('pv-ghost-btn').textContent=lbl;
+  document.getElementById('pv-reach').textContent=reach>9999?'9,999+':reach.toLocaleString();
+  document.getElementById('pv-budget').textContent='$'+cap.toFixed(0);
+  document.getElementById('pv-cond-amt')&&(document.getElementById('pv-cond-amt').textContent=amt.toFixed(2));
+  document.getElementById('pv-instant-amt').textContent='+$'+amt.toFixed(2);
+  document.getElementById('pv-pending-amt').textContent='$'+amt.toFixed(2);
+
+  if(rewardType==='instant'){
+    document.getElementById('pv-earn-hint').textContent='earn $'+amt.toFixed(2)+' instantly';
+  } else {
+    document.getElementById('pv-earn-hint').textContent='earn $'+amt.toFixed(2)+' — held until complete';
+  }
+
+  // earn tab
+  if(rewardType==='instant'){
+    document.getElementById('pv-instant').style.display='block';
+    document.getElementById('pv-pending').style.display='none';
+  } else {
+    document.getElementById('pv-instant').style.display='none';
+    document.getElementById('pv-pending').style.display='block';
+    const cpc=document.getElementById('pv-cond-preview');
+    const all=[{txt:'User taps the action button',done:true},...conditions];
+    cpc.innerHTML=all.map((c,i)=>`<div style="display:flex;gap:7px;align-items:flex-start">
+      <div style="width:16px;height:16px;border-radius:50%;${c.done?'background:var(--green-l);border:0.5px solid var(--green-b);color:var(--green)':'background:var(--s1);border:0.5px solid var(--brd);color:var(--hint)'};display:flex;align-items:center;justify-content:center;font-size:8px;flex-shrink:0;margin-top:2px">${c.done?'✓':i+1}</div>
+      <div style="font-size:10px;color:${c.done?'var(--muted)':'var(--hint)'};padding-top:3px;line-height:1.5">${c.txt}</div>
+    </div>`).join('');
+  }
+}
+
+function switchPreviewTab(t){
+  ['card','imm','earn'].forEach(tab=>{
+    const el=document.getElementById('pv-'+tab);
+    const te=document.getElementById('tab-'+tab);
+    if(el) el.style.display=tab===t?'flex':'none';
+    if(te){te.style.color=tab===t?'var(--txt)':'var(--muted)';te.style.borderBottomColor=tab===t?'var(--gold)':'transparent';}
+  });
+  if(t==='earn') updatePreview();
+}
+
+function selectMedia(){
+  mediaIdx=(mediaIdx+1)%MEDIA_SAMPLES.length;
+  const m=MEDIA_SAMPLES[mediaIdx];
+  const drop=document.getElementById('media-drop');
+  drop.style.display='none';
+  const sel=document.getElementById('media-selected');
+  sel.style.display='flex';
+  document.getElementById('media-thumb').style.background=m.bg;
+  document.getElementById('media-thumb').textContent=m.e;
+  document.getElementById('media-name').textContent=m.n;
+  document.getElementById('media-dur').textContent=m.d;
+  document.getElementById('pv-imm-bg').style.background=m.bg;
+  document.getElementById('pv-card-thumb').style.background=m.bg+'88';
+  mediaSet=true;
+}
+
+function clearMedia(){
+  document.getElementById('media-drop').style.display='block';
+  document.getElementById('media-selected').style.display='none';
+  mediaSet=false;
+}
+
+function cycleExpiry(){
+  expiryIdx=(expiryIdx+1)%expiryOpts.length;
+  document.getElementById('expiry-toggle').textContent=expiryOpts[expiryIdx]+' ↕';
+}
+
+function publishCampaign(){
+  const toast=document.getElementById('publish-toast');
+  toast.style.display='block';
+  document.getElementById('status-dot').innerHTML='<div style="width:5px;height:5px;border-radius:50%;background:var(--green);animation:earn-pulse 1.5s infinite"></div> live';
+  document.getElementById('status-dot').style.color='var(--green)';
+  setTimeout(()=>{toast.style.display='none'},3200);
+}
+
+init();
+updatePreview();
+</script>

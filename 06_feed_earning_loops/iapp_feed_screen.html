@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] App — Main Feed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-void:        #070709;
+    --bg-deep:        #0a0a0f;
+    --bg-surface:     #111118;
+    --bg-panel:       #16161f;
+    --bg-raised:      #1c1c28;
+    --border-subtle:  rgba(255,255,255,0.05);
+    --border-mid:     rgba(255,255,255,0.09);
+    --border-active:  rgba(255,255,255,0.18);
+    --text-primary:   #f0ede8;
+    --text-secondary: #9997a0;
+    --text-muted:     #4a4858;
+    --icoin-primary:  #4ade80;
+    --accent-cyan:    #00e5ff;
+    --accent-lime:    #b4ff47;
+    --font-display:   'Syne', sans-serif;
+    --font-body:      'DM Sans', sans-serif;
+    --font-mono:      'JetBrains Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg-deep);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    font-family: var(--font-body);
+  }
+
+  .phone-wrap {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .app-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -.02em;
+    margin-bottom: 6px;
+  }
+
+  .app-sub {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+  }
+
+  .phone {
+    width: 340px;
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 44px;
+    overflow: hidden;
+    background: var(--bg-surface);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(255,255,255,0.04);
+  }
+
+  .notch {
+    width: 88px;
+    height: 24px;
+    margin: 0 auto;
+    background: var(--bg-surface);
+    border-radius: 0 0 16px 16px;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-top: none;
+  }
+
+  .screen {
+    padding: 16px 0 0;
+    min-height: 740px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Top bar */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18px 14px;
+  }
+
+  .logo {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -.02em;
+  }
+
+  .top-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .wallet-chip {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(74,222,128,0.08);
+    border: 0.5px solid rgba(74,222,128,0.2);
+    border-radius: 20px;
+    padding: 4px 10px;
+    cursor: pointer;
+  }
+
+  .wallet-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--icoin-primary);
+  }
+
+  .wallet-val {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--icoin-primary);
+  }
+
+  .notif-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--bg-panel);
+    border: 0.5px solid var(--border-mid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .notif-pip {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--icoin-primary);
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    border: 1px solid var(--bg-surface);
+  }
+
+  /* Stories row */
+  .stories-row {
+    display: flex;
+    gap: 10px;
+    padding: 0 18px 14px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .stories-row::-webkit-scrollbar { display: none; }
+
+  .story {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .story-ring {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    padding: 2px;
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-lime));
+  }
+
+  .story-ring.seen {
+    background: var(--bg-raised);
+  }
+
+  .story-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--bg-panel);
+    border: 2px solid var(--bg-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    overflow: hidden;
+  }
+
+  .story-platform {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 7px;
+    font-weight: 700;
+    border: 1px solid var(--bg-surface);
+  }
+
+  .story-wrap { position: relative; }
+
+  .story-name {
+    font-family: var(--font-body);
+    font-size: 9px;
+    color: var(--text-muted);
+    text-align: center;
+    max-width: 46px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Filter pills */
+  .filter-row {
+    display: flex;
+    gap: 6px;
+    padding: 0 18px 14px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .filter-row::-webkit-scrollbar { display: none; }
+
+  .pill {
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 0.5px solid var(--border-mid);
+    background: transparent;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-muted);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all .12s;
+    flex-shrink: 0;
+  }
+
+  .pill.active {
+    background: var(--text-primary);
+    color: var(--bg-void);
+    border-color: var(--text-primary);
+  }
+
+  .pill:hover:not(.active) {
+    border-color: var(--border-active);
+    color: var(--text-secondary);
+  }
+
+  /* Feed cards */
+  .feed {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: none;
+    padding: 0 14px;
+  }
+  .feed::-webkit-scrollbar { display: none; }
+
+  .card {
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    background: var(--bg-panel);
+    border: 0.5px solid var(--border-subtle);
+    cursor: pointer;
+    transition: border-color .12s;
+  }
+  .card:hover { border-color: var(--border-mid); }
+
+  /* Card thumbnail */
+  .thumb {
+    width: 100%;
+    aspect-ratio: 16/9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .thumb-gradient {
+    position: absolute;
+    inset: 0;
+  }
+
+  .thumb-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(7,7,9,0.85) 0%, transparent 50%);
+  }
+
+  .thumb-platform {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(7,7,9,0.6);
+    border-radius: 8px;
+    padding: 4px 8px;
+    backdrop-filter: blur(4px);
+  }
+
+  .platform-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 6px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .platform-name {
+    font-family: var(--font-body);
+    font-size: 9px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  .thumb-duration {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--text-secondary);
+    background: rgba(7,7,9,0.6);
+    padding: 3px 6px;
+    border-radius: 6px;
+  }
+
+  .thumb-earn {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(74,222,128,0.15);
+    border: 0.5px solid rgba(74,222,128,0.3);
+    border-radius: 8px;
+    padding: 4px 8px;
+  }
+
+  .earn-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--icoin-primary);
+  }
+
+  .earn-val {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--icoin-primary);
+  }
+
+  .play-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(240,237,232,0.15);
+    border: 1px solid rgba(240,237,232,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+    backdrop-filter: blur(4px);
+  }
+
+  .play-triangle {
+    width: 0;
+    height: 0;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-left: 12px solid var(--text-primary);
+    margin-left: 2px;
+  }
+
+  /* Card body */
+  .card-body {
+    padding: 12px 14px;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .creator-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--bg-raised);
+    border: 0.5px solid var(--border-mid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  .creator-info { flex: 1; min-width: 0; }
+
+  .creator-name {
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -.01em;
+  }
+
+  .creator-handle {
+    font-family: var(--font-body);
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .verified-badge {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent-cyan);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 7px;
+    color: var(--bg-void);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .card-caption {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+
+  .card-caption span {
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  .card-stats {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .stat-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+  }
+
+  .card-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+  }
+
+  .action-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--bg-raised);
+    border: 0.5px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 11px;
+    transition: border-color .12s;
+  }
+  .action-btn:hover { border-color: var(--border-active); }
+
+  /* Earn progress bar */
+  .earn-bar-wrap {
+    height: 2px;
+    background: var(--border-subtle);
+    border-radius: 1px;
+    margin-top: 8px;
+    overflow: hidden;
+  }
+
+  .earn-bar-fill {
+    height: 100%;
+    border-radius: 1px;
+    background: linear-gradient(90deg, var(--accent-lime), var(--icoin-primary));
+    transition: width .3s;
+  }
+
+  /* Tab bar */
+  .tab-bar {
+    display: flex;
+    border-top: 0.5px solid var(--border-subtle);
+    padding: 12px 0 20px;
+    margin-top: 8px;
+  }
+
+  .tab {
+    flex: 1;
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 10px;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px 0;
+    transition: color .12s;
+  }
+  .tab:hover { color: var(--text-secondary); }
+  .tab.active { color: var(--text-primary); font-weight: 500; }
+
+  .tab-pip {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--icoin-primary);
+    margin: 4px auto 0;
+    opacity: 0;
+  }
+  .tab.active .tab-pip { opacity: 1; }
+
+  /* Annotations */
+  .annotations {
+    max-width: 280px;
+    padding-top: 12px;
+  }
+
+  .ann { margin-bottom: 24px; }
+
+  .ann-tag {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 9px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin-bottom: 6px;
+    border: 0.5px solid var(--border-mid);
+    color: var(--text-muted);
+  }
+
+  .ann-title {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+  }
+
+  .ann-body {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+
+  /* Sponsored card border */
+  .card.sponsored {
+    border-color: rgba(74,222,128,0.15);
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-wrap">
+
+  <div>
+    <div class="app-title">[ i ]</div>
+    <div class="app-sub">Main Feed — Aggregated platform content</div>
+
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen">
+
+        <!-- Top bar -->
+        <div class="top-bar">
+          <div class="logo">[ i ]</div>
+          <div class="top-right">
+            <div class="wallet-chip">
+              <div class="wallet-dot"></div>
+              <div class="wallet-val">847</div>
+            </div>
+            <div class="notif-btn">
+              <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+                <path d="M7 1a4 4 0 00-4 4v3l-1 1.5h10L11 8V5a4 4 0 00-4-4z" stroke="#9997a0" stroke-width="1.2" stroke-linecap="round"/>
+                <path d="M5.5 11.5a1.5 1.5 0 003 0" stroke="#9997a0" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+              <div class="notif-pip"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stories -->
+        <div class="stories-row">
+          <div class="story">
+            <div class="story-wrap">
+              <div class="story-ring">
+                <div class="story-avatar" style="background:rgba(0,229,255,0.1);color:#00e5ff">+</div>
+              </div>
+            </div>
+            <div class="story-name">Add</div>
+          </div>
+          <div class="story">
+            <div class="story-wrap">
+              <div class="story-ring">
+                <div class="story-avatar" style="background:rgba(180,255,71,0.1);color:#b4ff47">MK</div>
+              </div>
+              <div class="story-platform" style="background:#E1306C">IG</div>
+            </div>
+            <div class="story-name">@maya</div>
+          </div>
+          <div class="story">
+            <div class="story-wrap">
+              <div class="story-ring">
+                <div class="story-avatar" style="background:rgba(249,115,22,0.1);color:#f97316">JS</div>
+              </div>
+              <div class="story-platform" style="background:#FF0000">YT</div>
+            </div>
+            <div class="story-name">@jake</div>
+          </div>
+          <div class="story">
+            <div class="story-wrap">
+              <div class="story-ring seen">
+                <div class="story-avatar" style="background:rgba(139,92,246,0.1);color:#a78bfa">NR</div>
+              </div>
+              <div class="story-platform" style="background:#000">TK</div>
+            </div>
+            <div class="story-name">@nora</div>
+          </div>
+          <div class="story">
+            <div class="story-wrap">
+              <div class="story-ring seen">
+                <div class="story-avatar" style="background:rgba(74,222,128,0.1);color:#4ade80">CK</div>
+              </div>
+              <div class="story-platform" style="background:#6441a5">TW</div>
+            </div>
+            <div class="story-name">@chef</div>
+          </div>
+          <div class="story">
+            <div class="story-wrap">
+              <div class="story-ring seen">
+                <div class="story-avatar" style="background:rgba(245,158,11,0.1);color:#f59e0b">AR</div>
+              </div>
+              <div class="story-platform" style="background:#FFFC00;color:#000">SC</div>
+            </div>
+            <div class="story-name">@alex</div>
+          </div>
+        </div>
+
+        <!-- Filter pills -->
+        <div class="filter-row">
+          <div class="pill active">For you</div>
+          <div class="pill">Friends</div>
+          <div class="pill">Earn</div>
+          <div class="pill">Trending</div>
+          <div class="pill">Saved</div>
+          <div class="pill">Instagram</div>
+          <div class="pill">YouTube</div>
+        </div>
+
+        <!-- Feed -->
+        <div class="feed" id="feed">
+
+          <!-- Card 1 — TikTok organic -->
+          <div class="card" id="c1">
+            <div class="thumb">
+              <div class="thumb-gradient" style="background:linear-gradient(135deg,#1a0533,#0d1533,#0a1a0d)"></div>
+              <div class="thumb-overlay"></div>
+              <div class="thumb-platform">
+                <div class="platform-dot" style="background:#000;border:1px solid #fff">TK</div>
+                <div class="platform-name">TikTok</div>
+              </div>
+              <div class="thumb-duration">1:24</div>
+              <div class="play-btn"><div class="play-triangle"></div></div>
+            </div>
+            <div class="card-body">
+              <div class="card-header">
+                <div class="creator-avatar" style="background:rgba(139,92,246,0.12);color:#a78bfa">NK</div>
+                <div class="creator-info">
+                  <div class="creator-name">Nora Kim</div>
+                  <div class="creator-handle">@norakim · TikTok</div>
+                </div>
+                <div class="verified-badge">✓</div>
+              </div>
+              <div class="card-caption">The ramen recipe you asked for — 3 ingredients, 15 minutes <span>#food #recipe</span></div>
+              <div class="card-stats">
+                <div class="stat"><div class="stat-dot" style="background:#a78bfa"></div>92k views</div>
+                <div class="stat"><div class="stat-dot" style="background:#4ade80"></div>4.2k likes</div>
+                <div class="card-actions">
+                  <div class="action-btn">♡</div>
+                  <div class="action-btn">↗</div>
+                  <div class="action-btn">⋯</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2 — YouTube sponsored -->
+          <div class="card sponsored" id="c2">
+            <div class="thumb">
+              <div class="thumb-gradient" style="background:linear-gradient(135deg,#0a1a10,#0d1a1a,#0a0d1a)"></div>
+              <div class="thumb-overlay"></div>
+              <div class="thumb-platform">
+                <div class="platform-dot" style="background:#FF0000">YT</div>
+                <div class="platform-name">YouTube · Sponsored</div>
+              </div>
+              <div class="thumb-duration">4:30</div>
+              <div class="thumb-earn">
+                <div class="earn-dot"></div>
+                <div class="earn-val">+2.00 icoins</div>
+              </div>
+              <div class="play-btn"><div class="play-triangle"></div></div>
+            </div>
+            <div class="card-body">
+              <div class="card-header">
+                <div class="creator-avatar" style="background:rgba(255,0,0,0.1);color:#ff4d4d">NR</div>
+                <div class="creator-info">
+                  <div class="creator-name">Nike Running</div>
+                  <div class="creator-handle">Brand · Watch to earn</div>
+                </div>
+              </div>
+              <div class="card-caption">Run the world — new Pegasus 41 campaign <span>#Nike #running</span></div>
+              <div class="earn-bar-wrap"><div class="earn-bar-fill" id="bar2" style="width:0%"></div></div>
+              <div class="card-stats" style="margin-top:8px">
+                <div class="stat" style="font-size:9px;color:var(--text-muted)">Watch 4:30 · eye-tracking verified</div>
+                <div class="card-actions">
+                  <div class="action-btn">♡</div>
+                  <div class="action-btn">↗</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3 — Instagram organic -->
+          <div class="card" id="c3">
+            <div class="thumb" style="aspect-ratio:1/1">
+              <div class="thumb-gradient" style="background:linear-gradient(135deg,#1a0a1a,#0d0a1a,#1a1a0a)"></div>
+              <div class="thumb-overlay"></div>
+              <div class="thumb-platform">
+                <div class="platform-dot" style="background:#E1306C">IG</div>
+                <div class="platform-name">Instagram</div>
+              </div>
+              <div class="play-btn"><div class="play-triangle"></div></div>
+            </div>
+            <div class="card-body">
+              <div class="card-header">
+                <div class="creator-avatar" style="background:rgba(225,48,108,0.1);color:#E1306C">MK</div>
+                <div class="creator-info">
+                  <div class="creator-name">Maya Kato</div>
+                  <div class="creator-handle">@mayakato · Instagram</div>
+                </div>
+                <div class="verified-badge">✓</div>
+              </div>
+              <div class="card-caption">New collection dropping this weekend — DM for early access <span>#fashion #drop</span></div>
+              <div class="card-stats">
+                <div class="stat"><div class="stat-dot" style="background:#E1306C"></div>48k views</div>
+                <div class="stat"><div class="stat-dot" style="background:#4ade80"></div>9.1k likes</div>
+                <div class="card-actions">
+                  <div class="action-btn">♡</div>
+                  <div class="action-btn">↗</div>
+                  <div class="action-btn">⋯</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 4 — Twitch clip -->
+          <div class="card" id="c4">
+            <div class="thumb">
+              <div class="thumb-gradient" style="background:linear-gradient(135deg,#0d0a1a,#160a1a,#0a0d1a)"></div>
+              <div class="thumb-overlay"></div>
+              <div class="thumb-platform">
+                <div class="platform-dot" style="background:#6441a5">TW</div>
+                <div class="platform-name">Twitch · Clip</div>
+              </div>
+              <div class="thumb-duration">0:42</div>
+              <div class="play-btn"><div class="play-triangle"></div></div>
+            </div>
+            <div class="card-body">
+              <div class="card-header">
+                <div class="creator-avatar" style="background:rgba(100,65,165,0.12);color:#9d7ee8">CK</div>
+                <div class="creator-info">
+                  <div class="creator-name">ChefKai</div>
+                  <div class="creator-handle">@chefkai · Twitch</div>
+                </div>
+              </div>
+              <div class="card-caption">That moment when the soufflé actually worked live <span>#cooking #twitch</span></div>
+              <div class="card-stats">
+                <div class="stat"><div class="stat-dot" style="background:#6441a5"></div>12k views</div>
+                <div class="stat"><div class="stat-dot" style="background:#4ade80"></div>2.8k likes</div>
+                <div class="card-actions">
+                  <div class="action-btn">♡</div>
+                  <div class="action-btn">↗</div>
+                  <div class="action-btn">⋯</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Tab bar -->
+        <div class="tab-bar">
+          <div class="tab active">Feed<div class="tab-pip"></div></div>
+          <div class="tab">Earn</div>
+          <div class="tab">Wallet</div>
+          <div class="tab">Profile</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="annotations">
+    <div class="ann">
+      <div class="ann-tag">Top bar</div>
+      <div class="ann-title">Wallet always visible in feed</div>
+      <div class="ann-body">The icoins chip in the top right means the user never loses sight of their balance while scrolling. It's a constant reminder that attention has value — and it's accumulating right now.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">Stories</div>
+      <div class="ann-title">Platform badges on every story</div>
+      <div class="ann-body">Each story ring shows a platform badge — IG, YT, TK, TW, SC. The user knows at a glance where content originates before tapping. Imported content is never disguised as native.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">Filter pills</div>
+      <div class="ann-title">Platform filters alongside topic filters</div>
+      <div class="ann-body">Users can filter by topic (Friends, Trending) or by source platform (Instagram, YouTube). Mixing both gives granular control — "show me only trending TikToks" is two taps.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">Content cards</div>
+      <div class="ann-title">Platform identity always shown</div>
+      <div class="ann-body">Every card shows the source platform in the thumbnail and in the handle line. Sponsored cards have a green earn badge and a progress bar. The user always knows what they're watching and what they'll earn.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">Earn bar</div>
+      <div class="ann-title">Sponsored cards show watch progress</div>
+      <div class="ann-body">The lime-to-green progress bar fills as the user watches. It makes earning feel tangible and physical — the bar moving is the money moving. Click the Nike card to start the demo.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let watching = false;
+  let progress = 0;
+  let interval = null;
+
+  document.getElementById('c2').addEventListener('click', function() {
+    if (watching) return;
+    watching = true;
+    progress = 0;
+    interval = setInterval(() => {
+      progress += 2;
+      document.getElementById('bar2').style.width = Math.min(progress, 100) + '%';
+      if (progress >= 100) {
+        clearInterval(interval);
+        watching = false;
+        const earn = document.querySelector('#c2 .thumb-earn');
+        if (earn) {
+          earn.style.background = 'rgba(74,222,128,0.3)';
+          earn.querySelector('.earn-val').textContent = 'Earned! +2.00 i';
+        }
+      }
+    }, 80);
+  });
+</script>
+
+</body>
+</html>
