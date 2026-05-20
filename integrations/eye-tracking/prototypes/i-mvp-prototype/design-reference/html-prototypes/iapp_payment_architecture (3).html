@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] App — Payment Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-void:        #070709;
+    --bg-deep:        #0a0a0f;
+    --bg-surface:     #111118;
+    --bg-panel:       #16161f;
+    --bg-raised:      #1c1c28;
+    --border-subtle:  rgba(255,255,255,0.05);
+    --border-mid:     rgba(255,255,255,0.09);
+    --border-active:  rgba(255,255,255,0.18);
+    --text-primary:   #f0ede8;
+    --text-secondary: #9997a0;
+    --text-muted:     #4a4858;
+    --icoin-primary:  #4ade80;
+    --accent-amber:   #f59e0b;
+    --accent-rose:    #ff4d6d;
+    --font-display:   'Syne', sans-serif;
+    --font-body:      'DM Sans', sans-serif;
+    --font-mono:      'JetBrains Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg-deep);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 48px 24px;
+    font-family: var(--font-body);
+  }
+
+  .page {
+    width: 100%;
+    max-width: 960px;
+  }
+
+  .page-header { margin-bottom: 48px; }
+
+  .app-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -.02em;
+    margin-bottom: 6px;
+  }
+
+  .app-sub {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  /* Section label */
+  .lbl {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+
+  /* ── Payment methods grid ── */
+  .arch {
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr 1px 1fr;
+    gap: 0;
+    margin-bottom: 48px;
+    align-items: start;
+  }
+
+  .arch-divider {
+    background: var(--border-subtle);
+    margin: 0 16px;
+    align-self: stretch;
+  }
+
+  .arch-col { padding: 0 4px; }
+
+  .arch-col-title {
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+    text-align: center;
+  }
+
+  .method {
+    border: 0.5px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 14px;
+    background: var(--bg-panel);
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: border-color .12s, background .12s;
+  }
+  .method:hover { border-color: var(--border-mid); background: var(--bg-raised); }
+
+  .method-name {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+    letter-spacing: -.01em;
+  }
+
+  .method-how {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    line-height: 1.5;
+  }
+
+  .method-meta {
+    font-family: var(--font-mono);
+    font-size: 10px;
+  }
+
+  .meta-green { color: var(--icoin-primary); }
+  .meta-amber { color: var(--accent-amber); }
+  .meta-red   { color: var(--accent-rose); }
+
+  /* ── Spending limits ── */
+  .limits-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 48px;
+  }
+
+  .lim {
+    border: 0.5px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 16px;
+    background: var(--bg-panel);
+  }
+
+  .lim-tier {
+    font-family: var(--font-body);
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-bottom: 6px;
+  }
+
+  .lim-name {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -.01em;
+    margin-bottom: 14px;
+  }
+
+  .lim-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 0.5px solid var(--border-subtle);
+  }
+  .lim-row:last-child { border-bottom: none; }
+
+  .lim-label {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  .lim-val {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .lim-val.green { color: var(--icoin-primary); }
+
+  /* ── Security layer ── */
+  .security {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 48px;
+  }
+
+  .sec-card {
+    border: 0.5px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 16px;
+    background: var(--bg-panel);
+    cursor: pointer;
+    transition: border-color .12s;
+  }
+  .sec-card:hover { border-color: var(--border-mid); }
+
+  .sec-name {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+    letter-spacing: -.01em;
+  }
+
+  .sec-desc {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* ── Rules list ── */
+  .rules {
+    border: 0.5px solid var(--border-subtle);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .rule {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 13px 16px;
+    border-bottom: 0.5px solid var(--border-subtle);
+  }
+  .rule:last-child { border-bottom: none; }
+
+  .rule-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 6px;
+  }
+
+  .rule-text {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .rule-text b {
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  /* ── Section spacer ── */
+  .section { margin-bottom: 48px; }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="page-header">
+    <div class="app-title">[ i ]</div>
+    <div class="app-sub">Payment Architecture — Full System</div>
+  </div>
+
+  <!-- Payment methods -->
+  <div class="section">
+    <div class="lbl">Payment methods</div>
+    <div class="arch">
+
+      <div class="arch-col">
+        <div class="arch-col-title">In person</div>
+        <div class="method">
+          <div class="method-name">NFC tap</div>
+          <div class="method-how">Activate in app, hold to any [ i ] terminal. Same gesture as contactless card.</div>
+          <div class="method-meta meta-green">Instant · no fee</div>
+        </div>
+        <div class="method">
+          <div class="method-name">QR code</div>
+          <div class="method-how">Show code, merchant scans. Works without terminal hardware — any phone camera.</div>
+          <div class="method-meta meta-green">Instant · no fee · 5 min expiry</div>
+        </div>
+        <div class="method">
+          <div class="method-name">Scan to pay</div>
+          <div class="method-how">Reverse QR — you scan the merchant's code. Useful for fixed-price merchants.</div>
+          <div class="method-meta meta-green">Instant · no fee</div>
+        </div>
+      </div>
+
+      <div class="arch-divider"></div>
+
+      <div class="arch-col">
+        <div class="arch-col-title">Online / virtual</div>
+        <div class="method">
+          <div class="method-name">Pay link</div>
+          <div class="method-how">A URL that collects payment. Bio, email, website button, message. No app install required for payer.</div>
+          <div class="method-meta meta-green">Instant · no fee · shareable everywhere</div>
+        </div>
+        <div class="method">
+          <div class="method-name">Checkout button</div>
+          <div class="method-how">Embed on any website. One-tap payment from [ i ] wallet. Merchant SDK in 3 lines of code.</div>
+          <div class="method-meta meta-amber">Instant · 0.5% merchant fee</div>
+        </div>
+        <div class="method">
+          <div class="method-name">Recurring payment</div>
+          <div class="method-how">Subscriptions and scheduled transfers. User authorizes once, coins move on schedule.</div>
+          <div class="method-meta meta-amber">Scheduled · 0.5% fee</div>
+        </div>
+        <div class="method">
+          <div class="method-name">API payment</div>
+          <div class="method-how">Developers trigger payments programmatically. Powers automated rewards, game economies, B2B flows.</div>
+          <div class="method-meta meta-amber">Instant · developer fee applies</div>
+        </div>
+      </div>
+
+      <div class="arch-divider"></div>
+
+      <div class="arch-col">
+        <div class="arch-col-title">Cash out</div>
+        <div class="method">
+          <div class="method-name">Bank transfer</div>
+          <div class="method-how">icoins → USD/GBP/EUR to any linked bank. ACH or SEPA routing.</div>
+          <div class="method-meta meta-green">1–2 days · free</div>
+        </div>
+        <div class="method">
+          <div class="method-name">Instant to card</div>
+          <div class="method-how">icoins → linked Visa or Mastercard debit. Instant settlement.</div>
+          <div class="method-meta meta-amber">Instant · 1.5% fee</div>
+        </div>
+        <div class="method">
+          <div class="method-name">External wallet</div>
+          <div class="method-how">icoins → external crypto or partner wallet via xcoins bridge.</div>
+          <div class="method-meta meta-red">~10 min · Tier 4 · 2.5% fee</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Spending limits -->
+  <div class="section">
+    <div class="lbl">Spending limits by trust tier</div>
+    <div class="limits-grid">
+
+      <div class="lim">
+        <div class="lim-tier">Tier 1–2</div>
+        <div class="lim-name">Standard</div>
+        <div class="lim-row"><div class="lim-label">Per transaction</div><div class="lim-val">500 icoins</div></div>
+        <div class="lim-row"><div class="lim-label">Daily spend</div><div class="lim-val">2,000 icoins</div></div>
+        <div class="lim-row"><div class="lim-label">Monthly withdraw</div><div class="lim-val">$200 USD</div></div>
+        <div class="lim-row"><div class="lim-label">Pay link</div><div class="lim-val green">Enabled</div></div>
+        <div class="lim-row"><div class="lim-label">NFC tap</div><div class="lim-val green">Enabled</div></div>
+      </div>
+
+      <div class="lim">
+        <div class="lim-tier">Tier 3</div>
+        <div class="lim-name">Trusted</div>
+        <div class="lim-row"><div class="lim-label">Per transaction</div><div class="lim-val">5,000 icoins</div></div>
+        <div class="lim-row"><div class="lim-label">Daily spend</div><div class="lim-val">20,000 icoins</div></div>
+        <div class="lim-row"><div class="lim-label">Monthly withdraw</div><div class="lim-val">$2,000 USD</div></div>
+        <div class="lim-row"><div class="lim-label">Recurring</div><div class="lim-val green">Enabled</div></div>
+        <div class="lim-row"><div class="lim-label">API access</div><div class="lim-val green">Enabled</div></div>
+      </div>
+
+      <div class="lim">
+        <div class="lim-tier">Tier 4</div>
+        <div class="lim-name">Power</div>
+        <div class="lim-row"><div class="lim-label">Per transaction</div><div class="lim-val green">Unlimited</div></div>
+        <div class="lim-row"><div class="lim-label">Daily spend</div><div class="lim-val green">Unlimited</div></div>
+        <div class="lim-row"><div class="lim-label">Monthly withdraw</div><div class="lim-val green">Unlimited</div></div>
+        <div class="lim-row"><div class="lim-label">External wallet</div><div class="lim-val green">Enabled</div></div>
+        <div class="lim-row"><div class="lim-label">xcoins bridge</div><div class="lim-val green">Enabled</div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Security layer -->
+  <div class="section">
+    <div class="lbl">Security layer</div>
+    <div class="security">
+
+      <div class="sec-card">
+        <div class="sec-name">Dual confirmation</div>
+        <div class="sec-desc">Coins never move until both sender and receiver confirm. A 30-second window where either party can cancel with zero penalty.</div>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-name">Biometric auth</div>
+        <div class="sec-desc">Every payment over 50 icoins requires Face ID or fingerprint. Under 50 — tap and go. The threshold is user-configurable.</div>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-name">Anomaly detection</div>
+        <div class="sec-desc">Unusual spend patterns — new merchant, foreign location, off-hours — trigger a soft pause and in-app confirmation before coins move.</div>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-name">30-sec reversal</div>
+        <div class="sec-desc">Any payment can be reversed within 30 seconds of confirmation, no questions asked. After 30 seconds, reversal requires merchant cooperation.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- System rules -->
+  <div class="section">
+    <div class="lbl">System rules</div>
+    <div class="rules">
+      <div class="rule">
+        <div class="rule-dot" style="background:var(--icoin-primary)"></div>
+        <div class="rule-text"><b>Verified attention only.</b> Brands pay only for seconds a real human demonstrably watched. Bot traffic, background play, and inactive screens do not bill. This is the core promise to brands.</div>
+      </div>
+      <div class="rule">
+        <div class="rule-dot" style="background:#a78bfa"></div>
+        <div class="rule-text"><b>No competitor adjacency.</b> Brand content never appears beside a direct competitor's content in the same session. Brands can specify exclusion categories at campaign setup.</div>
+      </div>
+      <div class="rule">
+        <div class="rule-dot" style="background:var(--accent-amber)"></div>
+        <div class="rule-text"><b>ocoins are brand-locked.</b> Offer coins issued by Brand A cannot be spent at Brand B. They are not general currency — they are targeted conversion instruments with built-in intent.</div>
+      </div>
+      <div class="rule">
+        <div class="rule-dot" style="background:var(--accent-rose)"></div>
+        <div class="rule-text"><b>Transparency is non-negotiable.</b> Every piece of brand content is labelled. Users always know when they are watching a sponsored moment. Trust is the product — deception destroys it.</div>
+      </div>
+      <div class="rule">
+        <div class="rule-dot" style="background:var(--text-muted)"></div>
+        <div class="rule-text"><b>Budget burns cleanly.</b> Unspent vcoins from a campaign are returned to the brand at close, minus a 2% platform processing fee. No dark spend, no auto-renewal without confirmation.</div>
+      </div>
+      <div class="rule">
+        <div class="rule-dot" style="background:var(--text-muted)"></div>
+        <div class="rule-text"><b>The pay link is the viral primitive.</b> Every iapp.pay/handle/amount URL is a shareable payment request that works without the payer installing the app. This is how merchant adoption spreads organically.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

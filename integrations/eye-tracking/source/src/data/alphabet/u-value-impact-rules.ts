@@ -1,0 +1,50 @@
+import type { UValueImpactRule } from "@/types/alphabet/u-value.types";
+
+export const U_VALUE_IMPACT_RULES: UValueImpactRule[] = [
+  {
+    eventType: "safe_action_allowed",
+    category: "trust",
+    severity: "positive_small",
+    uValueDelta: 0.01,
+    contributionDelta: 0,
+    learningDelta: 0,
+    creationDelta: 0,
+    helpDelta: 0,
+    trustDelta: 0.01,
+    safetyDelta: 0.01,
+    masteryDelta: 0,
+    communityDelta: 0,
+    economicDelta: 0.01,
+    originalityDelta: 0,
+    yieldDelta: 0,
+    canTriggerGrantEligibility: false,
+    canTriggerScholarshipEligibility: false,
+    canTriggerRareRewardEligibility: false,
+    canTriggerProtectionEligibility: false,
+    canTriggerBoostEligibility: false,
+    active: true
+  },
+  {
+    eventType: "safe_action_blocked",
+    category: "trust",
+    severity: "negative_small",
+    uValueDelta: -0.04,
+    contributionDelta: 0,
+    learningDelta: 0,
+    creationDelta: 0,
+    helpDelta: 0,
+    trustDelta: -0.04,
+    safetyDelta: -0.02,
+    masteryDelta: 0,
+    communityDelta: 0,
+    economicDelta: -0.04,
+    originalityDelta: 0,
+    yieldDelta: 0,
+    canTriggerGrantEligibility: false,
+    canTriggerScholarshipEligibility: false,
+    canTriggerRareRewardEligibility: false,
+    canTriggerProtectionEligibility: false,
+    canTriggerBoostEligibility: false,
+    active: true
+  }
+];

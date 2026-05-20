@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] App — Coin Unlock Moment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-void:        #070709;
+    --bg-deep:        #0a0a0f;
+    --bg-surface:     #111118;
+    --bg-panel:       #16161f;
+    --bg-raised:      #1c1c28;
+    --border-subtle:  rgba(255,255,255,0.05);
+    --border-mid:     rgba(255,255,255,0.09);
+    --border-active:  rgba(255,255,255,0.18);
+    --text-primary:   #f0ede8;
+    --text-secondary: #9997a0;
+    --text-muted:     #4a4858;
+    --font-display:   'Syne', sans-serif;
+    --font-body:      'DM Sans', sans-serif;
+    --font-mono:      'JetBrains Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg-deep);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    font-family: var(--font-body);
+  }
+
+  .wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    width: 100%;
+    max-width: 800px;
+  }
+
+  .app-header {
+    text-align: center;
+  }
+
+  .app-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -.02em;
+    margin-bottom: 6px;
+  }
+
+  .app-sub {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  /* Coin selector controls */
+  .controls {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .ctrl-btn {
+    padding: 7px 16px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 400;
+    border-radius: 20px;
+    border: 0.5px solid var(--border-mid);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all .15s;
+  }
+
+  .ctrl-btn:hover {
+    border-color: var(--border-active);
+    color: var(--text-secondary);
+  }
+
+  .ctrl-btn.active {
+    color: var(--bg-void);
+    border-color: transparent;
+  }
+
+  /* Phone */
+  .phone {
+    width: 320px;
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 44px;
+    overflow: hidden;
+    background: var(--bg-surface);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(255,255,255,0.04);
+  }
+
+  .notch {
+    width: 88px;
+    height: 24px;
+    margin: 0 auto;
+    background: var(--bg-surface);
+    border-radius: 0 0 16px 16px;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-top: none;
+  }
+
+  .screen {
+    padding: 0;
+    min-height: 540px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Animations */
+  @keyframes float-in {
+    from { opacity: 0; transform: translateY(32px) scale(.88); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  @keyframes ring-out {
+    from { opacity: .65; transform: translate(-50%,-50%) scale(.55); }
+    to   { opacity: 0;   transform: translate(-50%,-50%) scale(2.4); }
+  }
+
+  @keyframes coin-drop {
+    0%   { opacity: 0; transform: translateY(-28px) scale(.65) rotate(-14deg); }
+    60%  { transform: translateY(5px) scale(1.09) rotate(3deg); }
+    100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+  }
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Ring elements */
+  .bg-ring {
+    position: absolute;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+    top: 50%;
+    left: 50%;
+    pointer-events: none;
+    animation: ring-out 1.8s ease-out infinite;
+  }
+
+  .bg-ring:nth-child(2) { animation-delay: .6s; }
+  .bg-ring:nth-child(3) { animation-delay: 1.2s; }
+
+  /* Coin stage */
+  .coin-stage {
+    position: relative;
+    width: 110px;
+    height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 28px;
+    animation: float-in .55s cubic-bezier(.34,1.56,.64,1) both;
+    animation-delay: .1s;
+    z-index: 2;
+  }
+
+  .coin-shimmer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  }
+
+  .coin-circle {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    border: 2px solid currentColor;
+    position: relative;
+    z-index: 2;
+    animation: coin-drop .65s cubic-bezier(.34,1.56,.64,1) both;
+    animation-delay: .2s;
+    letter-spacing: -.02em;
+  }
+
+  /* Text elements */
+  .unlock-label {
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    animation: fade-up .4s ease both;
+    animation-delay: .55s;
+    opacity: 0;
+    animation-fill-mode: forwards;
+    z-index: 2;
+  }
+
+  .coin-name {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    text-align: center;
+    letter-spacing: -.02em;
+    animation: fade-up .4s ease both;
+    animation-delay: .65s;
+    opacity: 0;
+    animation-fill-mode: forwards;
+    z-index: 2;
+  }
+
+  .coin-tagline {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 0 32px;
+    line-height: 1.6;
+    margin-bottom: 22px;
+    animation: fade-up .4s ease both;
+    animation-delay: .75s;
+    opacity: 0;
+    animation-fill-mode: forwards;
+    z-index: 2;
+  }
+
+  .why-pill {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 7px 18px;
+    border-radius: 20px;
+    border: 1px solid currentColor;
+    margin-bottom: 32px;
+    animation: fade-up .4s ease both;
+    animation-delay: .85s;
+    opacity: 0;
+    animation-fill-mode: forwards;
+    z-index: 2;
+  }
+
+  /* CTA row */
+  .cta-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    padding: 0 24px;
+    animation: fade-up .4s ease both;
+    animation-delay: .95s;
+    opacity: 0;
+    animation-fill-mode: forwards;
+    z-index: 2;
+  }
+
+  .cta-btn {
+    flex: 1;
+    padding: 13px 0;
+    border-radius: 14px;
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 0.5px solid var(--border-mid);
+    background: transparent;
+    color: var(--text-primary);
+    transition: opacity .15s, background .15s;
+    letter-spacing: -.01em;
+  }
+
+  .cta-btn:hover { opacity: .75; }
+
+  .cta-btn.primary {
+    background: var(--text-primary);
+    color: var(--bg-void);
+    border-color: transparent;
+  }
+
+  .cta-btn.primary:hover { opacity: .88; }
+
+  /* Dot row */
+  .dot-row {
+    display: flex;
+    gap: 7px;
+    margin-top: 22px;
+    animation: fade-up .4s ease both;
+    animation-delay: 1.05s;
+    opacity: 0;
+    animation-fill-mode: forwards;
+    z-index: 2;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--border-mid);
+    transition: background .2s, transform .2s;
+  }
+
+  .dot.active {
+    background: var(--text-primary);
+    transform: scale(1.3);
+  }
+
+  /* Section label */
+  .section-label {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--text-muted);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="app-header">
+    <div class="app-title">[ i ]</div>
+    <div class="app-sub">Coin Unlock Moment</div>
+  </div>
+
+  <div class="section-label">Select a coin to preview its unlock</div>
+
+  <div class="controls" id="controls"></div>
+
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="screen" id="screen"></div>
+  </div>
+
+  <div class="section-label">Each coin unlocks with its own moment</div>
+
+</div>
+
+<script>
+  const coins = [
+    {
+      sym: 'acoins',
+      letter: 'A',
+      label: 'Attention coins',
+      tagline: 'You watched. You earned. Your attention has real value now.',
+      why: 'Earned after your first full session',
+      color: '#1D9E75',
+      bg: 'rgba(29,158,117,0.14)',
+      textColor: '#9FE1CB',
+      ringColor: '#1D9E75',
+    },
+    {
+      sym: 'fcoins',
+      letter: 'F',
+      label: 'Focus coins',
+      tagline: 'Seven days of showing up. The app noticed — and rewards depth.',
+      why: 'Unlocked by a 7-day streak',
+      color: '#7F77DD',
+      bg: 'rgba(127,119,221,0.14)',
+      textColor: '#CECBF6',
+      ringColor: '#7F77DD',
+    },
+    {
+      sym: 'icoins',
+      letter: 'I',
+      label: 'Identity coins',
+      tagline: 'This is your money. Not points. Not tokens. Yours.',
+      why: 'Activated on first redemption',
+      color: '#D85A30',
+      bg: 'rgba(216,90,48,0.14)',
+      textColor: '#F0997B',
+      ringColor: '#D85A30',
+    },
+    {
+      sym: 'tcoins',
+      letter: 'T',
+      label: 'Trust coins',
+      tagline: "You've been here long enough to earn this. It can't be bought.",
+      why: 'Awarded at 90-day milestone',
+      color: '#D4537E',
+      bg: 'rgba(212,83,126,0.14)',
+      textColor: '#ED93B1',
+      ringColor: '#D4537E',
+    },
+    {
+      sym: 'zcoins',
+      letter: 'Z',
+      label: 'Zero coins',
+      tagline: 'A moment in time, minted once. You were there.',
+      why: 'Season zero drop — limited',
+      color: '#888780',
+      bg: 'rgba(136,135,128,0.14)',
+      textColor: '#D3D1C7',
+      ringColor: '#888780',
+    },
+  ];
+
+  let current = 0;
+  let animKey = 0;
+
+  function renderControls() {
+    document.getElementById('controls').innerHTML = coins.map((c, i) =>
+      `<button class="ctrl-btn${i === current ? ' active' : ''}"
+        style="${i === current ? `background:${c.color};` : ''}"
+        onclick="select(${i})">${c.sym}</button>`
+    ).join('');
+  }
+
+  function renderScreen() {
+    const c = coins[current];
+    animKey++;
+
+    document.getElementById('screen').innerHTML = `
+      <div class="bg-ring" style="color:${c.ringColor}"></div>
+      <div class="bg-ring" style="color:${c.ringColor}"></div>
+      <div class="bg-ring" style="color:${c.ringColor}"></div>
+
+      <div class="coin-stage">
+        <div class="coin-shimmer" style="background:${c.bg}"></div>
+        <div class="coin-circle" style="background:${c.bg};color:${c.textColor};border-color:${c.color}50">
+          ${c.letter}
+        </div>
+      </div>
+
+      <div class="unlock-label">new coin unlocked</div>
+      <div class="coin-name">${c.label}</div>
+      <div class="coin-tagline">${c.tagline}</div>
+      <div class="why-pill" style="color:${c.color};border-color:${c.color}50">${c.why}</div>
+
+      <div class="cta-row">
+        <button class="cta-btn" onclick="select(${(current + 1) % coins.length})">Later</button>
+        <button class="cta-btn primary" onclick="select(${(current + 1) % coins.length})">Explore</button>
+      </div>
+
+      <div class="dot-row">
+        ${coins.map((_, i) =>
+          `<div class="dot${i === current ? ' active' : ''}"></div>`
+        ).join('')}
+      </div>
+    `;
+  }
+
+  function select(i) {
+    current = i;
+    renderControls();
+    renderScreen();
+  }
+
+  select(0);
+</script>
+
+</body>
+</html>

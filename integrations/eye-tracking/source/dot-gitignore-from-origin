@@ -1,0 +1,5 @@
+
+# Local/generated
+node_modules/
+.next/
+.cursor/

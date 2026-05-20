@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] App — Wallet Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-void:       #070709;
+  --bg-deep:       #0a0a0f;
+  --bg-surface:    #111118;
+  --bg-panel:      #16161f;
+  --bg-raised:     #1c1c28;
+  --border-subtle: rgba(255,255,255,0.05);
+  --border-mid:    rgba(255,255,255,0.09);
+  --border-active: rgba(255,255,255,0.18);
+  --text-primary:  #f0ede8;
+  --text-secondary:#9997a0;
+  --text-muted:    #4a4858;
+  --icoin-primary: #4ade80;
+  --vcoin-primary: #f59e0b;
+  --accent-cyan:   #00e5ff;
+  --accent-lime:   #b4ff47;
+  --accent-amber:  #ffb300;
+  --accent-rose:   #ff4d6d;
+
+  /* Soft depth — only on earn/value surfaces */
+  --neu-out:   -3px -3px 8px rgba(255,255,255,0.025), 3px 3px 10px rgba(0,0,0,0.5);
+  --neu-hover: -4px -4px 12px rgba(255,255,255,0.03), 4px 4px 14px rgba(0,0,0,0.6);
+
+  --font-display: 'Syne', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg-deep);
+  min-height: 100vh;
+  font-family: var(--font-body);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+/* ── Outer layout ── */
+.outer {
+  display: flex;
+  gap: 36px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 1060px;
+  width: 100%;
+}
+
+.left-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.page-label {
+  font-family: var(--font-display);
+  font-size: 28px; font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -.02em;
+  margin-bottom: 6px;
+  align-self: flex-start;
+}
+
+.page-sub {
+  font-family: var(--font-body);
+  font-size: 13px; color: var(--text-muted);
+  margin-bottom: 28px;
+  align-self: flex-start;
+}
+
+/* ── Phone ── */
+.phone {
+  width: 320px;
+  border: 1.5px solid rgba(255,255,255,0.12);
+  border-radius: 44px;
+  overflow: hidden;
+  background: var(--bg-surface);
+  box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(255,255,255,0.04);
+}
+
+.notch {
+  width: 80px; height: 22px; margin: 0 auto;
+  background: var(--bg-surface);
+  border-radius: 0 0 14px 14px;
+  border: 1.5px solid rgba(255,255,255,0.08);
+  border-top: none;
+}
+
+.screen {
+  padding: 18px 0 0;
+  max-height: 820px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  display: flex;
+  flex-direction: column;
+}
+.screen::-webkit-scrollbar { display: none; }
+
+/* ── Shared primitives ── */
+.sec-label {
+  font-family: var(--font-body);
+  font-size: 10px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: .07em;
+  color: var(--text-muted);
+  padding: 0 18px;
+  margin-bottom: 10px;
+}
+
+.sec-hdr {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 18px;
+  margin-bottom: 10px;
+}
+
+.sec-title {
+  font-family: var(--font-display);
+  font-size: 13px; font-weight: 600;
+  color: var(--text-primary);
+}
+
+.sec-link {
+  font-family: var(--font-body);
+  font-size: 10px; color: var(--text-muted);
+  cursor: pointer;
+}
+.sec-link:hover { color: var(--text-secondary); }
+
+/* ── A. Header ── */
+.header { padding: 0 18px 20px; }
+
+.header-top {
+  display: flex; justify-content: space-between;
+  align-items: flex-start; margin-bottom: 16px;
+}
+
+.greeting {
+  font-family: var(--font-body);
+  font-size: 12px; color: var(--text-muted);
+  margin-bottom: 3px;
+}
+
+.total-label {
+  font-family: var(--font-body);
+  font-size: 10px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: .06em;
+  margin-bottom: 4px;
+}
+
+.total-amount {
+  font-family: var(--font-mono);
+  font-size: 44px; font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: -.03em;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.total-usd {
+  font-family: var(--font-body);
+  font-size: 13px; color: var(--text-secondary);
+}
+
+/* Coin split — GETS soft depth */
+.coin-split {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px; margin-bottom: 12px;
+}
+
+.coin-card {
+  border-radius: 12px; padding: 12px 13px;
+  background: var(--bg-raised);
+  box-shadow: var(--neu-out);
+  border: 0.5px solid var(--border-subtle);
+}
+
+.cc-label {
+  font-family: var(--font-body);
+  font-size: 9px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: .06em;
+  margin-bottom: 5px;
+}
+
+.cc-val {
+  font-family: var(--font-mono);
+  font-size: 20px; font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.cc-sub {
+  font-family: var(--font-body);
+  font-size: 9px; color: var(--text-muted);
+}
+
+.sparkline { width: 100%; height: 16px; margin-top: 6px; }
+
+/* Pending strip — NO depth, information layer */
+.pending-strip {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px;
+  border: 0.5px solid rgba(255,179,0,0.15);
+  border-radius: 9px; margin-bottom: 12px;
+  background: rgba(255,179,0,0.04);
+}
+
+.ps-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent-amber); flex-shrink: 0; }
+.ps-text { font-family: var(--font-body); font-size: 11px; color: var(--text-secondary); flex: 1; }
+.ps-val { font-family: var(--font-mono); font-size: 12px; font-weight: 500; color: var(--accent-amber); }
+
+/* Cash-out CTA — GETS depth as primary conversion action */
+.cashout-cta {
+  width: 100%; padding: 13px 0;
+  border-radius: 13px; border: none;
+  background: var(--text-primary); color: var(--bg-void);
+  font-family: var(--font-display);
+  font-size: 13px; font-weight: 700;
+  letter-spacing: -.01em; cursor: pointer;
+  box-shadow: 0 2px 16px rgba(240,237,232,0.08), 0 1px 4px rgba(0,0,0,0.3);
+  transition: opacity .12s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.cashout-cta:hover { opacity: .9; }
+.cashout-sub {
+  font-family: var(--font-mono);
+  font-size: 10px; color: rgba(7,7,9,0.45); font-weight: 400;
+}
+
+/* ── B. Quick actions ── */
+.actions-wrap { padding: 0 18px 20px; }
+
+.action-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 7px;
+}
+
+/* Action buttons — GETS soft depth as interactive earn/spend surfaces */
+.action-btn {
+  border-radius: 12px; padding: 12px 8px;
+  background: var(--bg-raised);
+  box-shadow: var(--neu-out);
+  border: 0.5px solid var(--border-subtle);
+  text-align: center; cursor: pointer;
+  transition: box-shadow .15s;
+}
+.action-btn:hover { box-shadow: var(--neu-hover); }
+
+.ab-icon {
+  width: 32px; height: 32px; border-radius: 9px;
+  margin: 0 auto 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700;
+}
+
+.ab-label {
+  font-family: var(--font-display);
+  font-size: 10px; font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -.01em;
+}
+
+.ab-sub {
+  font-family: var(--font-body);
+  font-size: 8px; color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ── C. Earnings performance — NO depth, data surface ── */
+.perf-wrap { padding: 0 18px 20px; }
+
+.perf-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 7px; margin-bottom: 8px;
+}
+
+.perf-card {
+  border-radius: 10px; padding: 11px 12px;
+  background: var(--bg-panel);
+  border: 0.5px solid var(--border-subtle);
+  /* NO depth — data/analytics surface */
+}
+
+.pc-label {
+  font-family: var(--font-body);
+  font-size: 9px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: .05em;
+  margin-bottom: 4px;
+}
+
+.pc-val {
+  font-family: var(--font-mono);
+  font-size: 18px; font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.pc-delta {
+  font-family: var(--font-mono);
+  font-size: 9px;
+}
+
+.perf-rates {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 7px;
+}
+
+.rate-card {
+  border-radius: 10px; padding: 11px 12px;
+  background: var(--bg-panel);
+  border: 0.5px solid var(--border-subtle);
+}
+
+.rc-label {
+  font-family: var(--font-body);
+  font-size: 9px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: .05em;
+  margin-bottom: 6px;
+}
+
+.rate-bar-wrap {
+  height: 3px; background: var(--border-subtle);
+  border-radius: 2px; margin-bottom: 4px; overflow: hidden;
+}
+
+.rate-bar-fill { height: 100%; border-radius: 2px; }
+
+.rc-val {
+  font-family: var(--font-mono);
+  font-size: 13px; font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* ── D. Rewards activity — NO depth, ledger surface ── */
+.activity-wrap { padding: 0 18px 20px; }
+
+.activity-tabs {
+  display: flex; gap: 5px; margin-bottom: 12px;
+}
+
+.act-tab {
+  padding: 5px 12px; border-radius: 20px;
+  border: 0.5px solid var(--border-mid);
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 10px; font-weight: 500;
+  color: var(--text-muted); cursor: pointer;
+  transition: all .12s;
+}
+
+.act-tab.active {
+  background: var(--bg-raised);
+  border-color: var(--border-active);
+  color: var(--text-primary);
+}
+
+/* Activity rows — flat, ledger style. NO depth */
+.activity-list { display: flex; flex-direction: column; gap: 0; }
+
+.activity-row {
+  display: flex; gap: 10px; align-items: center;
+  padding: 10px 0;
+  border-bottom: 0.5px solid var(--border-subtle);
+  cursor: pointer;
+}
+.activity-row:last-child { border-bottom: none; }
+.activity-row:hover { opacity: .75; }
+
+.ar-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.ar-body { flex: 1; min-width: 0; }
+
+.ar-title {
+  font-family: var(--font-display);
+  font-size: 12px; font-weight: 500;
+  color: var(--text-primary); margin-bottom: 1px;
+}
+
+.ar-meta {
+  font-family: var(--font-body);
+  font-size: 10px; color: var(--text-muted);
+}
+
+.ar-amount {
+  font-family: var(--font-mono);
+  font-size: 12px; font-weight: 500;
+  text-align: right; flex-shrink: 0;
+}
+
+.ar-status {
+  font-family: var(--font-mono);
+  font-size: 9px; color: var(--text-muted);
+  text-align: right; margin-top: 1px;
+}
+
+/* ── E. Payout readiness — NO depth, security/compliance ── */
+.payout-wrap { padding: 0 18px 20px; }
+
+.payout-list { border: 0.5px solid var(--border-subtle); border-radius: 12px; overflow: hidden; }
+
+.payout-row {
+  display: flex; gap: 10px; align-items: center;
+  padding: 11px 14px;
+  border-bottom: 0.5px solid var(--border-subtle);
+}
+.payout-row:last-child { border-bottom: none; }
+
+.pr-icon {
+  width: 26px; height: 26px; border-radius: 7px;
+  background: var(--bg-panel);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.pr-body { flex: 1; }
+
+.pr-title {
+  font-family: var(--font-display);
+  font-size: 12px; font-weight: 500;
+  color: var(--text-primary); margin-bottom: 1px;
+}
+
+.pr-sub {
+  font-family: var(--font-body);
+  font-size: 10px; color: var(--text-muted);
+}
+
+.pr-status {
+  font-family: var(--font-mono);
+  font-size: 10px; font-weight: 500;
+  flex-shrink: 0;
+}
+
+.status-ok   { color: var(--icoin-primary); }
+.status-warn { color: var(--accent-amber); }
+.status-bad  { color: var(--accent-rose); }
+
+/* ── F. Insights — GETS soft depth as recommendations ── */
+.insights-wrap { padding: 0 18px 28px; }
+
+.insight-card {
+  border-radius: 12px; padding: 13px 14px;
+  background: var(--bg-raised);
+  box-shadow: var(--neu-out);
+  border: 0.5px solid var(--border-subtle);
+  margin-bottom: 8px; cursor: pointer;
+  transition: box-shadow .15s;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.insight-card:hover { box-shadow: var(--neu-hover); }
+
+.ic-icon {
+  width: 32px; height: 32px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 11px;
+  font-weight: 500; flex-shrink: 0;
+}
+
+.ic-body { flex: 1; min-width: 0; }
+
+.ic-title {
+  font-family: var(--font-display);
+  font-size: 12px; font-weight: 600;
+  color: var(--text-primary); margin-bottom: 3px;
+  letter-spacing: -.01em;
+}
+
+.ic-text {
+  font-family: var(--font-body);
+  font-size: 10px; color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.ic-action {
+  font-family: var(--font-mono);
+  font-size: 9px; color: var(--text-muted);
+  margin-top: 5px;
+}
+
+/* ── Tab bar ── */
+.tab-bar {
+  display: flex; border-top: 0.5px solid var(--border-subtle);
+  padding: 10px 0 18px;
+}
+.tab {
+  flex: 1; text-align: center;
+  font-family: var(--font-body);
+  font-size: 10px; color: var(--text-muted);
+  cursor: pointer; padding: 4px 0;
+}
+.tab.active { color: var(--text-primary); font-weight: 500; }
+.tab-pip {
+  width: 4px; height: 4px; border-radius: 50%;
+  background: var(--icoin-primary);
+  margin: 4px auto 0; opacity: 0;
+}
+.tab.active .tab-pip { opacity: 1; }
+
+/* ── Annotations ── */
+.right-col { flex: 1; min-width: 240px; max-width: 300px; padding-top: 8px; }
+
+.ann-section { margin-bottom: 22px; }
+
+.ann-title {
+  font-family: var(--font-display);
+  font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .07em;
+  color: var(--text-muted); margin-bottom: 10px;
+}
+
+.ann { margin-bottom: 12px; }
+
+.ann-tag {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 9px; font-weight: 500;
+  padding: 2px 8px; border-radius: 20px;
+  margin-bottom: 4px;
+  border: 0.5px solid var(--border-mid);
+  color: var(--text-muted);
+}
+
+.ann-name {
+  font-family: var(--font-display);
+  font-size: 12px; font-weight: 500;
+  color: var(--text-primary); margin-bottom: 3px;
+}
+
+.ann-body {
+  font-family: var(--font-body);
+  font-size: 11px; color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.ann-rule {
+  font-family: var(--font-mono);
+  font-size: 9px; color: var(--text-muted);
+  margin-top: 3px;
+}
+
+.ann-divider { height: 0.5px; background: var(--border-subtle); margin: 16px 0; }
+
+/* Depth legend strip */
+.depth-legend {
+  border: 0.5px solid var(--border-subtle);
+  border-radius: 10px; overflow: hidden;
+  margin-top: 20px;
+}
+
+.dl-row {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 9px 12px;
+  border-bottom: 0.5px solid var(--border-subtle);
+}
+.dl-row:last-child { border-bottom: none; }
+
+.dl-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; margin-top: 3px; }
+.dl-body { flex: 1; }
+.dl-title { font-family: var(--font-display); font-size: 11px; font-weight: 500; color: var(--text-primary); margin-bottom: 1px; }
+.dl-text { font-family: var(--font-body); font-size: 10px; color: var(--text-secondary); line-height: 1.4; }
+</style>
+</head>
+<body>
+
+<div class="outer">
+<div class="left-col">
+
+  <div class="page-label">[ i ]</div>
+  <div class="page-sub">Wallet dashboard blueprint</div>
+
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="screen">
+
+      <!-- ── A. HEADER ── -->
+      <div class="header">
+        <div class="greeting">Good morning, Alex</div>
+        <div class="total-label">Total available</div>
+        <div class="total-amount" id="anim-balance">847</div>
+        <div class="total-usd">≈ $8.47 USD · Tier 2 rate</div>
+
+        <!-- Coin split — soft depth -->
+        <div class="coin-split" style="margin-top:14px;">
+          <div class="coin-card">
+            <div class="cc-label">icoins</div>
+            <div class="cc-val" style="color:var(--icoin-primary)">847</div>
+            <div class="cc-sub">Cash-equivalent</div>
+            <svg class="sparkline" viewBox="0 0 100 16" preserveAspectRatio="none">
+              <polyline points="0,14 18,11 36,9 54,5 72,7 90,3 100,2" fill="none" stroke="var(--icoin-primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="coin-card">
+            <div class="cc-label">acoins</div>
+            <div class="cc-val" style="color:#9FE1CB">1,240</div>
+            <div class="cc-sub">Earning now</div>
+            <svg class="sparkline" viewBox="0 0 100 16" preserveAspectRatio="none">
+              <polyline points="0,15 18,13 36,10 54,8 72,4 90,2 100,1" fill="none" stroke="#5DCAA5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Pending — flat, information layer -->
+        <div class="pending-strip">
+          <div class="ps-dot"></div>
+          <div class="ps-text">83 icoins clearing · 1–2 days</div>
+          <div class="ps-val">+83</div>
+        </div>
+
+        <!-- Cash-out CTA — soft depth as primary conversion action -->
+        <button class="cashout-cta" onclick="sendPrompt('Start the cash out flow in the i app wallet')">
+          Cash out
+          <span class="cashout-sub">$8.47 · bank free · card 1.5%</span>
+        </button>
+      </div>
+
+      <!-- ── B. QUICK ACTIONS ── -->
+      <div class="actions-wrap">
+        <div class="sec-label">Quick actions</div>
+        <div class="action-grid">
+          <div class="action-btn" onclick="sendPrompt('Open withdraw screen in the i app')">
+            <div class="ab-icon" style="background:rgba(249,115,22,0.1);color:#f97316">W</div>
+            <div class="ab-label">Withdraw</div>
+            <div class="ab-sub">Bank · card</div>
+          </div>
+          <div class="action-btn" onclick="sendPrompt('Open convert screen in the i app')">
+            <div class="ab-icon" style="background:rgba(139,92,246,0.1);color:#a78bfa">C</div>
+            <div class="ab-label">Convert</div>
+            <div class="ab-sub">acoins → i</div>
+          </div>
+          <div class="action-btn" onclick="sendPrompt('Open send payment in the i app')">
+            <div class="ab-icon" style="background:rgba(0,229,255,0.1);color:var(--accent-cyan)">S</div>
+            <div class="ab-label">Send</div>
+            <div class="ab-sub">NFC · link</div>
+          </div>
+          <div class="action-btn" onclick="sendPrompt('Open spend screen in the i app')">
+            <div class="ab-icon" style="background:rgba(180,255,71,0.1);color:var(--accent-lime)">$</div>
+            <div class="ab-label">Spend</div>
+            <div class="ab-sub">mcoins · pay</div>
+          </div>
+          <div class="action-btn" onclick="sendPrompt('Open tip creator screen in the i app')">
+            <div class="ab-icon" style="background:rgba(255,77,109,0.1);color:var(--accent-rose)">T</div>
+            <div class="ab-label">Tip</div>
+            <div class="ab-sub">Creator · 0%</div>
+          </div>
+          <div class="action-btn" onclick="sendPrompt('Add a payout method to the i app wallet')">
+            <div class="ab-icon" style="background:rgba(255,255,255,0.05);color:var(--text-muted)">+</div>
+            <div class="ab-label">Add method</div>
+            <div class="ab-sub">Bank · wallet</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── C. EARNINGS PERFORMANCE ── -->
+      <div class="perf-wrap">
+        <div class="sec-label">Earnings performance</div>
+        <div class="perf-grid">
+          <div class="perf-card">
+            <div class="pc-label">This week</div>
+            <div class="pc-val" style="color:var(--icoin-primary)">+34</div>
+            <div class="pc-delta" style="color:var(--icoin-primary)">↑ 12% vs last week</div>
+          </div>
+          <div class="perf-card">
+            <div class="pc-label">This month</div>
+            <div class="pc-val" style="color:var(--icoin-primary)">+142</div>
+            <div class="pc-delta" style="color:var(--icoin-primary)">↑ 8% vs last month</div>
+          </div>
+          <div class="perf-card">
+            <div class="pc-label">Lifetime</div>
+            <div class="pc-val">4,891</div>
+            <div class="pc-delta" style="color:var(--text-muted)">All time</div>
+          </div>
+          <div class="perf-card">
+            <div class="pc-label">Avg / session</div>
+            <div class="pc-val">+6.4</div>
+            <div class="pc-delta" style="color:var(--icoin-primary)">↑ from 5.1</div>
+          </div>
+        </div>
+        <div style="height:8px"></div>
+        <div class="perf-rates">
+          <div class="rate-card">
+            <div class="rc-label">Completion rate</div>
+            <div class="rate-bar-wrap">
+              <div class="rate-bar-fill" style="width:84%;background:var(--icoin-primary)"></div>
+            </div>
+            <div class="rc-val">84%</div>
+          </div>
+          <div class="rate-card">
+            <div class="rc-label">Verified earn rate</div>
+            <div class="rate-bar-wrap">
+              <div class="rate-bar-fill" style="width:91%;background:var(--accent-cyan)"></div>
+            </div>
+            <div class="rc-val">91%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── D. REWARDS ACTIVITY ── -->
+      <div class="activity-wrap">
+        <div class="sec-hdr">
+          <div class="sec-title">Rewards activity</div>
+          <div class="sec-link">See all</div>
+        </div>
+        <div class="activity-tabs">
+          <div class="act-tab active" onclick="switchTab(this,'earned')">Earned</div>
+          <div class="act-tab" onclick="switchTab(this,'pending')">Pending</div>
+          <div class="act-tab" onclick="switchTab(this,'failed')">Failed</div>
+          <div class="act-tab" onclick="switchTab(this,'payouts')">Payouts</div>
+        </div>
+
+        <div class="activity-list" id="activity-list">
+          <!-- Earned tab (default) -->
+          <div class="activity-row">
+            <div class="ar-dot" style="background:var(--icoin-primary)"></div>
+            <div class="ar-body">
+              <div class="ar-title">Nike Running campaign</div>
+              <div class="ar-meta">2 min ago · Watch · verified</div>
+            </div>
+            <div>
+              <div class="ar-amount" style="color:var(--icoin-primary)">+2.00 i</div>
+              <div class="ar-status">Complete</div>
+            </div>
+          </div>
+          <div class="activity-row">
+            <div class="ar-dot" style="background:var(--icoin-primary)"></div>
+            <div class="ar-body">
+              <div class="ar-title">Focus session · 14 min</div>
+              <div class="ar-meta">24 min ago · Attention</div>
+            </div>
+            <div>
+              <div class="ar-amount" style="color:var(--icoin-primary)">+28 a</div>
+              <div class="ar-status">Complete</div>
+            </div>
+          </div>
+          <div class="activity-row">
+            <div class="ar-dot" style="background:#9997a0"></div>
+            <div class="ar-body">
+              <div class="ar-title">Converted acoins</div>
+              <div class="ar-meta">1 hr ago · 3,400 rcoins pool</div>
+            </div>
+            <div>
+              <div class="ar-amount" style="color:var(--icoin-primary)">+34 i</div>
+              <div class="ar-status">Complete</div>
+            </div>
+          </div>
+          <div class="activity-row">
+            <div class="ar-dot" style="background:var(--icoin-primary)"></div>
+            <div class="ar-body">
+              <div class="ar-title">Spotify Discover Weekly</div>
+              <div class="ar-meta">3 hrs ago · Watch · 45 sec</div>
+            </div>
+            <div>
+              <div class="ar-amount" style="color:var(--icoin-primary)">+0.80 i</div>
+              <div class="ar-status">Complete</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── E. PAYOUT READINESS ── -->
+      <div class="payout-wrap">
+        <div class="sec-label">Payout readiness</div>
+        <div class="payout-list">
+          <div class="payout-row">
+            <div class="pr-icon">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <circle cx="6" cy="4" r="2.5" stroke="var(--icoin-primary)" stroke-width="1.2"/>
+                <path d="M1.5 10.5a4.5 4.5 0 019 0" stroke="var(--icoin-primary)" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="pr-body">
+              <div class="pr-title">Identity verified</div>
+              <div class="pr-sub">KYC passed · ID confirmed</div>
+            </div>
+            <div class="pr-status status-ok">✓ Active</div>
+          </div>
+          <div class="payout-row">
+            <div class="pr-icon">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <rect x="1" y="3" width="10" height="7" rx="1.5" stroke="var(--icoin-primary)" stroke-width="1.2"/>
+                <path d="M1 6h10" stroke="var(--icoin-primary)" stroke-width="1.2"/>
+              </svg>
+            </div>
+            <div class="pr-body">
+              <div class="pr-title">Bank linked</div>
+              <div class="pr-sub">Chase ···4821 · ACH enabled</div>
+            </div>
+            <div class="pr-status status-ok">✓ Ready</div>
+          </div>
+          <div class="payout-row">
+            <div class="pr-icon">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M6 1l1.5 3h3l-2.5 2 1 3L6 7.5 3 9l1-3L1.5 4h3z" stroke="var(--accent-amber)" stroke-width="1" stroke-linejoin="round" fill="none"/>
+              </svg>
+            </div>
+            <div class="pr-body">
+              <div class="pr-title">Tax form</div>
+              <div class="pr-sub">Required above $100/month</div>
+            </div>
+            <div class="pr-status status-warn">W-9 needed</div>
+          </div>
+          <div class="payout-row">
+            <div class="pr-icon">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <rect x="1.5" y="1.5" width="9" height="9" rx="2" stroke="var(--text-muted)" stroke-width="1.2"/>
+                <path d="M4 6h4M6 4v4" stroke="var(--text-muted)" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="pr-body">
+              <div class="pr-title">Account limits</div>
+              <div class="pr-sub">Tier 2 · $200/mo withdraw</div>
+            </div>
+            <div class="pr-status" style="color:var(--text-muted)">Tier 3 → $2k</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── F. INSIGHTS ── -->
+      <div class="insights-wrap">
+        <div class="sec-hdr">
+          <div class="sec-title">Insights for you</div>
+          <div class="sec-link">Refresh</div>
+        </div>
+
+        <!-- Insight cards — GETS soft depth as recommendation surfaces -->
+        <div class="insight-card" onclick="sendPrompt('Show me watch offers in the i app earn marketplace')">
+          <div class="ic-icon" style="background:rgba(74,222,128,0.1);color:var(--icoin-primary)">▶</div>
+          <div class="ic-body">
+            <div class="ic-title">Watch offers earn you the most</div>
+            <div class="ic-text">Your average return on Watch offers is 0.44 icoins/min — 2× your survey rate. 8 Watch offers available now.</div>
+            <div class="ic-action">Tap to see Watch offers →</div>
+          </div>
+        </div>
+
+        <div class="insight-card" onclick="sendPrompt('What is my average reward per minute in the i app?')">
+          <div class="ic-icon" style="background:rgba(0,229,255,0.1);color:var(--accent-cyan)">≈</div>
+          <div class="ic-body">
+            <div class="ic-title">0.44 icoins per verified minute</div>
+            <div class="ic-text">Up from 0.38 last month. Your attention score average is 80 — top 22% of users at your tier.</div>
+            <div class="ic-action">See full analytics →</div>
+          </div>
+        </div>
+
+        <div class="insight-card" onclick="sendPrompt('Show me the Blue Bottle Coffee GPS offer in the i app')">
+          <div class="ic-icon" style="background:rgba(255,179,0,0.1);color:var(--accent-amber)">⊙</div>
+          <div class="ic-body">
+            <div class="ic-title">Blue Bottle nearby — 5.00 icoins</div>
+            <div class="ic-text">A GPS check-in offer is active 0.4 miles away. Expires today at 6 PM. Highest local offer this week.</div>
+            <div class="ic-action">View on map →</div>
+          </div>
+        </div>
+
+        <div class="insight-card" onclick="sendPrompt('What happens when I reach Trust Tier 3 in the i app?')">
+          <div class="ic-icon" style="background:rgba(180,255,71,0.1);color:var(--accent-lime)">↑</div>
+          <div class="ic-body">
+            <div class="ic-title">Tier 3 unlocks in ~43 days</div>
+            <div class="ic-text">At Tier 3 your conversion rate improves to 88:1, payouts drop to 3 days, and brand deals open. Keep your current pace.</div>
+            <div class="ic-action">What changes at Tier 3 →</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab bar -->
+      <div class="tab-bar">
+        <div class="tab">Feed</div>
+        <div class="tab">Earn</div>
+        <div class="tab active">Wallet<div class="tab-pip"></div></div>
+        <div class="tab">Profile</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Annotations -->
+<div class="right-col">
+
+  <div class="ann-section">
+    <div class="ann-title">The three fintech questions</div>
+    <div class="ann">
+      <div class="ann-name">How much do I have?</div>
+      <div class="ann-body">Section A answers this immediately — total balance, coin split, pending, cash value in USD. The user knows their state before they scroll.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-name">What can I do with it?</div>
+      <div class="ann-body">Section B gives six actions in two taps maximum. The actions are ordered by frequency of use — Withdraw and Convert first, Add method last.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-name">What should I do next?</div>
+      <div class="ann-body">Section F answers this with personalized signals — best offer type, nearby GPS opportunity, tier progression timeline. Not generic tips. Specific, actionable, time-bound.</div>
+    </div>
+  </div>
+
+  <div class="ann-divider"></div>
+
+  <div class="ann-section">
+    <div class="ann-title">Section decisions</div>
+    <div class="ann">
+      <div class="ann-tag">C · Earnings</div>
+      <div class="ann-name">Performance without pressure</div>
+      <div class="ann-body">This week, this month, lifetime, and two rate metrics. No gamification. No streak warnings. Just honest performance data that lets users understand if their habits are working.</div>
+      <div class="ann-rule">Nielsen: visibility of system status</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">D · Activity</div>
+      <div class="ann-name">Four tabs, one ledger</div>
+      <div class="ann-body">Earned, Pending, Failed, Payouts. The Failed tab is the most important trust moment — users who see a transparent failed verification explanation stay. Users who see a silent balance discrepancy leave.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">E · Readiness</div>
+      <div class="ann-name">Payout blockers surfaced early</div>
+      <div class="ann-body">Identity, bank, tax form, limits — shown at rest, not at the moment of withdrawal. W-9 needed is visible before the user tries to cash out $100 and hits a wall. Friction at the moment of intent is trust destruction.</div>
+      <div class="ann-rule">Nielsen: error prevention</div>
+    </div>
+  </div>
+
+  <div class="ann-divider"></div>
+
+  <!-- Depth legend -->
+  <div class="ann-title" style="margin-bottom:10px">Soft depth — applied</div>
+  <div class="depth-legend">
+    <div class="dl-row">
+      <div class="dl-dot" style="background:var(--icoin-primary)"></div>
+      <div class="dl-body">
+        <div class="dl-title">Gets depth</div>
+        <div class="dl-text">Coin split cards · action buttons · cash-out CTA · insight cards. These are value and conversion surfaces.</div>
+      </div>
+    </div>
+    <div class="dl-row">
+      <div class="dl-dot" style="background:var(--text-muted)"></div>
+      <div class="dl-body">
+        <div class="dl-title">No depth</div>
+        <div class="dl-text">Pending strip · performance metrics · activity rows · payout readiness list. These are information and compliance surfaces.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+const tabData = {
+  earned: [
+    { dot:'var(--icoin-primary)', title:'Nike Running campaign', meta:'2 min ago · Watch · verified', amount:'+2.00 i', amtColor:'var(--icoin-primary)', status:'Complete' },
+    { dot:'var(--icoin-primary)', title:'Focus session · 14 min', meta:'24 min ago · Attention', amount:'+28 a', amtColor:'var(--icoin-primary)', status:'Complete' },
+    { dot:'#9997a0', title:'Converted acoins', meta:'1 hr ago · 3,400 rcoins pool', amount:'+34 i', amtColor:'var(--icoin-primary)', status:'Complete' },
+    { dot:'var(--icoin-primary)', title:'Spotify Discover Weekly', meta:'3 hrs ago · Watch · 45 sec', amount:'+0.80 i', amtColor:'var(--icoin-primary)', status:'Complete' },
+  ],
+  pending: [
+    { dot:'var(--accent-amber)', title:'Blue Bottle GPS check-in', meta:'1 hr ago · GPS · verifying', amount:'+5.00 i', amtColor:'var(--accent-amber)', status:'Clearing' },
+    { dot:'var(--accent-amber)', title:'Apple TV+ campaign', meta:'4 hrs ago · Watch · hold', amount:'+1.50 i', amtColor:'var(--accent-amber)', status:'Pending 24h' },
+    { dot:'var(--accent-amber)', title:'Nike referral bonus', meta:'2 days ago · Referral', amount:'+3.00 i', amtColor:'var(--accent-amber)', status:'Under review' },
+  ],
+  failed: [
+    { dot:'var(--accent-rose)', title:'Samsung watch campaign', meta:'Yesterday · Attention score 58', amount:'0.00 i', amtColor:'var(--text-muted)', status:'Score too low' },
+    { dot:'var(--accent-rose)', title:'Survey · market research', meta:'3 days ago · Incomplete', amount:'0.00 i', amtColor:'var(--text-muted)', status:'Not completed' },
+  ],
+  payouts: [
+    { dot:'var(--icoin-primary)', title:'Bank transfer', meta:'5 days ago · Chase ···4821', amount:'−$20.00', amtColor:'var(--text-secondary)', status:'Delivered' },
+    { dot:'var(--icoin-primary)', title:'Bank transfer', meta:'2 weeks ago · Chase ···4821', amount:'−$15.00', amtColor:'var(--text-secondary)', status:'Delivered' },
+  ],
+};
+
+function switchTab(el, key) {
+  document.querySelectorAll('.act-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const list = document.getElementById('activity-list');
+  list.innerHTML = (tabData[key] || []).map(r => `
+    <div class="activity-row">
+      <div class="ar-dot" style="background:${r.dot}"></div>
+      <div class="ar-body">
+        <div class="ar-title">${r.title}</div>
+        <div class="ar-meta">${r.meta}</div>
+      </div>
+      <div>
+        <div class="ar-amount" style="color:${r.amtColor}">${r.amount}</div>
+        <div class="ar-status">${r.status}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Animate balance on load
+let bal = 0;
+const target = 847;
+const step = Math.ceil(target / 40);
+const balEl = document.getElementById('anim-balance');
+const t = setInterval(() => {
+  bal = Math.min(bal + step, target);
+  balEl.textContent = bal.toLocaleString();
+  if (bal >= target) clearInterval(t);
+}, 30);
+</script>
+
+</body>
+</html>

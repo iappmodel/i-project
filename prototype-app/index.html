@@ -341,6 +341,12 @@
     border: 1px solid rgba(96,165,250,0.15);
   }
 
+  .ext-tsx, .ext-dart {
+    color: #a78bfa;
+    background: rgba(167,139,250,0.08);
+    border: 1px solid rgba(167,139,250,0.15);
+  }
+
   .file-name {
     font-family: var(--font-mono);
     font-size: 12px;
@@ -572,6 +578,26 @@
         { name: 'alphabet-currency.html', ext: 'html' },
         { name: 'acoins_earning_system.html', ext: 'html' }
       ]
+    },
+    {
+      id: '09_eye_tracking',
+      title: 'Eye Tracking / Verified Attention',
+      desc: 'Imported Cursor work — integration map, demos, docs',
+      files: [
+        { name: 'EYE_TRACKING_INTEGRATION_MAP.md', ext: 'md', folder: 'docs/technical' },
+        { name: 'IMPORT_PROVENANCE.md', ext: 'md', folder: 'integrations/eye-tracking/ai-history' },
+        { name: 'DECISIONS.md', ext: 'md', folder: 'integrations/eye-tracking/docs' },
+        { name: 'AGENTS.md', ext: 'md', folder: 'integrations/eye-tracking/docs' },
+        { name: '00-MOC-eye-tracking-app.md', ext: 'md', folder: 'integrations/eye-tracking/docs/obsidian-vault/Projects/eye-tracking-app' },
+        { name: 'gaze-dart-pipeline.md', ext: 'md', folder: 'integrations/eye-tracking/docs/obsidian-vault/Projects/eye-tracking-app' },
+        { name: 'native-android-vision.md', ext: 'md', folder: 'integrations/eye-tracking/docs/obsidian-vault/Projects/eye-tracking-app' },
+        { name: 'index.html', ext: 'html', folder: 'integrations/eye-tracking/demos/investor-demo', label: 'investor-demo (Vite entry)' },
+        { name: 'WatchVerifyScreen.tsx', ext: 'tsx', folder: 'integrations/eye-tracking/demos/investor-demo/src/screens', label: 'WatchVerifyScreen.tsx' },
+        { name: 'index.html', ext: 'html', folder: 'integrations/eye-tracking/prototypes/i-mvp-prototype', label: 'i-mvp-prototype (Vite entry)' },
+        { name: 'App.tsx', ext: 'tsx', folder: 'integrations/eye-tracking/prototypes/i-mvp-prototype/src', label: 'i-mvp-prototype App.tsx' },
+        { name: 'governance_kernel.dart', ext: 'dart', folder: 'integrations/eye-tracking/source/lib/core/intent_os', label: 'governance_kernel.dart' },
+        { name: 'continual-learning.json', ext: 'json', folder: 'integrations/eye-tracking/ai-history/cursor/hooks/state' }
+      ]
     }
   ];
 
@@ -583,7 +609,8 @@
   var noResultsEl = document.getElementById('no-results');
 
   function href(folder, filename) {
-    return '../' + encodeURI(folder) + '/' + encodeURI(filename);
+    var parts = folder.split('/').map(function (p) { return encodeURIComponent(p); });
+    return '../' + parts.join('/') + '/' + encodeURIComponent(filename);
   }
 
   function buildNav() {
@@ -615,16 +642,18 @@
       grid.className = 'file-grid';
 
       sec.files.forEach(function (file) {
+        var folder = file.folder || sec.id;
+        var displayName = file.label || file.name;
         var a = document.createElement('a');
         a.className = 'file-link';
-        a.href = href(sec.id, file.name);
+        a.href = href(folder, file.name);
         a.target = '_blank';
         a.rel = 'noopener noreferrer';
-        a.setAttribute('data-search', (sec.id + ' ' + file.name + ' ' + sec.title).toLowerCase());
+        a.setAttribute('data-search', (folder + ' ' + file.name + ' ' + displayName + ' ' + sec.title).toLowerCase());
 
         a.innerHTML =
           '<span class="file-ext ext-' + file.ext + '">' + file.ext + '</span>' +
-          '<span class="file-name">' + file.name + '</span>' +
+          '<span class="file-name">' + displayName + '</span>' +
           '<span class="file-arrow" aria-hidden="true">↗</span>';
 
         grid.appendChild(a);

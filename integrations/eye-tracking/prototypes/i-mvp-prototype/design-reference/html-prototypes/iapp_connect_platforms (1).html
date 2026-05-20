@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] App — Connect Platforms</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-void:        #070709;
+    --bg-deep:        #0a0a0f;
+    --bg-surface:     #111118;
+    --bg-panel:       #16161f;
+    --bg-raised:      #1c1c28;
+    --border-subtle:  rgba(255,255,255,0.05);
+    --border-mid:     rgba(255,255,255,0.09);
+    --border-active:  rgba(255,255,255,0.18);
+    --text-primary:   #f0ede8;
+    --text-secondary: #9997a0;
+    --text-muted:     #4a4858;
+    --icoin-primary:  #4ade80;
+    --accent-cyan:    #00e5ff;
+    --font-display:   'Syne', sans-serif;
+    --font-body:      'DM Sans', sans-serif;
+    --font-mono:      'JetBrains Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg-deep);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    font-family: var(--font-body);
+  }
+
+  .phone-wrap {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .app-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -.02em;
+    margin-bottom: 6px;
+  }
+
+  .app-sub {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+  }
+
+  .phone {
+    width: 340px;
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 44px;
+    overflow: hidden;
+    background: var(--bg-surface);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(255,255,255,0.04);
+  }
+
+  .notch {
+    width: 88px;
+    height: 24px;
+    margin: 0 auto;
+    background: var(--bg-surface);
+    border-radius: 0 0 16px 16px;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-top: none;
+  }
+
+  .screen {
+    padding: 22px 20px 32px;
+    min-height: 740px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .back-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 22px;
+    cursor: pointer;
+    opacity: .55;
+    transition: opacity .12s;
+  }
+  .back-row:hover { opacity: 1; }
+
+  .back-box {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: var(--bg-panel);
+    border: 0.5px solid var(--border-mid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  .back-lbl {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .screen-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+    letter-spacing: -.02em;
+  }
+
+  .screen-sub {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 22px;
+    line-height: 1.5;
+  }
+
+  /* Connected summary strip */
+  .connected-strip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(74,222,128,0.05);
+    border: 0.5px solid rgba(74,222,128,0.15);
+    border-radius: 10px;
+    padding: 9px 13px;
+    margin-bottom: 20px;
+  }
+
+  .cs-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--icoin-primary);
+    flex-shrink: 0;
+  }
+
+  .cs-text {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--icoin-primary);
+    flex: 1;
+  }
+
+  .cs-count {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--icoin-primary);
+  }
+
+  /* Section label */
+  .sec-label {
+    font-family: var(--font-body);
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    margin-bottom: 10px;
+  }
+
+  /* Platform list */
+  .platform-list {
+    margin-bottom: 20px;
+  }
+
+  .platform-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 14px;
+    border: 0.5px solid var(--border-subtle);
+    border-radius: 12px;
+    background: var(--bg-panel);
+    margin-bottom: 7px;
+    cursor: pointer;
+    transition: border-color .12s, background .12s;
+  }
+  .platform-row:hover { border-color: var(--border-mid); }
+  .platform-row.connected { border-color: rgba(74,222,128,0.2); }
+  .platform-row.active-now { border-color: rgba(0,229,255,0.25); background: rgba(0,229,255,0.03); }
+
+  .platform-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+    color: #fff;
+  }
+
+  .platform-info { flex: 1; min-width: 0; }
+
+  .platform-name {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+    letter-spacing: -.01em;
+  }
+
+  .platform-detail {
+    font-family: var(--font-body);
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .platform-detail.connected {
+    color: var(--icoin-primary);
+  }
+
+  .platform-detail.syncing {
+    color: var(--accent-cyan);
+  }
+
+  /* Connect / disconnect toggle */
+  .toggle-wrap {
+    width: 36px;
+    height: 20px;
+    border-radius: 10px;
+    background: var(--bg-raised);
+    border: 0.5px solid var(--border-mid);
+    position: relative;
+    cursor: pointer;
+    transition: background .2s, border-color .2s;
+    flex-shrink: 0;
+  }
+
+  .toggle-wrap.on {
+    background: var(--icoin-primary);
+    border-color: var(--icoin-primary);
+  }
+
+  .toggle-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: transform .2s, background .2s;
+  }
+
+  .toggle-wrap.on .toggle-thumb {
+    transform: translateX(16px);
+    background: var(--bg-void);
+  }
+
+  /* Content count badge */
+  .content-badge {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: var(--bg-raised);
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  .content-badge.active {
+    background: rgba(74,222,128,0.08);
+    color: var(--icoin-primary);
+  }
+
+  /* Syncing indicator */
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .sync-ring {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1.5px solid transparent;
+    border-top-color: var(--accent-cyan);
+    border-right-color: var(--accent-cyan);
+    animation: spin .8s linear infinite;
+    flex-shrink: 0;
+  }
+
+  /* Info card */
+  .info-card {
+    background: var(--bg-panel);
+    border: 0.5px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 20px;
+  }
+
+  .info-title {
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    letter-spacing: -.01em;
+  }
+
+  .info-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 7px;
+  }
+  .info-row:last-child { margin-bottom: 0; }
+
+  .info-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+
+  .info-text {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* CTA */
+  .cta {
+    width: 100%;
+    padding: 15px;
+    border-radius: 14px;
+    background: var(--text-primary);
+    color: var(--bg-void);
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: opacity .12s;
+    margin-top: auto;
+    letter-spacing: -.01em;
+  }
+  .cta:hover { opacity: .88; }
+
+  /* Annotations */
+  .annotations {
+    max-width: 280px;
+    padding-top: 12px;
+  }
+
+  .ann { margin-bottom: 24px; }
+
+  .ann-tag {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 9px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin-bottom: 6px;
+    border: 0.5px solid var(--border-mid);
+    color: var(--text-muted);
+  }
+
+  .ann-title {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+  }
+
+  .ann-body {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-wrap">
+
+  <div>
+    <div class="app-title">[ i ]</div>
+    <div class="app-sub">Connect Platforms — Content sources</div>
+
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen">
+
+        <div class="back-row">
+          <div class="back-box">←</div>
+          <div class="back-lbl">Profile</div>
+        </div>
+
+        <div class="screen-title">Connect platforms</div>
+        <div class="screen-sub">Import your content from other platforms. You keep ownership — [ i ] distributes it.</div>
+
+        <div class="connected-strip">
+          <div class="cs-dot"></div>
+          <div class="cs-text">3 platforms active · content syncing</div>
+          <div class="cs-count" id="post-count">284 posts</div>
+        </div>
+
+        <div class="sec-label">Connected</div>
+        <div class="platform-list" id="platform-list">
+
+          <div class="platform-row connected active-now" data-id="instagram" onclick="togglePlatform('instagram', this)">
+            <div class="platform-icon" style="background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)">IG</div>
+            <div class="platform-info">
+              <div class="platform-name">Instagram</div>
+              <div class="platform-detail syncing">Syncing 142 posts…</div>
+            </div>
+            <div class="sync-ring"></div>
+            <div class="toggle-wrap on" id="toggle-instagram"><div class="toggle-thumb"></div></div>
+          </div>
+
+          <div class="platform-row connected" data-id="youtube" onclick="togglePlatform('youtube', this)">
+            <div class="platform-icon" style="background:#FF0000">YT</div>
+            <div class="platform-info">
+              <div class="platform-name">YouTube</div>
+              <div class="platform-detail connected">@alexrivera · 47 videos</div>
+            </div>
+            <div class="content-badge active">47</div>
+            <div class="toggle-wrap on" id="toggle-youtube"><div class="toggle-thumb"></div></div>
+          </div>
+
+          <div class="platform-row connected" data-id="tiktok" onclick="togglePlatform('tiktok', this)">
+            <div class="platform-icon" style="background:#000000">TK</div>
+            <div class="platform-info">
+              <div class="platform-name">TikTok</div>
+              <div class="platform-detail connected">@alex · 95 videos</div>
+            </div>
+            <div class="content-badge active">95</div>
+            <div class="toggle-wrap on" id="toggle-tiktok"><div class="toggle-thumb"></div></div>
+          </div>
+
+        </div>
+
+        <div class="sec-label">Available to connect</div>
+        <div class="platform-list">
+
+          <div class="platform-row" data-id="twitch" onclick="togglePlatform('twitch', this)">
+            <div class="platform-icon" style="background:#6441a5">TW</div>
+            <div class="platform-info">
+              <div class="platform-name">Twitch</div>
+              <div class="platform-detail">Stream clips · VODs · highlights</div>
+            </div>
+            <div class="toggle-wrap" id="toggle-twitch"><div class="toggle-thumb"></div></div>
+          </div>
+
+          <div class="platform-row" data-id="snapchat" onclick="togglePlatform('snapchat', this)">
+            <div class="platform-icon" style="background:#FFFC00;color:#000">SC</div>
+            <div class="platform-info">
+              <div class="platform-name">Snapchat</div>
+              <div class="platform-detail">Spotlight · stories · memories</div>
+            </div>
+            <div class="toggle-wrap" id="toggle-snapchat"><div class="toggle-thumb"></div></div>
+          </div>
+
+          <div class="platform-row" data-id="facebook" onclick="togglePlatform('facebook', this)">
+            <div class="platform-icon" style="background:#1877F2">FB</div>
+            <div class="platform-info">
+              <div class="platform-name">Facebook</div>
+              <div class="platform-detail">Reels · videos · posts</div>
+            </div>
+            <div class="toggle-wrap" id="toggle-facebook"><div class="toggle-thumb"></div></div>
+          </div>
+
+          <div class="platform-row" data-id="x" onclick="togglePlatform('x', this)">
+            <div class="platform-icon" style="background:#000000">X</div>
+            <div class="platform-info">
+              <div class="platform-name">X / Twitter</div>
+              <div class="platform-detail">Videos · spaces · posts</div>
+            </div>
+            <div class="toggle-wrap" id="toggle-x"><div class="toggle-thumb"></div></div>
+          </div>
+
+          <div class="platform-row" data-id="kik" onclick="togglePlatform('kik', this)">
+            <div class="platform-icon" style="background:#47BF01">KK</div>
+            <div class="platform-info">
+              <div class="platform-name">Kik</div>
+              <div class="platform-detail">Community content · groups</div>
+            </div>
+            <div class="toggle-wrap" id="toggle-kik"><div class="toggle-thumb"></div></div>
+          </div>
+
+          <div class="platform-row" data-id="pinterest" onclick="togglePlatform('pinterest', this)">
+            <div class="platform-icon" style="background:#E60023">PT</div>
+            <div class="platform-info">
+              <div class="platform-name">Pinterest</div>
+              <div class="platform-detail">Idea pins · boards · videos</div>
+            </div>
+            <div class="toggle-wrap" id="toggle-pinterest"><div class="toggle-thumb"></div></div>
+          </div>
+
+        </div>
+
+        <div class="info-card">
+          <div class="info-title">How it works</div>
+          <div class="info-row"><div class="info-dot"></div><div class="info-text">Content you own on other platforms gets imported to your [ i ] board automatically.</div></div>
+          <div class="info-row"><div class="info-dot"></div><div class="info-text">You earn attention coins when users on [ i ] watch your imported content.</div></div>
+          <div class="info-row"><div class="info-dot"></div><div class="info-text">Disconnecting a platform hides its content from your board — nothing is deleted.</div></div>
+        </div>
+
+        <button class="cta">Save &amp; sync</button>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="annotations">
+    <div class="ann">
+      <div class="ann-tag">Connected strip</div>
+      <div class="ann-title">Active platform count at a glance</div>
+      <div class="ann-body">The green strip shows how many platforms are live and how many posts are in the board. It makes the user feel their content footprint is growing — a productive asset, not just a settings page.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">Syncing state</div>
+      <div class="ann-title">Live sync is visible, not hidden</div>
+      <div class="ann-body">Instagram shows a spinning ring while syncing. The user can see it working in real time. Hiding sync states causes anxiety — showing them builds confidence that the system is doing what it promised.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">Toggle mechanic</div>
+      <div class="ann-title">Connect and disconnect in one tap</div>
+      <div class="ann-body">The toggle is the primary action — not a button that navigates to an auth flow. Tapping a disconnected platform triggers OAuth in a sheet. Tapping a connected one offers to disconnect with a single confirm. Fast, reversible, no dead ends.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">Content count</div>
+      <div class="ann-title">Posts are assets, not just content</div>
+      <div class="ann-body">Each connected platform shows a post count badge. "47 videos" frames the user's YouTube library as inventory — a board that earns passive attention while they sleep. The number makes the value tangible.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">Info card</div>
+      <div class="ann-title">Ownership is stated, not assumed</div>
+      <div class="ann-body">The three-line how-it-works card clarifies ownership immediately: your content, your earnings, reversible at any time. This pre-empts the anxiety every user has about connecting a social account to a new platform.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const connected = { instagram: true, youtube: true, tiktok: true };
+  const postCounts = {
+    instagram: 142, youtube: 47, tiktok: 95,
+    twitch: 0, snapchat: 0, facebook: 0, x: 0, kik: 0, pinterest: 0
+  };
+
+  function togglePlatform(id, row) {
+    const toggle = document.getElementById('toggle-' + id);
+    const isOn = toggle.classList.contains('on');
+
+    if (isOn) {
+      toggle.classList.remove('on');
+      row.classList.remove('connected', 'active-now');
+      connected[id] = false;
+      postCounts[id] = 0;
+      const detail = row.querySelector('.platform-detail');
+      detail.className = 'platform-detail';
+      detail.textContent = 'Disconnected — tap to reconnect';
+      const badge = row.querySelector('.content-badge');
+      if (badge) { badge.className = 'content-badge'; badge.textContent = '0'; }
+      const syncRing = row.querySelector('.sync-ring');
+      if (syncRing) syncRing.remove();
+    } else {
+      toggle.classList.add('on');
+      row.classList.add('connected');
+      connected[id] = true;
+      const fakeCount = Math.floor(Math.random() * 80) + 20;
+      postCounts[id] = fakeCount;
+      const detail = row.querySelector('.platform-detail');
+      detail.className = 'platform-detail syncing';
+      detail.textContent = 'Connecting…';
+      setTimeout(() => {
+        detail.className = 'platform-detail connected';
+        detail.textContent = fakeCount + ' items synced';
+        let badge = row.querySelector('.content-badge');
+        if (!badge) {
+          badge = document.createElement('div');
+          badge.className = 'content-badge active';
+          toggle.parentNode.insertBefore(badge, toggle);
+        }
+        badge.className = 'content-badge active';
+        badge.textContent = fakeCount;
+        updateCount();
+      }, 1500);
+    }
+
+    updateCount();
+  }
+
+  function updateCount() {
+    const total = Object.values(postCounts).reduce((a, b) => a + b, 0);
+    const active = Object.values(connected).filter(Boolean).length;
+    document.getElementById('post-count').textContent = total + ' posts';
+    const strip = document.querySelector('.cs-text');
+    strip.textContent = active + ' platform' + (active !== 1 ? 's' : '') + ' active · content syncing';
+  }
+</script>
+
+</body>
+</html>

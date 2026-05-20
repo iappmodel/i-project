@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] App — Convert Screen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-void:        #070709;
+    --bg-deep:        #0a0a0f;
+    --bg-surface:     #111118;
+    --bg-panel:       #16161f;
+    --bg-raised:      #1c1c28;
+    --border-subtle:  rgba(255,255,255,0.05);
+    --border-mid:     rgba(255,255,255,0.09);
+    --border-active:  rgba(255,255,255,0.18);
+    --text-primary:   #f0ede8;
+    --text-secondary: #9997a0;
+    --text-muted:     #4a4858;
+    --icoin-primary:  #4ade80;
+    --icoin-dim:      rgba(74,222,128,0.08);
+    --accent-purple:  #a78bfa;
+    --accent-cyan:    #00e5ff;
+    --accent-rose:    #ff4d6d;
+    --font-display:   'Syne', sans-serif;
+    --font-body:      'DM Sans', sans-serif;
+    --font-mono:      'JetBrains Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg-deep);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    font-family: var(--font-body);
+  }
+
+  .phone-wrap {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .app-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -.02em;
+    margin-bottom: 6px;
+  }
+
+  .app-sub {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 40px;
+  }
+
+  .phone {
+    width: 340px;
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 44px;
+    overflow: hidden;
+    background: var(--bg-surface);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(255,255,255,0.04);
+  }
+
+  .notch {
+    width: 88px;
+    height: 24px;
+    margin: 0 auto;
+    background: var(--bg-surface);
+    border-radius: 0 0 16px 16px;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-top: none;
+  }
+
+  .screen {
+    padding: 24px 20px 32px;
+    min-height: 680px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Back row */
+  .back-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 22px;
+    cursor: pointer;
+    opacity: .6;
+    transition: opacity .12s;
+  }
+  .back-row:hover { opacity: 1; }
+
+  .back-box {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: var(--bg-panel);
+    border: 0.5px solid var(--border-mid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  .back-lbl {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  /* Title */
+  .screen-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+  }
+
+  .screen-sub {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 26px;
+  }
+
+  .screen-sub span {
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  /* Cards */
+  .from-card {
+    border: 0.5px solid var(--border-mid);
+    border-radius: 14px;
+    padding: 16px;
+    background: var(--bg-panel);
+    margin-bottom: 10px;
+  }
+
+  .fc-label {
+    font-family: var(--font-body);
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    margin-bottom: 10px;
+  }
+
+  .fc-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .fc-coin {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .fc-name {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    flex: 1;
+  }
+
+  .fc-bal {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: right;
+  }
+
+  .amount-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin: 14px 0 6px;
+  }
+
+  .amount-input {
+    font-family: var(--font-mono);
+    font-size: 36px;
+    font-weight: 500;
+    color: var(--text-primary);
+    background: transparent;
+    border: none;
+    outline: none;
+    width: 160px;
+    -moz-appearance: textfield;
+  }
+  .amount-input::-webkit-outer-spin-button,
+  .amount-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  .amount-sym {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .pct-row {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .pct-btn {
+    flex: 1;
+    padding: 6px 0;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: 8px;
+    border: 0.5px solid var(--border-mid);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    text-align: center;
+    transition: all .12s;
+  }
+
+  .pct-btn:hover { border-color: var(--border-active); color: var(--text-secondary); }
+  .pct-btn.on { background: var(--text-primary); color: var(--bg-void); border-color: var(--text-primary); }
+
+  /* Swap button */
+  .swap-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 0.5px solid var(--border-mid);
+    background: var(--bg-panel);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    font-size: 16px;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: transform .25s, border-color .12s;
+    font-family: var(--font-body);
+  }
+  .swap-btn:hover { transform: rotate(180deg); border-color: var(--border-active); }
+
+  /* To card */
+  .to-card {
+    border: 0.5px solid var(--border-mid);
+    border-radius: 14px;
+    padding: 16px;
+    background: var(--bg-panel);
+    margin-bottom: 14px;
+  }
+
+  .to-selector {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .to-btn {
+    flex: 1;
+    padding: 7px 0;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: 8px;
+    border: 0.5px solid var(--border-mid);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    text-align: center;
+    transition: all .12s;
+  }
+  .to-btn:hover { border-color: var(--border-active); color: var(--text-secondary); }
+  .to-btn.on { background: var(--text-primary); color: var(--bg-void); border-color: var(--text-primary); }
+
+  .to-receive {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--icoin-primary);
+    text-align: right;
+    min-width: 80px;
+  }
+
+  /* Breakdown */
+  .breakdown {
+    border: 0.5px solid var(--border-subtle);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+
+  .bk-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 9px 14px;
+    border-bottom: 0.5px solid var(--border-subtle);
+  }
+  .bk-row:last-child { border-bottom: none; }
+
+  .bk-label {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .bk-val {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .bk-row.total .bk-label {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .bk-row.total .bk-val {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--icoin-primary);
+  }
+
+  /* Trust pill */
+  .trust-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-panel);
+    border: 0.5px solid var(--border-subtle);
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin-bottom: 16px;
+  }
+
+  .trust-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--icoin-primary);
+    flex-shrink: 0;
+  }
+
+  .trust-text {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  /* CTA */
+  .confirm-btn {
+    width: 100%;
+    padding: 15px;
+    border-radius: 14px;
+    background: var(--text-primary);
+    color: var(--bg-void);
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: opacity .12s;
+    margin-top: auto;
+    letter-spacing: -.01em;
+  }
+  .confirm-btn:hover { opacity: .88; }
+  .confirm-btn:disabled { opacity: .3; cursor: not-allowed; }
+
+  /* Annotations */
+  .annotations {
+    max-width: 280px;
+    padding-top: 12px;
+  }
+
+  .ann { margin-bottom: 24px; }
+
+  .ann-tag {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 9px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin-bottom: 6px;
+    border: 0.5px solid var(--border-mid);
+    color: var(--text-muted);
+  }
+
+  .ann-title {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+  }
+
+  .ann-body {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-wrap">
+
+  <div>
+    <div class="app-title">[ i ]</div>
+    <div class="app-sub">Convert — Coin Exchange</div>
+
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen">
+
+        <div class="back-row">
+          <div class="back-box">←</div>
+          <div class="back-lbl">Wallet</div>
+        </div>
+
+        <div class="screen-title">Convert</div>
+        <div class="screen-sub">Your trust tier: <span>Tier 2</span> · 1.15× multiplier active</div>
+
+        <div class="from-card">
+          <div class="fc-label">FROM</div>
+          <div class="fc-row">
+            <div class="fc-coin" style="background:rgba(74,222,128,0.1);color:#4ade80">a</div>
+            <div class="fc-name">acoins</div>
+            <div class="fc-bal">1,240 available</div>
+          </div>
+          <div class="amount-row">
+            <input class="amount-input" id="amt-in" type="number" value="500" min="1" max="1240" oninput="calc()">
+            <span class="amount-sym">acoins</span>
+          </div>
+          <div class="pct-row">
+            <div class="pct-btn" onclick="setPct(25,this)">25%</div>
+            <div class="pct-btn" onclick="setPct(50,this)">50%</div>
+            <div class="pct-btn" onclick="setPct(75,this)">75%</div>
+            <div class="pct-btn" onclick="setPct(100,this)">Max</div>
+          </div>
+        </div>
+
+        <div class="swap-btn" title="Swap direction">⇅</div>
+
+        <div class="to-card">
+          <div class="fc-label">TO</div>
+          <div class="to-selector">
+            <div class="to-btn on" onclick="setTo('icoins','rgba(249,115,22,0.1)','#f97316','i',this)">icoins</div>
+            <div class="to-btn" onclick="setTo('mcoins','rgba(0,229,255,0.1)','#00e5ff','m',this)">mcoins</div>
+            <div class="to-btn" onclick="setTo('ucoins','rgba(167,139,250,0.1)','#a78bfa','u',this)">ucoins</div>
+          </div>
+          <div class="fc-row">
+            <div class="fc-coin" id="to-icon" style="background:rgba(249,115,22,0.1);color:#f97316">i</div>
+            <div class="fc-name" id="to-name">icoins</div>
+            <div class="to-receive" id="to-receive">— receiving</div>
+          </div>
+        </div>
+
+        <div class="breakdown" id="breakdown"></div>
+
+        <div class="trust-pill">
+          <div class="trust-dot"></div>
+          <div class="trust-text" id="trust-text">Tier 2 bonus: +15% on pool clearing · next tier at 90-day milestone</div>
+        </div>
+
+        <button class="confirm-btn" id="confirm-btn">Confirm conversion</button>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="annotations">
+    <div class="ann">
+      <div class="ann-tag">From card</div>
+      <div class="ann-title">Percentage shortcuts kill friction</div>
+      <div class="ann-body">25 / 50 / 75 / Max means users never need to type a number. Max is the most common action — one tap. The input is there for precision, not for default use.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">To selector</div>
+      <div class="ann-title">Three destinations, always visible</div>
+      <div class="ann-body">icoins, mcoins, ucoins — the three conversion targets are always shown together so users can see the rate difference and make an informed choice without navigating away.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">Breakdown</div>
+      <div class="ann-title">Show every number before confirm</div>
+      <div class="ann-body">Pool fee, trust multiplier, and final receive amount are all shown before the user taps confirm. No surprises. The moment of clarity before commitment is where trust is built.</div>
+    </div>
+    <div class="ann">
+      <div class="ann-tag">Trust pill</div>
+      <div class="ann-title">Tier progress is always in view</div>
+      <div class="ann-body">The trust pill reminds the user what their tier is doing for them right now — and what the next milestone unlocks. Progress is motivating only when it's visible.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const rates = { icoins: 100, mcoins: 60, ucoins: 50 };
+  const tierMult = 1.15;
+  const fee = 0.05;
+  let toType = 'icoins';
+
+  function setTo(type, bg, color, sym, el) {
+    toType = type;
+    document.getElementById('to-icon').style.background = bg;
+    document.getElementById('to-icon').style.color = color;
+    document.getElementById('to-icon').textContent = sym;
+    document.getElementById('to-name').textContent = type;
+    document.querySelectorAll('.to-btn').forEach(b => b.classList.remove('on'));
+    el.classList.add('on');
+    calc();
+  }
+
+  function setPct(pct, el) {
+    const max = 1240;
+    document.getElementById('amt-in').value = Math.floor(max * pct / 100);
+    document.querySelectorAll('.pct-btn').forEach(b => b.classList.remove('on'));
+    el.classList.add('on');
+    calc();
+  }
+
+  function calc() {
+    const amt = parseInt(document.getElementById('amt-in').value) || 0;
+    const pooled = Math.round(amt * tierMult);
+    const feeAmt = Math.round(pooled * fee);
+    const net = pooled - feeAmt;
+    const received = Math.floor(net / rates[toType]);
+
+    document.getElementById('to-receive').textContent = received.toLocaleString() + ' ' + toType;
+
+    const discountLine = toType !== 'icoins'
+      ? `<div class="bk-row"><div class="bk-label">In-app discount</div><div class="bk-val" style="color:#4ade80">-${Math.round((1 - rates[toType]/100)*100)}% vs cash rate</div></div>`
+      : '';
+
+    document.getElementById('breakdown').innerHTML = `
+      <div class="bk-row"><div class="bk-label">You send</div><div class="bk-val">${amt.toLocaleString()} acoins</div></div>
+      <div class="bk-row"><div class="bk-label">Tier 2 multiplier (1.15×)</div><div class="bk-val" style="color:#4ade80">+${(pooled - amt).toLocaleString()} rcoins</div></div>
+      <div class="bk-row"><div class="bk-label">Pool fee (5%)</div><div class="bk-val" style="color:#9997a0">−${feeAmt.toLocaleString()} rcoins</div></div>
+      ${discountLine}
+      <div class="bk-row total"><div class="bk-label">You receive</div><div class="bk-val">${received.toLocaleString()} ${toType}</div></div>
+    `;
+
+    document.getElementById('confirm-btn').disabled = amt <= 0 || amt > 1240;
+  }
+
+  calc();
+</script>
+
+</body>
+</html>
