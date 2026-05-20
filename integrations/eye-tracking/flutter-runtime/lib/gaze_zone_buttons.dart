@@ -7,8 +7,9 @@ import 'intent_influence_ui.dart';
 /// Three gaze targets (LEFT / CENTER / RIGHT) with animated focus and optional
 /// selection highlight — intended as a dwell+blink calibration or demo UI.
 ///
-/// Layout matches a full-height [Stack]: [Row] of targets at the top and an
-/// optional bottom banner `SELECTED: …` when [showSelectionLabel] is true.
+/// Layout: [Row] of targets at the top and an optional bottom banner
+/// `SELECTED: …` when [showSelectionLabel] is true (column + spacer when height
+/// is bounded; compact column when height is unbounded).
 ///
 /// When [influenceListenable] is set, the predicted target zone uses
 /// [expandHitbox] / [opacityFromWeight] from [intent_influence_ui] (presentation only).
@@ -66,31 +67,44 @@ class GazeZoneButtons extends StatelessWidget {
 
       final selectedLine = selected.isEmpty ? '—' : selected;
       final bannerSize = compact ? 22.0 : 28.0;
+      final banner = Center(
+        child: Text(
+          'SELECTED: $selectedLine',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: bannerSize,
+          ),
+        ),
+      );
 
-      return Stack(
-        fit: StackFit.expand,
-        children: [
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: row,
-          ),
-          Positioned(
-            bottom: selectionBannerBottom,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Text(
-                'SELECTED: $selectedLine',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: bannerSize,
-                ),
+      // Avoid [Stack] + [Positioned] top/bottom here: that path requires a finite
+      // max height; some ancestors still pass unbounded height. [Column] + [Spacer]
+      // pins the banner when height is bounded; a tight [Column] is used otherwise.
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          if (!constraints.hasBoundedHeight) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                row,
+                SizedBox(height: selectionBannerBottom),
+                banner,
+              ],
+            );
+          }
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              row,
+              const Spacer(),
+              Padding(
+                padding: const EdgeInsets.only(bottom: selectionBannerBottom),
+                child: banner,
               ),
-            ),
-          ),
-        ],
+            ],
+          );
+        },
       );
     }
 
