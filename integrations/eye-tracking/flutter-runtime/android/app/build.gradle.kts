@@ -9,7 +9,7 @@ android {
     namespace = "com.example.eye_tracking_app"
     // camera_android requires compileSdk 36+ (see `flutter build` warnings).
     compileSdk = 36
-    ndkVersion = "27.0.12077973"
+    ndkVersion = "28.2.13676358"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
