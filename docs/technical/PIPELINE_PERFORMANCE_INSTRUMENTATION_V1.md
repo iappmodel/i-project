@@ -12,6 +12,8 @@ Physical Android runs on Samsung SM-S928U proved the promoted runtime is **funct
 
 `[frame_perf]` logs already summarize encode, channel, and native timings once per second, but they reset the window each log line and do not label **which stage dominates** or surface drop mix in the lab HUD. Pipeline Performance Instrumentation v1 adds a **rolling-window, observe-only** monitor and a compact **Pipeline perf** panel so operators can see bottleneck stage + reason without changing processing behavior.
 
+**Test hygiene:** Before treating HUD/`[frame_perf]` numbers as proof of a pipeline bottleneck (or comparing sessions), follow [`ANDROID_RUNTIME_TEST_HYGIENE_CHECKLIST.md`](ANDROID_RUNTIME_TEST_HYGIENE_CHECKLIST.md) — USB/cable, phone thermal and battery state, Mac disk/CPU, warm-up run, and stable 60 s capture protocol.
+
 ---
 
 ## 2. Current observed bottleneck (Android SM-S928U)
@@ -173,6 +175,7 @@ Encode/channel dominance on SM-S928U motivated a guarded **Y-plane / grayscale**
 
 | Doc | Path |
 |-----|------|
+| Android runtime test hygiene | [`ANDROID_RUNTIME_TEST_HYGIENE_CHECKLIST.md`](ANDROID_RUNTIME_TEST_HYGIENE_CHECKLIST.md) |
 | Y-plane experiment | [`Y_PLANE_TRANSPORT_EXPERIMENT.md`](Y_PLANE_TRANSPORT_EXPERIMENT.md) |
 | Smoke test result | [`ANDROID_EYE_TRACKING_SMOKE_TEST_RESULT.md`](ANDROID_EYE_TRACKING_SMOKE_TEST_RESULT.md) |
 | Verification stability v1 | [`VERIFICATION_STABILITY_LAYER_V1.md`](VERIFICATION_STABILITY_LAYER_V1.md) |

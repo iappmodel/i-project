@@ -153,6 +153,8 @@ adb logcat -s VisionProcessor flutter | grep -E 'frame_perf|ImageStream|GetEnv'
 
 ## 10. Compare against baseline logs
 
+**Environment / test hygiene:** Before comparing baseline vs Y-plane metrics, complete [`ANDROID_RUNTIME_TEST_HYGIENE_CHECKLIST.md`](ANDROID_RUNTIME_TEST_HYGIENE_CHECKLIST.md) (cable, thermal state, warm-up → second run, Mac disk/CPU, etc.). A/B conclusions are invalid if physical or host conditions differ.
+
 Record both sessions with the same device, lighting, and ~60 s hold:
 
 | Metric | Baseline log / HUD | Experiment log / HUD |
