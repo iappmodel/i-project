@@ -4,7 +4,7 @@
 **Audit type:** Archaeological inspection — read-only, no merges, no rewrites  
 **Root audit directory:** `~/Desktop/i-project-rescue/github-source-repos`  
 **Primary integration repo:** `~/Desktop/i-project-rescue/i_project_migration_archive`  
-**Status:** Initial full sweep complete  
+**Status:** Recovery complete — ownership reconciliation active ([`SYSTEM_PROMOTION_SOURCE_OF_TRUTH.md`](SYSTEM_PROMOTION_SOURCE_OF_TRUTH.md))  
 **Branch audits (2026-05-20):**
 - `eye_tracking_app/feature/evidence-vault-v2-hardening` — [`EVIDENCE_VAULT_V2_HARDENING_BRANCH_AUDIT.md`](EVIDENCE_VAULT_V2_HARDENING_BRANCH_AUDIT.md)
 - `eye-earn-sparkle-archive/codex/vision-unified-pipeline` — [`VISION_UNIFIED_PIPELINE_BRANCH_AUDIT.md`](VISION_UNIFIED_PIPELINE_BRANCH_AUDIT.md)
@@ -31,6 +31,9 @@
 9. [Systems at Risk of Duplication / Rewrite Waste](#9-systems-at-risk-of-duplication--rewrite-waste)
 10. [Recommended Canonical Architecture Direction](#10-recommended-canonical-architecture-direction)
 11. [Audit Summary](#11-audit-summary)
+12. [Recovery Complete — Transition To Reconciliation](#recovery-complete--transition-to-reconciliation)
+
+**Master ownership map:** [`SYSTEM_PROMOTION_SOURCE_OF_TRUTH.md`](SYSTEM_PROMOTION_SOURCE_OF_TRUTH.md)
 
 ---
 
@@ -1000,6 +1003,41 @@ The following systems exist in a working state and **must not be rebuilt from sc
 
 ---
 
-*Report generated: 2026-05-20*  
-*Audit status: Read-only archaeological inspection — no merges, no rewrites, no deletions performed*  
+---
+
+## Recovery Complete — Transition To Reconciliation
+
+**Date:** 2026-05-21
+
+### Archaeology phase completed
+
+- All **11 cloned repos** inventoried; **8** with code analyzed in depth ([§1–§4](#1-repository-inventory)).
+- **Critical branch audits** listed in the header are **done** (evidence vault, vision pipeline, investor demo v2, MVP night build, unified vision archive, pre-composer checkpoint, studio routing, Cursor v1 kernel trio, dev-environment setup).
+- **Keyword and subsystem sweeps** ([§3–§4](#3-keyword-search-findings)) mapped POPS, wallet, feed, studio, gaze, and trust across repos.
+- **Stale bookmarks closed** — `cursor/v1-*` and `cursor/dev-environment-setup-4f71` add no unique work beyond `main` / promoted flutter-runtime.
+
+### Ownership mapping now exists
+
+The master reconciliation document **[`SYSTEM_PROMOTION_SOURCE_OF_TRUTH.md`](SYSTEM_PROMOTION_SOURCE_OF_TRUTH.md)** answers:
+
+> *What is the current source of truth for every major i platform subsystem?*
+
+It assigns **canonical repo · branch · path**, **promotion status**, **risk**, and **next action** for all **35** platform systems (Android/web vision, POPS, proof, wallet, studio, ELO, iVatar, admin, payments, documentation, etc.).
+
+**Do not** treat [`FULL_REPO_SOURCE_RECOVERY_AUDIT.md`](FULL_REPO_SOURCE_RECOVERY_AUDIT.md) as the active blocker — org-level clone inspection is complete at `github-source-repos/` scope; remaining work is **promotion into `i_project_migration_archive`**, not discovery.
+
+### Future work: promotion and implementation
+
+| Stop | Start |
+|------|--------|
+| New branch archaeology without new remote evidence | Execute **P0** from SoT: proof packet emission, promote archive Supabase financial core, wire pending-validation wallet |
+| Rebuilding wallet, Stripe, merchant checkout, or gaze pipeline | Selective copy from canonical sources in SoT §3 and §6 |
+| Ad-hoc “which repo?” decisions | Update **SoT §3** when a promotion lands |
+
+**Immediate engineering priority (unchanged, now SoT-backed):** Wire **`ProofPacketV0` emission** in `integrations/eye-tracking/flutter-runtime/`, then promote **`eye-earn-sparkle-archive`** ledger/reward backend — this unblocks POPS, pending wallet, and evidence vault reconciliation.
+
+---
+
+*Report generated: 2026-05-20 · Reconciliation section: 2026-05-21*  
+*Audit status: Archaeological inspection complete — promotion phase governed by [`SYSTEM_PROMOTION_SOURCE_OF_TRUTH.md`](SYSTEM_PROMOTION_SOURCE_OF_TRUTH.md)*  
 *Evidence preserved: All repositories intact at audit path*
