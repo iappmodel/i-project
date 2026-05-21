@@ -14,6 +14,7 @@
 - `eye_tracking_app/checkpoint/pre-composer-cleanup` — [`EYE_TRACKING_PRE_COMPOSER_CLEANUP_BRANCH_AUDIT.md`](EYE_TRACKING_PRE_COMPOSER_CLEANUP_BRANCH_AUDIT.md)
 - `eye_tracking_app/integration/studio-routing-audit` — [`STUDIO_ROUTING_AUDIT_BRANCH_AUDIT.md`](STUDIO_ROUTING_AUDIT_BRANCH_AUDIT.md) (identical tip to `feature/evidence-vault-v2-hardening` @ `d23d365`)
 - `eye_tracking_app/cursor/v1-autonomy-4f71`, `cursor/v1-safety-4f71`, `cursor/v1-signal-4f71` — [`CURSOR_V1_KERNEL_BRANCHES_AUDIT.md`](CURSOR_V1_KERNEL_BRANCHES_AUDIT.md) (all three identical @ `4980581` — stale bookmarks, 61 commits behind `main`)
+- `eye_tracking_app/cursor/dev-environment-setup-4f71` — [`CURSOR_DEV_ENVIRONMENT_SETUP_BRANCH_AUDIT.md`](CURSOR_DEV_ENVIRONMENT_SETUP_BRANCH_AUDIT.md) (1 compile-fix commit on `4980581`; 61 behind `main`; no promotion)
 
 ---
 
@@ -781,6 +782,7 @@ Ranked by value to canonical i-project build:
 | ~~**MEDIUM**~~ **DONE** | `eye_tracking_app` | `cursor/v1-autonomy-4f71` | Audited 2026-05-21 — identical to v1-safety/v1-signal @ initial commit; no unique work — see [`CURSOR_V1_KERNEL_BRANCHES_AUDIT.md`](CURSOR_V1_KERNEL_BRANCHES_AUDIT.md) |
 | ~~**MEDIUM**~~ **DONE** | `eye_tracking_app` | `cursor/v1-safety-4f71` | Same audit — stale bookmark |
 | ~~**MEDIUM**~~ **DONE** | `eye_tracking_app` | `cursor/v1-signal-4f71` | Same audit — stale bookmark |
+| ~~**MEDIUM**~~ **DONE** | `eye_tracking_app` | `cursor/dev-environment-setup-4f71` | Audited 2026-05-21 — single Flutter compile fix (`GazeFilterStack` + `main.dart` renames) on initial commit; superseded by `main`/promoted runtime; see [`CURSOR_DEV_ENVIRONMENT_SETUP_BRANCH_AUDIT.md`](CURSOR_DEV_ENVIRONMENT_SETUP_BRANCH_AUDIT.md) |
 | **MEDIUM** | `i-initial-structures` | `dev` | May contain work-in-progress beyond the single main commit |
 | **LOW** | `eye-earn-sparkle` | `demo-investor` | v1 investor demo — likely superseded |
 
@@ -975,12 +977,13 @@ The following systems exist in a working state and **must not be rebuilt from sc
 | ~~`checkpoint/pre-composer-cleanup`~~ | `eye_tracking_app` | **Done** — see [`EYE_TRACKING_PRE_COMPOSER_CLEANUP_BRANCH_AUDIT.md`](EYE_TRACKING_PRE_COMPOSER_CLEANUP_BRANCH_AUDIT.md) |
 | ~~`integration/studio-routing-audit`~~ | `eye_tracking_app` | **Done** — see [`STUDIO_ROUTING_AUDIT_BRANCH_AUDIT.md`](STUDIO_ROUTING_AUDIT_BRANCH_AUDIT.md) |
 | ~~`cursor/v1-autonomy-4f71`~~ / ~~`v1-safety`~~ / ~~`v1-signal`~~ | `eye_tracking_app` | **Done** — see [`CURSOR_V1_KERNEL_BRANCHES_AUDIT.md`](CURSOR_V1_KERNEL_BRANCHES_AUDIT.md) |
+| ~~`cursor/dev-environment-setup-4f71`~~ | `eye_tracking_app` | **Done** — see [`CURSOR_DEV_ENVIRONMENT_SETUP_BRANCH_AUDIT.md`](CURSOR_DEV_ENVIRONMENT_SETUP_BRANCH_AUDIT.md) |
 
 ### Immediate Next Recommended Audit Target
 
-**Target:** `eye_tracking_app/cursor/dev-environment-setup-4f71` (then **`eye-earn-sparkle-archive/main` Studio component reconciliation** vs IVAULT post-package types)
+**Target:** **`eye-earn-sparkle-archive/main` Studio reconciliation** vs `integrations/eye-tracking/source/` studio types (collab/media/post-package)
 
-**Why:** Cursor v1 kernel audit (2026-05-21) confirmed all three `cursor/v1-*-4f71` branches are **byte-identical stale bookmarks** on initial commit `4980581` (0 unique commits; 61 behind `main`). Intent OS kernels on `main` and promoted flutter-runtime **supersede** v1 tips — no hidden autonomy/safety/signal work. Remaining unexplored ET branch: `dev-environment-setup-4f71` (+1 compile-fix commit on same base). Studio routing audit already placed web Studio + i Command in monorepo checkpoint — next cross-repo pass should reconcile **archive production Studio UI** with **`integrations/eye-tracking/source/`** collab/media types.
+**Why:** `cursor/dev-environment-setup-4f71` audit (2026-05-21) confirmed a **single compile-fix** on initial commit `4980581` (`GazeFilterStack` + `main.dart` shadowing renames) — **61 commits behind `main`**, no Android/Gradle/CI/setup, **nothing to promote**; promoted flutter-runtime already has the delegate `GazeFilterStack`. With Cursor v1 kernel branches and dev-environment branch closed, remaining high-value cross-repo gap is **archive production Studio UI** vs i-project **`integrations/eye-tracking/source/`** types (studio routing audit placed web Studio in monorepo checkpoint; archive `main` is the live production tree).
 
 **Completed branch audits:**
 - `eye_tracking_app/feature/evidence-vault-v2-hardening` — [`EVIDENCE_VAULT_V2_HARDENING_BRANCH_AUDIT.md`](EVIDENCE_VAULT_V2_HARDENING_BRANCH_AUDIT.md)
@@ -991,6 +994,7 @@ The following systems exist in a working state and **must not be rebuilt from sc
 - `eye_tracking_app/checkpoint/pre-composer-cleanup` — [`EYE_TRACKING_PRE_COMPOSER_CLEANUP_BRANCH_AUDIT.md`](EYE_TRACKING_PRE_COMPOSER_CLEANUP_BRANCH_AUDIT.md)
 - `eye_tracking_app/integration/studio-routing-audit` — [`STUDIO_ROUTING_AUDIT_BRANCH_AUDIT.md`](STUDIO_ROUTING_AUDIT_BRANCH_AUDIT.md)
 - `eye_tracking_app/cursor/v1-autonomy-4f71`, `cursor/v1-safety-4f71`, `cursor/v1-signal-4f71` — [`CURSOR_V1_KERNEL_BRANCHES_AUDIT.md`](CURSOR_V1_KERNEL_BRANCHES_AUDIT.md)
+- `eye_tracking_app/cursor/dev-environment-setup-4f71` — [`CURSOR_DEV_ENVIRONMENT_SETUP_BRANCH_AUDIT.md`](CURSOR_DEV_ENVIRONMENT_SETUP_BRANCH_AUDIT.md)
 
 **Secondary targets:** `i-initial-structures/dev`; `eye-earn-sparkle/demo-investor` (low — likely superseded).
 
