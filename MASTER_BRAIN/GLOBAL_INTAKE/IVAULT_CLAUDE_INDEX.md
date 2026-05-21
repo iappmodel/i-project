@@ -1,0 +1,144 @@
+# IVAULT Claude Export Index
+
+**Files:** 1220
+
+**Detectable conversations (sampled JSON):** 1
+
+
+## Priority extraction (heuristic)
+
+**[ i ]-relevant keyword matches:** 46
+
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/slack-gif-creator/SKILL.md` (17142 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/developer-growth-analysis/SKILL.md` (15720 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/DEMOS:REPOS/i dev demo/DEMO 1/DEMOCKUPS/claude_iapp_uiux_master_instructions.md` (15711 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/slack-gif-creator/core/visual_effects.py` (14862 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/slack-gif-creator/core/frame_composer.py` (14468 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/skill-creator/SKILL.md` (11547 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/skill-creator/LICENSE.txt` (11357 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/slack-gif-creator/LICENSE.txt` (11357 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/slack-gif-creator/templates/explode.py` (11259 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/slack-gif-creator/templates/morph.py` (11241 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/skill-creator/scripts/init_skill.py` (10863 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/slack-gif-creator/core/typography.py` (10761 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/slack-gif-creator/templates/fade.py` (10143 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/slack-gif-creator/templates/zoom.py` (10111 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/slack-gif-creator/templates/wiggle.py` (10060 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/slack-gif-creator/core/gif_builder.py` (9565 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/slack-gif-creator/templates/flip.py` (9458 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/slack-gif-creator/templates/move.py` (9395 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/slack-gif-creator/templates/slide.py` (9367 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/slack-gif-creator/templates/spin.py` (9096 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/slack-gif-creator/core/color_palettes.py` (8724 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/slack-gif-creator/templates/pulse.py` (8638 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/slack-gif-creator/core/validators.py` (8225 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/slack-gif-creator/templates/kaleidoscope.py` (6349 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/slack-gif-creator/core/easing.py` (6289 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/slack-gif-creator/.DS_Store` (6148 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/DEMOS:REPOS/i-app-demo/CLAUDE 2.md` (4864 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/slack-gif-creator/templates/shake.py` (3737 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/skill-creator/scripts/package_skill.py` (3247 bytes)
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/changelog-generator/SKILL.md` (3096 bytes)
+
+## All paths (first 100)
+
+- `/Users/2023macbookpro/Desktop/IVAULT/CLAUDE/.DS_Store`
+- `/Users/2023macbookpro/Desktop/IVAULT/CLAUDE/data-fe35a285-bb03-4a76-9713-3d7d7db136c1-1779344478-caa3e17f-batch-0000/conversations.json`
+- `/Users/2023macbookpro/Desktop/IVAULT/CLAUDE/data-fe35a285-bb03-4a76-9713-3d7d7db136c1-1779344478-caa3e17f-batch-0000/.DS_Store`
+- `/Users/2023macbookpro/Desktop/IVAULT/CLAUDE/data-fe35a285-bb03-4a76-9713-3d7d7db136c1-1779344478-caa3e17f-batch-0000/users.json`
+- `/Users/2023macbookpro/Desktop/IVAULT/CLAUDE/data-fe35a285-bb03-4a76-9713-3d7d7db136c1-1779344478-caa3e17f-batch-0000/projects/019cea82-0e9f-73c1-ac2c-52ac4af5fe4a.json`
+- `/Users/2023macbookpro/Desktop/IVAULT/CLAUDE/data-fe35a285-bb03-4a76-9713-3d7d7db136c1-1779344478-caa3e17f-batch-0000/projects/019d115c-6974-73dc-a62b-b230540eed64.json`
+- `/Users/2023macbookpro/Desktop/IVAULT/CLAUDE/data-fe35a285-bb03-4a76-9713-3d7d7db136c1-1779344478-caa3e17f-batch-0000/projects/019cf39d-2874-7664-9b6f-35410a4cf73c.json`
+- `/Users/2023macbookpro/Desktop/IVAULT/CLAUDE/data-fe35a285-bb03-4a76-9713-3d7d7db136c1-1779344478-caa3e17f-batch-0000/projects/019d1222-a68f-77dd-a11d-d7f989c21917.json`
+- `/Users/2023macbookpro/Desktop/IVAULT/DEMOS:REPOS/eye_tracking_app/CLAUDE.md`
+- `/Users/2023macbookpro/Desktop/IVAULT/DEMOS:REPOS/i dev demo/DEMO 1/DEMOCKUPS/claude_paste_instructions.txt`
+- `/Users/2023macbookpro/Desktop/IVAULT/DEMOS:REPOS/i dev demo/DEMO 1/DEMOCKUPS/claude_iapp_uiux_master_instructions.md`
+- `/Users/2023macbookpro/Desktop/IVAULT/DEMOS:REPOS/i-app/.claude/settings.local.json`
+- `/Users/2023macbookpro/Desktop/IVAULT/DEMOS:REPOS/i-app-demo/CLAUDE 2.md`
+- `/Users/2023macbookpro/Desktop/IVAULT/DEMOS:REPOS/i-app-demo/CLAUDE.md`
+- `/Users/2023macbookpro/Desktop/IVAULT/DEMOS:REPOS/inew/.claude/settings.local.json`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/BorisChernyClaudeMarkdown-main.zip`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/Claude (1).dmg`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/claude-code-jetbrains-plugin-0.1.14-beta.zip`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/claude_iapp_uiux_master_instructions.md`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master.zip`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/Claude.dmg`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/CLAUDE.md`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/BorisChernyClaudeMarkdown-main/Gemini_Generated_Image_xv2vcsxv2vcsxv2v.png`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/BorisChernyClaudeMarkdown-main/README.md`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/BorisChernyClaudeMarkdown-main/CLAUDE.md`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/.DS_Store`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/README.md`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/CONTRIBUTING.md`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/allegation_escalation_infographic.png`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/artifacts-builder/SKILL.md`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/artifacts-builder/LICENSE.txt`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/artifacts-builder/scripts/shadcn-components.tar.gz`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/artifacts-builder/scripts/init-artifact.sh`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/artifacts-builder/scripts/bundle-artifact.sh`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/brand-guidelines/SKILL.md`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/brand-guidelines/LICENSE.txt`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/SKILL.md`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/LICENSE.txt`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/Lora-Italic.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/InstrumentSerif-Italic.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/WorkSans-Regular.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/ArsenalSC-OFL.txt`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/Italiana-OFL.txt`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/CrimsonPro-Italic.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/Outfit-OFL.txt`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/Gloock-OFL.txt`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/RedHatMono-Regular.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/YoungSerif-OFL.txt`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/Outfit-Bold.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/Boldonse-Regular.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/CrimsonPro-OFL.txt`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/RedHatMono-Bold.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/PixelifySans-OFL.txt`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/Jura-OFL.txt`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/Outfit-Regular.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/Silkscreen-OFL.txt`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/JetBrainsMono-Bold.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/IBMPlexSerif-Regular.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/YoungSerif-Regular.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/Italiana-Regular.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/Lora-Bold.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/IBMPlexSerif-BoldItalic.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/JetBrainsMono-Regular.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/CrimsonPro-Regular.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/InstrumentSans-Italic.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/Jura-Light.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/IBMPlexMono-Bold.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/WorkSans-BoldItalic.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/WorkSans-OFL.txt`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/Lora-OFL.txt`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/Silkscreen-Regular.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/PixelifySans-Medium.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/PoiretOne-Regular.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/BricolageGrotesque-Regular.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/IBMPlexMono-Regular.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/CrimsonPro-Bold.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/InstrumentSerif-Regular.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/InstrumentSans-OFL.txt`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/Tektur-OFL.txt`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/InstrumentSans-BoldItalic.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/EricaOne-OFL.txt`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/IBMPlexSerif-Italic.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/DMMono-Regular.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/NationalPark-Bold.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/DMMono-OFL.txt`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/NationalPark-OFL.txt`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/InstrumentSans-Regular.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/LibreBaskerville-Regular.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/EricaOne-Regular.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/SmoochSans-OFL.txt`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/NothingYouCouldDo-Regular.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/WorkSans-Italic.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/LibreBaskerville-OFL.txt`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/PoiretOne-OFL.txt`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/Gloock-Regular.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/BricolageGrotesque-OFL.txt`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/SmoochSans-Medium.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/NothingYouCouldDo-OFL.txt`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/Tektur-Regular.ttf`
+- `/Users/2023macbookpro/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/awesome-claude-skills-master/canvas-design/canvas-fonts/GeistMono-Regular.ttf`

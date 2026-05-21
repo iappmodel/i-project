@@ -3,6 +3,9 @@
 **Classification:** Unknown / Research required  
 **Last evidence pass:** 2026-05-21 — see [`EVIDENCE_VERIFICATION.md`](../EVIDENCE_VERIFICATION.md)
 
+> **Full IVAULT global intake is required before final canonicalization or owner decisions.**  
+> Census complete 2026-05-21 — see [`GLOBAL_INTAKE/IVAULT_GLOBAL_INVENTORY.md`](../GLOBAL_INTAKE/IVAULT_GLOBAL_INVENTORY.md). Remaining gaps below are **post-census** work items, not missing inventory.
+
 ## Workspace Split (Critical)
 
 | Location | Has `docs/`, `integrations/`, `app/`? |
@@ -47,7 +50,19 @@ MASTER_BRAIN claims must cite IVAULT paths until the workspace is unified.
 
 ## Archaeology Phase Status
 
-Per verified `MULTI_REPO_SYSTEM_RECOVERY_REPORT.md` + SoT (2026-05-21): archaeology **complete** at clone scope. Remaining work is **promotion/reconciliation**, not discovery.
+Per verified `MULTI_REPO_SYSTEM_RECOVERY_REPORT.md` + SoT (2026-05-21): migration-archive archaeology **complete** at clone scope.
+
+**IVAULT global intake (2026-05-21):** ~628k files on disk indexed at metadata level; 80,959 non-dependency rows in `GLOBAL_INTAKE/IVAULT_SOURCE_CENSUS.tsv`; 32 repos; 29 Lovable-likely apps; 2,917 chat files. Remaining work: **chat extraction**, **visual review**, **duplicate owner decisions**, then promotion/reconciliation — not raw discovery.
+
+## Post-Intake Unknowns (New)
+
+| Topic | Gap |
+|-------|-----|
+| IVAULT `MASTER_BRAIN/` PDFs | Multiple Ultimate Development Guide variants — which is canonical? |
+| `DEMOS:REPOS` vs `i-project-rescue/github-source-repos` | Parallel eye-earn-sparkle lineages — merge order undefined |
+| CHATGPT + CLAUDE exports | 2,917 files indexed; **zero** conversations summarized |
+| `node_modules` (~495k files) | Excluded from row census — dependency preservation only |
+| Workspace vs IVAULT primary repo | Two `i_project_migration_archive` trees — unification pending |
 
 ## Prior masterbrain/ Folder
 

@@ -34,6 +34,25 @@ This directory is the classified memory of the [ i ] Attention Wallet and Media 
 
 Every finding: **Canonical · Experimental · Obsolete · Unknown**
 
+## Global Intake (IVAULT Full Archive)
+
+**`GLOBAL_INTAKE/`** — 2026-05-21 census of entire `~/Desktop/IVAULT` (56 GB, ~628k files on disk).
+
+| Index | Purpose |
+|-------|---------|
+| [IVAULT_GLOBAL_INVENTORY.md](GLOBAL_INTAKE/IVAULT_GLOBAL_INVENTORY.md) | Executive census + viability map |
+| [IVAULT_SOURCE_CENSUS.tsv](GLOBAL_INTAKE/IVAULT_SOURCE_CENSUS.tsv) | Per-file metadata (80,959 rows; node_modules excluded) |
+| [IVAULT_RECOVERY_PRIORITY_QUEUE.md](GLOBAL_INTAKE/IVAULT_RECOVERY_PRIORITY_QUEUE.md) | Top 20 inspect-next list |
+| [IVAULT_REPO_INDEX.md](GLOBAL_INTAKE/IVAULT_REPO_INDEX.md) | 32 git repos |
+| [IVAULT_LOVABLE_INDEX.md](GLOBAL_INTAKE/IVAULT_LOVABLE_INDEX.md) | Lovable/Vite projects |
+| [IVAULT_CHAT_EXPORTS_INDEX.md](GLOBAL_INTAKE/IVAULT_CHAT_EXPORTS_INDEX.md) | OpenAI + Claude exports |
+| [IVAULT_HIGH_VALUE_SOURCES.md](GLOBAL_INTAKE/IVAULT_HIGH_VALUE_SOURCES.md) | Keyword-triage sources |
+| [IVAULT_DUPLICATE_CLUSTERS.md](GLOBAL_INTAKE/IVAULT_DUPLICATE_CLUSTERS.md) | Basename collision clusters |
+| [IVAULT_VISUAL_ASSETS_INDEX.md](GLOBAL_INTAKE/IVAULT_VISUAL_ASSETS_INDEX.md) | Image folders by size/count |
+| [IVAULT_PROTOTYPES_INDEX.md](GLOBAL_INTAKE/IVAULT_PROTOTYPES_INDEX.md) | HTML + React demos |
+
+Regenerate: `python3 scripts/ivault_global_intake.py` (read-only on IVAULT).
+
 ## Status
 
-Archaeology / knowledge extraction **v1.0 complete** (2026-05-21). Implementation and promotion are separate phases.
+Migration-archive archaeology **v1.0 complete** (2026-05-21). **Full IVAULT global intake census complete** — canonicalization and owner decisions **blocked** until chat extraction, visual review, and duplicate resolution phases run. Implementation and promotion are separate phases.
