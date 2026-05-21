@@ -10,6 +10,7 @@
 - `eye-earn-sparkle-archive/codex/vision-unified-pipeline` — [`VISION_UNIFIED_PIPELINE_BRANCH_AUDIT.md`](VISION_UNIFIED_PIPELINE_BRANCH_AUDIT.md)
 - `eye-earn-sparkle-archive/codex/investor-demo-mode-v2` — [`INVESTOR_DEMO_MODE_V2_BRANCH_AUDIT.md`](INVESTOR_DEMO_MODE_V2_BRANCH_AUDIT.md)
 - `i-initial-structures/investor-demo-mvp-night-build` — [`I_INITIAL_STRUCTURES_MVP_BRANCH_AUDIT.md`](I_INITIAL_STRUCTURES_MVP_BRANCH_AUDIT.md)
+- `eye-earn-sparkle-v2/archive/unified-vision-2025-02-07` — [`EYE_EARN_SPARKLE_V2_UNIFIED_VISION_ARCHIVE_AUDIT.md`](EYE_EARN_SPARKLE_V2_UNIFIED_VISION_ARCHIVE_AUDIT.md)
 
 ---
 
@@ -771,7 +772,7 @@ Ranked by value to canonical i-project build:
 | ~~**CRITICAL**~~ **DONE** | `eye-earn-sparkle-archive` | `codex/investor-demo-mode-v2` | Audited 2026-05-20 — full-app demo overlay, pending wallet UX, HeroEntry/tour; v1 superseded; see [`INVESTOR_DEMO_MODE_V2_BRANCH_AUDIT.md`](INVESTOR_DEMO_MODE_V2_BRANCH_AUDIT.md) |
 | **LOW** | `eye-earn-sparkle-archive` | `codex/investor-demo-mode` | v1 subset of v2 (commit `0b260c6` only) — no separate audit needed |
 | ~~**HIGH**~~ **DONE** | `i-initial-structures` | `investor-demo-mvp-night-build` | Audited 2026-05-20 — branch adds demo/prototype only; platform `src/` on `main` already mirrored at `integrations/eye-tracking/source/`; see [`I_INITIAL_STRUCTURES_MVP_BRANCH_AUDIT.md`](I_INITIAL_STRUCTURES_MVP_BRANCH_AUDIT.md) |
-| **HIGH** | `eye-earn-sparkle-v2` | `archive/unified-vision-2025-02-07` | Snapshot at time of platform audit — captures state at a known milestone |
+| ~~**HIGH**~~ **DONE** | `eye-earn-sparkle-v2` | `archive/unified-vision-2025-02-07` | Audited 2026-05-20 — Feb 2026 web vision + `attention_mediapipe` snapshot; web vision superseded by archive `codex/vision-unified-pipeline`; see [`EYE_EARN_SPARKLE_V2_UNIFIED_VISION_ARCHIVE_AUDIT.md`](EYE_EARN_SPARKLE_V2_UNIFIED_VISION_ARCHIVE_AUDIT.md) |
 | **HIGH** | `eye_tracking_app` | `checkpoint/pre-composer-cleanup` | Pre-cleanup checkpoint — may preserve code removed during stabilization |
 | **HIGH** | `eye_tracking_app` | `integration/studio-routing-audit` | Studio routing in eye tracking context — architecture decision |
 | **MEDIUM** | `eye_tracking_app` | `cursor/v1-autonomy-4f71` | Autonomy v1 — may have different execution path |
@@ -967,23 +968,24 @@ The following systems exist in a working state and **must not be rebuilt from sc
 | ~~`codex/vision-unified-pipeline`~~ | `eye-earn-sparkle-archive` | **Done** — see [`VISION_UNIFIED_PIPELINE_BRANCH_AUDIT.md`](VISION_UNIFIED_PIPELINE_BRANCH_AUDIT.md) |
 | ~~`codex/investor-demo-mode-v2`~~ | `eye-earn-sparkle-archive` | **Done** — see [`INVESTOR_DEMO_MODE_V2_BRANCH_AUDIT.md`](INVESTOR_DEMO_MODE_V2_BRANCH_AUDIT.md) |
 | ~~`investor-demo-mvp-night-build`~~ | `i-initial-structures` | **Done** — see [`I_INITIAL_STRUCTURES_MVP_BRANCH_AUDIT.md`](I_INITIAL_STRUCTURES_MVP_BRANCH_AUDIT.md) |
-| `archive/unified-vision-2025-02-07` | `eye-earn-sparkle-v2` | **Immediate** |
-| `checkpoint/pre-composer-cleanup` | `eye_tracking_app` | **High** |
+| ~~`archive/unified-vision-2025-02-07`~~ | `eye-earn-sparkle-v2` | **Done** — see branch audit |
+| `checkpoint/pre-composer-cleanup` | `eye_tracking_app` | **Immediate** |
 | `integration/studio-routing-audit` | `eye_tracking_app` | **Medium** |
 
 ### Immediate Next Recommended Audit Target
 
-**Target:** `eye-earn-sparkle-v2/archive/unified-vision-2025-02-07`
+**Target:** `eye_tracking_app/checkpoint/pre-composer-cleanup`
 
-**Why:** i-initial-structures night-build audit (2026-05-20) confirmed branch deltas are demo/prototype packaging only; ELO/trust/studio/safe-action code lives on `main` and is already mirrored under `integrations/eye-tracking/source/`. Next high-value unknown is the Feb 2026 unified-vision snapshot in v2 for gaze-adapter and `attention_mediapipe` deltas vs archive `codex/vision-unified-pipeline`.
+**Why:** v2 unified-vision archive audit (2026-05-20) confirmed Feb 2026 web vision is real but **superseded for promotion** by `eye-earn-sparkle-archive/codex/vision-unified-pipeline`; unique value is `attention_mediapipe` plugin source (absent on v2 `main`) vs promoted flutter-runtime. Next risk is **pre-cleanup Flutter snapshot** code removed during T-series stabilization.
 
 **Completed branch audits:**
 - `eye_tracking_app/feature/evidence-vault-v2-hardening` — [`EVIDENCE_VAULT_V2_HARDENING_BRANCH_AUDIT.md`](EVIDENCE_VAULT_V2_HARDENING_BRANCH_AUDIT.md)
 - `eye-earn-sparkle-archive/codex/vision-unified-pipeline` — [`VISION_UNIFIED_PIPELINE_BRANCH_AUDIT.md`](VISION_UNIFIED_PIPELINE_BRANCH_AUDIT.md)
 - `eye-earn-sparkle-archive/codex/investor-demo-mode-v2` — [`INVESTOR_DEMO_MODE_V2_BRANCH_AUDIT.md`](INVESTOR_DEMO_MODE_V2_BRANCH_AUDIT.md)
 - `i-initial-structures/investor-demo-mvp-night-build` — [`I_INITIAL_STRUCTURES_MVP_BRANCH_AUDIT.md`](I_INITIAL_STRUCTURES_MVP_BRANCH_AUDIT.md)
+- `eye-earn-sparkle-v2/archive/unified-vision-2025-02-07` — [`EYE_EARN_SPARKLE_V2_UNIFIED_VISION_ARCHIVE_AUDIT.md`](EYE_EARN_SPARKLE_V2_UNIFIED_VISION_ARCHIVE_AUDIT.md)
 
-**Secondary target:** `eye_tracking_app/checkpoint/pre-composer-cleanup` — pre-cleanup snapshot may preserve gaze code removed during T-series stabilization.
+**Secondary target:** `eye_tracking_app/integration/studio-routing-audit` — studio routing in eye-tracking context.
 
 ---
 
