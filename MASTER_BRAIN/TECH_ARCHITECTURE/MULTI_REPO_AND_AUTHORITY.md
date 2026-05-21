@@ -15,10 +15,19 @@
 | i-initial-structures | Safe-action, studio types, ELO mock |
 | i-project | This migration archive |
 
-## Authority Contract (From IVAULT Docs — Promotion Candidate)
+## Authority Contract (Source-Verified — Preservation Snapshot)
 
-| Domain | Canonical Writer |
-|--------|------------------|
+Paths verified 2026-05-21 in `integrations/old-source-preservation/ivault-eye-tracking/snapshot/docs/`:
+
+| Doc | Path |
+|-----|------|
+| Ownership contract | `.../snapshot/docs/source-of-truth-ownership-contract.md` |
+| Runtime wiring matrix | `.../snapshot/docs/runtime-wiring-matrix.md` |
+
+These are **not yet promoted** to `docs/` at archive root. See [`EVIDENCE_VERIFICATION.md`](../EVIDENCE_VERIFICATION.md).
+
+| Domain | Canonical writer (per ownership contract) |
+|--------|-------------------------------------------|
 | Wallet / ledger / payouts | Backend API / Supabase |
 | Trust / fraud decisions | Backend POPS + admin |
 | POPS scoring | Backend |
@@ -33,9 +42,9 @@ i-initial-structures/main → integrations/eye-tracking/source/
 IVAULT d23d365 → integrations/old-source-preservation/ivault-eye-tracking/snapshot/
 ```
 
-## Subsystem Registry (35 systems — per SYSTEM_PROMOTION_SOURCE_OF_TRUTH)
+## Subsystem Registry (35 systems — source-verified)
 
-Referenced in audits: Android/web vision, POPS, proof, wallet, studio, ELO, iVatar, admin, payments, documentation. The full SoT table is cited as `docs/technical/SYSTEM_PROMOTION_SOURCE_OF_TRUTH.md`, but that source file was not readable during the quality review.
+Verified in `docs/technical/SYSTEM_PROMOTION_SOURCE_OF_TRUTH.md` §3 (IVAULT primary repo): Android/web vision, POPS, proof, wallet, studio, ELO, iVatar, admin, payments, documentation — 35 numbered rows with canonical repo · branch · path.
 
 ## Intent OS (Flutter)
 
@@ -53,6 +62,6 @@ Device signals → Proof Packet v0 (schema target) → POPS scoring candidate �
 Evidence Vault custody (admin)
 ```
 
-**Current gap:** Packet emission and POPS ingestion are not verified as wired.
+**Current gap:** Packet emission and POPS ingestion are **confirmed unbuilt** in source docs (`PROOF_PACKET_SCHEMA_V0.md` §3; `proof_packet_v0.dart` header).
 
 **Sources:** EVIDENCE_VAULT audit §8; STUDIO_ROUTING audit; CURSOR_V1 audit; MULTI_REPO report

@@ -26,8 +26,8 @@
 
 | Candidate | Evidence path | Confidence | Beats |
 |-----------|---------------|------------|-------|
-| Loop 1 investor spine | `app/` + MVP_CANONICAL_FLOW (referenced) | **High** | archive v2 linear story, i-mvp-prototype monolith |
-| Pending-first wallet UX | demoState.ts patterns (v2 branch) | **Medium** | Strong UX evidence, but demo-only localStorage; treat as canonical-aligned pattern, not canonical system |
+| Loop 1 investor spine | `app/` + [`docs/MVP_CANONICAL_FLOW.md`](../docs/MVP_CANONICAL_FLOW.md) (IVAULT primary repo) | **High** | archive v2 linear story, i-mvp-prototype monolith |
+| Pending-first wallet UX | `github-source-repos/eye-earn-sparkle-archive/src/lib/demoState.ts` | **Medium** | Source-verified demo-only localStorage; canonical-aligned UX pattern, not canonical system |
 | Consent + proof layer screens | `app/` ProofLayer, ConsentGate | **High** | archive v2 (absent) |
 | Creator economics slide | `app/CreatorEconomicsScreen` | **High** | v2 fintech-only demo |
 | HeroEntry investor copy | v2 HeroEntry.tsx | **Medium** | app/ splash copy |
@@ -36,9 +36,9 @@
 
 | Candidate | Evidence path | Confidence | Beats |
 |-----------|---------------|------------|-------|
-| Ownership contract | IVAULT docs/source-of-truth-ownership-contract.md | **Medium** | High-value audit reference; exact source file still needs path verification in this archive |
-| Runtime wiring matrix | IVAULT docs/runtime-wiring-matrix.md | **Medium** | High-value audit reference; exact source file still needs path verification in this archive |
-| SYSTEM_PROMOTION_SOURCE_OF_TRUTH | docs/technical/ (35 systems) | **Unknown until readable** | Referenced by recovery report; file not readable in this workspace during review |
+| Ownership contract | `integrations/old-source-preservation/ivault-eye-tracking/snapshot/docs/source-of-truth-ownership-contract.md` | **Medium** | Source-verified in preservation snapshot; **not promoted** to `docs/` |
+| Runtime wiring matrix | `integrations/old-source-preservation/ivault-eye-tracking/snapshot/docs/runtime-wiring-matrix.md` | **Medium** | Source-verified in preservation snapshot; **not promoted** to `docs/` |
+| SYSTEM_PROMOTION_SOURCE_OF_TRUTH | `docs/technical/SYSTEM_PROMOTION_SOURCE_OF_TRUTH.md` (35 systems §3) | **High** (source-verified) | Readable in IVAULT primary repo; governs promotion decisions per SoT |
 | Studio placement decision | STUDIO_ROUTING audit ADR | **High** | ET main for web studio |
 
 ### Attention & Verification
@@ -46,19 +46,19 @@
 | Candidate | Evidence path | Confidence | Beats |
 |-----------|---------------|------------|-------|
 | Native signal runtime | integrations/eye-tracking/flutter-runtime/ | **High** | v1 branches, checkpoint monolith, attention_mediapipe |
-| Proof Packet v0 schema | PROOF_PACKET_SCHEMA_V0.md + proof_packet_v0.dart | **Medium** | Schema is repeatedly referenced by audits; source doc/file path must be verified before canonicalization |
+| Proof Packet v0 schema | `docs/technical/PROOF_PACKET_SCHEMA_V0.md` + `integrations/eye-tracking/flutter-runtime/lib/proof/proof_packet_v0.dart` | **High** (schema/types) | Source-verified; **no runtime emission** — candidate wire format, not live pipeline |
 | VSL operator bands | verification_stability_layer.dart | **Medium** | Ad-hoc debug HUD |
 | Web vision cherry-pick set | archive @ 22cabd3 (13 files) | **High** | v2 archive baseline, v2 main adapters-only |
-| validate-attention edge fn | eye-earn-sparkle-archive Supabase | **Medium** | Authoritative for promo attention sessions, but not the full POPS/proof pipeline |
+| validate-attention edge fn | `github-source-repos/eye-earn-sparkle-archive/supabase/functions/validate-attention/index.ts` | **Medium** | Source-verified; authoritative for promo attention sessions only — not ProofPacketV0 / full POPS |
 
 ### Trust & POPS
 
 | Candidate | Evidence path | Confidence | Beats |
 |-----------|---------------|------------|-------|
-| Backend POPS executable | IVAULT services/api/src/pops/ | **High** | Flutter lib/pops/, docs-only |
+| Backend POPS executable | `integrations/old-source-preservation/ivault-eye-tracking/snapshot/services/api/src/pops/` (~184 files) | **High** (snapshot) | Flutter `lib/pops/` partial; not promoted to migration archive root |
 | Safe Action Execution Engine | integrations/eye-tracking/source/.../safe-action-engine.ts | **High** | trust-impact seeds alone |
-| Evidence Vault v2 SQL | supabase/migrations/204–209 | **Medium** | Strong admin-custody evidence; not the same layer as Proof Packet or payout validation |
-| POPS architecture doc | POPS_MULTI_SIGNAL_VALIDATION_ARCHITECTURE.md | **Unknown until readable** | Referenced by audits; source doc not readable in this workspace during review |
+| Evidence Vault v2 SQL | `integrations/old-source-preservation/ivault-eye-tracking/snapshot/supabase/migrations/204–209_*.sql` | **Medium** | Source-verified admin custody in preservation snapshot; not in archive Supabase migrations |
+| POPS architecture doc | `docs/technical/POPS_MULTI_SIGNAL_VALIDATION_ARCHITECTURE.md` | **High** (design) | Source-verified six-layer model §2; design canonical per SoT — execution gap remains |
 
 ### Economy & Wallet
 
@@ -117,7 +117,7 @@ See `OBSOLETE/INDEX.md`.
 | Coin naming map | Vicoin/Icoin → aCoins/iCoins/vCoins? |
 | iVatar scope | Product concept vs cut feature? |
 | Fourth studio merge | Which lineage wins for ship? |
-| Full 35-system SoT | Verify local file vs GitHub main |
+| Full 35-system SoT | Verified in IVAULT `docs/technical/SYSTEM_PROMOTION_SOURCE_OF_TRUTH.md` §3 — reconcile with workspace checkout |
 | Dual demo long-term | Maintain both app/ and archive demo indefinitely? |
 
 See `RESEARCH/GAPS_AND_UNKNOWNS.md`.
@@ -153,4 +153,4 @@ Investor pitch:   Dual path — Loop 1 spine + optional full-app demo
 | Obsolete | ~13 | INDEX in OBSOLETE/ |
 | Unknown | ~5 | RESEARCH/ |
 
-**Next knowledge step (not implementation):** Verify missing source docs, then owner review of Tier 4 unknowns + coin glossary decision.
+**Next knowledge step (not implementation):** Owner review of Tier 4 unknowns + coin glossary decision; promote preservation authority docs or unify workspace with IVAULT primary repo.

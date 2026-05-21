@@ -69,7 +69,7 @@ flowchart LR
   IntentOS --> FlutterRT
 ```
 
-**Gap node:** ProofPacket is represented as a schema target in the audits; packet emission and POPS ingestion are **not verified as wired** in this corpus.
+**Gap node:** ProofPacket is a **source-verified schema target** (`PROOF_PACKET_SCHEMA_V0.md` + `proof_packet_v0.dart`); packet emission and POPS ingestion are **confirmed unbuilt** per source docs.
 
 ---
 

@@ -173,3 +173,41 @@ Recommended order:
 | Is it ready for evidence-verification pass? | Yes |
 
 **Quality verdict:** First-pass corpus is valuable, but still too dependent on audit-referenced and unread source docs to become canonical.
+
+---
+
+## Evidence Verification Addendum (2026-05-21)
+
+**Pass:** Evidence verification (see [`EVIDENCE_VERIFICATION.md`](EVIDENCE_VERIFICATION.md))
+
+### Root cause of “unreadable” warnings
+
+The quality review ran against a **MASTER_BRAIN-only workspace** (`~/Desktop/i-project-rescue/i_project_migration_archive`). The full archive — including all cited source docs — exists at the **primary repo** path: `~/Desktop/IVAULT/i-project-rescue/i_project_migration_archive`.
+
+### Source docs — verification status
+
+| Document | Primary repo path | Status |
+|----------|-------------------|--------|
+| SYSTEM_PROMOTION_SOURCE_OF_TRUTH.md | `docs/technical/` (239 lines, 35 systems §3) | **Source-verified** |
+| POPS_MULTI_SIGNAL_VALIDATION_ARCHITECTURE.md | `docs/technical/` (six layers §2) | **Source-verified** |
+| PROOF_PACKET_SCHEMA_V0.md | `docs/technical/` (358 lines) | **Source-verified** |
+| MVP_CANONICAL_FLOW.md | `docs/` (271 lines) | **Source-verified** |
+| MULTI_REPO_SYSTEM_RECOVERY_REPORT.md | `docs/technical/` (1043 lines) | **Source-verified** (full body) |
+| proof_packet_v0.dart | `integrations/eye-tracking/flutter-runtime/lib/proof/` | **Source-verified** |
+| demoState.ts | `github-source-repos/eye-earn-sparkle-archive/src/lib/` | **Source-verified** (demo-only) |
+| validate-attention | `github-source-repos/eye-earn-sparkle-archive/supabase/functions/` | **Source-verified** (promo scope) |
+| Wallet migrations | `github-source-repos/eye-earn-sparkle-archive/supabase/migrations/` | **Source-verified** |
+| app/ screen router | `app/src/App.tsx`, `app/src/state/types.ts` | **Source-verified** |
+| Ownership contract | `integrations/old-source-preservation/ivault-eye-tracking/snapshot/docs/` | **Verified in snapshot** — not promoted to `docs/` |
+| Runtime wiring matrix | same preservation path | **Verified in snapshot** — not promoted to `docs/` |
+
+### Updated readiness
+
+| Question | First-pass verdict | After evidence verification |
+|----------|-------------------|----------------------------|
+| Is it fully source-verified? | No | **Partially** — core docs verified in primary repo; workspace split remains |
+| Is it safe to treat as canonical project constitution? | No | **No** — runtime wiring gaps confirmed by source docs |
+| Is it ready for canonicalization phase? | Not yet | **Not yet** — evidence exists; product loop still unbuilt |
+| Is evidence-verification pass complete? | Pending | **Yes** |
+
+**Post-verification verdict:** MASTER_BRAIN classifications can now cite direct evidence paths. Do **not** promote systems to final canonical status while Proof Packet emission, pending-wallet wiring, and authority-doc promotion remain open.

@@ -126,7 +126,16 @@ integrations/
 | VERIFICATION_STABILITY_LAYER_V1.md | Operator confidence bands |
 | FULL_REPO_SOURCE_RECOVERY_AUDIT.md | Prior org clone audit |
 
-**Quality review note:** During the quality review pass, `SYSTEM_PROMOTION_SOURCE_OF_TRUTH.md`, `POPS_MULTI_SIGNAL_VALIDATION_ARCHITECTURE.md`, `PROOF_PACKET_SCHEMA_V0.md`, and `docs/MVP_CANONICAL_FLOW.md` were referenced by audits but were not directly readable via repository search/read tools. Treat claims depending on those files as audit-referenced until the source files are restored or verified.
+**Evidence verification note (2026-05-21):** Core source docs are **source-verified** in the IVAULT primary repo (`~/Desktop/IVAULT/i-project-rescue/i_project_migration_archive`). This Cursor workspace may contain `MASTER_BRAIN/` only — see [`EVIDENCE_VERIFICATION.md`](EVIDENCE_VERIFICATION.md).
+
+| File | Subject | Verification |
+|------|---------|--------------|
+| SYSTEM_PROMOTION_SOURCE_OF_TRUTH.md | 35 subsystem ownership map | **Source-verified** — `docs/technical/`, 239 lines |
+| POPS_MULTI_SIGNAL_VALIDATION_ARCHITECTURE.md | Six-layer POPS | **Source-verified** — `docs/technical/` |
+| PROOF_PACKET_SCHEMA_V0.md | Device handoff wire format | **Source-verified** — `docs/technical/` |
+| VERIFICATION_STABILITY_LAYER_V1.md | Operator confidence bands | Present in primary repo |
+| FULL_REPO_SOURCE_RECOVERY_AUDIT.md | Prior org clone audit | Present in primary repo |
+| MVP_CANONICAL_FLOW.md | Loop 1 decision map | **Source-verified** — `docs/` |
 
 ---
 
