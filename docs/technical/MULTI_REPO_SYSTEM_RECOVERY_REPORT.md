@@ -12,6 +12,7 @@
 - `i-initial-structures/investor-demo-mvp-night-build` — [`I_INITIAL_STRUCTURES_MVP_BRANCH_AUDIT.md`](I_INITIAL_STRUCTURES_MVP_BRANCH_AUDIT.md)
 - `eye-earn-sparkle-v2/archive/unified-vision-2025-02-07` — [`EYE_EARN_SPARKLE_V2_UNIFIED_VISION_ARCHIVE_AUDIT.md`](EYE_EARN_SPARKLE_V2_UNIFIED_VISION_ARCHIVE_AUDIT.md)
 - `eye_tracking_app/checkpoint/pre-composer-cleanup` — [`EYE_TRACKING_PRE_COMPOSER_CLEANUP_BRANCH_AUDIT.md`](EYE_TRACKING_PRE_COMPOSER_CLEANUP_BRANCH_AUDIT.md)
+- `eye_tracking_app/integration/studio-routing-audit` — [`STUDIO_ROUTING_AUDIT_BRANCH_AUDIT.md`](STUDIO_ROUTING_AUDIT_BRANCH_AUDIT.md) (identical tip to `feature/evidence-vault-v2-hardening` @ `d23d365`)
 
 ---
 
@@ -971,13 +972,13 @@ The following systems exist in a working state and **must not be rebuilt from sc
 | ~~`investor-demo-mvp-night-build`~~ | `i-initial-structures` | **Done** — see [`I_INITIAL_STRUCTURES_MVP_BRANCH_AUDIT.md`](I_INITIAL_STRUCTURES_MVP_BRANCH_AUDIT.md) |
 | ~~`archive/unified-vision-2025-02-07`~~ | `eye-earn-sparkle-v2` | **Done** — see branch audit |
 | ~~`checkpoint/pre-composer-cleanup`~~ | `eye_tracking_app` | **Done** — see [`EYE_TRACKING_PRE_COMPOSER_CLEANUP_BRANCH_AUDIT.md`](EYE_TRACKING_PRE_COMPOSER_CLEANUP_BRANCH_AUDIT.md) |
-| `integration/studio-routing-audit` | `eye_tracking_app` | **Immediate** |
+| ~~`integration/studio-routing-audit`~~ | `eye_tracking_app` | **Done** — see [`STUDIO_ROUTING_AUDIT_BRANCH_AUDIT.md`](STUDIO_ROUTING_AUDIT_BRANCH_AUDIT.md) |
 
 ### Immediate Next Recommended Audit Target
 
-**Target:** `eye_tracking_app/integration/studio-routing-audit`
+**Target:** `eye_tracking_app/cursor/v1-autonomy-4f71` (then `cursor/v1-safety-4f71`, `cursor/v1-signal-4f71`)
 
-**Why:** Pre-composer cleanup audit (2026-05-20) confirmed checkpoint `78d8f68` is a **pre-T-series platform bulk import** — 51 commits behind `main` on gaze stabilization; promoted flutter-runtime **supersedes** checkpoint for gaze/blink/calibration. Only native `VisionProcessor.kt` segmentation perf tuning warrants device A/B. POPS/backend reference continues on `feature/evidence-vault-v2-hardening` (+31 commits). Next unexplored eye_tracking_app branch is **studio routing in ET context**.
+**Why:** Studio routing audit (2026-05-20) confirmed `integration/studio-routing-audit` is **identical** to `feature/evidence-vault-v2-hardening` @ `d23d365` — a platform monorepo checkpoint with **dual Studio stacks** (legacy Stage 1–7 mock vs 151-file platform studio), **i Command router** as the only “routing” system, and **no** `collab/`/`media/` slice (that lives in promoted `integrations/eye-tracking/source/`). Studio belongs in **i-project web + archive**, not ET `main`. Remaining unexplored `eye_tracking_app` branches are **cursor/v1-*** Intent OS kernel paths.
 
 **Completed branch audits:**
 - `eye_tracking_app/feature/evidence-vault-v2-hardening` — [`EVIDENCE_VAULT_V2_HARDENING_BRANCH_AUDIT.md`](EVIDENCE_VAULT_V2_HARDENING_BRANCH_AUDIT.md)
@@ -986,8 +987,9 @@ The following systems exist in a working state and **must not be rebuilt from sc
 - `i-initial-structures/investor-demo-mvp-night-build` — [`I_INITIAL_STRUCTURES_MVP_BRANCH_AUDIT.md`](I_INITIAL_STRUCTURES_MVP_BRANCH_AUDIT.md)
 - `eye-earn-sparkle-v2/archive/unified-vision-2025-02-07` — [`EYE_EARN_SPARKLE_V2_UNIFIED_VISION_ARCHIVE_AUDIT.md`](EYE_EARN_SPARKLE_V2_UNIFIED_VISION_ARCHIVE_AUDIT.md)
 - `eye_tracking_app/checkpoint/pre-composer-cleanup` — [`EYE_TRACKING_PRE_COMPOSER_CLEANUP_BRANCH_AUDIT.md`](EYE_TRACKING_PRE_COMPOSER_CLEANUP_BRANCH_AUDIT.md)
+- `eye_tracking_app/integration/studio-routing-audit` — [`STUDIO_ROUTING_AUDIT_BRANCH_AUDIT.md`](STUDIO_ROUTING_AUDIT_BRANCH_AUDIT.md)
 
-**Secondary targets:** `eye_tracking_app/cursor/v1-autonomy-4f71`, `cursor/v1-safety-4f71`, `cursor/v1-signal-4f71` — alternative kernel/signal paths.
+**Secondary targets:** `eye-earn-sparkle-archive/main` Studio component reconciliation vs IVAULT post-package types; `eye_tracking_app/cursor/dev-environment-setup-4f71`.
 
 ---
 
