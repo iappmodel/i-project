@@ -9,4 +9,4 @@
 
 See `IVAULT_OPENAI_INDEX.md` and `IVAULT_CLAUDE_INDEX.md` for detail.
 
-**Note:** Conversation summarization deferred — indexes only.
+**Note:** Conversation **triage** complete — see `../CHAT_RECOVERY/CHAT_EXPORT_TRIAGE.md` (648 threads scored). Full summarization deferred.

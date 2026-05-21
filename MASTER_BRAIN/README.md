@@ -53,6 +53,21 @@ Every finding: **Canonical · Experimental · Obsolete · Unknown**
 
 Regenerate: `python3 scripts/ivault_global_intake.py` (read-only on IVAULT).
 
+## Chat Recovery (Export Triage)
+
+**`CHAT_RECOVERY/`** — 2026-05-21 triage of OpenAI + Claude exports under `~/Desktop/IVAULT` (metadata only; raw exports untouched).
+
+| Artifact | Purpose |
+|----------|---------|
+| [CHAT_EXPORT_TRIAGE.md](CHAT_RECOVERY/CHAT_EXPORT_TRIAGE.md) | Formats, scan counts, privacy rules |
+| [OPENAI_RELEVANT_CONVERSATIONS.tsv](CHAT_RECOVERY/OPENAI_RELEVANT_CONVERSATIONS.tsv) | 580 ranked OpenAI threads |
+| [CLAUDE_RELEVANT_CONVERSATIONS.tsv](CHAT_RECOVERY/CLAUDE_RELEVANT_CONVERSATIONS.tsv) | 68 ranked Claude threads |
+| [CHAT_RECOVERY_PRIORITY_QUEUE.md](CHAT_RECOVERY/CHAT_RECOVERY_PRIORITY_QUEUE.md) | Top 30 extract-next |
+| [CHAT_RELEVANCE_KEYWORDS.md](CHAT_RECOVERY/CHAT_RELEVANCE_KEYWORDS.md) | Scoring lexicon |
+| [CHAT_EXTRACTION_PLAN.md](CHAT_RECOVERY/CHAT_EXTRACTION_PLAN.md) | Phased summarization playbook |
+
+Regenerate: `python3 scripts/chat_export_triage.py` (read-only on IVAULT).
+
 ## Status
 
-Migration-archive archaeology **v1.0 complete** (2026-05-21). **Full IVAULT global intake census complete** — canonicalization and owner decisions **blocked** until chat extraction, visual review, and duplicate resolution phases run. Implementation and promotion are separate phases.
+Migration-archive archaeology **v1.0 complete** (2026-05-21). **Full IVAULT global intake census complete.** **Chat exports triaged** (648 conversation records scored; not fully summarized). Canonicalization and owner decisions remain **blocked** until P0/P1 chat extraction, visual review, and duplicate resolution. Implementation and promotion are separate phases.
