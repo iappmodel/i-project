@@ -13,6 +13,7 @@
 - `eye-earn-sparkle-v2/archive/unified-vision-2025-02-07` — [`EYE_EARN_SPARKLE_V2_UNIFIED_VISION_ARCHIVE_AUDIT.md`](EYE_EARN_SPARKLE_V2_UNIFIED_VISION_ARCHIVE_AUDIT.md)
 - `eye_tracking_app/checkpoint/pre-composer-cleanup` — [`EYE_TRACKING_PRE_COMPOSER_CLEANUP_BRANCH_AUDIT.md`](EYE_TRACKING_PRE_COMPOSER_CLEANUP_BRANCH_AUDIT.md)
 - `eye_tracking_app/integration/studio-routing-audit` — [`STUDIO_ROUTING_AUDIT_BRANCH_AUDIT.md`](STUDIO_ROUTING_AUDIT_BRANCH_AUDIT.md) (identical tip to `feature/evidence-vault-v2-hardening` @ `d23d365`)
+- `eye_tracking_app/cursor/v1-autonomy-4f71`, `cursor/v1-safety-4f71`, `cursor/v1-signal-4f71` — [`CURSOR_V1_KERNEL_BRANCHES_AUDIT.md`](CURSOR_V1_KERNEL_BRANCHES_AUDIT.md) (all three identical @ `4980581` — stale bookmarks, 61 commits behind `main`)
 
 ---
 
@@ -776,10 +777,10 @@ Ranked by value to canonical i-project build:
 | ~~**HIGH**~~ **DONE** | `i-initial-structures` | `investor-demo-mvp-night-build` | Audited 2026-05-20 — branch adds demo/prototype only; platform `src/` on `main` already mirrored at `integrations/eye-tracking/source/`; see [`I_INITIAL_STRUCTURES_MVP_BRANCH_AUDIT.md`](I_INITIAL_STRUCTURES_MVP_BRANCH_AUDIT.md) |
 | ~~**HIGH**~~ **DONE** | `eye-earn-sparkle-v2` | `archive/unified-vision-2025-02-07` | Audited 2026-05-20 — Feb 2026 web vision + `attention_mediapipe` snapshot; web vision superseded by archive `codex/vision-unified-pipeline`; see [`EYE_EARN_SPARKLE_V2_UNIFIED_VISION_ARCHIVE_AUDIT.md`](EYE_EARN_SPARKLE_V2_UNIFIED_VISION_ARCHIVE_AUDIT.md) |
 | ~~**HIGH**~~ **DONE** | `eye_tracking_app` | `checkpoint/pre-composer-cleanup` | Audited 2026-05-20 — pre-T-series platform snapshot (`78d8f68`); does not supersede promoted runtime; native segmentation perf tuning only P0 delta; see [`EYE_TRACKING_PRE_COMPOSER_CLEANUP_BRANCH_AUDIT.md`](EYE_TRACKING_PRE_COMPOSER_CLEANUP_BRANCH_AUDIT.md) |
-| **HIGH** | `eye_tracking_app` | `integration/studio-routing-audit` | Studio routing in eye tracking context — architecture decision |
-| **MEDIUM** | `eye_tracking_app` | `cursor/v1-autonomy-4f71` | Autonomy v1 — may have different execution path |
-| **MEDIUM** | `eye_tracking_app` | `cursor/v1-safety-4f71` | Safety v1 — alternative safety kernel |
-| **MEDIUM** | `eye_tracking_app` | `cursor/v1-signal-4f71` | Signal v1 — gaze signal pipeline variant |
+| ~~**HIGH**~~ **DONE** | `eye_tracking_app` | `integration/studio-routing-audit` | Audited 2026-05-20 — see [`STUDIO_ROUTING_AUDIT_BRANCH_AUDIT.md`](STUDIO_ROUTING_AUDIT_BRANCH_AUDIT.md) |
+| ~~**MEDIUM**~~ **DONE** | `eye_tracking_app` | `cursor/v1-autonomy-4f71` | Audited 2026-05-21 — identical to v1-safety/v1-signal @ initial commit; no unique work — see [`CURSOR_V1_KERNEL_BRANCHES_AUDIT.md`](CURSOR_V1_KERNEL_BRANCHES_AUDIT.md) |
+| ~~**MEDIUM**~~ **DONE** | `eye_tracking_app` | `cursor/v1-safety-4f71` | Same audit — stale bookmark |
+| ~~**MEDIUM**~~ **DONE** | `eye_tracking_app` | `cursor/v1-signal-4f71` | Same audit — stale bookmark |
 | **MEDIUM** | `i-initial-structures` | `dev` | May contain work-in-progress beyond the single main commit |
 | **LOW** | `eye-earn-sparkle` | `demo-investor` | v1 investor demo — likely superseded |
 
@@ -973,12 +974,13 @@ The following systems exist in a working state and **must not be rebuilt from sc
 | ~~`archive/unified-vision-2025-02-07`~~ | `eye-earn-sparkle-v2` | **Done** — see branch audit |
 | ~~`checkpoint/pre-composer-cleanup`~~ | `eye_tracking_app` | **Done** — see [`EYE_TRACKING_PRE_COMPOSER_CLEANUP_BRANCH_AUDIT.md`](EYE_TRACKING_PRE_COMPOSER_CLEANUP_BRANCH_AUDIT.md) |
 | ~~`integration/studio-routing-audit`~~ | `eye_tracking_app` | **Done** — see [`STUDIO_ROUTING_AUDIT_BRANCH_AUDIT.md`](STUDIO_ROUTING_AUDIT_BRANCH_AUDIT.md) |
+| ~~`cursor/v1-autonomy-4f71`~~ / ~~`v1-safety`~~ / ~~`v1-signal`~~ | `eye_tracking_app` | **Done** — see [`CURSOR_V1_KERNEL_BRANCHES_AUDIT.md`](CURSOR_V1_KERNEL_BRANCHES_AUDIT.md) |
 
 ### Immediate Next Recommended Audit Target
 
-**Target:** `eye_tracking_app/cursor/v1-autonomy-4f71` (then `cursor/v1-safety-4f71`, `cursor/v1-signal-4f71`)
+**Target:** `eye_tracking_app/cursor/dev-environment-setup-4f71` (then **`eye-earn-sparkle-archive/main` Studio component reconciliation** vs IVAULT post-package types)
 
-**Why:** Studio routing audit (2026-05-20) confirmed `integration/studio-routing-audit` is **identical** to `feature/evidence-vault-v2-hardening` @ `d23d365` — a platform monorepo checkpoint with **dual Studio stacks** (legacy Stage 1–7 mock vs 151-file platform studio), **i Command router** as the only “routing” system, and **no** `collab/`/`media/` slice (that lives in promoted `integrations/eye-tracking/source/`). Studio belongs in **i-project web + archive**, not ET `main`. Remaining unexplored `eye_tracking_app` branches are **cursor/v1-*** Intent OS kernel paths.
+**Why:** Cursor v1 kernel audit (2026-05-21) confirmed all three `cursor/v1-*-4f71` branches are **byte-identical stale bookmarks** on initial commit `4980581` (0 unique commits; 61 behind `main`). Intent OS kernels on `main` and promoted flutter-runtime **supersede** v1 tips — no hidden autonomy/safety/signal work. Remaining unexplored ET branch: `dev-environment-setup-4f71` (+1 compile-fix commit on same base). Studio routing audit already placed web Studio + i Command in monorepo checkpoint — next cross-repo pass should reconcile **archive production Studio UI** with **`integrations/eye-tracking/source/`** collab/media types.
 
 **Completed branch audits:**
 - `eye_tracking_app/feature/evidence-vault-v2-hardening` — [`EVIDENCE_VAULT_V2_HARDENING_BRANCH_AUDIT.md`](EVIDENCE_VAULT_V2_HARDENING_BRANCH_AUDIT.md)
@@ -988,8 +990,9 @@ The following systems exist in a working state and **must not be rebuilt from sc
 - `eye-earn-sparkle-v2/archive/unified-vision-2025-02-07` — [`EYE_EARN_SPARKLE_V2_UNIFIED_VISION_ARCHIVE_AUDIT.md`](EYE_EARN_SPARKLE_V2_UNIFIED_VISION_ARCHIVE_AUDIT.md)
 - `eye_tracking_app/checkpoint/pre-composer-cleanup` — [`EYE_TRACKING_PRE_COMPOSER_CLEANUP_BRANCH_AUDIT.md`](EYE_TRACKING_PRE_COMPOSER_CLEANUP_BRANCH_AUDIT.md)
 - `eye_tracking_app/integration/studio-routing-audit` — [`STUDIO_ROUTING_AUDIT_BRANCH_AUDIT.md`](STUDIO_ROUTING_AUDIT_BRANCH_AUDIT.md)
+- `eye_tracking_app/cursor/v1-autonomy-4f71`, `cursor/v1-safety-4f71`, `cursor/v1-signal-4f71` — [`CURSOR_V1_KERNEL_BRANCHES_AUDIT.md`](CURSOR_V1_KERNEL_BRANCHES_AUDIT.md)
 
-**Secondary targets:** `eye-earn-sparkle-archive/main` Studio component reconciliation vs IVAULT post-package types; `eye_tracking_app/cursor/dev-environment-setup-4f71`.
+**Secondary targets:** `i-initial-structures/dev`; `eye-earn-sparkle/demo-investor` (low — likely superseded).
 
 ---
 
