@@ -5,7 +5,9 @@
 **Root audit directory:** `~/Desktop/i-project-rescue/github-source-repos`  
 **Primary integration repo:** `~/Desktop/i-project-rescue/i_project_migration_archive`  
 **Status:** Initial full sweep complete  
-**Branch audit (2026-05-20):** Dedicated deep inspection of `eye_tracking_app/feature/evidence-vault-v2-hardening` — see [`EVIDENCE_VAULT_V2_HARDENING_BRANCH_AUDIT.md`](EVIDENCE_VAULT_V2_HARDENING_BRANCH_AUDIT.md).
+**Branch audits (2026-05-20):**
+- `eye_tracking_app/feature/evidence-vault-v2-hardening` — [`EVIDENCE_VAULT_V2_HARDENING_BRANCH_AUDIT.md`](EVIDENCE_VAULT_V2_HARDENING_BRANCH_AUDIT.md)
+- `eye-earn-sparkle-archive/codex/vision-unified-pipeline` — [`VISION_UNIFIED_PIPELINE_BRANCH_AUDIT.md`](VISION_UNIFIED_PIPELINE_BRANCH_AUDIT.md)
 
 ---
 
@@ -763,7 +765,7 @@ Ranked by value to canonical i-project build:
 | Priority | Repo | Branch | Why |
 |----------|------|--------|-----|
 | ~~**CRITICAL**~~ **DONE** | `eye_tracking_app` | `feature/evidence-vault-v2-hardening` | Audited 2026-05-20 — platform checkpoint + admin Evidence Vault v2 SQL; native anti-spoof already on `main`; see [`EVIDENCE_VAULT_V2_HARDENING_BRANCH_AUDIT.md`](EVIDENCE_VAULT_V2_HARDENING_BRANCH_AUDIT.md) |
-| **CRITICAL** | `eye-earn-sparkle-archive` | `codex/vision-unified-pipeline` | Unified vision pipeline — likely the most complete web eye-control integration |
+| ~~**CRITICAL**~~ **DONE** | `eye-earn-sparkle-archive` | `codex/vision-unified-pipeline` | Audited 2026-05-20 — web calibration unification + client liveness + hand fusion; cherry-pick commit `22cabd3` only; see [`VISION_UNIFIED_PIPELINE_BRANCH_AUDIT.md`](VISION_UNIFIED_PIPELINE_BRANCH_AUDIT.md) |
 | **CRITICAL** | `eye-earn-sparkle-archive` | `codex/investor-demo-mode` | Investor demo polish — may have UX refinements not in main |
 | **CRITICAL** | `eye-earn-sparkle-archive` | `codex/investor-demo-mode-v2` | v2 of investor demo — compare to v1 |
 | **HIGH** | `i-initial-structures` | `investor-demo-mvp-night-build` | Night build — may contain last working state of MVP integration |
@@ -802,6 +804,7 @@ These are specific artifacts ready for promotion (copy-in, not merge) into `i_pr
 | ELO recommendation engine | `i-initial-structures/src/elo/` | Need to wire to feed + campaign selection |
 | Trust rule engine | `i-initial-structures/src/types/alphabet/trust.types.ts` + rules | Need Supabase table + trigger |
 | Studio type system | `i-initial-structures/src/screens/studio/` | Need to integrate with archive studio components |
+| Web vision unified pipeline | `eye-earn-sparkle-archive` branch `codex/vision-unified-pipeline` commit `22cabd3` | Cherry-pick: `visionCalibration/profile.ts`, wizard, `useVisionEngine` liveness/hand fusion — see [`VISION_UNIFIED_PIPELINE_BRANCH_AUDIT.md`](VISION_UNIFIED_PIPELINE_BRANCH_AUDIT.md) |
 | Web VisionContext | `eye-earn-sparkle-archive/src/contexts/VisionContext.tsx` | Need to integrate with gaze adapter abstraction |
 | Attention mediapipe module | `eye-earn-sparkle-v2/attention_mediapipe/` | Needs standalone review before promotion |
 | Evidence vault hardening | `eye_tracking_app/feature/evidence-vault-v2-hardening` | Selective promote: vault SQL 204–209, wiring docs, POPS backend reference — see branch audit |
@@ -891,9 +894,11 @@ Based on full archaeological inspection across all repos, the recommended canoni
 
 5. ~~**Deep-inspect evidence-vault branch**~~ — **Done** ([`EVIDENCE_VAULT_V2_HARDENING_BRANCH_AUDIT.md`](EVIDENCE_VAULT_V2_HARDENING_BRANCH_AUDIT.md)). Next: reconcile backend POPS scoring with Proof Packet v0; stage evidence vault migrations 204–209.
 
-6. **Extract and promote Y-plane transport** — Implement the `Y_PLANE_TRANSPORT_EXPERIMENT.md` optimization to improve signal quality and pipeline performance.
+6. ~~**Deep-inspect vision-unified-pipeline branch**~~ — **Done** ([`VISION_UNIFIED_PIPELINE_BRANCH_AUDIT.md`](VISION_UNIFIED_PIPELINE_BRANCH_AUDIT.md)). Next: cherry-pick vision commit `22cabd3` when web shell promotes; map web liveness to Proof Packet v0 presence hints.
 
-7. **Unify studio type system** — Merge `i-initial-structures/src/screens/studio/` types with `eye-earn-sparkle-archive/src/components/studio/` implementations.
+7. **Extract and promote Y-plane transport** — Implement the `Y_PLANE_TRANSPORT_EXPERIMENT.md` optimization to improve signal quality and pipeline performance.
+
+8. **Unify studio type system** — Merge `i-initial-structures/src/screens/studio/` types with `eye-earn-sparkle-archive/src/components/studio/` implementations.
 
 ### 10.3 Architecture Decisions to Lock In Now
 
@@ -957,8 +962,8 @@ The following systems exist in a working state and **must not be rebuilt from sc
 | Branch | Repo | Urgency |
 |--------|------|---------|
 | ~~`feature/evidence-vault-v2-hardening`~~ | `eye_tracking_app` | **Done** — see branch audit |
-| `codex/vision-unified-pipeline` | `eye-earn-sparkle-archive` | **Immediate** |
-| `codex/investor-demo-mode-v2` | `eye-earn-sparkle-archive` | **High** |
+| ~~`codex/vision-unified-pipeline`~~ | `eye-earn-sparkle-archive` | **Done** — see [`VISION_UNIFIED_PIPELINE_BRANCH_AUDIT.md`](VISION_UNIFIED_PIPELINE_BRANCH_AUDIT.md) |
+| `codex/investor-demo-mode-v2` | `eye-earn-sparkle-archive` | **Immediate** |
 | `investor-demo-mvp-night-build` | `i-initial-structures` | **High** |
 | `archive/unified-vision-2025-02-07` | `eye-earn-sparkle-v2` | **High** |
 | `checkpoint/pre-composer-cleanup` | `eye_tracking_app` | **High** |
@@ -966,13 +971,15 @@ The following systems exist in a working state and **must not be rebuilt from sc
 
 ### Immediate Next Recommended Audit Target
 
-**Target:** `eye-earn-sparkle-archive/codex/vision-unified-pipeline`
+**Target:** `eye-earn-sparkle-archive/codex/investor-demo-mode-v2`
 
-**Why:** The evidence-vault branch audit (2026-05-20) found admin Evidence Vault v2 SQL and a full backend POPS stack — not a missing mobile liveness layer. Native anti-spoof heuristics already exist on `eye_tracking_app/main`. The highest remaining gap for eye-control integration is the archive’s unified web vision pipeline.
+**Why:** The vision-unified-pipeline audit (2026-05-20) found real web calibration/liveness work in commit `22cabd3`, but commit `0b260c6` on the same branch bundles investor demo mode, hardening runbook, and mock wallet flows. The v2 investor-demo branch may contain polished demo UX not yet compared to `main` or v1.
 
-**Completed:** `eye_tracking_app/feature/evidence-vault-v2-hardening` — see [`EVIDENCE_VAULT_V2_HARDENING_BRANCH_AUDIT.md`](EVIDENCE_VAULT_V2_HARDENING_BRANCH_AUDIT.md).
+**Completed branch audits:**
+- `eye_tracking_app/feature/evidence-vault-v2-hardening` — [`EVIDENCE_VAULT_V2_HARDENING_BRANCH_AUDIT.md`](EVIDENCE_VAULT_V2_HARDENING_BRANCH_AUDIT.md)
+- `eye-earn-sparkle-archive/codex/vision-unified-pipeline` — [`VISION_UNIFIED_PIPELINE_BRANCH_AUDIT.md`](VISION_UNIFIED_PIPELINE_BRANCH_AUDIT.md)
 
-**Secondary target:** `eye-earn-sparkle-archive/codex/investor-demo-mode-v2` — investor demo polish not yet compared to main.
+**Secondary target:** `eye-earn-sparkle-v2/archive/unified-vision-2025-02-07` — Feb 2026 vision snapshot for diff against archive branch deltas.
 
 ---
 
