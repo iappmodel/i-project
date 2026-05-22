@@ -54,9 +54,9 @@ Per verified `MULTI_REPO_SYSTEM_RECOVERY_REPORT.md` + SoT (2026-05-21): migratio
 
 **IVAULT global intake (2026-05-21):** ~628k files on disk indexed at metadata level; 80,959 non-dependency rows in `GLOBAL_INTAKE/IVAULT_SOURCE_CENSUS.tsv`; 32 repos; 29 Lovable-likely apps; 2,917 chat-related paths in census (mostly OpenAI `.dat` attachments, not threads).
 
-**Chat export triage (2026-05-21):** 580 OpenAI + 68 Claude **conversation records** scored in `CHAT_RECOVERY/` (P0/P1/P2/P3 priority bands; top-30 extract queue). **P0 extraction batches 1–4 complete** (40/104 P0 threads → `CHAT_RECOVERY/EXTRACTED/`). P0 chat extraction batch 4 completed; **further P0/P1 extraction still required before final canonicalization.** Regenerate triage: `python3 scripts/chat_export_triage.py`.
+**Chat export triage (2026-05-21):** 580 OpenAI + 68 Claude **conversation records** scored in `CHAT_RECOVERY/` (P0/P1/P2/P3 priority bands; top-30 extract queue). **P0 extraction batches 1–4 complete** (40/104 P0 threads → `CHAT_RECOVERY/EXTRACTED/`). **Synthesis complete:** [`CHAT_RECOVERY/EXTRACTED/P0_BATCHES_01_04_SYNTHESIS.md`](../CHAT_RECOVERY/EXTRACTED/P0_BATCHES_01_04_SYNTHESIS.md). P0 chat extraction batch 4 completed; **further P0/P1 extraction still required before final canonicalization.** Regenerate triage: `python3 scripts/chat_export_triage.py`.
 
-Remaining work: **64 P0 + P1 chat extraction**, **visual review**, **duplicate owner decisions**, then promotion/reconciliation.
+Remaining work: **64 P0 + P1 chat extraction**, **owner decision session (synthesis §12)**, **visual review**, **duplicate owner decisions**, then promotion/reconciliation.
 
 ## Post-Intake Unknowns (New)
 
@@ -69,6 +69,8 @@ Remaining work: **64 P0 + P1 chat extraction**, **visual review**, **duplicate o
 | gCoin letter semantics | G=Go/Growth (040) vs G=Governance (prior file) — **owner lock required** |
 | Product IA vs demo IA | 4-tab (038/014) vs 5/8-screen demos — **owner lock required** |
 | build-log.md / prototype artifacts | Referenced in 036/038/037 — **on-disk location unknown** |
+| P0 batches 01–04 synthesis | **Complete** — owner decisions not made; see `P0_BATCHES_01_04_SYNTHESIS.md` §12 |
+| Currency semantics (full map) | Evidence in `P0_BATCH_03_CURRENCY_RECONCILIATION_NOTES.md` + synthesis §5 — **blocked** |
 | `node_modules` (~495k files) | Excluded from row census — dependency preservation only |
 | Workspace vs IVAULT primary repo | Two `i_project_migration_archive` trees — unification pending |
 

@@ -20,6 +20,14 @@
 | 04 | 31–40 | Complete |
 | 05+ | 41–104 | **Next** |
 
+## Phase 1.5 — P0 synthesis (batches 01–04)
+
+**Complete 2026-05-22:** Consolidated synthesis of ranks 1–40:
+
+- [`EXTRACTED/P0_BATCHES_01_04_SYNTHESIS.md`](CHAT_RECOVERY/EXTRACTED/P0_BATCHES_01_04_SYNTHESIS.md)
+
+Use synthesis for owner decision sessions. **Do not treat synthesis as canonical** — all items remain candidate/experimental/blocked until owner lock + repo verification.
+
 ## Phase 2 — P1 extraction (product & investor)
 
 1. Investor demo, eye-tracking, studio, UX threads → `INVESTOR_DEMO/`, `ATTENTION_SYSTEM/`, `CREATOR_ECONOMY/`.
@@ -41,7 +49,8 @@
 
 ## Unblock canonicalization when
 
-- [ ] P0 threads extracted and reconciled with `i_SOURCE_OF_TRUTH.md` (**40/104 P0 done**)
-- [ ] Proof/wallet/attention claims traced to code or marked Unknown (039 session bypass open)
+- [x] P0 ranks 1–40 extracted and synthesized (`P0_BATCHES_01_04_SYNTHESIS.md`)
+- [ ] Remaining P0 threads (41–104) extracted and reconciled with `i_SOURCE_OF_TRUTH.md`
+- [ ] Proof/wallet/attention claims traced to code or marked Unknown (**039 session bypass — critical**)
 - [ ] Duplicate IVAULT vs workspace `MASTER_BRAIN` unified
-- [ ] Owner decisions: currency letter mapping, rCoin role, product vs demo IA
+- [ ] Owner decisions: currency letter mapping, rCoin role, product vs demo IA (**blocked — see synthesis §12**)

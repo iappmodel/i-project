@@ -1,7 +1,27 @@
 # DUPLICATES_AND_CONFLICTS
 
 **Generated:** 2026-05-21  
+**Updated:** 2026-05-22 (P0 chat batches 01–04 synthesis)  
 **Purpose:** Explicit registry of repeated concepts, competing implementations, and contradictions vs [ i ] Source of Truth
+
+**Chat synthesis:** [`CHAT_RECOVERY/EXTRACTED/P0_BATCHES_01_04_SYNTHESIS.md`](CHAT_RECOVERY/EXTRACTED/P0_BATCHES_01_04_SYNTHESIS.md) — 40 P0 conversations; **no conflicts resolved silently.**
+
+---
+
+## 0. P0 Chat Extraction — Critical Blockers (Batches 01–04)
+
+| ID | Conflict | Severity | Status |
+|----|----------|----------|--------|
+| **CR-01** | **Attention session bypass** — reward issuable without valid `attentionSessionId` (conv 039; owner confirmed YES) | **Critical** | **Blocked** — fix before any reward canon |
+| **CR-02** | **iCoin semantics** — SoT cash-value vs OpenAI Identity-linked vs chat Icoins | **Critical** | **Blocked** — owner decision |
+| **CR-03** | **vCoin semantics** — SoT utility vs conv 020 spendable vs 028 platform value | **Critical** | **Blocked** — owner decision |
+| **CR-04** | **rCoin triple definition** — clearing pool (007) / hub (023) / Reputation (028) | **Critical** | **Blocked** — owner decision |
+| **CR-05** | **uCoin fork** — 007≈Vicoins vs 026 User Value | **Critical** | **Blocked** — owner decision |
+| **CR-06** | **Currency naming** — Vicoin/Icoin vs a/i/v/e/o across 40 convs | **Critical** | **Blocked** — owner decision |
+| **HI-01** | **Demo lineage** — 6+ URLs/architectures (HTML, Vite, 4-tab, 5-screen, 8-screen, 9-step) | **High** | **Blocked** — owner decision |
+| **HI-02** | **Product IA vs demo IA** — 4-tab (014, 038) vs multi-screen demos | **High** | **Blocked** — owner decision |
+
+**Currency evidence map:** `CHAT_RECOVERY/EXTRACTED/P0_BATCH_03_CURRENCY_RECONCILIATION_NOTES.md`
 
 ---
 
@@ -9,10 +29,11 @@
 
 | Category | Count | Severity |
 |----------|-------|----------|
+| P0 chat critical blockers | 6 currency + 1 attention + 2 IA/demo | **Critical / High** |
 | Competing implementations | 12 domains | High |
-| Naming contradictions | 4 | Medium |
+| Naming contradictions | 4 (+ chat-era Vicoin/Icoin) | Medium → **Critical** |
 | Product vs implementation gaps | 8 | High |
-| Duplicate prototypes | 6 | Low |
+| Duplicate prototypes | 6 (+ chat demo URLs) | Low → Medium |
 | Obsolete re-mining risks | 5 | Medium |
 
 ---
@@ -177,13 +198,15 @@
 
 ## 3. Naming Contradictions
 
-| Topic | Constitution | Evidence | Status |
-|-------|--------------|----------|--------|
-| Cash coin | iCoins | Icoin, iCoin | Unresolved mapping |
-| Attention coin | aCoins | Vicoin (dual asset) | Unresolved mapping |
-| Utility coin | vCoins | Rarely named in code | Gap |
-| Engagement coin | eCoins | Not found in audits | Gap |
-| Origin coin | oCoins | Not found in audits | Gap |
+| Topic | Constitution | Chat P0 (40 convs) | Repo evidence | Status |
+|-------|--------------|-------------------|---------------|--------|
+| Cash coin | iCoins | Icoin, iCoin (Identity in 025) | Icoin | **Blocked (CR-02, CR-06)** |
+| Attention coin | aCoins | (often absent in demos) | Vicoin conflation | **Blocked (CR-06)** |
+| Utility coin | vCoins | Vicoin; 020 spendable layer | Rarely named | **Blocked (CR-03, CR-06)** |
+| Engagement coin | eCoins | — | Not found in audits | Candidate (033 aligns) |
+| Origin coin | oCoins | — | Not found | **Blocked (Origin vs Offers)** |
+| rCoins | Not in SoT | Pool / hub / Reputation | — | **Blocked (CR-04)** |
+| uCoins | Not in SoT | ≈Vicoins (007) / User Value (026) | — | **Blocked (CR-05)** |
 
 ---
 
@@ -211,6 +234,9 @@
 | IVAULT studio-routing ↔ evidence-vault | Identical @ d23d365 |
 | cursor/v1-* × 3 | Byte-identical bookmarks |
 | MULTI_REPO body ↔ audit cross-refs | Local file may be truncated stub |
+| **Chat: 032 ↔ 037** | Early Claude MVP artifacts — cite once |
+| **Chat: 021 ↔ 014** | "The Solution" UX duplicate — cite 014 |
+| **Chat demo URLs** | iappdemomarcelo, flux-i-app, i-attention-wallet, ~/i-app-demo — **lineage blocked (HI-01)** |
 
 ---
 
@@ -252,6 +278,6 @@ Not implementation — classification guidance for future work:
 4. **Single web vision promotion:** 22cabd3 cherry-pick set  
 5. **Single Loop 1 spine:** `app/`; v2 pending UX remains a candidate pattern, not a grafted system  
 6. **Single studio type layer:** integrations/source + IVAULT contracts  
-7. **Single coin glossary:** Map Vicoin/Icoin → constitution names  
+7. **Single coin glossary:** Map Vicoin/Icoin → constitution names — **blocked; see synthesis §5 and CR-02–CR-06**
 
-See `CANONICAL_CANDIDATES.md` for file-level pointers.
+See `CANONICAL_CANDIDATES.md` and **`CHAT_RECOVERY/EXTRACTED/P0_BATCHES_01_04_SYNTHESIS.md`** for file-level pointers.

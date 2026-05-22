@@ -1,11 +1,14 @@
 # CANONICAL_CANDIDATES
 
 **Generated:** 2026-05-21  
+**Updated:** 2026-05-22 (P0 chat batches 01–04 synthesis)  
 **Purpose:** What should become canonical — with evidence, confidence, and competing alternatives
+
+**Synthesis:** [`CHAT_RECOVERY/EXTRACTED/P0_BATCHES_01_04_SYNTHESIS.md`](CHAT_RECOVERY/EXTRACTED/P0_BATCHES_01_04_SYNTHESIS.md) — **40 P0 conversations consolidated; nothing promoted.**
 
 **Legend:**  
 - **Confidence:** High / Medium / Low  
-- **Status:** Declared / Audit-backed / Gap
+- **Status:** Declared / Audit-backed / Gap / **Chat-candidate (blocked)**
 
 ---
 
@@ -17,6 +20,36 @@
 | Core Loop definition | CANONICAL/CORE_LOOP.md | **High** | Derived from constitution |
 | Three Participants | CANONICAL/THREE_PARTICIPANTS.md | **High** | Derived from constitution |
 | Revenue 60/30/10 | CANONICAL/REVENUE_MODEL.md | **High** | Intent canonical; app/ screen is best evidence |
+
+---
+
+## Tier 0.5 — P0 Chat Extraction Candidates (Batches 01–04)
+
+**Source:** 40 P0 conversations (ranks 1–40) — see `CHAT_RECOVERY/EXTRACTED/conversations/` and batch `P0_BATCH_*_CANONICAL_CANDIDATES.md`.
+
+**Total unique candidate IDs:** ~125 (CC-B01 through CC-B04)  
+**Status:** **All blocked or candidate — not canonical.** Promotion requires owner decisions in synthesis §12.
+
+### Highest-priority chat candidates (blocked on noted items)
+
+| ID | Candidate | Conv(s) | Blocker |
+|----|-----------|---------|---------|
+| CC-B04-27–31 | Attention sessions + ACS + split reward endpoints | 039 | **Session bypass (CR-01)** |
+| CC-B03-01, CC-B04-07–08 | aCoin + eCoin specs | 023, 033 | Currency pipeline |
+| CC-B02-01, CC-B04-23 | 4-tab product IA | 014, 038 | Demo lineage (HI-01) |
+| CC-B01-04, CC-B02-04 | Progressive trust ladder | 009, 014 | — |
+| CC-B03-16 | Tier 1 A/I/V/E/O | 028 | Letter semantics (CR-02–06) |
+
+### Chat candidate tiers (summary)
+
+| Tier | Count (approx) | Action |
+|------|----------------|--------|
+| A — SoT-aligned | ~30 | Promote after blockers cleared |
+| B — Needs reconciliation | ~45 | Owner decision required |
+| C — Experimental | ~35 | Preserve only |
+| D — Process/obsolete | ~15 | Do not promote to product canon |
+
+**Do not merge chat candidates with repo audit candidates below until currency + session bypass resolved.**
 
 ---
 
@@ -114,13 +147,17 @@ See `OBSOLETE/INDEX.md`.
 
 | Item | Question |
 |------|----------|
-| Coin naming map | Vicoin/Icoin → aCoins/iCoins/vCoins? |
+| Coin naming map | Vicoin/Icoin → aCoins/iCoins/vCoins? **See synthesis §5 + `P0_BATCH_03_CURRENCY_RECONCILIATION_NOTES.md`** |
+| rCoin definition | Pool vs hub vs reputation — **blocked (CR-04)** |
+| Demo canonical URL | 6+ lineages — **blocked (HI-01)** |
+| Product vs demo IA | 4-tab vs multi-screen — **blocked (HI-02)** |
+| Attention session bypass | Owner YES in conv 039 — **blocked (CR-01)** |
 | iVatar scope | Product concept vs cut feature? |
 | Fourth studio merge | Which lineage wins for ship? |
 | Full 35-system SoT | Verified in IVAULT `docs/technical/SYSTEM_PROMOTION_SOURCE_OF_TRUTH.md` §3 — reconcile with workspace checkout |
 | Dual demo long-term | Maintain both app/ and archive demo indefinitely? |
 
-See `RESEARCH/GAPS_AND_UNKNOWNS.md`.
+See `RESEARCH/GAPS_AND_UNKNOWNS.md` and **`CHAT_RECOVERY/EXTRACTED/P0_BATCHES_01_04_SYNTHESIS.md` §12**.
 
 ---
 
@@ -153,4 +190,4 @@ Investor pitch:   Dual path — Loop 1 spine + optional full-app demo
 | Obsolete | ~13 | INDEX in OBSOLETE/ |
 | Unknown | ~5 | RESEARCH/ |
 
-**Next knowledge step (not implementation):** Owner review of Tier 4 unknowns + coin glossary decision; promote preservation authority docs or unify workspace with IVAULT primary repo.
+**Next knowledge step (not implementation):** Owner review of Tier 4 unknowns + synthesis §12 agenda; **fix attention session bypass (CR-01)**; coin glossary decision; promote preservation authority docs or unify workspace with IVAULT primary repo. **Continue P0 extraction (ranks 41+) in parallel with owner session.**
