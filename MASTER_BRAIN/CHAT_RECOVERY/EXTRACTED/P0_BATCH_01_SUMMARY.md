@@ -109,19 +109,11 @@ Sonnet/Haiku split, Master Control File, phased HTML demo build, MD-files-as-sha
 
 ## Remaining P0 Work
 
-**94 P0 conversations remain** after this batch (104 total P0 − 10 extracted).
+**84 P0 conversations remain** after batches 01–02 (104 total P0 − 20 extracted).
 
-**Next batch candidates (ranks 11–20):**
-11. Application development masterplan and stages  
-12. Removing the streak bar feature  
-13. Using multiple skills and repos together in Claude  
-14. UX/UI Strategy Separation (OpenAI)  
-15. Eye-tracking attention interface for verified engagement  
-16. Complete fintech app artifact with wallet interface  
-17. Eye-tracking system audit and integration review  
-18. UX/UI design principles  
-19. Clarification needed (owner review flagged)  
-20. vCoin Development Guide (OpenAI)
+**Batch 02 (ranks 11–20) completed 2026-05-22** — see `P0_BATCH_02_SUMMARY.md` and `conversations/011–020`.
+
+**Next batch candidates (ranks 21–30):** App Redesign Strategy (OpenAI), Creating custom skills (Claude), aCoin Specification (OpenAI), App walkthrough video (Claude), iCoin Development Strategy (OpenAI), uCoin Detailed Design (OpenAI), Remote control development (Claude), Alphabet Currency System (OpenAI), Alpha currency engagement tracking (Claude), Building functional investor demo (Claude).
 
 ---
 
@@ -129,10 +121,10 @@ Sonnet/Haiku split, Master Control File, phased HTML demo build, MD-files-as-sha
 
 **Not ready.**
 
-P0 chat extraction batch 1 completed; **further P0/P1 extraction still required before final canonicalization.**
+P0 chat extraction batch 1 completed; batch 2 completed 2026-05-22; **further P0/P1 extraction still required before final canonicalization.**
 
 Blockers:
-- 94 P0 threads not yet extracted
+- 84 P0 threads not yet extracted
 - 39 P1 threads not extracted
 - Coin naming reconciliation unresolved (Vicoin/Icoin vs a/i/v/e/o; 26-coin vs 5-coin)
 - Competing demo implementations not merged
