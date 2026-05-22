@@ -112,26 +112,13 @@ Fintech wallet dashboard patterns, warm/cool glass lineages, brand logo + vision
 | Flutter production vs Vite demo vs Expo `~/i-app` | High |
 | Partial reward policy (017) | High |
 | Conv 019 substantive content | Low — owner review only |
-| OpenAI aCoin/iCoin/Alphabet threads (ranks 23, 25, 28) | High — next batch |
+| OpenAI aCoin/iCoin/Alphabet threads (ranks 23, 25, 28) | ✅ Extracted in batch 03 |
 
 ---
 
 ## Remaining P0 Work
 
-**84 P0 conversations remain** (104 total − 20 extracted).
-
-**Next batch candidates (ranks 21–30):**
-
-21. App Redesign Strategy (OpenAI)  
-22. Creating custom skills with documentation (Claude)  
-23. aCoin Specification (OpenAI)  
-24. App walkthrough video demonstration (Claude)  
-25. iCoin Development Strategy (OpenAI)  
-26. uCoin Detailed Design (OpenAI)  
-27. Remote control development (Claude)  
-28. Alphabet Currency System (OpenAI)  
-29. Alpha currency engagement tracking system (Claude)  
-30. Building a functional investor demo with core features (Claude)
+**74 P0 conversations remain** (104 total − 30 extracted). Batch 03 completed ranks 21–30 — see `P0_BATCH_03_SUMMARY.md`.
 
 ---
 
@@ -143,10 +130,11 @@ P0 chat extraction batch 2 completed; **further P0/P1 extraction still required 
 
 Blockers:
 
-- 84 P0 threads not extracted
-- vCoin role conflict (020 vs SoT vs Vicoin chat naming)
+- 74 P0 threads not extracted (batch 03 done)
+- vCoin role conflict (020 vs SoT vs Vicoin chat vs 028 spendable platform)
+- iCoin/rCoin/uCoin semantics — see `P0_BATCH_03_CURRENCY_RECONCILIATION_NOTES.md`
 - Competing demo stacks and URLs not merged
-- OpenAI alphabet coin series incomplete (a/i/u + Alphabet System)
+- OpenAI alphabet Tier 1 extracted (028); remaining B–Z letters P1
 - Engine audit findings not traced to repo evidence
 
 ---
