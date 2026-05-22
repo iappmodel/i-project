@@ -128,9 +128,11 @@ Verified attention quality (6 dimensions), **aCoins → rCoins → iCoins** pipe
 
 ## Remaining P0 Work
 
-**74 P0 conversations remain** (104 total − 30 extracted).
+**64 P0 conversations remain** (104 total − 40 extracted as of Batch 04).
 
-**Next batch candidates (ranks 31–40):** See `CHAT_RECOVERY_PRIORITY_QUEUE.md` ranks 31+.
+**Batch 04 (ranks 31–40) completed 2026-05-22** — see `P0_BATCH_04_SUMMARY.md`.
+
+**Next batch candidates (ranks 41–50):** See `CHAT_RECOVERY_PRIORITY_QUEUE.md` P0 band continuation.
 
 ---
 
@@ -142,7 +144,7 @@ P0 chat extraction batch 3 completed; **currency evidence expanded but owner dec
 
 Blockers:
 
-- 74 P0 threads not extracted
+- 64 P0 threads not extracted (Batch 04 complete)
 - **iCoin/vCoin letter semantics fork** (OpenAI vs chat vs SoT)
 - **rCoin triple definition** unresolved
 - **uCoin vs Vicoins** mapping conflict (007 vs 026)

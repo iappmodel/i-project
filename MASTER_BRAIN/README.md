@@ -65,9 +65,10 @@ Regenerate: `python3 scripts/ivault_global_intake.py` (read-only on IVAULT).
 | [CHAT_RECOVERY_PRIORITY_QUEUE.md](CHAT_RECOVERY/CHAT_RECOVERY_PRIORITY_QUEUE.md) | Top 30 extract-next |
 | [CHAT_RELEVANCE_KEYWORDS.md](CHAT_RECOVERY/CHAT_RELEVANCE_KEYWORDS.md) | Scoring lexicon |
 | [CHAT_EXTRACTION_PLAN.md](CHAT_RECOVERY/CHAT_EXTRACTION_PLAN.md) | Phased summarization playbook |
+| [EXTRACTED/P0_BATCH_04_SUMMARY.md](CHAT_RECOVERY/EXTRACTED/P0_BATCH_04_SUMMARY.md) | P0 ranks 31–40 extracted (2026-05-22) |
 
 Regenerate: `python3 scripts/chat_export_triage.py` (read-only on IVAULT).
 
 ## Status
 
-Migration-archive archaeology **v1.0 complete** (2026-05-21). **Full IVAULT global intake census complete.** **Chat exports triaged** (648 conversation records scored; not fully summarized). Canonicalization and owner decisions remain **blocked** until P0/P1 chat extraction, visual review, and duplicate resolution. Implementation and promotion are separate phases.
+Migration-archive archaeology **v1.0 complete** (2026-05-21). **Full IVAULT global intake census complete.** **Chat exports triaged** (648 conversation records scored). **P0 chat extraction batches 1–4 complete** (40/104 P0 threads structured). P0 chat extraction batch 4 completed; **further P0/P1 extraction still required before final canonicalization.** Canonicalization and owner decisions remain **blocked** until remaining P0/P1 extraction, visual review, and duplicate resolution. Implementation and promotion are separate phases.

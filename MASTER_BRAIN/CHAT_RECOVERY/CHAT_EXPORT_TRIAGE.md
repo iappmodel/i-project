@@ -39,6 +39,17 @@
 - No unrelated personal thread bodies summarized in this pass.
 - P3 rows flagged in `privacy_note`; extraction deferred unless owner opts in.
 
+## Extraction progress
+
+| Batch | Ranks | Status | Summary |
+|-------|------:|--------|---------|
+| P0 Batch 01 | 1–10 | Complete | `EXTRACTED/P0_BATCH_01_SUMMARY.md` |
+| P0 Batch 02 | 11–20 | Complete | `EXTRACTED/P0_BATCH_02_SUMMARY.md` |
+| P0 Batch 03 | 21–30 | Complete | `EXTRACTED/P0_BATCH_03_SUMMARY.md` |
+| P0 Batch 04 | 31–40 | Complete | `EXTRACTED/P0_BATCH_04_SUMMARY.md` |
+
+**40 / 104 P0 threads extracted** (2026-05-22). P0 chat extraction batch 4 completed; further P0/P1 extraction still required before final canonicalization.
+
 ## Canonicalization readiness
 
-**Not ready.** Triage complete; **full conversation summarization and cross-linking to `docs/` and repo evidence** remain blocked follow-ons.
+**Not ready.** Triage complete; **64 P0 + P1 threads remain**; cross-linking to `docs/` and repo evidence blocked until extraction completes and owner decisions resolve currency/IA forks.
