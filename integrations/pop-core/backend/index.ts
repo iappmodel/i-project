@@ -92,3 +92,26 @@ export {
   ProofReviewStateMachine,
   type ProofReviewTransitionResult
 } from "./review/proof-review-state-machine.js";
+
+export {
+  toReviewAudit,
+  type CreatePendingHoldOutcome,
+  type CreatePendingHoldResult,
+  type PendingHoldRecord,
+  type PendingHoldReleaseStatus,
+  type PendingHoldReviewAudit,
+  type PendingHoldSkipReason,
+  type PendingHoldStatus
+} from "./settlement/pending-hold.js";
+
+export {
+  InMemoryPendingHoldStore,
+  PendingHoldConflictError,
+  type PendingHoldStore
+} from "./settlement/pending-hold-store.js";
+
+export {
+  PendingHoldService,
+  createPendingHoldFromReview,
+  type CreatePendingHoldOptions
+} from "./settlement/pending-hold-service.js";

@@ -32,10 +32,17 @@ ProofPacketV0 durable review persistence (PR4):
 ProofReviewRecord → JsonFileProofReviewStore → records/{sessionId}.json + _indexes.json
 ```
 
-ProofPacketV0 ingest and batch mapping are in PR2B adapters. Review projection composes adapters + authority services. PR3 adds a replaceable store boundary (`ProofReviewStore`) with `sessionId` as the canonical unique identity. PR3A adds lifecycle events and transition validation before records are saved. PR4 adds a zero-dependency JSON file adapter with atomic writes.
+POP pending hold boundary (PR5):
+
+```
+ProofReviewRecord → createPendingHoldFromReview → PendingHoldRecord (in-memory)
+```
+
+ProofPacketV0 ingest and batch mapping are in PR2B adapters. Review projection composes adapters + authority services. PR3 adds a replaceable store boundary (`ProofReviewStore`) with `sessionId` as the canonical unique identity. PR3A adds lifecycle events and transition validation before records are saved. PR4 adds a zero-dependency JSON file adapter with atomic writes. PR5 adds settlement-eligibility gating and in-memory pending hold creation without money movement.
 
 See [`../docs/proof-review-state-machine.md`](../docs/proof-review-state-machine.md) for the canonical state machine.
 See [`../docs/proof-review-persistence-v1.md`](../docs/proof-review-persistence-v1.md) for on-disk layout and future Postgres mapping.
+See [`../docs/pending-hold-v1.md`](../docs/pending-hold-v1.md) for pending hold contract (PR5).
 
 ## Public API
 
@@ -51,6 +58,7 @@ See [`../docs/proof-review-persistence-v1.md`](../docs/proof-review-persistence-
 | `toStoredRecord`, `fromStoredRecord` | Versioned record serialization for disk/DB (PR4) |
 | `ProofReviewService` | Submit packet for review and lookup stored records by `sessionId` / optional ids |
 | `ProofReviewStateMachine`, lifecycle events | Canonical review transitions and settlement-eligibility gates (PR3A) |
+| `createPendingHoldFromReview`, `PendingHoldStore` | Settlement-eligible review → pending hold record (PR5) |
 | `resolvePopsVersionBundle`, `bundleToJudgmentVersionFields` | Judgment version metadata for `toJudgment()` |
 
 ### PR4 durable store usage
@@ -70,10 +78,28 @@ const record = service.submitProofPacketForReview(packet, {
 });
 ```
 
-## Out of scope (PR2A / PR3 / PR3A / PR4)
+### PR5 pending hold usage
+
+```typescript
+import {
+  ProofReviewService,
+  createPendingHoldFromReview,
+  InMemoryPendingHoldStore
+} from "@pop-core/backend";
+
+const reviewService = new ProofReviewService(reviewStore);
+const holdStore = new InMemoryPendingHoldStore();
+
+const record = reviewService.submitProofPacketForReview(packet);
+const result = createPendingHoldFromReview(record, { store: holdStore });
+// result.outcome: "created" | "existing" | "skipped"
+```
+
+## Out of scope (PR2A / PR3 / PR3A / PR4 / PR5)
 
 - HTTP routes, Supabase client, Postgres migrations
-- Wallet, settlement, trust mutation
+- Wallet payout, available balance mutation, ledger writes, trust mutation
+- Hold release, amount policy (PR6+), durable hold persistence
 - Privacy receipts, replay service
 - ProofPacketV0 adapter (PR2B)
 - Async review store interface

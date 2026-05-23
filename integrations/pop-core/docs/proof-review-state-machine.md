@@ -47,16 +47,18 @@ ProofPacketV0 (review.status = pending)
 
 Runtime packets **must** arrive with `review.status = "pending"`. Non-pending submissions throw `ProofReviewNonPendingSubmissionError`.
 
-## Future settlement dependency
+## Settlement dependency (PR5)
 
-Settlement (out of scope for PR3A) must gate on:
+Settlement gates on:
 
 ```typescript
 ProofReviewStateMachine.isSettlementEligible(record.status)
 // true only for "approved" | "partial"
 ```
 
-Until then, `review.settlementAmount` remains `null`. Pending and escalated records block settlement; rejected records permanently block payout.
+PR5 implements the first settlement boundary: `createPendingHoldFromReview(record)` creates an in-memory `PendingHoldRecord` with `status: "pending"`, `releaseStatus: "not_released"`, and `amount: null`. Non-eligible reviews return `{ outcome: "skipped" }` without throwing. See [`pending-hold-v1.md`](./pending-hold-v1.md).
+
+Until PR6, `review.settlementAmount` remains `null`. Pending and escalated records block settlement; rejected records permanently block payout.
 
 ## API exports
 
