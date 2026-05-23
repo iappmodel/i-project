@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ivault.local/schemas/proof-packet-v0.json",
+  "title": "ProofPacketV0",
+  "type": "object",
+  "required": [
+    "packetVersion",
+    "sessionId",
+    "localUserRef",
+    "offerId",
+    "contentId",
+    "deviceIdHash",
+    "startedAt",
+    "endedAt",
+    "durationMs",
+    "appVersion",
+    "runtimeVersion",
+    "signals",
+    "eyeTracking",
+    "interaction",
+    "review"
+  ],
+  "properties": {
+    "packetVersion": { "type": "string", "const": "0" },
+    "sessionId": { "type": "string", "minLength": 1 },
+    "userId": { "type": ["string", "null"] },
+    "localUserRef": { "type": "string", "minLength": 1 },
+    "offerId": { "type": "string", "minLength": 1 },
+    "contentId": { "type": "string", "minLength": 1 },
+    "deviceId": { "type": ["string", "null"] },
+    "deviceIdHash": { "type": "string", "minLength": 1 },
+    "startedAt": { "type": "string", "format": "date-time" },
+    "endedAt": { "type": "string", "format": "date-time" },
+    "durationMs": { "type": "integer", "minimum": 0 },
+    "appVersion": { "type": "string" },
+    "runtimeVersion": { "type": "string" },
+    "signals": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/signalSummary" }
+    },
+    "eyeTracking": { "$ref": "#/$defs/eyeTracking" },
+    "interaction": { "$ref": "#/$defs/interaction" },
+    "review": { "$ref": "#/$defs/review" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "signalSummary": {
+      "type": "object",
+      "required": ["score", "confidence"],
+      "properties": {
+        "score": { "type": "number", "minimum": 0, "maximum": 1 },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "notes": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "verificationStabilitySnapshot": {
+      "type": "object",
+      "required": [
+        "stableZone",
+        "confidenceBand",
+        "validFrameRatio",
+        "zoneConsistency",
+        "dwellReadiness",
+        "blinkConfidence",
+        "fpsConfidence",
+        "reason",
+        "sampleCount",
+        "windowMs"
+      ],
+      "properties": {
+        "stableZone": { "type": "string" },
+        "confidenceBand": {
+          "type": "string",
+          "enum": ["POOR", "WARMING", "USABLE", "STRONG"]
+        },
+        "validFrameRatio": { "type": "number", "minimum": 0, "maximum": 1 },
+        "zoneConsistency": { "type": "number", "minimum": 0, "maximum": 1 },
+        "dwellReadiness": { "type": "number", "minimum": 0, "maximum": 1 },
+        "blinkConfidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "fpsConfidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "reason": { "type": "string" },
+        "sampleCount": { "type": "integer", "minimum": 0 },
+        "windowMs": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "eyeTracking": {
+      "type": "object",
+      "required": [
+        "facePresentRatio",
+        "stableGazeWindows",
+        "dwellEvents",
+        "blinkEvents",
+        "verificationStabilitySnapshot",
+        "calibrationConfidence",
+        "invalidFrameRatio",
+        "processedFpsAvg"
+      ],
+      "properties": {
+        "facePresentRatio": { "type": "number", "minimum": 0, "maximum": 1 },
+        "stableGazeWindows": { "type": "array", "items": { "type": "object" } },
+        "dwellEvents": { "type": "array", "items": { "type": "object" } },
+        "blinkEvents": { "type": "array", "items": { "type": "object" } },
+        "verificationStabilitySnapshot": {
+          "$ref": "#/$defs/verificationStabilitySnapshot"
+        },
+        "calibrationConfidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "invalidFrameRatio": { "type": "number", "minimum": 0, "maximum": 1 },
+        "processedFpsAvg": { "type": "number", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "interaction": {
+      "type": "object",
+      "required": [
+        "taps",
+        "scrolls",
+        "playbackStarted",
+        "playbackCompleted",
+        "foregroundRatio",
+        "interactionTiming"
+      ],
+      "properties": {
+        "taps": { "type": "integer", "minimum": 0 },
+        "scrolls": { "type": "integer", "minimum": 0 },
+        "playbackStarted": { "type": "boolean" },
+        "playbackCompleted": { "type": "boolean" },
+        "foregroundRatio": { "type": "number", "minimum": 0, "maximum": 1 },
+        "interactionTiming": { "type": "object" }
+      },
+      "additionalProperties": false
+    },
+    "review": {
+      "type": "object",
+      "required": ["status", "reasons"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["pending", "approved", "partial", "rejected", "escalated"]
+        },
+        "reviewedAt": { "type": ["string", "null"] },
+        "reasons": { "type": "array", "items": { "type": "string" } },
+        "layerOutcomes": {
+          "type": ["object", "null"],
+          "additionalProperties": { "type": "string" }
+        },
+        "settlementAmount": { "type": ["number", "null"] }
+      },
+      "additionalProperties": false
+    }
+  }
+}

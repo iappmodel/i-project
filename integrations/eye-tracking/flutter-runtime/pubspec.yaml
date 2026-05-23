@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  pop_core:
+    path: ../../pop-core/contracts/proof-packet-v0/dart
   cupertino_icons: ^1.0.8
   camera: ^0.10.6
   image: ^4.8.0
