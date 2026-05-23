@@ -46,3 +46,15 @@ export {
   type ProofReviewProjectorOptions,
   type ProofReviewProjectionResult
 } from "./review/proof-review-projector.js";
+
+export {
+  InMemoryProofReviewStore,
+  ProofReviewConflictError,
+  type ProofReviewRecord,
+  type ProofReviewStore
+} from "./review/proof-review-store.js";
+
+export {
+  ProofReviewService,
+  type ProofReviewSubmitOptions
+} from "./review/proof-review-service.js";

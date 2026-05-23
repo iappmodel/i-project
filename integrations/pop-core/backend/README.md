@@ -14,7 +14,13 @@ ProofPacketV0 review projection (PR2C):
 ProofPacketV0 → projectProofPacketReview → updated ProofPacketV0
 ```
 
-ProofPacketV0 ingest and batch mapping are in PR2B adapters. Review projection composes adapters + authority services without persistence.
+ProofPacketV0 review persistence boundary (PR3):
+
+```
+ProofPacketV0 → ProofReviewService.submitProofPacketForReview → ProofReviewRecord
+```
+
+ProofPacketV0 ingest and batch mapping are in PR2B adapters. Review projection composes adapters + authority services. PR3 adds an in-memory, replaceable store boundary (`ProofReviewStore`) with `sessionId` as the canonical unique identity.
 
 ## Public API
 
@@ -25,14 +31,17 @@ ProofPacketV0 ingest and batch mapping are in PR2B adapters. Review projection c
 | `PopsScoringService` | Batch-weighted confidence + fraud scoring |
 | `PopsDecisionService` | Threshold-based eligibility decisions |
 | `projectProofPacketReview` | Authority-side review projection for `ProofPacketV0` |
+| `ProofReviewStore`, `InMemoryProofReviewStore` | Replaceable review persistence boundary (PR3, in-memory only) |
+| `ProofReviewService` | Submit packet for review and lookup stored records by `sessionId` / optional ids |
 | `resolvePopsVersionBundle`, `bundleToJudgmentVersionFields` | Judgment version metadata for `toJudgment()` |
 
-## Out of scope (PR2A)
+## Out of scope (PR2A / PR3)
 
 - HTTP routes, DB, Supabase
 - Wallet, settlement, trust mutation
 - Privacy receipts, replay service
-- ProofPacketV0 adapter
+- ProofPacketV0 adapter (PR2B)
+- Durable review persistence (future DB/Supabase adapter behind `ProofReviewStore`)
 
 ## Note on `PopsRewardDecision`
 
