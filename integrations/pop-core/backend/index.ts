@@ -28,3 +28,15 @@ export type {
   PopsVersionResolverInput,
   PopsJudgmentVersionFields
 } from "./decisions/versioning/pops-version.types.js";
+
+export * from "./types/proof-packet-v0.types.js";
+
+export {
+  proofPacketV0ToPopsSignalBatch,
+  proofPacketV0ToDecisionInput
+} from "./adapters/proof-packet-v0-to-pops.js";
+export {
+  popsDecisionToProofReview,
+  popsRewardEligibilityToProofReviewStatus,
+  proofReviewStatusToPopsRewardEligibility
+} from "./adapters/proof-review-status-map.js";

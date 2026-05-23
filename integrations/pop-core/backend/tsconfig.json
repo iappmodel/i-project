@@ -7,8 +7,15 @@
     "noEmit": true,
     "skipLibCheck": true,
     "rootDir": ".",
-    "types": ["node"]
+    "types": [
+      "node"
+    ],
+    "resolveJsonModule": true
   },
-  "include": ["**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
