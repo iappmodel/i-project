@@ -1,8 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterEach, describe, expect, it } from "vitest";
 import {
   ProofReviewNonPendingSubmissionError,
   ProofReviewService
 } from "../../review/proof-review-service.js";
+import { JsonFileProofReviewStore } from "../../review/persistence/json-file-proof-review-store.js";
 import { InMemoryProofReviewStore } from "../../review/proof-review-store.js";
 import { PROOF_REVIEW_LIFECYCLE_EVENT } from "../../review/proof-review-lifecycle.types.js";
 import { PopsDecisionService } from "../../decisions/pops-decision.service.js";
@@ -16,9 +20,25 @@ import { pp000001Packet } from "../fixtures/pp-000001-packet.js";
 
 describe("ProofReviewService", () => {
   const submittedAt = "2026-05-23T12:00:00.000Z";
+  const tempDirs: string[] = [];
+
+  afterEach(() => {
+    while (tempDirs.length > 0) {
+      const dir = tempDirs.pop();
+      if (dir) {
+        rmSync(dir, { recursive: true, force: true });
+      }
+    }
+  });
 
   function createService(): ProofReviewService {
     return new ProofReviewService(new InMemoryProofReviewStore());
+  }
+
+  function createTempDir(): string {
+    const dir = mkdtempSync(join(tmpdir(), "proof-review-service-"));
+    tempDirs.push(dir);
+    return dir;
   }
 
   it("submits PP-000001 and stores pending original with approved projection", () => {
@@ -124,6 +144,25 @@ describe("ProofReviewService", () => {
     expect(() => service.submitProofPacketForReview(packet)).toThrow(
       ProofReviewNonPendingSubmissionError
     );
+  });
+
+  it("persists PP-000001 through JsonFileProofReviewStore across service restart", () => {
+    const baseDir = createTempDir();
+    const service = new ProofReviewService(new JsonFileProofReviewStore({ baseDir }));
+
+    const record = service.submitProofPacketForReview(pp000001Packet, {
+      artifactId: "PP-000001",
+      packetId: "pkt-test-001",
+      submittedAt
+    });
+
+    const reloadedService = new ProofReviewService(new JsonFileProofReviewStore({ baseDir }));
+    const reloaded = reloadedService.getReviewBySessionId(pp000001Packet.sessionId);
+
+    expect(reloaded).toEqual(record);
+    expect(reloaded?.lifecycleEvents).toHaveLength(1);
+    expect(reloadedService.getReviewByArtifactId("PP-000001")).toEqual(record);
+    expect(reloadedService.getReviewByPacketId("pkt-test-001")).toEqual(record);
   });
 
   it("records AUTHORITY_REVIEW_DEFERRED when authority eligibility is ELIGIBLE_PENDING", () => {

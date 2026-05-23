@@ -26,9 +26,16 @@ ProofPacketV0 review state machine (PR3A):
 pending → lifecycle event → ProofReviewStateMachine.transition → terminal / escalated / deferred pending
 ```
 
-ProofPacketV0 ingest and batch mapping are in PR2B adapters. Review projection composes adapters + authority services. PR3 adds an in-memory, replaceable store boundary (`ProofReviewStore`) with `sessionId` as the canonical unique identity. PR3A adds lifecycle events and transition validation before records are saved.
+ProofPacketV0 durable review persistence (PR4):
+
+```
+ProofReviewRecord → JsonFileProofReviewStore → records/{sessionId}.json + _indexes.json
+```
+
+ProofPacketV0 ingest and batch mapping are in PR2B adapters. Review projection composes adapters + authority services. PR3 adds a replaceable store boundary (`ProofReviewStore`) with `sessionId` as the canonical unique identity. PR3A adds lifecycle events and transition validation before records are saved. PR4 adds a zero-dependency JSON file adapter with atomic writes.
 
 See [`../docs/proof-review-state-machine.md`](../docs/proof-review-state-machine.md) for the canonical state machine.
+See [`../docs/proof-review-persistence-v1.md`](../docs/proof-review-persistence-v1.md) for on-disk layout and future Postgres mapping.
 
 ## Public API
 
@@ -39,18 +46,37 @@ See [`../docs/proof-review-state-machine.md`](../docs/proof-review-state-machine
 | `PopsScoringService` | Batch-weighted confidence + fraud scoring |
 | `PopsDecisionService` | Threshold-based eligibility decisions |
 | `projectProofPacketReview` | Authority-side review projection for `ProofPacketV0` |
-| `ProofReviewStore`, `InMemoryProofReviewStore` | Replaceable review persistence boundary (PR3, in-memory only) |
+| `ProofReviewStore`, `InMemoryProofReviewStore` | Replaceable review persistence boundary (PR3) |
+| `JsonFileProofReviewStore` | Durable JSON file persistence adapter (PR4) |
+| `toStoredRecord`, `fromStoredRecord` | Versioned record serialization for disk/DB (PR4) |
 | `ProofReviewService` | Submit packet for review and lookup stored records by `sessionId` / optional ids |
 | `ProofReviewStateMachine`, lifecycle events | Canonical review transitions and settlement-eligibility gates (PR3A) |
 | `resolvePopsVersionBundle`, `bundleToJudgmentVersionFields` | Judgment version metadata for `toJudgment()` |
 
-## Out of scope (PR2A / PR3 / PR3A)
+### PR4 durable store usage
 
-- HTTP routes, DB, Supabase
+```typescript
+import {
+  JsonFileProofReviewStore,
+  ProofReviewService
+} from "@pop-core/backend";
+
+const store = new JsonFileProofReviewStore({ baseDir: "./data/proof-reviews" });
+const service = new ProofReviewService(store);
+
+const record = service.submitProofPacketForReview(packet, {
+  artifactId: "PP-000001",
+  submittedAt: new Date().toISOString()
+});
+```
+
+## Out of scope (PR2A / PR3 / PR3A / PR4)
+
+- HTTP routes, Supabase client, Postgres migrations
 - Wallet, settlement, trust mutation
 - Privacy receipts, replay service
 - ProofPacketV0 adapter (PR2B)
-- Durable review persistence (PR4+)
+- Async review store interface
 - Manual review resolution wiring (PR3A defines events only)
 
 ## Note on `PopsRewardDecision`

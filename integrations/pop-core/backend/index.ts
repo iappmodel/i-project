@@ -56,6 +56,21 @@ export {
 } from "./review/proof-review-store.js";
 
 export {
+  JsonFileProofReviewStore,
+  ProofReviewInvalidSessionIdError,
+  ProofReviewStoreReadError,
+  assertFilesystemSafeSessionId,
+  type JsonFileProofReviewStoreOptions
+} from "./review/persistence/json-file-proof-review-store.js";
+export {
+  PROOF_REVIEW_RECORD_STORAGE_VERSION,
+  ProofReviewRecordStorageError,
+  fromStoredRecord,
+  toStoredRecord,
+  type ProofReviewStoredRecordV1
+} from "./review/persistence/proof-review-record-serializer.js";
+
+export {
   ProofReviewService,
   ProofReviewNonPendingSubmissionError,
   ProofReviewProjectionMismatchError,
