@@ -20,7 +20,15 @@ ProofPacketV0 review persistence boundary (PR3):
 ProofPacketV0 → ProofReviewService.submitProofPacketForReview → ProofReviewRecord
 ```
 
-ProofPacketV0 ingest and batch mapping are in PR2B adapters. Review projection composes adapters + authority services. PR3 adds an in-memory, replaceable store boundary (`ProofReviewStore`) with `sessionId` as the canonical unique identity.
+ProofPacketV0 review state machine (PR3A):
+
+```
+pending → lifecycle event → ProofReviewStateMachine.transition → terminal / escalated / deferred pending
+```
+
+ProofPacketV0 ingest and batch mapping are in PR2B adapters. Review projection composes adapters + authority services. PR3 adds an in-memory, replaceable store boundary (`ProofReviewStore`) with `sessionId` as the canonical unique identity. PR3A adds lifecycle events and transition validation before records are saved.
+
+See [`../docs/proof-review-state-machine.md`](../docs/proof-review-state-machine.md) for the canonical state machine.
 
 ## Public API
 
@@ -33,15 +41,17 @@ ProofPacketV0 ingest and batch mapping are in PR2B adapters. Review projection c
 | `projectProofPacketReview` | Authority-side review projection for `ProofPacketV0` |
 | `ProofReviewStore`, `InMemoryProofReviewStore` | Replaceable review persistence boundary (PR3, in-memory only) |
 | `ProofReviewService` | Submit packet for review and lookup stored records by `sessionId` / optional ids |
+| `ProofReviewStateMachine`, lifecycle events | Canonical review transitions and settlement-eligibility gates (PR3A) |
 | `resolvePopsVersionBundle`, `bundleToJudgmentVersionFields` | Judgment version metadata for `toJudgment()` |
 
-## Out of scope (PR2A / PR3)
+## Out of scope (PR2A / PR3 / PR3A)
 
 - HTTP routes, DB, Supabase
 - Wallet, settlement, trust mutation
 - Privacy receipts, replay service
 - ProofPacketV0 adapter (PR2B)
-- Durable review persistence (future DB/Supabase adapter behind `ProofReviewStore`)
+- Durable review persistence (PR4+)
+- Manual review resolution wiring (PR3A defines events only)
 
 ## Note on `PopsRewardDecision`
 

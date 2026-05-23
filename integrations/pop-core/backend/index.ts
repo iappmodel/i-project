@@ -37,6 +37,7 @@ export {
 } from "./adapters/proof-packet-v0-to-pops.js";
 export {
   popsDecisionToProofReview,
+  eligibilityToLifecycleEventType,
   popsRewardEligibilityToProofReviewStatus,
   proofReviewStatusToPopsRewardEligibility
 } from "./adapters/proof-review-status-map.js";
@@ -56,5 +57,23 @@ export {
 
 export {
   ProofReviewService,
+  ProofReviewNonPendingSubmissionError,
+  ProofReviewProjectionMismatchError,
   type ProofReviewSubmitOptions
 } from "./review/proof-review-service.js";
+
+export { lifecycleEventFromDecision } from "./review/proof-review-lifecycle.js";
+export {
+  PROOF_REVIEW_LIFECYCLE_EVENT,
+  type ProofReviewLifecycleEvent,
+  type ProofReviewLifecycleEventType,
+  type AuthorityReviewCompletedEvent,
+  type AuthorityReviewDeferredEvent,
+  type ManualReviewCompletedEvent,
+  type PacketEmittedEvent
+} from "./review/proof-review-lifecycle.types.js";
+export {
+  ProofReviewInvalidTransitionError,
+  ProofReviewStateMachine,
+  type ProofReviewTransitionResult
+} from "./review/proof-review-state-machine.js";

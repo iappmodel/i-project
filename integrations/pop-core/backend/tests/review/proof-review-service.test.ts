@@ -1,7 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { ProofReviewService } from "../../review/proof-review-service.js";
+import {
+  ProofReviewNonPendingSubmissionError,
+  ProofReviewService
+} from "../../review/proof-review-service.js";
 import { InMemoryProofReviewStore } from "../../review/proof-review-store.js";
-import { POPS_REWARD_ELIGIBILITY } from "../../types/pops-decisions.types.js";
+import { PROOF_REVIEW_LIFECYCLE_EVENT } from "../../review/proof-review-lifecycle.types.js";
+import { PopsDecisionService } from "../../decisions/pops-decision.service.js";
+import {
+  POPS_REWARD_ELIGIBILITY,
+  type PopsDecisionInput,
+  type PopsRewardDecision
+} from "../../types/pops-decisions.types.js";
+import { POPS_PROOF_LEVEL, POPS_SESSION_STATE } from "../../types/pops.types.js";
 import { pp000001Packet } from "../fixtures/pp-000001-packet.js";
 
 describe("ProofReviewService", () => {
@@ -33,6 +43,20 @@ describe("ProofReviewService", () => {
     expect(record.projectedPacket.review).toEqual(record.review);
 
     expect(inputPacket.review.status).toBe("pending");
+  });
+
+  it("records lifecycleEvents with AUTHORITY_REVIEW_COMPLETED for PP-000001", () => {
+    const service = createService();
+
+    const record = service.submitProofPacketForReview(pp000001Packet, { submittedAt });
+
+    expect(record.lifecycleEvents).toHaveLength(1);
+    expect(record.lifecycleEvents[0]).toMatchObject({
+      type: PROOF_REVIEW_LIFECYCLE_EVENT.AUTHORITY_REVIEW_COMPLETED,
+      sessionId: pp000001Packet.sessionId,
+      targetStatus: "approved",
+      rewardEligibility: POPS_REWARD_ELIGIBILITY.ELIGIBLE_FULL
+    });
   });
 
   it("stores identity fields and full projection artifacts for PP-000001", () => {
@@ -86,5 +110,56 @@ describe("ProofReviewService", () => {
     expect(service.getReviewBySessionId("missing-session")).toBeNull();
     expect(service.getReviewByArtifactId("missing-artifact")).toBeNull();
     expect(service.getReviewByPacketId("missing-packet")).toBeNull();
+  });
+
+  it("rejects submission when original review.status is not pending", () => {
+    const service = createService();
+    const packet = structuredClone(pp000001Packet);
+    packet.review = {
+      ...packet.review,
+      status: "approved",
+      reviewedAt: "2026-05-20T18:08:42.000Z"
+    };
+
+    expect(() => service.submitProofPacketForReview(packet)).toThrow(
+      ProofReviewNonPendingSubmissionError
+    );
+  });
+
+  it("records AUTHORITY_REVIEW_DEFERRED when authority eligibility is ELIGIBLE_PENDING", () => {
+    const deferredDecision: PopsRewardDecision = {
+      id: "pops_reward_decision_deferred",
+      sessionId: pp000001Packet.sessionId,
+      userId: pp000001Packet.userId ?? "local-user",
+      proofLevel: POPS_PROOF_LEVEL.LEVEL_2_ATTENTION,
+      sessionState: POPS_SESSION_STATE.COMPLETED,
+      rewardEligibility: POPS_REWARD_ELIGIBILITY.ELIGIBLE_PENDING,
+      trustImpact: "NONE",
+      recommendedAction: "CONTINUE_TRACKING",
+      reasonCodes: ["confidence_pending"],
+      createdAt: "2026-05-23T12:00:01.000Z"
+    };
+
+    const decisionService = {
+      evaluate(_input: PopsDecisionInput): PopsRewardDecision {
+        return deferredDecision;
+      },
+      toJudgment: PopsDecisionService.prototype.toJudgment
+    };
+
+    const service = new ProofReviewService(new InMemoryProofReviewStore());
+    const record = service.submitProofPacketForReview(pp000001Packet, {
+      submittedAt,
+      decisionService
+    });
+
+    expect(record.status).toBe("pending");
+    expect(record.review.status).toBe("pending");
+    expect(record.reviewedAt).toBe("2026-05-23T12:00:01.000Z");
+    expect(record.lifecycleEvents).toHaveLength(1);
+    expect(record.lifecycleEvents[0]).toMatchObject({
+      type: PROOF_REVIEW_LIFECYCLE_EVENT.AUTHORITY_REVIEW_DEFERRED,
+      rewardEligibility: POPS_REWARD_ELIGIBILITY.ELIGIBLE_PENDING
+    });
   });
 });

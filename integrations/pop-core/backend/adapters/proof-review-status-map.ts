@@ -1,9 +1,23 @@
 import type { ProofReviewResult, ProofReviewStatus } from "../types/proof-packet-v0.types.js";
 import {
+  PROOF_REVIEW_LIFECYCLE_EVENT,
+  type ProofReviewLifecycleEventType
+} from "../review/proof-review-lifecycle.types.js";
+import {
   POPS_REWARD_ELIGIBILITY,
   type PopsRewardDecision,
   type PopsRewardEligibility
 } from "../types/pops-decisions.types.js";
+
+export function eligibilityToLifecycleEventType(
+  eligibility: PopsRewardEligibility
+): ProofReviewLifecycleEventType {
+  if (eligibility === POPS_REWARD_ELIGIBILITY.ELIGIBLE_PENDING) {
+    return PROOF_REVIEW_LIFECYCLE_EVENT.AUTHORITY_REVIEW_DEFERRED;
+  }
+
+  return PROOF_REVIEW_LIFECYCLE_EVENT.AUTHORITY_REVIEW_COMPLETED;
+}
 
 export function popsRewardEligibilityToProofReviewStatus(
   eligibility: PopsRewardEligibility

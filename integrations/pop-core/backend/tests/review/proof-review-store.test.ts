@@ -4,11 +4,13 @@ import {
   ProofReviewConflictError,
   type ProofReviewRecord
 } from "../../review/proof-review-store.js";
+import { lifecycleEventFromDecision } from "../../review/proof-review-lifecycle.js";
 import { pp000001Packet } from "../fixtures/pp-000001-packet.js";
 import { projectProofPacketReview } from "../../review/proof-review-projector.js";
 
 function buildRecord(overrides: Partial<ProofReviewRecord> = {}): ProofReviewRecord {
   const projection = projectProofPacketReview(pp000001Packet);
+  const lifecycleEvents = overrides.lifecycleEvents ?? [lifecycleEventFromDecision(projection.decision)];
 
   return {
     sessionId: pp000001Packet.sessionId,
@@ -27,6 +29,7 @@ function buildRecord(overrides: Partial<ProofReviewRecord> = {}): ProofReviewRec
     scoring: projection.scoring,
     decision: projection.decision,
     review: projection.review,
+    lifecycleEvents,
     ...overrides
   };
 }

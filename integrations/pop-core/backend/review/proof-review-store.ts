@@ -8,6 +8,7 @@ import type {
   PopsScoringResult
 } from "../types/pops-decisions.types.js";
 import type { PopsSignalBatch } from "../types/pops.types.js";
+import type { ProofReviewLifecycleEvent } from "./proof-review-lifecycle.types.js";
 
 export interface ProofReviewRecord {
   sessionId: string;
@@ -26,6 +27,7 @@ export interface ProofReviewRecord {
   scoring: PopsScoringResult;
   decision: PopsRewardDecision;
   review: ProofReviewResult;
+  lifecycleEvents: ProofReviewLifecycleEvent[];
 }
 
 export interface ProofReviewStore {
