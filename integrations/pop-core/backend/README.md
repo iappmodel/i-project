@@ -8,7 +8,13 @@ Standalone TypeScript package for the P.O.P.S authority stack promoted in PR2A.
 PopsSignalBatch → PopsScoringService → PopsDecisionService → PopsJudgment
 ```
 
-ProofPacketV0 ingest and batch mapping are **deferred to PR2B**. This package accepts `PopsSignalBatch` only.
+ProofPacketV0 review projection (PR2C):
+
+```
+ProofPacketV0 → projectProofPacketReview → updated ProofPacketV0
+```
+
+ProofPacketV0 ingest and batch mapping are in PR2B adapters. Review projection composes adapters + authority services without persistence.
 
 ## Public API
 
@@ -18,6 +24,7 @@ ProofPacketV0 ingest and batch mapping are **deferred to PR2B**. This package ac
 | `POPS_PROOF_THRESHOLDS`, `POPS_DEFAULT_SCORING_WEIGHTS` | Scoring/decision constants |
 | `PopsScoringService` | Batch-weighted confidence + fraud scoring |
 | `PopsDecisionService` | Threshold-based eligibility decisions |
+| `projectProofPacketReview` | Authority-side review projection for `ProofPacketV0` |
 | `resolvePopsVersionBundle`, `bundleToJudgmentVersionFields` | Judgment version metadata for `toJudgment()` |
 
 ## Out of scope (PR2A)

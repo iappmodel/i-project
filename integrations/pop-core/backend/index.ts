@@ -40,3 +40,9 @@ export {
   popsRewardEligibilityToProofReviewStatus,
   proofReviewStatusToPopsRewardEligibility
 } from "./adapters/proof-review-status-map.js";
+
+export {
+  projectProofPacketReview,
+  type ProofReviewProjectorOptions,
+  type ProofReviewProjectionResult
+} from "./review/proof-review-projector.js";
