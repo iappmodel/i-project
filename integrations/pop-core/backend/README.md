@@ -38,11 +38,19 @@ POP pending hold boundary (PR5):
 ProofReviewRecord → createPendingHoldFromReview → PendingHoldRecord (in-memory)
 ```
 
-ProofPacketV0 ingest and batch mapping are in PR2B adapters. Review projection composes adapters + authority services. PR3 adds a replaceable store boundary (`ProofReviewStore`) with `sessionId` as the canonical unique identity. PR3A adds lifecycle events and transition validation before records are saved. PR4 adds a zero-dependency JSON file adapter with atomic writes. PR5 adds settlement-eligibility gating and in-memory pending hold creation without money movement.
+POP pending hold persistence (PR6B):
+
+```
+PendingHoldRecord → JsonFilePendingHoldStore → records/{sessionId}.json
+```
+
+ProofPacketV0 ingest and batch mapping are in PR2B adapters. Review projection composes adapters + authority services. PR3 adds a replaceable store boundary (`ProofReviewStore`) with `sessionId` as the canonical unique identity. PR3A adds lifecycle events and transition validation before records are saved. PR4 adds a zero-dependency JSON file adapter with atomic writes. PR5 adds settlement-eligibility gating and in-memory pending hold creation without money movement. PR6B adds durable JSON-file persistence for pending holds with PR6A amount snapshots.
 
 See [`../docs/proof-review-state-machine.md`](../docs/proof-review-state-machine.md) for the canonical state machine.
 See [`../docs/proof-review-persistence-v1.md`](../docs/proof-review-persistence-v1.md) for on-disk layout and future Postgres mapping.
 See [`../docs/pending-hold-v1.md`](../docs/pending-hold-v1.md) for pending hold contract (PR5).
+See [`../docs/pending-hold-persistence-v1.md`](../docs/pending-hold-persistence-v1.md) for hold on-disk layout (PR6B).
+See [`../docs/settlement-amount-v1.md`](../docs/settlement-amount-v1.md) for amount policy (PR6A).
 
 ## Public API
 
@@ -59,6 +67,9 @@ See [`../docs/pending-hold-v1.md`](../docs/pending-hold-v1.md) for pending hold 
 | `ProofReviewService` | Submit packet for review and lookup stored records by `sessionId` / optional ids |
 | `ProofReviewStateMachine`, lifecycle events | Canonical review transitions and settlement-eligibility gates (PR3A) |
 | `createPendingHoldFromReview`, `PendingHoldStore` | Settlement-eligible review → pending hold record (PR5) |
+| `JsonFilePendingHoldStore` | Durable JSON file persistence adapter for pending holds (PR6B) |
+| `toStoredPendingHoldRecord`, `fromStoredPendingHoldRecord` | Versioned hold serialization for disk/DB (PR6B) |
+| `computeSettlementAmount`, `SettlementAmountBreakdown` | PR6A settlement amount policy |
 | `resolvePopsVersionBundle`, `bundleToJudgmentVersionFields` | Judgment version metadata for `toJudgment()` |
 
 ### PR4 durable store usage
@@ -95,11 +106,29 @@ const result = createPendingHoldFromReview(record, { store: holdStore });
 // result.outcome: "created" | "existing" | "skipped"
 ```
 
-## Out of scope (PR2A / PR3 / PR3A / PR4 / PR5)
+### PR6B durable hold store usage
+
+```typescript
+import {
+  JsonFilePendingHoldStore,
+  ProofReviewService,
+  createPendingHoldFromReview,
+  InMemoryProofReviewStore
+} from "@pop-core/backend";
+
+const reviewService = new ProofReviewService(new InMemoryProofReviewStore());
+const holdStore = new JsonFilePendingHoldStore({ baseDir: "./data/pending-holds" });
+
+const record = reviewService.submitProofPacketForReview(packet);
+const result = createPendingHoldFromReview(record, { store: holdStore });
+// result.hold persists to records/{sessionId}.json
+```
+
+## Out of scope (PR2A / PR3 / PR3A / PR4 / PR5 / PR6B)
 
 - HTTP routes, Supabase client, Postgres migrations
 - Wallet payout, available balance mutation, ledger writes, trust mutation
-- Hold release, amount policy (PR6+), durable hold persistence
+- Hold release, release lifecycle persistence
 - Privacy receipts, replay service
 - ProofPacketV0 adapter (PR2B)
 - Async review store interface

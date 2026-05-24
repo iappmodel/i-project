@@ -111,6 +111,21 @@ export {
 } from "./settlement/pending-hold-store.js";
 
 export {
+  JsonFilePendingHoldStore,
+  PendingHoldInvalidSessionIdError,
+  PendingHoldStoreReadError,
+  assertFilesystemSafeSessionId as assertFilesystemSafePendingHoldSessionId,
+  type JsonFilePendingHoldStoreOptions
+} from "./settlement/persistence/json-file-pending-hold-store.js";
+export {
+  PENDING_HOLD_RECORD_STORAGE_VERSION,
+  PendingHoldRecordStorageError,
+  fromStoredRecord as fromStoredPendingHoldRecord,
+  toStoredRecord as toStoredPendingHoldRecord,
+  type PendingHoldStoredRecordV1
+} from "./settlement/persistence/pending-hold-record-serializer.js";
+
+export {
   PendingHoldService,
   createPendingHoldFromReview,
   type CreatePendingHoldOptions
