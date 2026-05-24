@@ -709,7 +709,11 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
   }
 
   void _sealProofPacketDebug() {
-    if (!_proofBridge.isActive) return;
+    debugPrint('PROOF_SEAL_TAP');
+    if (!_proofBridge.isActive) {
+      debugPrint('PROOF_SEAL_FAILED: no active proof session');
+      return;
+    }
     try {
       final event = _proofBridge.sealAndEmit(
         artifactId:
@@ -2310,6 +2314,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
                           zoneOffsets: _zoneOffsets,
                           zoneOpacity: _zoneOpacity,
                           compact: true,
+                          showSelectionLabel: false,
                           influenceListenable: _influenceNotifier,
                         );
                       },
@@ -2326,7 +2331,9 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
               child: SafeArea(
                 child: Material(
                   color: Colors.black45,
+                  elevation: 4,
                   borderRadius: BorderRadius.circular(8),
+                  clipBehavior: Clip.antiAlias,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -2416,8 +2423,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
                       ),
                       const Divider(height: 8, color: Colors.white24),
                       TextButton(
-                        onPressed:
-                            _proofBridge.isActive ? _sealProofPacketDebug : null,
+                        onPressed: _sealProofPacketDebug,
                         child: const Text(
                           'Seal Proof',
                           style: TextStyle(color: Colors.white70, fontSize: 13),
