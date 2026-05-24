@@ -1,6 +1,10 @@
 import type { ProofReviewRecord } from "../review/proof-review-store.js";
 import { ProofReviewStateMachine } from "../review/proof-review-state-machine.js";
 import {
+  createDefaultOfferSettlementTermsProvider,
+  type OfferSettlementTermsProvider
+} from "./offer-settlement-terms.js";
+import {
   toReviewAudit,
   type CreatePendingHoldResult,
   type PendingHoldRecord
@@ -9,10 +13,12 @@ import {
   InMemoryPendingHoldStore,
   type PendingHoldStore
 } from "./pending-hold-store.js";
+import { computeSettlementAmount } from "./settlement-amount-policy.js";
 
 export interface CreatePendingHoldOptions {
   createdAt?: string;
   store?: PendingHoldStore;
+  offerTermsProvider?: OfferSettlementTermsProvider;
 }
 
 export function createPendingHoldFromReview(
@@ -46,6 +52,26 @@ export function createPendingHoldFromReview(
     };
   }
 
+  const offerTermsProvider =
+    options?.offerTermsProvider ?? createDefaultOfferSettlementTermsProvider();
+  const terms = offerTermsProvider.getByOfferId(record.offerId);
+  if (!terms) {
+    return {
+      outcome: "skipped",
+      skipReason: "offer_settlement_terms_missing",
+      sessionId: record.sessionId
+    };
+  }
+
+  const amountResult = computeSettlementAmount({ record, terms });
+  if (amountResult.computedAmountMinor < 1) {
+    return {
+      outcome: "skipped",
+      skipReason: "settlement_amount_zero",
+      sessionId: record.sessionId
+    };
+  }
+
   const hold: PendingHoldRecord = {
     sessionId: record.sessionId,
     userId: record.userId,
@@ -54,7 +80,8 @@ export function createPendingHoldFromReview(
     offerId: record.offerId,
     packetId: record.packetId ?? null,
     artifactId: record.artifactId ?? null,
-    amount: null,
+    amount: amountResult.computedAmountMinor,
+    amountBreakdown: amountResult.breakdown,
     status: "pending",
     releaseStatus: "not_released",
     createdAt: options?.createdAt ?? new Date().toISOString(),

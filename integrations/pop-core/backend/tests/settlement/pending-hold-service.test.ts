@@ -2,13 +2,35 @@ import { describe, expect, it } from "vitest";
 import { ProofReviewService } from "../../review/proof-review-service.js";
 import { InMemoryProofReviewStore } from "../../review/proof-review-store.js";
 import {
+  DEFAULT_FIXTURE_BASE_REWARD_MINOR,
+  DEFAULT_FIXTURE_OFFER_ID,
+  DEFAULT_FIXTURE_OFFER_SETTLEMENT_TERMS,
+  InMemoryOfferSettlementTermsProvider
+} from "../../settlement/offer-settlement-terms.js";
+import {
   createPendingHoldFromReview,
   PendingHoldService
 } from "../../settlement/pending-hold-service.js";
 import { InMemoryPendingHoldStore } from "../../settlement/pending-hold-store.js";
+import {
+  SETTLEMENT_AMOUNT_POLICY_V1,
+  SETTLEMENT_APPROVED_MULTIPLIER_V1,
+  SETTLEMENT_CURRENCY_V1,
+  SETTLEMENT_PARTIAL_MULTIPLIER_V1
+} from "../../settlement/settlement-amount.constants.js";
 import { pp000001Packet } from "../fixtures/pp-000001-packet.js";
 import { buildProofReviewRecord } from "../review/proof-review-store.contract.js";
 import { buildPartialProofReviewRecord } from "./pending-hold-store.contract.js";
+
+const approvedAmountBreakdown = {
+  policyVersion: SETTLEMENT_AMOUNT_POLICY_V1,
+  currency: SETTLEMENT_CURRENCY_V1,
+  offerId: DEFAULT_FIXTURE_OFFER_ID,
+  baseRewardMinor: DEFAULT_FIXTURE_BASE_REWARD_MINOR,
+  statusMultiplier: SETTLEMENT_APPROVED_MULTIPLIER_V1,
+  computedAmountMinor: 100,
+  presenceUnits: null
+};
 
 describe("createPendingHoldFromReview", () => {
   const createdAt = "2026-05-23T12:01:00.000Z";
@@ -33,7 +55,8 @@ describe("createPendingHoldFromReview", () => {
         offerId: record.offerId,
         packetId: "pkt-test-001",
         artifactId: "PP-000001",
-        amount: null,
+        amount: 100,
+        amountBreakdown: approvedAmountBreakdown,
         status: "pending",
         releaseStatus: "not_released",
         createdAt,
@@ -59,6 +82,16 @@ describe("createPendingHoldFromReview", () => {
     expect(result.hold?.status).toBe("pending");
     expect(result.hold?.releaseStatus).toBe("not_released");
     expect(result.hold?.reviewAudit.reviewStatus).toBe("partial");
+    expect(result.hold?.amount).toBe(50);
+    expect(result.hold?.amountBreakdown).toEqual({
+      policyVersion: SETTLEMENT_AMOUNT_POLICY_V1,
+      currency: SETTLEMENT_CURRENCY_V1,
+      offerId: DEFAULT_FIXTURE_OFFER_ID,
+      baseRewardMinor: DEFAULT_FIXTURE_BASE_REWARD_MINOR,
+      statusMultiplier: SETTLEMENT_PARTIAL_MULTIPLIER_V1,
+      computedAmountMinor: 50,
+      presenceUnits: null
+    });
   });
 
   it.each(["pending", "rejected", "escalated"] as const)(
@@ -101,7 +134,7 @@ describe("createPendingHoldFromReview", () => {
     expect(store.getBySessionId(record.sessionId)).toEqual(first.hold);
   });
 
-  it("does not populate settlement amount on hold or review", () => {
+  it("populates hold amount without writing review.settlementAmount", () => {
     const store = new InMemoryPendingHoldStore();
     const record = buildProofReviewRecord();
 
@@ -109,8 +142,50 @@ describe("createPendingHoldFromReview", () => {
 
     const result = createPendingHoldFromReview(record, { store, createdAt });
 
-    expect(result.hold?.amount).toBeNull();
+    expect(result.hold?.amount).toBe(100);
+    expect(result.hold?.amountBreakdown).toEqual(approvedAmountBreakdown);
     expect(record.review.settlementAmount).toBeNull();
+  });
+
+  it("skips when offer settlement terms are missing", () => {
+    const store = new InMemoryPendingHoldStore();
+    const record = buildProofReviewRecord({ offerId: "unknown-offer" });
+    const offerTermsProvider = new InMemoryOfferSettlementTermsProvider({});
+
+    const result = createPendingHoldFromReview(record, {
+      store,
+      offerTermsProvider
+    });
+
+    expect(result).toEqual({
+      outcome: "skipped",
+      skipReason: "offer_settlement_terms_missing",
+      sessionId: record.sessionId
+    });
+    expect(store.getBySessionId(record.sessionId)).toBeNull();
+  });
+
+  it("skips when computed settlement amount is zero", () => {
+    const store = new InMemoryPendingHoldStore();
+    const record = buildPartialProofReviewRecord();
+    const offerTermsProvider = new InMemoryOfferSettlementTermsProvider({
+      [DEFAULT_FIXTURE_OFFER_ID]: {
+        ...DEFAULT_FIXTURE_OFFER_SETTLEMENT_TERMS,
+        baseRewardMinor: 1
+      }
+    });
+
+    const result = createPendingHoldFromReview(record, {
+      store,
+      offerTermsProvider
+    });
+
+    expect(result).toEqual({
+      outcome: "skipped",
+      skipReason: "settlement_amount_zero",
+      sessionId: record.sessionId
+    });
+    expect(store.getBySessionId(record.sessionId)).toBeNull();
   });
 
   it("skips when record.status and record.review.status mismatch", () => {
@@ -171,9 +246,15 @@ describe("ProofReviewService → createPendingHoldFromReview boundary", () => {
       sessionId: pp000001Packet.sessionId,
       status: "pending",
       releaseStatus: "not_released",
-      amount: null,
+      amount: 100,
       artifactId: "PP-000001",
       packetId: "pkt-test-001"
     });
+    expect(result.hold?.amountBreakdown).toMatchObject({
+      policyVersion: SETTLEMENT_AMOUNT_POLICY_V1,
+      computedAmountMinor: 100,
+      presenceUnits: null
+    });
+    expect(record.review.settlementAmount).toBeNull();
   });
 });

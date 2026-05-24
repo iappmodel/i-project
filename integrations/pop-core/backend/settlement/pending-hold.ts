@@ -1,12 +1,15 @@
 import type { ProofReviewStatus } from "../types/proof-packet-v0.types.js";
 import type { ProofReviewRecord } from "../review/proof-review-store.js";
+import type { SettlementAmountBreakdown } from "./settlement-amount.types.js";
 
 export type PendingHoldStatus = "pending";
 export type PendingHoldReleaseStatus = "not_released";
 
 export type PendingHoldSkipReason =
   | "review_not_settlement_eligible"
-  | "review_status_mismatch";
+  | "review_status_mismatch"
+  | "offer_settlement_terms_missing"
+  | "settlement_amount_zero";
 
 export interface PendingHoldReviewAudit {
   sessionId: string;
@@ -26,6 +29,7 @@ export interface PendingHoldRecord {
   packetId?: string | null;
   artifactId?: string | null;
   amount: number | null;
+  amountBreakdown: SettlementAmountBreakdown | null;
   status: PendingHoldStatus;
   releaseStatus: PendingHoldReleaseStatus;
   createdAt: string;

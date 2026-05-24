@@ -1,0 +1,6 @@
+export const SETTLEMENT_AMOUNT_POLICY_V1 = "SETTLEMENT_AMOUNT_POLICY_V1";
+export const SETTLEMENT_APPROVED_MULTIPLIER_V1 = 1.0;
+export const SETTLEMENT_PARTIAL_MULTIPLIER_V1 = 0.5;
+export const SETTLEMENT_CURRENCY_V1 = "ICOIN" as const;
+
+export type SettlementCurrency = typeof SETTLEMENT_CURRENCY_V1;

@@ -2,6 +2,15 @@ import { describe, expect, it } from "vitest";
 import { createPendingHoldFromReview } from "../../settlement/pending-hold-service.js";
 import { toReviewAudit, type PendingHoldRecord } from "../../settlement/pending-hold.js";
 import {
+  DEFAULT_FIXTURE_BASE_REWARD_MINOR,
+  DEFAULT_FIXTURE_OFFER_ID
+} from "../../settlement/offer-settlement-terms.js";
+import {
+  SETTLEMENT_AMOUNT_POLICY_V1,
+  SETTLEMENT_APPROVED_MULTIPLIER_V1,
+  SETTLEMENT_CURRENCY_V1
+} from "../../settlement/settlement-amount.constants.js";
+import {
   PendingHoldConflictError,
   type PendingHoldStore
 } from "../../settlement/pending-hold-store.js";
@@ -12,6 +21,18 @@ export function buildPendingHoldRecord(
 ): PendingHoldRecord {
   const reviewRecord = buildProofReviewRecord();
   const createdAt = overrides.createdAt ?? "2026-05-23T12:01:00.000Z";
+  const amount = overrides.amount ?? 100;
+  const amountBreakdown =
+    overrides.amountBreakdown ??
+    ({
+      policyVersion: SETTLEMENT_AMOUNT_POLICY_V1,
+      currency: SETTLEMENT_CURRENCY_V1,
+      offerId: DEFAULT_FIXTURE_OFFER_ID,
+      baseRewardMinor: DEFAULT_FIXTURE_BASE_REWARD_MINOR,
+      statusMultiplier: SETTLEMENT_APPROVED_MULTIPLIER_V1,
+      computedAmountMinor: amount,
+      presenceUnits: null
+    } as const);
 
   return {
     sessionId: reviewRecord.sessionId,
@@ -21,7 +42,8 @@ export function buildPendingHoldRecord(
     offerId: reviewRecord.offerId,
     packetId: reviewRecord.packetId ?? null,
     artifactId: reviewRecord.artifactId ?? null,
-    amount: null,
+    amount,
+    amountBreakdown,
     status: "pending",
     releaseStatus: "not_released",
     createdAt,

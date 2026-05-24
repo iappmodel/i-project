@@ -115,3 +115,26 @@ export {
   createPendingHoldFromReview,
   type CreatePendingHoldOptions
 } from "./settlement/pending-hold-service.js";
+
+export {
+  SETTLEMENT_AMOUNT_POLICY_V1,
+  SETTLEMENT_APPROVED_MULTIPLIER_V1,
+  SETTLEMENT_PARTIAL_MULTIPLIER_V1,
+  SETTLEMENT_CURRENCY_V1,
+  type SettlementCurrency
+} from "./settlement/settlement-amount.constants.js";
+export type {
+  SettlementAmountBreakdown,
+  SettlementAmountInput,
+  SettlementAmountResult
+} from "./settlement/settlement-amount.types.js";
+export { computeSettlementAmount } from "./settlement/settlement-amount-policy.js";
+export {
+  DEFAULT_FIXTURE_BASE_REWARD_MINOR,
+  DEFAULT_FIXTURE_OFFER_ID,
+  DEFAULT_FIXTURE_OFFER_SETTLEMENT_TERMS,
+  InMemoryOfferSettlementTermsProvider,
+  createDefaultOfferSettlementTermsProvider,
+  type OfferSettlementTerms,
+  type OfferSettlementTermsProvider
+} from "./settlement/offer-settlement-terms.js";
