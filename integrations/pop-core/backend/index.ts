@@ -188,6 +188,30 @@ export {
 } from "./settlement/release-execution-service.js";
 
 export {
+  LEDGER_BOUNDARY_V1,
+  buildLedgerCreditEntryFromReleaseExecution,
+  deriveLedgerEntryId,
+  type BuildLedgerCreditEntryOptions,
+  type LedgerBoundaryVersion,
+  type LedgerEntry,
+  type LedgerEntryDirection,
+  type LedgerEntryStatus,
+  type LedgerEntryType
+} from "./settlement/ledger-entry.js";
+export {
+  InMemoryLedgerEntryStore,
+  LedgerEntryConflictError,
+  type LedgerEntryStore
+} from "./settlement/ledger-entry-store.js";
+export {
+  LedgerEntryService,
+  postLedgerCreditFromReleaseExecution,
+  type PostLedgerCreditFromReleaseExecutionOptions,
+  type PostLedgerCreditFromReleaseExecutionResult,
+  type PostLedgerCreditOutcome
+} from "./settlement/ledger-entry-service.js";
+
+export {
   SETTLEMENT_AMOUNT_POLICY_V1,
   SETTLEMENT_APPROVED_MULTIPLIER_V1,
   SETTLEMENT_PARTIAL_MULTIPLIER_V1,

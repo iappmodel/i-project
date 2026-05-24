@@ -126,6 +126,7 @@ Inject a shared `ReleaseExecutionStore` at the call site for idempotency across 
 
 ## Related docs
 
+- [`ledger-entry-v1.md`](./ledger-entry-v1.md) — PR9 ledger credit boundary (next step after release execution)
 - [`pending-hold-release-state-machine.md`](./pending-hold-release-state-machine.md) — PR7 release lifecycle
 - [`pending-hold-v1.md`](./pending-hold-v1.md) — hold creation (PR5)
 - [`settlement-amount-v1.md`](./settlement-amount-v1.md) — amount policy (PR6A)
