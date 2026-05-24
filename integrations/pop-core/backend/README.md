@@ -78,7 +78,7 @@ Ledger Credit Entry
 Wallet Credit
 ```
 
-ProofPacketV0 ingest and batch mapping are in PR2B adapters. Review projection composes adapters + authority services. PR3 adds a replaceable store boundary (`ProofReviewStore`) with `sessionId` as the canonical unique identity. PR3A adds lifecycle events and transition validation before records are saved. PR4 adds a zero-dependency JSON file adapter with atomic writes. PR5 adds settlement-eligibility gating and in-memory pending hold creation without money movement. PR6B adds durable JSON-file persistence for pending holds with PR6A amount snapshots. PR7 adds the pure release lifecycle state machine and eligibility gates without release execution or store mutation. PR8 adds release execution orchestration with in-memory `ReleaseExecutionRecord` persistence without wallet or ledger mutation. PR9 adds the ledger credit boundary with in-memory `LedgerEntry` persistence without wallet mutation. PR10 adds internal wallet accounting with in-memory `WalletCreditRecord` persistence and derived available balance without payout or balance mutation tables.
+ProofPacketV0 ingest and batch mapping are in PR2B adapters. Review projection composes adapters + authority services. PR3 adds a replaceable store boundary (`ProofReviewStore`) with `sessionId` as the canonical unique identity. PR3A adds lifecycle events and transition validation before records are saved. PR4 adds a zero-dependency JSON file adapter with atomic writes. PR5 adds settlement-eligibility gating and in-memory pending hold creation without money movement. PR6B adds durable JSON-file persistence for pending holds with PR6A amount snapshots. PR7 adds the pure release lifecycle state machine and eligibility gates without release execution or store mutation. PR8 adds release execution orchestration with in-memory `ReleaseExecutionRecord` persistence without wallet or ledger mutation. PR9 adds the ledger credit boundary with in-memory `LedgerEntry` persistence without wallet mutation. PR10 adds internal wallet accounting with in-memory `WalletCreditRecord` persistence and derived available balance without payout or balance mutation tables. PR11 adds end-to-end value-flow orchestration (`runPopValueFlow`) that composes PR3–PR10 into a single golden-path entry point with shared in-memory stores and review recall for idempotent reruns.
 
 See [`../docs/proof-review-state-machine.md`](../docs/proof-review-state-machine.md) for the canonical state machine.
 See [`../docs/proof-review-persistence-v1.md`](../docs/proof-review-persistence-v1.md) for on-disk layout and future Postgres mapping.
@@ -89,6 +89,34 @@ See [`../docs/release-execution-v1.md`](../docs/release-execution-v1.md) for rel
 See [`../docs/ledger-entry-v1.md`](../docs/ledger-entry-v1.md) for ledger credit boundary (PR9).
 See [`../docs/wallet-credit-v1.md`](../docs/wallet-credit-v1.md) for wallet credit boundary (PR10).
 See [`../docs/settlement-amount-v1.md`](../docs/settlement-amount-v1.md) for amount policy (PR6A).
+
+### PR11 end-to-end value flow
+
+```typescript
+import {
+  POP_VALUE_FLOW_V1,
+  createDefaultPopValueFlowStores,
+  runPopValueFlow
+} from "@pop-core/backend";
+
+const stores = createDefaultPopValueFlowStores();
+
+const result = runPopValueFlow(packet, {
+  stores,
+  artifactId: "PP-000001",
+  submittedAt: "2026-05-23T12:00:00.000Z",
+  holdCreatedAt: "2026-05-23T12:01:00.000Z",
+  executedAt: "2026-05-23T12:02:00.000Z",
+  creditedAt: "2026-05-23T12:03:00.000Z"
+});
+
+// result.valueFlowVersion === POP_VALUE_FLOW_V1
+// result.review.review.status === "approved"
+// result.hold.amount === 100
+// result.ledgerEntry.status === "pending_wallet_credit"
+// result.balance.availableMinor === 100
+// result.sourceRef === result.releaseExecution.executionRef === result.walletCredit.sourceRef
+```
 
 ## Public API
 
@@ -115,6 +143,7 @@ See [`../docs/settlement-amount-v1.md`](../docs/settlement-amount-v1.md) for amo
 | `WalletCreditRecord`, `WalletCreditStore`, `WalletCreditService` | Wallet credit artifacts and in-memory store (PR10) |
 | `applyWalletCreditFromLedgerEntry` | Builds and persists wallet credit from ledger entry (PR10) |
 | `createHoldReviewWalletOwnerResolver`, `computeWalletAvailableBalance` | Owner resolution and derived balance read model (PR10) |
+| `runPopValueFlow`, `POP_VALUE_FLOW_V1`, `createDefaultPopValueFlowStores` | End-to-end POP value-flow orchestration (PR11) |
 | `computeSettlementAmount`, `SettlementAmountBreakdown` | PR6A settlement amount policy |
 | `resolvePopsVersionBundle`, `bundleToJudgmentVersionFields` | Judgment version metadata for `toJudgment()` |
 
@@ -287,7 +316,7 @@ const balance = computeWalletAvailableBalance(
 - HTTP routes, Supabase client, Postgres migrations
 - External payout, payment rails, wallet withdrawal
 - Trust mutation
-- Durable wallet, ledger, or release execution persistence (PR11+)
+- Durable wallet, ledger, or release execution persistence (PR12+)
 - Balance mutation tables or stored running totals
 - Wallet debit legs
 - Ledger entry status updates after write

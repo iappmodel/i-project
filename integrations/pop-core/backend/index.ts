@@ -245,6 +245,18 @@ export {
 } from "./settlement/wallet-balance.js";
 
 export {
+  POP_VALUE_FLOW_V1,
+  PopValueFlowSkippedError,
+  createDefaultPopValueFlowStores,
+  runPopValueFlow,
+  type PopValueFlowOptions,
+  type PopValueFlowResult,
+  type PopValueFlowStageOutcomes,
+  type PopValueFlowStores,
+  type PopValueFlowVersion
+} from "./pipeline/pop-value-flow.js";
+
+export {
   SETTLEMENT_AMOUNT_POLICY_V1,
   SETTLEMENT_APPROVED_MULTIPLIER_V1,
   SETTLEMENT_PARTIAL_MULTIPLIER_V1,
