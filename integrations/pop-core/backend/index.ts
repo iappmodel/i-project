@@ -165,6 +165,29 @@ export {
 } from "./settlement/pending-hold-release-state-machine.js";
 
 export {
+  RELEASE_EXECUTION_BOUNDARY_V1,
+  buildReleaseExecutionRecord,
+  deriveReleaseExecutionRef,
+  releaseStateFromExecutionRecord,
+  type BuildReleaseExecutionRecordInput,
+  type ReleaseExecutionBoundaryVersion,
+  type ReleaseExecutionRecord
+} from "./settlement/release-execution.js";
+export {
+  InMemoryReleaseExecutionStore,
+  ReleaseExecutionConflictError,
+  type ReleaseExecutionStore
+} from "./settlement/release-execution-store.js";
+export {
+  ReleaseExecutionService,
+  executePendingHoldRelease,
+  type ExecutePendingHoldReleaseOptions,
+  type ExecutePendingHoldReleaseOutcome,
+  type ExecutePendingHoldReleaseResult,
+  type ReleaseExecutionSkipReason
+} from "./settlement/release-execution-service.js";
+
+export {
   SETTLEMENT_AMOUNT_POLICY_V1,
   SETTLEMENT_APPROVED_MULTIPLIER_V1,
   SETTLEMENT_PARTIAL_MULTIPLIER_V1,

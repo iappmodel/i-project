@@ -50,13 +50,38 @@ POP pending hold release state machine (PR7):
 PendingHoldRecord + release lifecycle event → PendingHoldReleaseStateMachine.transition → PendingHoldReleaseState
 ```
 
-ProofPacketV0 ingest and batch mapping are in PR2B adapters. Review projection composes adapters + authority services. PR3 adds a replaceable store boundary (`ProofReviewStore`) with `sessionId` as the canonical unique identity. PR3A adds lifecycle events and transition validation before records are saved. PR4 adds a zero-dependency JSON file adapter with atomic writes. PR5 adds settlement-eligibility gating and in-memory pending hold creation without money movement. PR6B adds durable JSON-file persistence for pending holds with PR6A amount snapshots. PR7 adds the pure release lifecycle state machine and eligibility gates without release execution or store mutation.
+POP release execution boundary (PR8):
+
+```
+PendingHoldRecord → executePendingHoldRelease → ReleaseExecutionRecord + PendingHoldReleaseState (released)
+```
+
+Settlement pipeline overview:
+
+```
+Proof
+↓
+Review
+↓
+Review Persistence
+↓
+Hold
+↓
+Hold Persistence
+↓
+Release State Machine
+↓
+Release Execution
+```
+
+ProofPacketV0 ingest and batch mapping are in PR2B adapters. Review projection composes adapters + authority services. PR3 adds a replaceable store boundary (`ProofReviewStore`) with `sessionId` as the canonical unique identity. PR3A adds lifecycle events and transition validation before records are saved. PR4 adds a zero-dependency JSON file adapter with atomic writes. PR5 adds settlement-eligibility gating and in-memory pending hold creation without money movement. PR6B adds durable JSON-file persistence for pending holds with PR6A amount snapshots. PR7 adds the pure release lifecycle state machine and eligibility gates without release execution or store mutation. PR8 adds release execution orchestration with in-memory `ReleaseExecutionRecord` persistence without wallet or ledger mutation.
 
 See [`../docs/proof-review-state-machine.md`](../docs/proof-review-state-machine.md) for the canonical state machine.
 See [`../docs/proof-review-persistence-v1.md`](../docs/proof-review-persistence-v1.md) for on-disk layout and future Postgres mapping.
 See [`../docs/pending-hold-v1.md`](../docs/pending-hold-v1.md) for pending hold contract (PR5).
 See [`../docs/pending-hold-persistence-v1.md`](../docs/pending-hold-persistence-v1.md) for hold on-disk layout (PR6B).
 See [`../docs/pending-hold-release-state-machine.md`](../docs/pending-hold-release-state-machine.md) for release lifecycle (PR7).
+See [`../docs/release-execution-v1.md`](../docs/release-execution-v1.md) for release execution boundary (PR8).
 See [`../docs/settlement-amount-v1.md`](../docs/settlement-amount-v1.md) for amount policy (PR6A).
 
 ## Public API
@@ -77,6 +102,8 @@ See [`../docs/settlement-amount-v1.md`](../docs/settlement-amount-v1.md) for amo
 | `JsonFilePendingHoldStore` | Durable JSON file persistence adapter for pending holds (PR6B) |
 | `toStoredPendingHoldRecord`, `fromStoredPendingHoldRecord` | Versioned hold serialization for disk/DB (PR6B) |
 | `PendingHoldReleaseStateMachine`, release lifecycle events | Canonical hold release transitions and eligibility gates (PR7) |
+| `ReleaseExecutionRecord`, `ReleaseExecutionStore`, `ReleaseExecutionService` | Release execution artifacts and in-memory store (PR8) |
+| `executePendingHoldRelease` | Orchestrates approve → complete release lifecycle and persists execution record (PR8) |
 | `computeSettlementAmount`, `SettlementAmountBreakdown` | PR6A settlement amount policy |
 | `resolvePopsVersionBundle`, `bundleToJudgmentVersionFields` | Judgment version metadata for `toJudgment()` |
 
@@ -163,11 +190,35 @@ const released = projectPendingHoldReleaseTransition(
 // released.releaseStatus === "released" — state only; no payout in PR7
 ```
 
-## Out of scope (PR2A / PR3 / PR3A / PR4 / PR5 / PR6B / PR7)
+### PR8 release execution usage
+
+```typescript
+import {
+  createPendingHoldFromReview,
+  executePendingHoldRelease,
+  InMemoryPendingHoldStore,
+  InMemoryReleaseExecutionStore
+} from "@pop-core/backend";
+
+const holdStore = new InMemoryPendingHoldStore();
+const executionStore = new InMemoryReleaseExecutionStore();
+
+const holdResult = createPendingHoldFromReview(reviewRecord, { store: holdStore });
+const releaseResult = executePendingHoldRelease(holdResult.hold!, {
+  store: executionStore,
+  executedAt: new Date().toISOString()
+});
+// releaseResult.outcome: "executed" | "existing" | "skipped"
+// releaseResult.execution?.boundaryVersion === "RELEASE_EXECUTION_BOUNDARY_V1"
+```
+
+## Out of scope (PR2A / PR3 / PR3A / PR4 / PR5 / PR6B / PR7 / PR8)
 
 - HTTP routes, Supabase client, Postgres migrations
-- Wallet payout, available balance mutation, ledger writes, trust mutation
-- Release execution, payout, or store mutation for release lifecycle (PR8+)
+- Wallet mutation, available balance mutation, ledger writes, trust mutation
+- Payout and external payments
+- Durable release execution persistence (PR9+)
+- Hold or release lifecycle persistence mutation
 - Privacy receipts, replay service
 - ProofPacketV0 adapter (PR2B)
 - Async review store interface
