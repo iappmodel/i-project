@@ -212,6 +212,39 @@ export {
 } from "./settlement/ledger-entry-service.js";
 
 export {
+  WALLET_BOUNDARY_V1,
+  buildWalletCreditFromLedgerEntry,
+  deriveWalletCreditId,
+  type BuildWalletCreditFromLedgerEntryOptions,
+  type WalletBoundaryVersion,
+  type WalletCreditRecord,
+  type WalletOwnerResolutionSource
+} from "./settlement/wallet-credit.js";
+export {
+  InMemoryWalletCreditStore,
+  WalletCreditConflictError,
+  type WalletCreditStore
+} from "./settlement/wallet-credit-store.js";
+export {
+  WalletCreditService,
+  WalletOwnerNotFoundError,
+  applyWalletCreditFromLedgerEntry,
+  type ApplyWalletCreditFromLedgerEntryOptions,
+  type ApplyWalletCreditFromLedgerEntryResult,
+  type ApplyWalletCreditOutcome
+} from "./settlement/wallet-credit-service.js";
+export {
+  createHoldReviewWalletOwnerResolver,
+  resolveWalletOwnerRef,
+  type WalletOwnerIdentity,
+  type WalletOwnerResolver
+} from "./settlement/wallet-owner-resolver.js";
+export {
+  computeWalletAvailableBalance,
+  type WalletBalanceSnapshot
+} from "./settlement/wallet-balance.js";
+
+export {
   SETTLEMENT_AMOUNT_POLICY_V1,
   SETTLEMENT_APPROVED_MULTIPLIER_V1,
   SETTLEMENT_PARTIAL_MULTIPLIER_V1,

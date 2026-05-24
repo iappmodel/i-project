@@ -82,6 +82,8 @@ PR10 must resolve wallet owner identity via hold/review chain — `ReleaseExecut
 
 PR10 must **not** mutate ledger entries (append-only). Wallet application writes a separate artifact keyed by `sourceRef`.
 
+See [`wallet-credit-v1.md`](./wallet-credit-v1.md) for the PR10 wallet credit boundary.
+
 ## Usage
 
 ```typescript
