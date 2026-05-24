@@ -23,8 +23,43 @@ ProofReviewStateMachine.isSettlementEligible(record.status)
 | `amount` | computed integer | PR6A amount policy (`SETTLEMENT_AMOUNT_POLICY_V1`) |
 | `amountBreakdown` | replay snapshot | Policy version, multipliers, and audit fields |
 | `status` | `"pending"` | Hold lifecycle starts here |
-| `releaseStatus` | `"not_released"` | Release is PR7+ |
+| `releaseStatus` | `"not_released"` initially | Release lifecycle — see [`pending-hold-release-state-machine.md`](./pending-hold-release-state-machine.md) (PR7) |
 | `reviewAudit` | snapshot | Lightweight link back to review; not full record embed |
+
+## Release lifecycle (PR7)
+
+PR7 defines the canonical release state machine for `releaseStatus`:
+
+| Status | Terminal | Meaning |
+|--------|----------|---------|
+| `not_released` | No | Initial state after hold creation |
+| `release_ready` | No | Pre-release gates passed; awaiting execution (PR8+) |
+| `release_blocked` | No | Policy/risk block; recoverable |
+| `released` | Yes | Release completed (state only in PR7) |
+| `cancelled` | Yes | Hold voided before release |
+
+See [`pending-hold-release-state-machine.md`](./pending-hold-release-state-machine.md) for events, transitions, and eligibility gates.
+
+Pure projection (no store writes):
+
+```typescript
+import {
+  PendingHoldReleaseStateMachine,
+  projectPendingHoldReleaseTransition,
+  releaseApprovedEvent
+} from "@pop-core/backend";
+
+const state = {
+  releaseStatus: PendingHoldReleaseStateMachine.initialReleaseStatus(),
+  releaseLifecycleEvents: []
+};
+
+const ready = projectPendingHoldReleaseTransition(
+  state,
+  hold,
+  releaseApprovedEvent(hold.sessionId)
+);
+```
 
 ## Outcomes
 
@@ -52,7 +87,14 @@ Do **not** confuse this with decision-layer `HELD_FOR_REVIEW` (maps to review `e
 
 ## Store
 
-PR5 provides `PendingHoldStore` with `InMemoryPendingHoldStore` only. `sessionId` is the sole index. No JSON/DB persistence in PR5.
+`PendingHoldStore` with `sessionId` as the sole index:
+
+| Implementation | PR | Notes |
+|----------------|-----|-------|
+| `InMemoryPendingHoldStore` | PR5 | Default in-memory adapter |
+| `JsonFilePendingHoldStore` | PR6B | Durable JSON file adapter |
+
+See [`pending-hold-persistence-v1.md`](./pending-hold-persistence-v1.md) for on-disk layout, write semantics, and amount consistency validation on read.
 
 ## Usage
 
@@ -84,7 +126,7 @@ See [`settlement-amount-v1.md`](./settlement-amount-v1.md) for amount formula an
 - Available balance / ledger / wallet writes
 - `settlementAmount` write-back to review records
 - Trust mutation
-- Supabase, Postgres, JSON hold persistence
+- Supabase, Postgres (JSON hold persistence added in PR6B — see [`pending-hold-persistence-v1.md`](./pending-hold-persistence-v1.md))
 - HTTP routes
 - Auto-invoking hold creation inside `ProofReviewService`
 - Flutter runtime changes
@@ -94,7 +136,8 @@ See [`settlement-amount-v1.md`](./settlement-amount-v1.md) for amount formula an
 | PR | Addition |
 |----|----------|
 | PR6A | Amount policy populates `amount` and `amountBreakdown` — see [`settlement-amount-v1.md`](./settlement-amount-v1.md) |
-| PR7+ | Release lifecycle (`releaseStatus` → `released`) |
-| PR8+ | Durable hold persistence, ledger writes |
+| PR6B | Durable hold persistence — see [`pending-hold-persistence-v1.md`](./pending-hold-persistence-v1.md) |
+| PR7 | Release state machine — see [`pending-hold-release-state-machine.md`](./pending-hold-release-state-machine.md) |
+| PR8+ | Release execution, ledger writes |
 
 See [`proof-review-state-machine.md`](./proof-review-state-machine.md) for review settlement eligibility.

@@ -132,6 +132,39 @@ export {
 } from "./settlement/pending-hold-service.js";
 
 export {
+  PENDING_HOLD_RELEASE_ELIGIBILITY_REASON,
+  PendingHoldReleaseEligibilityError,
+  assertReleaseEligible,
+  isReleaseAmountConsistent,
+  isReleaseEligible,
+  type PendingHoldReleaseEligibilityReason
+} from "./settlement/pending-hold-release-eligibility.js";
+export {
+  projectPendingHoldReleaseTransition,
+  releaseApprovedEvent,
+  releaseBlockedEvent,
+  releaseCancelledEvent,
+  releaseCompletedEvent,
+  type PendingHoldReleaseEventOptions
+} from "./settlement/pending-hold-release-lifecycle.js";
+export {
+  PENDING_HOLD_RELEASE_LIFECYCLE_EVENT,
+  type HoldCreatedEvent,
+  type PendingHoldReleaseLifecycleEvent,
+  type PendingHoldReleaseLifecycleEventType,
+  type PendingHoldReleaseState,
+  type ReleaseApprovedEvent,
+  type ReleaseBlockedEvent,
+  type ReleaseCancelledEvent,
+  type ReleaseCompletedEvent
+} from "./settlement/pending-hold-release-lifecycle.types.js";
+export {
+  PendingHoldReleaseInvalidTransitionError,
+  PendingHoldReleaseStateMachine,
+  type PendingHoldReleaseTransitionResult
+} from "./settlement/pending-hold-release-state-machine.js";
+
+export {
   SETTLEMENT_AMOUNT_POLICY_V1,
   SETTLEMENT_APPROVED_MULTIPLIER_V1,
   SETTLEMENT_PARTIAL_MULTIPLIER_V1,

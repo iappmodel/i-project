@@ -3,7 +3,12 @@ import type { ProofReviewRecord } from "../review/proof-review-store.js";
 import type { SettlementAmountBreakdown } from "./settlement-amount.types.js";
 
 export type PendingHoldStatus = "pending";
-export type PendingHoldReleaseStatus = "not_released";
+export type PendingHoldReleaseStatus =
+  | "not_released"
+  | "release_ready"
+  | "release_blocked"
+  | "released"
+  | "cancelled";
 
 export type PendingHoldSkipReason =
   | "review_not_settlement_eligible"
