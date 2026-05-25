@@ -69,6 +69,7 @@ import 'debug_state.dart';
 import 'performance/pipeline_performance_monitor.dart';
 import 'proof/proof_live_loop_bridge.dart';
 import 'proof/proof_session_context.dart';
+import 'proof/proof_validator_bridge.dart';
 import 'verification/verification_stability_layer.dart';
 
 /// Native 0–100 [nativeAttention] plus a small bonus when [fatigueLevel] is low (EAR fatigue).
@@ -120,6 +121,7 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
   ]);
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  ProofValidatorBridge().install();
   runApp(const EyeTrackingApp());
 }
 

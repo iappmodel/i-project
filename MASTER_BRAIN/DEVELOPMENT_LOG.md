@@ -5,6 +5,20 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-25 — P0 wiring slice (validator + Supabase promote)
+
+### Delivered
+- **`integrations/pop-core/validator/`** — HTTP stub `POST /v1/proof-packets/validate` (pending + full modes); tests pass
+- **`app/supabase/`** — 103 migrations + `issue-reward`, `validate-attention`, `_shared` from sparkle-archive
+- **`scripts/promote_supabase_financial_core.sh`** — repeatable promotion
+- **flutter-runtime** — `ProofValidatorBridge` POSTs sealed packets when `POP_VALIDATOR_URL` is set
+
+### Next
+1. Merge feature branch → `main`
+2. Wire validator pending holds → Supabase ledger (P1)
+
+---
+
 ## 2026-05-25 — Phase 2 integration readiness audit
 
 ### Delivered
@@ -14,8 +28,8 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ### Next engineering (P0)
 1. Merge `reliability/wire-proof-collector-live-loop` → `main`
-2. Promote archive Supabase financial core
-3. POPS validator stub + pending wallet wire
+2. ~~Promote archive Supabase financial core~~ ✅
+3. ~~POPS validator stub~~ ✅ — Supabase settlement wire remains P1
 
 ---
 
