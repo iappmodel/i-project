@@ -9,9 +9,11 @@ import {
 } from "./validate-handler.js";
 import { createSupabaseSettlementClient } from "./supabase-settlement-client.js";
 import {
-  settleHoldViaSupabase,
-  type SettleHoldRequestBody
-} from "./settle-handler.js";
+  getPendingHoldBySessionId,
+  listPendingHoldsForUser,
+  settlePendingHold
+} from "./hold-query.js";
+import type { SettleHoldRequestBody } from "./settle-handler.js";
 import { readSupabaseSettlementConfig } from "./supabase-settlement.js";
 
 const PORT = Number(process.env.POP_VALIDATOR_PORT ?? "8787");
@@ -29,7 +31,7 @@ async function readJsonBody(req: IncomingMessage): Promise<unknown> {
   }
   const raw = Buffer.concat(chunks).toString("utf8");
   if (!raw.trim()) {
-    throw new Error("Empty request body");
+    return {};
   }
   return JSON.parse(raw) as unknown;
 }
@@ -58,7 +60,8 @@ const server = createServer(async (req, res) => {
         dataDir: DATA_DIR,
         supabase: supabaseConfig
           ? { enabled: true, url: supabaseConfig.url }
-          : { enabled: false }
+          : { enabled: false },
+        settlement: supabaseConfig ? "supabase" : "local-json"
       });
       return;
     }
@@ -79,46 +82,71 @@ const server = createServer(async (req, res) => {
       return;
     }
 
+    const settleDemoMatch = url.pathname.match(
+      /^\/v1\/pending-holds\/([^/]+)\/settle-demo$/
+    );
+    if (req.method === "POST" && settleDemoMatch) {
+      const sessionId = decodeURIComponent(settleDemoMatch[1] ?? "");
+      const result = await settlePendingHold(
+        DATA_DIR,
+        sessionId,
+        null,
+        supabase,
+        "demo"
+      );
+      sendJson(res, 200, result);
+      return;
+    }
+
     const settleMatch = url.pathname.match(
       /^\/v1\/pending-holds\/([^/]+)\/settle$/
     );
     if (req.method === "POST" && settleMatch) {
       const sessionId = decodeURIComponent(settleMatch[1] ?? "");
       const body = (await readJsonBody(req)) as SettleHoldRequestBody;
-      if (!body?.userId || !UUID_RE.test(body.userId)) {
-        sendJson(res, 400, { error: "userId must be a valid UUID" });
+
+      if (supabase.isEnabled) {
+        if (!body?.userId || !UUID_RE.test(body.userId)) {
+          sendJson(res, 400, { error: "userId must be a valid UUID" });
+          return;
+        }
+        const result = await settlePendingHold(
+          DATA_DIR,
+          sessionId,
+          body.userId,
+          supabase,
+          "production"
+        );
+        sendJson(res, 200, result);
         return;
       }
 
-      const result = await settleHoldViaSupabase(sessionId, body.userId, supabase);
+      const result = await settlePendingHold(
+        DATA_DIR,
+        sessionId,
+        null,
+        supabase,
+        "demo"
+      );
       sendJson(res, 200, result);
       return;
     }
 
-    const listMatch = url.pathname === "/v1/pending-holds";
-    if (req.method === "GET" && listMatch) {
+    if (req.method === "GET" && url.pathname === "/v1/pending-holds") {
       const localUserRef = url.searchParams.get("localUserRef")?.trim();
       if (!localUserRef) {
         sendJson(res, 400, { error: "localUserRef query param is required" });
         return;
       }
-      if (!supabase.isEnabled) {
-        sendJson(res, 503, { error: "Supabase settlement is not configured" });
-        return;
-      }
-      const holds = await supabase.listPendingHolds(localUserRef);
-      sendJson(res, 200, { localUserRef, holds });
+      const listed = await listPendingHoldsForUser(DATA_DIR, localUserRef, supabase);
+      sendJson(res, 200, { localUserRef, source: listed.source, holds: listed.holds });
       return;
     }
 
     const holdMatch = url.pathname.match(/^\/v1\/pending-holds\/([^/]+)$/);
     if (req.method === "GET" && holdMatch) {
       const sessionId = decodeURIComponent(holdMatch[1] ?? "");
-      if (!supabase.isEnabled) {
-        sendJson(res, 503, { error: "Supabase settlement is not configured" });
-        return;
-      }
-      const hold = await supabase.getPendingHold(sessionId);
+      const hold = await getPendingHoldBySessionId(DATA_DIR, sessionId, supabase);
       if (!hold) {
         sendJson(res, 404, { error: "hold_not_found" });
         return;
@@ -138,13 +166,14 @@ server.listen(PORT, () => {
   console.log(`POP validator stub listening on http://127.0.0.1:${PORT}`);
   console.log(`  POST /v1/proof-packets/validate`);
   console.log(`  POST /v1/pending-holds/:sessionId/settle`);
+  console.log(`  POST /v1/pending-holds/:sessionId/settle-demo`);
   console.log(`  GET  /v1/pending-holds?localUserRef=...`);
   console.log(`  GET  /v1/pending-holds/:sessionId`);
   console.log(`  GET  /health`);
   console.log(`  data: ${DATA_DIR}`);
   console.log(
     supabase.isEnabled
-      ? "  supabase: enabled"
-      : "  supabase: disabled (set SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY)"
+      ? "  settlement: supabase"
+      : "  settlement: local-json (no Docker required)"
   );
 });

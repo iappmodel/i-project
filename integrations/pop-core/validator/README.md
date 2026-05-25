@@ -26,7 +26,9 @@ Minimal HTTP service that accepts `ProofPacketV0`, runs POP review + pending hol
 
 When `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` are set, pending holds are inserted into `pop_pending_holds`.
 
-### Settle request
+**Without Supabase/Docker:** holds are stored in JSON files under `POP_VALIDATOR_DATA_DIR` and served via the same list/get endpoints (`source: "local"`).
+
+### Settle request (Supabase)
 
 ```json
 { "userId": "00000000-0000-4000-8000-000000000001" }
@@ -34,7 +36,19 @@ When `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` are set, pending holds are ins
 
 Calls RPC `settle_pop_pending_hold` → `ledger_append` (idempotent on `pop_hold_{sessionId}`).
 
-## Run
+### Dev settle (no Supabase)
+
+```bash
+curl -X POST http://127.0.0.1:8787/v1/pending-holds/SESSION_ID/settle-demo
+```
+
+Or `POST .../settle` with empty body when Supabase is disabled — uses local-json demo settlement.
+
+## Smoke test
+
+```bash
+./scripts/smoke_pop_wallet_loop.sh
+```
 
 ```bash
 cd integrations/pop-core/validator

@@ -15,8 +15,29 @@ Chronological record of archaeology, promotion, and implementation work.
 - Promotion script preserves `*pop_*.sql` migrations on re-promote
 
 ### Next
-1. E2E smoke: supabase local + validator + app `.env.local` + Loop 1 earn flow
+1. Docker + `supabase start` for ledger-backed settle (production path)
 2. Auth-backed user_id on settle (replace manual curl)
+
+---
+
+## 2026-05-25 — E2E smoke + local-json settlement (no Docker)
+
+### Delivered
+- **Local-json fallback** — validator lists/settles holds from JSON files when Supabase unavailable
+- **`POST /v1/pending-holds/:sessionId/settle-demo`** — dev settle without UUID
+- **`scripts/smoke_pop_wallet_loop.sh`** — automated smoke (7 validator tests + validate → list → settle → PASS)
+- Smoke verified on this machine (Docker not installed; Supabase local blocked)
+
+### Run smoke
+```bash
+./scripts/smoke_pop_wallet_loop.sh
+```
+
+### Run app live wallet (no Docker)
+```bash
+cd integrations/pop-core/validator && npm start
+cd app && echo 'VITE_POP_VALIDATOR_URL=http://127.0.0.1:8787' > .env.local && npm run dev
+```
 
 ---
 
