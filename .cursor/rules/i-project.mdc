@@ -1,0 +1,60 @@
+---
+description: [ i ] Attention Wallet project context — constitution, canonical paths, and audit references
+alwaysApply: true
+---
+
+# [ i ] Project Context
+
+You are working on **[ i ]** — an Attention Wallet and Media Marketplace.
+
+## Product law (wins all conflicts)
+
+Read before product or economy decisions:
+- `MASTER_BRAIN/CANONICAL/i_SOURCE_OF_TRUTH.md`
+- `MASTER_BRAIN/ECONOMY/i-app-economy-rules.md` (26+ω taxonomy; immutable for implementation)
+- `MASTER_BRAIN/CANONICAL/FEATURE_BIBLE.md` (build checklist)
+
+If documents conflict, Source of Truth wins — then flag blockers in `MASTER_BRAIN/DUPLICATES_AND_CONFLICTS.md`.
+
+## Canonical workspace
+
+**Root:** `i_project_migration_archive/` (this repo)  
+**Desktop archive:** `~/Desktop/IVAULT/` (~56 GB evidence — not all canonical)
+
+| Domain | Path |
+|--------|------|
+| Loop 1 MVP (React) | `app/` — `npm run dev` |
+| MVP flow | `docs/MVP_CANONICAL_FLOW.md` |
+| Eye-tracking runtime | `integrations/eye-tracking/flutter-runtime/` |
+| Proof / POPS | `integrations/pop-core/`, `docs/technical/POPS_*` |
+| Knowledge corpus | `MASTER_BRAIN/` |
+| HTML prototypes | `02_clickable_prototypes/` … `07_currency_system/`, `recent_may2026/` |
+| Clean git clones | `../github-source-repos/` (sibling under i-project-rescue) |
+
+## Do not treat as canonical
+
+- `~/Desktop/IVAULT/DEMOS:REPOS/` — mine for promotion; heavy duplicates
+- `~/Desktop/IVAULT/SYSTEMS:APPS:REFFERENCES/` — third-party reference only
+- `~/Desktop/IVAULT/iTrack/` — dirty fork
+- `08_raw_originals/` — duplicate mirror of 02–07
+- Chat exports — indexed in `MASTER_BRAIN/CHAT_RECOVERY/`; extract, don't re-litigate raw
+
+## Session start checklist
+
+1. `MASTER_BRAIN/DEVELOPMENT_LOG.md` — recent work
+2. `MASTER_BRAIN/PROMOTION_AND_DISCARD_QUEUE.md` — pending actions
+3. `MASTER_BRAIN/IVAULT_FULL_AUDIT_2026-05-25.md` — full project map
+
+## Implementation rules
+
+- Minimize scope; match existing conventions in `app/` and `integrations/`
+- Loop 1 core loop: Watch → Verify → Reward → Wallet → Spend/Convert/Withdraw
+- Currency mutations via Edge Functions — never client-side direct DB writes (per economy rules)
+- Dual-demo strategy: `app/` = Loop 1 spine; sparkle-archive = fintech demo — do not merge architectures without owner decision
+- Blocked until owner resolves: CR-01 (session bypass), CR-02–CR-06 (currency naming)
+
+## When user references other chats or Desktop folders
+
+- Search `MASTER_BRAIN/` and codebase first
+- Check `MASTER_BRAIN/CHAT_RECOVERY/EXTRACTED/conversations/` for prior thread summaries
+- Raw ChatGPT/Claude exports are at `~/Desktop/IVAULT/CHATGPT/` and `CLAUDE/`
