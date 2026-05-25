@@ -1,14 +1,17 @@
-import { createContext, useCallback, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import {
   DEFAULT_SPONSORED_OFFER,
   initialTransactions,
   WALLET_INITIAL,
 } from '../data/demoData'
+import { buildDemoProofPacket } from '../lib/demoProofPacket'
+import { submitProofPacket } from '../lib/popValidator'
 import {
   canIssueAttentionReward,
   canValidateSession,
   createAttentionSession,
 } from './attentionSession'
+import { useLiveWalletSync } from './useLiveWalletSync'
 import type {
   DemoContextValue,
   DemoScreenId,
@@ -63,12 +66,22 @@ const defaultState = (): DemoState => ({
   selectedOffer: null,
   verificationStatus: 'idle',
   attentionSession: null,
+  walletBackend: 'mock',
+  popHolds: [],
+  walletSyncError: null,
+  walletSyncing: false,
 })
 
 export const DemoContext = createContext<DemoContextValue | null>(null)
 
 export function DemoProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<DemoState>(defaultState)
+  const liveWallet = useLiveWalletSync()
+
+  useEffect(() => {
+    if (liveWallet.walletBackend !== 'live' || liveWallet.popHolds.length === 0) return
+    setState((prev) => liveWallet.applyHoldSync(prev, liveWallet.popHolds))
+  }, [liveWallet.popHolds, liveWallet.applyHoldSync, liveWallet.walletBackend])
 
   const navigateTo = useCallback((screen: DemoScreenId) => {
     setState((prev) => withScreen(prev, screen))
@@ -111,8 +124,9 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const resetDemo = useCallback(() => {
+    liveWallet.resetLiveWallet()
     setState(defaultState())
-  }, [])
+  }, [liveWallet])
 
   const selectOffer = useCallback((offer: Offer) => {
     setState((prev) => ({
@@ -181,7 +195,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     })
   }, [])
 
-  const finishRewardToWallet = useCallback(() => {
+  const finishRewardMock = useCallback(() => {
     setState((prev) => {
       if (!canIssueAttentionReward(prev.attentionSession)) {
         return prev
@@ -243,12 +257,65 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     }, 1200)
   }, [])
 
+  const finishRewardToWallet = useCallback(() => {
+    if (liveWallet.walletBackend !== 'live') {
+      finishRewardMock()
+      return
+    }
+
+    setState((prev) => {
+      if (!canIssueAttentionReward(prev.attentionSession)) {
+        return prev
+      }
+      const offer = prev.selectedOffer ?? DEFAULT_SPONSORED_OFFER
+      const session = prev.attentionSession
+
+      void (async () => {
+        try {
+          const packet = buildDemoProofPacket({ session, offer })
+          await submitProofPacket(packet, `WEB-${session.id.slice(0, 8)}`)
+          await liveWallet.refreshPendingHolds()
+        } catch (error) {
+          setState((inner) => ({
+            ...inner,
+            walletSyncError:
+              error instanceof Error ? error.message : 'Proof submission failed',
+          }))
+        }
+      })()
+
+      return {
+        ...prev,
+        verificationStatus: 'idle',
+        currentScreen: 'wallet',
+        activeTab: 'wallet',
+        attentionSession: {
+          ...prev.attentionSession,
+          status: 'redeemed',
+          redeemedAt: Date.now(),
+        },
+      }
+    })
+
+    window.setTimeout(() => {
+      setState((prev) =>
+        prev.attentionSession?.status === 'redeemed'
+          ? { ...prev, attentionSession: null }
+          : prev,
+      )
+    }, 500)
+  }, [finishRewardMock, liveWallet])
+
   const canCollectReward = canIssueAttentionReward(state.attentionSession)
   const canRedeemReward = canIssueAttentionReward(state.attentionSession)
 
   const value = useMemo<DemoContextValue>(
     () => ({
       ...state,
+      walletBackend: liveWallet.walletBackend,
+      popHolds: liveWallet.popHolds,
+      walletSyncError: liveWallet.syncError ?? state.walletSyncError,
+      walletSyncing: liveWallet.isSyncing,
       setScreen: navigateTo,
       setActiveTab,
       startPresenterTour,
@@ -265,11 +332,13 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       completeVerification,
       claimReward,
       finishRewardToWallet,
+      refreshPendingHolds: liveWallet.refreshPendingHolds,
       canCollectReward,
       canRedeemReward,
     }),
     [
       state,
+      liveWallet,
       navigateTo,
       setActiveTab,
       startPresenterTour,

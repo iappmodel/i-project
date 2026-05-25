@@ -10,8 +10,21 @@ function actDot(kind: string) {
 }
 
 export function WalletScreen() {
-  const { walletBalance, pendingBalance, aCoins, iCoins, iCoinsPending, transactions, setScreen, jumpEarn } =
-    useDemo()
+  const {
+    walletBalance,
+    pendingBalance,
+    aCoins,
+    iCoins,
+    iCoinsPending,
+    transactions,
+    walletBackend,
+    popHolds,
+    walletSyncError,
+    walletSyncing,
+    refreshPendingHolds,
+    setScreen,
+    jumpEarn,
+  } = useDemo()
   const [showAll, setShowAll] = useState(false)
 
   const usdFmt = walletBalance.toLocaleString(undefined, {
@@ -20,6 +33,7 @@ export function WalletScreen() {
   })
 
   const visible = showAll ? transactions : transactions.slice(0, 5)
+  const pendingHolds = popHolds.filter((h) => h.holdStatus === 'pending')
 
   return (
     <TabScreenLayout
@@ -29,8 +43,32 @@ export function WalletScreen() {
         '04_wallet_payments/iapp_wallet_ui (1).html',
         '04_wallet_payments/wallet_pending_tab.html',
         'integrations/eye-tracking/demos/investor-demo/src/screens/WalletScreen.tsx',
+        'app/supabase/migrations/20260525220000_pop_pending_holds.sql',
       ]}
     >
+      {walletBackend === 'live' ? (
+        <div className="wallet-live-banner" style={{ marginBottom: 12 }}>
+          <span className="ps-dot" aria-hidden />
+          <span className="ps-text">
+            Live POP settlement
+            {walletSyncing ? ' · syncing…' : ''}
+          </span>
+          <button
+            type="button"
+            className="sec-link-wu"
+            onClick={() => void refreshPendingHolds()}
+          >
+            Refresh
+          </button>
+        </div>
+      ) : null}
+
+      {walletSyncError ? (
+        <p className="wallet-sync-error" style={{ color: 'var(--accent-rose)', fontSize: 12, marginBottom: 8 }}>
+          {walletSyncError}
+        </p>
+      ) : null}
+
       <p className="wallet-ui-greeting">Good afternoon · sandbox</p>
       <p className="balance-label-wallet-ui">estimated value</p>
       <div className="balance-num-wallet-ui mono">${usdFmt}</div>
@@ -66,7 +104,7 @@ export function WalletScreen() {
           <span className="cc-val ic mono">{iCoins.toLocaleString()}</span>
           {iCoinsPending > 0 ? (
             <span className="cc-sub muted-num mono" style={{ fontSize: 11, marginTop: 4 }}>
-              +{iCoinsPending.toFixed(2)} pending
+              +{iCoinsPending.toLocaleString()} pending
             </span>
           ) : null}
         </div>
@@ -74,9 +112,32 @@ export function WalletScreen() {
 
       <div className="pending-strip">
         <span className="ps-dot" aria-hidden />
-        <span className="ps-text">Pending attestations settling</span>
-        <span className="ps-val mono">{pendingBalance} ℏ</span>
+        <span className="ps-text">
+          {walletBackend === 'live'
+            ? 'POP pending holds'
+            : 'Pending attestations settling'}
+        </span>
+        <span className="ps-val mono">
+          {walletBackend === 'live' ? pendingHolds.length : pendingBalance} ℏ
+        </span>
       </div>
+
+      {walletBackend === 'live' && pendingHolds.length > 0 ? (
+        <div className="activity-stack-wu" style={{ marginBottom: 12 }}>
+          {pendingHolds.slice(0, 3).map((h) => (
+            <div key={h.sessionId} className="activity-card-wu pending">
+              <span className="act-dot-wu" style={{ background: 'var(--accent-amber)' }} />
+              <div className="act-body-wu">
+                <p className="act-title-wu">{h.offerId.replace(/-watch$/, '')}</p>
+                <p className="act-time-wu">{h.reviewStatus} · {h.releaseStatus}</p>
+              </div>
+              <span className="act-amount-wu mono pending">
+                +{h.amount} {h.currency === 'vicoin' ? 'v' : 'i'}
+              </span>
+            </div>
+          ))}
+        </div>
+      ) : null}
 
       <div className="section-hdr-wu">
         <span className="sec-title-wu">Activity</span>

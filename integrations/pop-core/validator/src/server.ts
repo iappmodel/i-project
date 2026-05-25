@@ -95,6 +95,22 @@ const server = createServer(async (req, res) => {
       return;
     }
 
+    const listMatch = url.pathname === "/v1/pending-holds";
+    if (req.method === "GET" && listMatch) {
+      const localUserRef = url.searchParams.get("localUserRef")?.trim();
+      if (!localUserRef) {
+        sendJson(res, 400, { error: "localUserRef query param is required" });
+        return;
+      }
+      if (!supabase.isEnabled) {
+        sendJson(res, 503, { error: "Supabase settlement is not configured" });
+        return;
+      }
+      const holds = await supabase.listPendingHolds(localUserRef);
+      sendJson(res, 200, { localUserRef, holds });
+      return;
+    }
+
     const holdMatch = url.pathname.match(/^\/v1\/pending-holds\/([^/]+)$/);
     if (req.method === "GET" && holdMatch) {
       const sessionId = decodeURIComponent(holdMatch[1] ?? "");
@@ -122,6 +138,7 @@ server.listen(PORT, () => {
   console.log(`POP validator stub listening on http://127.0.0.1:${PORT}`);
   console.log(`  POST /v1/proof-packets/validate`);
   console.log(`  POST /v1/pending-holds/:sessionId/settle`);
+  console.log(`  GET  /v1/pending-holds?localUserRef=...`);
   console.log(`  GET  /v1/pending-holds/:sessionId`);
   console.log(`  GET  /health`);
   console.log(`  data: ${DATA_DIR}`);

@@ -1,4 +1,7 @@
 import type { AttentionSession } from './attentionSession'
+import type { PopPendingHold } from '../lib/popValidator'
+
+export type WalletBackend = 'mock' | 'live'
 
 export type ProductTabId = 'feed' | 'earn' | 'wallet' | 'profile'
 
@@ -94,6 +97,10 @@ export interface DemoState {
   verificationStatus: VerificationStatus
   /** Gate for attention-backed rewards — null until consent accepted */
   attentionSession: AttentionSession | null
+  walletBackend: WalletBackend
+  popHolds: PopPendingHold[]
+  walletSyncError: string | null
+  walletSyncing: boolean
 }
 
 export interface DemoContextValue extends DemoState {
@@ -113,6 +120,7 @@ export interface DemoContextValue extends DemoState {
   completeVerification: () => void
   claimReward: () => void
   finishRewardToWallet: () => void
+  refreshPendingHolds: () => Promise<void>
   canCollectReward: boolean
   canRedeemReward: boolean
 }

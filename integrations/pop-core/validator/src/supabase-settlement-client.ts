@@ -16,6 +16,7 @@ export interface SupabaseSettlementClient {
     userId: string
   ): Promise<Record<string, unknown>>;
   getPendingHold(sessionId: string): Promise<Record<string, unknown> | null>;
+  listPendingHolds(localUserRef: string): Promise<Record<string, unknown>[]>;
 }
 
 function createSupabaseClient(config: SupabaseSettlementConfig): SupabaseClient {
@@ -38,6 +39,9 @@ export function createSupabaseSettlementClient(
       },
       async getPendingHold() {
         return null;
+      },
+      async listPendingHolds() {
+        return [];
       }
     };
   }
@@ -92,6 +96,20 @@ export function createSupabaseSettlementClient(
       }
 
       return data as Record<string, unknown> | null;
+    },
+
+    async listPendingHolds(localUserRef: string) {
+      const { data, error } = await client
+        .from("pop_pending_holds")
+        .select("*")
+        .eq("local_user_ref", localUserRef)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        throw new Error(`pop_pending_holds list failed: ${error.message}`);
+      }
+
+      return (data ?? []) as Record<string, unknown>[];
     }
   };
 }

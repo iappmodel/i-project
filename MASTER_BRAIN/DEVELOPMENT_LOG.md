@@ -15,8 +15,18 @@ Chronological record of archaeology, promotion, and implementation work.
 - Promotion script preserves `*pop_*.sql` migrations on re-promote
 
 ### Next
-1. E2E smoke: supabase local + validator + flutter Seal Proof + settle
-2. Wire `app/` demo wallet to read pending holds from Supabase (P1b)
+1. E2E smoke: supabase local + validator + app `.env.local` + Loop 1 earn flow
+2. Auth-backed user_id on settle (replace manual curl)
+
+---
+
+## 2026-05-25 — P1b app wallet ↔ POP pending holds
+
+### Delivered
+- **`VITE_POP_VALIDATOR_URL`** — live wallet mode polls `GET /v1/pending-holds?localUserRef=demo-user-001`
+- **Loop 1** `finishRewardToWallet` POSTs demo proof packet to validator when live
+- **WalletScreen** — live banner, pending hold cards, refresh control
+- **Validator** — list holds endpoint for demo user ref
 
 ---
 
