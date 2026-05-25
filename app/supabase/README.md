@@ -23,8 +23,16 @@ supabase functions serve issue-reward validate-attention
 ## Wiring to POP validator
 
 1. Device seals proof → POST `integrations/pop-core/validator` (`/v1/proof-packets/validate`)
-2. Validator returns pending hold
-3. On approval, `issue-reward` / ledger RPCs settle via this Supabase stack
+2. Validator upserts `pop_pending_holds` when Supabase env is configured
+3. `POST /v1/pending-holds/:sessionId/settle` → `settle_pop_pending_hold` → `wallet_ledger`
+
+### i-project migration (not in archive)
+
+| File | Purpose |
+|------|---------|
+| `20260525220000_pop_pending_holds.sql` | Pending holds table + settlement RPC |
+
+Preserved when re-running `./scripts/promote_supabase_financial_core.sh`.
 
 ## Re-promote
 

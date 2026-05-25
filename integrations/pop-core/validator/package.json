@@ -10,7 +10,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@pop-core/backend": "file:../backend"
+    "@pop-core/backend": "file:../backend",
+    "@supabase/supabase-js": "^2.49.8"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

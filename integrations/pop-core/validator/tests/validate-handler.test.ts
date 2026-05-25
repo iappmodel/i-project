@@ -8,6 +8,7 @@ import {
   createValidatorStores,
   validateProofPacket
 } from "../src/validate-handler.js";
+import { createSupabaseSettlementClient } from "../src/supabase-settlement-client.js";
 import pp000001 from "../../fixtures/PP-000001.json" with { type: "json" };
 
 describe("validateProofPacket", () => {
@@ -19,14 +20,14 @@ describe("validateProofPacket", () => {
     }
   });
 
-  it("pending mode returns review + pending hold", () => {
+  it("pending mode returns review + pending hold", async () => {
     dataDir = mkdtempSync(join(tmpdir(), "pop-validator-"));
     const stores = createValidatorStores(dataDir);
     const packet = structuredClone(pp000001) as typeof pp000001;
 
-    const result = validateProofPacket(
+    const result = await validateProofPacket(
       { packet, mode: "pending", artifactId: "PP-000001" },
-      stores
+      { stores, supabase: createSupabaseSettlementClient(null) }
     );
 
     expect(result.mode).toBe("pending");
@@ -35,16 +36,18 @@ describe("validateProofPacket", () => {
     expect(result.reviewStatus).toBe("approved");
     expect(result.holdOutcome).toBe("created");
     expect(result.hold?.amount).toBe(100);
+    expect(result.hold?.currency).toBe("icoin");
     expect(result.hold?.status).toBe("pending");
+    expect(result.supabase?.enabled).toBe(false);
   });
 
-  it("is idempotent on rerun for same sessionId", () => {
+  it("is idempotent on rerun for same sessionId", async () => {
     dataDir = mkdtempSync(join(tmpdir(), "pop-validator-"));
     const stores = createValidatorStores(dataDir);
     const packet = structuredClone(pp000001) as typeof pp000001;
 
-    const first = validateProofPacket({ packet, mode: "pending" }, stores);
-    const second = validateProofPacket({ packet, mode: "pending" }, stores);
+    const first = await validateProofPacket({ packet, mode: "pending" }, { stores });
+    const second = await validateProofPacket({ packet, mode: "pending" }, { stores });
 
     expect(first.mode).toBe("pending");
     expect(second.mode).toBe("pending");
@@ -54,20 +57,20 @@ describe("validateProofPacket", () => {
     expect(second.holdOutcome).toBe("existing");
   });
 
-  it("full mode runs golden-path value flow", () => {
+  it("full mode runs golden-path value flow", async () => {
     dataDir = mkdtempSync(join(tmpdir(), "pop-validator-"));
     const stores = createValidatorStores(dataDir);
     const packet = structuredClone(pp000001) as typeof pp000001;
     packet.sessionId = "sess_full_mode_golden_path";
 
-    const result = validateProofPacket(
+    const result = await validateProofPacket(
       {
         packet,
         mode: "full",
         artifactId: "PP-FULL-001",
         submittedAt: "2026-05-23T12:00:00.000Z"
       },
-      stores
+      { stores, supabase: createSupabaseSettlementClient(null) }
     );
 
     expect(result.mode).toBe("full");

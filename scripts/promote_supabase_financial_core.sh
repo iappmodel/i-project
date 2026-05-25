@@ -22,9 +22,22 @@ echo "Destination: $DEST"
 rm -rf "$DEST"
 mkdir -p "$DEST/migrations" "$DEST/functions"
 
+# Preserve i-project-only migrations (pop_* etc.) before overwrite.
+PRESERVE_DIR="$(mktemp -d)"
+if [[ -d "$ROOT/app/supabase/migrations" ]]; then
+  for f in "$ROOT/app/supabase/migrations/"*pop_*.sql; do
+    [[ -f "$f" ]] && cp "$f" "$PRESERVE_DIR/"
+  done
+fi
+
 # Full migration chain — wallet ledger depends on profiles from early migrations.
 cp "$ARCHIVE_ROOT/supabase/config.toml" "$DEST/config.toml"
 cp "$ARCHIVE_ROOT/supabase/migrations/"*.sql "$DEST/migrations/"
+
+if compgen -G "$PRESERVE_DIR/*.sql" > /dev/null; then
+  cp "$PRESERVE_DIR/"*.sql "$DEST/migrations/"
+fi
+rmdir "$PRESERVE_DIR" 2>/dev/null || rm -rf "$PRESERVE_DIR"
 
 # Financial edge functions + shared middleware (P0 slice).
 for fn in issue-reward validate-attention; do

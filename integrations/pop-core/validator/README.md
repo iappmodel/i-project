@@ -1,15 +1,17 @@
-# POP Validator Stub (P0)
+# POP Validator Stub (P0 → P1)
 
-Minimal HTTP service that accepts `ProofPacketV0` and runs the POP review + pending hold boundary (default) or full value flow (dev).
+Minimal HTTP service that accepts `ProofPacketV0`, runs POP review + pending hold, and optionally persists to Supabase.
 
 ## Endpoints
 
 | Method | Path | Purpose |
 |--------|------|---------|
-| `GET` | `/health` | Liveness |
+| `GET` | `/health` | Liveness + Supabase config status |
 | `POST` | `/v1/proof-packets/validate` | Ingest proof packet |
+| `GET` | `/v1/pending-holds/:sessionId` | Read hold row (Supabase required) |
+| `POST` | `/v1/pending-holds/:sessionId/settle` | Release hold → `wallet_ledger` |
 
-### Request body
+### Validate request
 
 ```json
 {
@@ -19,8 +21,18 @@ Minimal HTTP service that accepts `ProofPacketV0` and runs the POP review + pend
 }
 ```
 
-- **`pending`** (default): review + pending hold only — production-shaped stub
-- **`full`**: runs `runPopValueFlow` through wallet credit (golden path / dev)
+- **`pending`** (default): review + pending hold
+- **`full`**: runs `runPopValueFlow` through in-memory wallet credit (dev)
+
+When `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` are set, pending holds are inserted into `pop_pending_holds`.
+
+### Settle request
+
+```json
+{ "userId": "00000000-0000-4000-8000-000000000001" }
+```
+
+Calls RPC `settle_pop_pending_hold` → `ledger_append` (idempotent on `pop_hold_{sessionId}`).
 
 ## Run
 
@@ -28,23 +40,33 @@ Minimal HTTP service that accepts `ProofPacketV0` and runs the POP review + pend
 cd integrations/pop-core/validator
 npm install
 npm test
-POP_VALIDATOR_PORT=8787 npm start
+
+# Local JSON only
+npm start
+
+# With Supabase (after app/supabase db reset)
+export SUPABASE_URL=http://127.0.0.1:54321
+export SUPABASE_SERVICE_ROLE_KEY=...
+npm start
+```
+
+## Supabase migration
+
+Apply `app/supabase/migrations/20260525220000_pop_pending_holds.sql` via:
+
+```bash
+cd app/supabase && supabase db reset
 ```
 
 ## Flutter device path
-
-Run the stub locally, then launch flutter-runtime with:
 
 ```bash
 flutter run --dart-define=POP_VALIDATOR_URL=http://10.0.2.2:8787
 ```
 
-(`10.0.2.2` is the Android emulator alias for host `localhost`.)
+## End-to-end smoke
 
-Sealed packets are POSTed automatically when `POP_VALIDATOR_URL` is set.
-
-## Data
-
-JSON-file persistence under `POP_VALIDATOR_DATA_DIR` (default `./data/validator`).
-
-Supabase promotion is separate — see `app/supabase/README.md`.
+1. `supabase start && supabase db reset` in `app/supabase`
+2. `npm start` in validator with Supabase env
+3. Flutter Seal Proof → validate response includes `supabase.outcome: "created"`
+4. `POST /v1/pending-holds/{sessionId}/settle` with test user UUID → ledger credit

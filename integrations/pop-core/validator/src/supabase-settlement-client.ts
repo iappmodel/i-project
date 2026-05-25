@@ -1,0 +1,97 @@
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+
+import type { PendingHoldRecord } from "@pop-core/backend";
+
+import {
+  pendingHoldToRow,
+  readSupabaseSettlementConfig,
+  type SupabaseSettlementConfig
+} from "./supabase-settlement.js";
+
+export interface SupabaseSettlementClient {
+  isEnabled: boolean;
+  upsertPendingHold(hold: PendingHoldRecord): Promise<{ outcome: "created" | "existing" }>;
+  settlePendingHold(
+    sessionId: string,
+    userId: string
+  ): Promise<Record<string, unknown>>;
+  getPendingHold(sessionId: string): Promise<Record<string, unknown> | null>;
+}
+
+function createSupabaseClient(config: SupabaseSettlementConfig): SupabaseClient {
+  return createClient(config.url, config.serviceRoleKey, {
+    auth: { persistSession: false, autoRefreshToken: false }
+  });
+}
+
+export function createSupabaseSettlementClient(
+  config: SupabaseSettlementConfig | null = readSupabaseSettlementConfig()
+): SupabaseSettlementClient {
+  if (!config) {
+    return {
+      isEnabled: false,
+      async upsertPendingHold() {
+        return { outcome: "existing" as const };
+      },
+      async settlePendingHold() {
+        throw new Error("Supabase settlement is not configured");
+      },
+      async getPendingHold() {
+        return null;
+      }
+    };
+  }
+
+  const client = createSupabaseClient(config);
+
+  return {
+    isEnabled: true,
+
+    async upsertPendingHold(hold: PendingHoldRecord) {
+      const row = pendingHoldToRow(hold);
+      const { data: existing } = await client
+        .from("pop_pending_holds")
+        .select("session_id")
+        .eq("session_id", row.session_id)
+        .maybeSingle();
+
+      if (existing) {
+        return { outcome: "existing" as const };
+      }
+
+      const { error } = await client.from("pop_pending_holds").insert(row);
+      if (error) {
+        throw new Error(`pop_pending_holds insert failed: ${error.message}`);
+      }
+
+      return { outcome: "created" as const };
+    },
+
+    async settlePendingHold(sessionId: string, userId: string) {
+      const { data, error } = await client.rpc("settle_pop_pending_hold", {
+        p_session_id: sessionId,
+        p_user_id: userId
+      });
+
+      if (error) {
+        throw new Error(`settle_pop_pending_hold failed: ${error.message}`);
+      }
+
+      return (data ?? {}) as Record<string, unknown>;
+    },
+
+    async getPendingHold(sessionId: string) {
+      const { data, error } = await client
+        .from("pop_pending_holds")
+        .select("*")
+        .eq("session_id", sessionId)
+        .maybeSingle();
+
+      if (error) {
+        throw new Error(`pop_pending_holds select failed: ${error.message}`);
+      }
+
+      return data as Record<string, unknown> | null;
+    }
+  };
+}

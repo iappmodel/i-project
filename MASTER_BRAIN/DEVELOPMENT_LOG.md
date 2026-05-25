@@ -5,6 +5,21 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-25 — P1 Supabase settlement wire
+
+### Delivered
+- **`20260525220000_pop_pending_holds.sql`** — `pop_pending_holds` table + `settle_pop_pending_hold` RPC → `wallet_ledger`
+- **Validator** — upserts holds when `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` set
+- **`POST /v1/pending-holds/:sessionId/settle`** — releases hold to ledger (idempotent)
+- **`GET /v1/pending-holds/:sessionId`** — read hold status
+- Promotion script preserves `*pop_*.sql` migrations on re-promote
+
+### Next
+1. E2E smoke: supabase local + validator + flutter Seal Proof + settle
+2. Wire `app/` demo wallet to read pending holds from Supabase (P1b)
+
+---
+
 ## 2026-05-25 — P0 wiring slice (validator + Supabase promote)
 
 ### Delivered
