@@ -37,10 +37,11 @@ Ordered action list — not yet executed unless noted.
 
 | # | Decision | Blocker IDs | Notes |
 |---|----------|-------------|-------|
-| D1 | Currency naming: SoT (a/i/v/e/o) vs full 26+ω taxonomy | CR-02–CR-06 | **ADR-001 working default** — owner confirm |
-| D2 | Canonical demo architecture | HI-01, HI-02 | `app/` Loop 1 vs archive fintech vs 4-tab IA |
-| D3 | Attention session bypass policy | CR-01 | Must fix before reward canon |
-| D4 | iCoin/vCoin display rules in Loop 1 app | CR-02, CR-03 | app uses simplified demo credits today |
+| D1 | Currency naming | CR-02–CR-06 | ✅ **ADR-001** — build a/i/v/e/o now |
+| D2 | Demo + product IA | HI-01, HI-02 | ✅ **ADR-014** — `app/` + 4-tab |
+| D3 | Session bypass | CR-01 | ✅ Fixed in demo paths |
+| D4 | iCoin display in Loop 1 | CR-02, CR-03 | 🟡 Pending-first in `demoContext`; align labels |
+| D5 | Merge proof-collector branch | MERGE-01 | 🟡 See [`INTEGRATION_READINESS_AUDIT_2026-05-25.md`](INTEGRATION_READINESS_AUDIT_2026-05-25.md) |
 
 ---
 
@@ -76,11 +77,14 @@ Ordered action list — not yet executed unless noted.
 
 ## P4 — Implementation sequence (after decisions)
 
-1. Fix CR-01 attention session bypass in reward path
-2. Align `app/demoContext.tsx` wallet with pending-first pattern
-3. Wire pop-core proof emission (PP-000001 → wallet settlement)
-4. Bridge flutter-runtime gaze signals to web demo (Capacitor or WebSocket)
-5. Mark features complete in `FEATURE_BIBLE.md` as built
+**Authoritative order:** [`INTEGRATION_READINESS_AUDIT_2026-05-25.md`](INTEGRATION_READINESS_AUDIT_2026-05-25.md) §9
+
+1. Merge `reliability/wire-proof-collector-live-loop` → `main`
+2. Promote archive Supabase wallet + `issue-reward` → `app/supabase/`
+3. POPS validator stub + pending wallet production wiring
+4. Device path: Seal Proof → API/log stub
+5. Bridge flutter-runtime ↔ demo shell (Capacitor or WS)
+6. Mark features in `FEATURE_BIBLE.md` as built
 
 ---
 

@@ -5,6 +5,20 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-25 — Phase 2 integration readiness audit
+
+### Delivered
+- **`INTEGRATION_READINESS_AUDIT_2026-05-25.md`** — built vs wired vs designed; 30/60/90 day alive definition; ordered build queue
+- Runtime verification: `app/` ✅ · flutter-runtime **211 tests** ✅ · vision-v2 ✅ (after npm install)
+- Repo sweep: all 11 `iappmodel` repos cloned; feature branch 19 commits ahead of main
+
+### Next engineering (P0)
+1. Merge `reliability/wire-proof-collector-live-loop` → `main`
+2. Promote archive Supabase financial core
+3. POPS validator stub + pending wallet wire
+
+---
+
 ## 2026-05-25 — 4-tab product shell (ADR-014)
 
 ### Implemented

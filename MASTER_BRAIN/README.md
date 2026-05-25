@@ -6,18 +6,19 @@ This directory is the classified memory of the [ i ] Attention Wallet and Media 
 
 ## Start Here
 
-1. **[CANONICAL/i_SOURCE_OF_TRUTH.md](CANONICAL/i_SOURCE_OF_TRUTH.md)** — Product constitution (wins all conflicts)
-2. **[IVAULT_FULL_AUDIT_2026-05-25.md](IVAULT_FULL_AUDIT_2026-05-25.md)** — Full 56 GB archive audit (promote/keep/discard)
-3. **[DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md)** — Chronological work log
-4. **[PROMOTION_AND_DISCARD_QUEUE.md](PROMOTION_AND_DISCARD_QUEUE.md)** — Next actions
-5. **[RELATIONSHIPS/UNIVERSE_MAP.md](RELATIONSHIPS/UNIVERSE_MAP.md)** — **Cross-platform organism map** (entities + systems + loops)
-6. **[ENTITIES/INDEX.md](ENTITIES/INDEX.md)** — Elo, POP, iAM, iVatar
-7. **[SYSTEMS/INDEX.md](SYSTEMS/INDEX.md)** — Wallet, Eye Tracking, Studio, modules…
-8. **[MASTERBRAIN_STRUCTURE.md](MASTERBRAIN_STRUCTURE.md)** — How this corpus is organized
-9. **[REPOSITORY_MAP.md](REPOSITORY_MAP.md)** — Where evidence lives
-10. **[KNOWLEDGE_GRAPH.md](KNOWLEDGE_GRAPH.md)** — Concept map
-11. **[DUPLICATES_AND_CONFLICTS.md](DUPLICATES_AND_CONFLICTS.md)** — Competing implementations
-12. **[CANONICAL_CANDIDATES.md](CANONICAL_CANDIDATES.md)** — What should become canonical
+1. **[INTEGRATION_READINESS_AUDIT_2026-05-25.md](INTEGRATION_READINESS_AUDIT_2026-05-25.md)** — **Phase 2: what's built, what's next**
+2. **[RELATIONSHIPS/UNIVERSE_MAP.md](RELATIONSHIPS/UNIVERSE_MAP.md)** — organism map
+3. **[CANONICAL/i_SOURCE_OF_TRUTH.md](CANONICAL/i_SOURCE_OF_TRUTH.md)** — product constitution (wins all conflicts)
+4. **[IVAULT_FULL_AUDIT_2026-05-25.md](IVAULT_FULL_AUDIT_2026-05-25.md)** — Full 56 GB archive audit (promote/keep/discard)
+5. **[DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md)** — Chronological work log
+6. **[PROMOTION_AND_DISCARD_QUEUE.md](PROMOTION_AND_DISCARD_QUEUE.md)** — Next actions
+7. **[ENTITIES/INDEX.md](ENTITIES/INDEX.md)** — Elo, POP, iAM, iVatar
+8. **[SYSTEMS/INDEX.md](SYSTEMS/INDEX.md)** — Wallet, Eye Tracking, Studio, modules…
+9. **[MASTERBRAIN_STRUCTURE.md](MASTERBRAIN_STRUCTURE.md)** — How this corpus is organized
+10. **[REPOSITORY_MAP.md](REPOSITORY_MAP.md)** — Where evidence lives
+11. **[KNOWLEDGE_GRAPH.md](KNOWLEDGE_GRAPH.md)** — Concept map
+12. **[DUPLICATES_AND_CONFLICTS.md](DUPLICATES_AND_CONFLICTS.md)** — Competing implementations
+13. **[CANONICAL_CANDIDATES.md](CANONICAL_CANDIDATES.md)** — What should become canonical
 
 ## Domain Folders
 
