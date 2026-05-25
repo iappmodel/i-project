@@ -1,0 +1,892 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0a;--s1:#111;--s2:#171717;--s3:#1f1f1f;--s4:#272727;
+  --brd:rgba(255,255,255,0.06);--brd2:rgba(255,255,255,0.1);
+  --txt:#f0f0f0;--muted:rgba(255,255,255,0.38);--hint:rgba(255,255,255,0.18);
+  --gold:#EF9F27;--gold-l:rgba(239,159,39,0.1);--gold-b:rgba(239,159,39,0.3);
+  --blue:#378ADD;--blue-l:rgba(55,138,221,0.1);
+  --green:#1D9E75;--red:#E24B4A;--purple:#7F77DD;
+  --accent:#EF9F27;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+@keyframes slide-up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tool-pop{0%{transform:scale(0.85)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+@keyframes playhead{0%{left:0%}100%{left:calc(100% - 2px)}}
+
+.tool-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 6px;border-radius:10px;cursor:pointer;transition:all 0.18s;border:none;background:none;min-width:52px;flex-shrink:0}
+.tool-btn:hover{background:var(--s3)}
+.tool-btn.active{background:var(--gold-l);color:var(--gold)}
+.tool-btn .ico{font-size:20px;line-height:1}
+.tool-btn .lbl{font-size:9px;color:var(--muted);letter-spacing:0.04em;white-space:nowrap}
+.tool-btn.active .lbl{color:var(--gold)}
+
+.panel{position:absolute;bottom:0;left:0;right:0;background:var(--s1);border-top:0.5px solid var(--brd2);animation:slide-up 0.22s ease;z-index:20;max-height:220px;overflow-y:auto}
+
+.filter-chip{padding:6px 13px;border-radius:20px;font-size:11px;cursor:pointer;border:0.5px solid var(--brd2);white-space:nowrap;color:var(--muted);transition:all 0.15s;flex-shrink:0}
+.filter-chip.sel{border-color:var(--gold);background:var(--gold-l);color:var(--gold)}
+
+.clip-block{height:100%;border-radius:5px;position:absolute;cursor:ew-resize;overflow:hidden;display:flex;align-items:center;user-select:none}
+.trim-handle{width:9px;height:100%;background:rgba(255,255,255,0.18);cursor:ew-resize;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.trim-handle::after{content:'';width:2px;height:18px;background:rgba(255,255,255,0.5);border-radius:1px}
+
+.layer-row{height:36px;position:relative;background:var(--s2);border-radius:6px;overflow:hidden;border:0.5px solid var(--brd)}
+
+.speed-btn{padding:7px 14px;border-radius:8px;font-size:12px;cursor:pointer;border:0.5px solid var(--brd2);color:var(--muted);background:none;transition:all 0.15s}
+.speed-btn.sel{border-color:var(--gold);background:var(--gold-l);color:var(--gold)}
+
+.text-style{width:36px;height:36px;border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:0.5px solid var(--brd2);font-size:14px;color:var(--muted);transition:all 0.15s;flex-shrink:0}
+.text-style.sel{border-color:var(--gold);background:var(--gold-l);color:var(--gold)}
+
+.color-dot{width:24px;height:24px;border-radius:50%;cursor:pointer;flex-shrink:0;transition:transform 0.15s;border:1.5px solid transparent}
+.color-dot.sel{transform:scale(1.2);border-color:white}
+
+input[type=range]{accent-color:var(--gold);cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:3px}
+</style>
+
+<div style="background:var(--bg);height:700px;display:flex;flex-direction:column;position:relative;overflow:hidden;font-family:sans-serif">
+
+<!-- ══ TOP BAR ══ -->
+<div style="height:48px;border-bottom:0.5px solid var(--brd);display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0;background:var(--s1)">
+  <button onclick="exitStudio()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:0 4px;line-height:1">‹</button>
+  <span style="font-size:13px;font-weight:500;color:var(--txt)">Studio</span>
+  <span style="font-size:11px;color:var(--hint)">guitar_live_session.mp4</span>
+
+  <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+    <!-- undo/redo -->
+    <button id="undo-btn" onclick="undo()" style="background:var(--s3);border:0.5px solid var(--brd2);border-radius:7px;color:var(--muted);font-size:13px;padding:5px 10px;cursor:pointer">↩</button>
+    <button onclick="redo()" style="background:var(--s3);border:0.5px solid var(--brd2);border-radius:7px;color:var(--muted);font-size:13px;padding:5px 10px;cursor:pointer">↪</button>
+    <!-- aspect ratio -->
+    <div id="ar-toggle" onclick="cycleAspect()" style="background:var(--s3);border:0.5px solid var(--brd2);border-radius:7px;color:var(--muted);font-size:11px;padding:5px 10px;cursor:pointer;min-width:44px;text-align:center">9:16</div>
+    <button onclick="exportVideo()" style="background:var(--gold);border:none;border-radius:9px;padding:7px 16px;font-size:12px;font-weight:500;color:#1a0d00;cursor:pointer;letter-spacing:0.03em">Export →</button>
+  </div>
+</div>
+
+<!-- ══ MAIN AREA ══ -->
+<div style="flex:1;display:flex;min-height:0">
+
+  <!-- LEFT: LAYERS PANEL -->
+  <div style="width:54px;border-right:0.5px solid var(--brd);background:var(--s1);display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:6px;flex-shrink:0">
+    <div onclick="addLayer('video')" title="Add video" style="width:36px;height:36px;border-radius:8px;background:var(--s3);border:0.5px solid var(--brd2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--muted);transition:all 0.15s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--brd2)'">▤</div>
+    <div onclick="addLayer('text')" title="Add text layer" style="width:36px;height:36px;border-radius:8px;background:var(--s3);border:0.5px solid var(--brd2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--muted);font-weight:500;transition:all 0.15s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--brd2)'">T</div>
+    <div onclick="addLayer('sticker')" title="Add sticker" style="width:36px;height:36px;border-radius:8px;background:var(--s3);border:0.5px solid var(--brd2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all 0.15s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--brd2)'">★</div>
+    <div style="flex:1"></div>
+    <div onclick="toggleMute()" id="mute-btn" title="Mute/Unmute" style="width:36px;height:36px;border-radius:8px;background:var(--s3);border:0.5px solid var(--brd2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;color:var(--muted)">♪</div>
+  </div>
+
+  <!-- CENTER: PREVIEW + TIMELINE -->
+  <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+
+    <!-- PREVIEW WINDOW -->
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;background:#080808;position:relative;min-height:0" id="preview-area">
+      <!-- canvas frame -->
+      <div id="preview-frame" style="position:relative;background:#000;border-radius:6px;overflow:hidden;transition:all 0.3s" >
+        <!-- simulated video content -->
+        <div id="video-bg" style="position:absolute;inset:0;background:linear-gradient(135deg,#0a1c17 0%,#062013 100%);display:flex;align-items:center;justify-content:center">
+          <div style="display:flex;gap:4px;align-items:flex-end;height:50px" id="waveform-preview"></div>
+        </div>
+        <!-- filter overlay -->
+        <div id="filter-overlay" style="position:absolute;inset:0;pointer-events:none;transition:all 0.4s;border-radius:6px"></div>
+        <!-- brightness/contrast overlay -->
+        <div id="adj-overlay" style="position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;opacity:0;background:#fff;border-radius:6px"></div>
+
+        <!-- text overlay -->
+        <div id="text-overlays" style="position:absolute;inset:0;pointer-events:none"></div>
+        <!-- sticker overlays -->
+        <div id="sticker-overlays" style="position:absolute;inset:0;pointer-events:none"></div>
+
+        <!-- playhead indicator -->
+        <div id="play-indicator" style="position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(0,0,0,0.5)">
+          <div id="play-progress" style="height:100%;background:var(--gold);width:0%;transition:width 0.1s linear"></div>
+        </div>
+        <!-- watermark preview -->
+        <div id="watermark-el" style="position:absolute;bottom:10px;right:10px;font-size:10px;color:rgba(255,255,255,0.3);display:none">◈ platform</div>
+      </div>
+
+      <!-- play controls overlay -->
+      <div style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;background:rgba(0,0,0,0.65);border:0.5px solid var(--brd2);border-radius:30px;padding:8px 18px">
+        <div onclick="skipFrames(-10)" style="color:var(--muted);cursor:pointer;font-size:13px;user-select:none">-10s</div>
+        <div id="play-btn" onclick="togglePlay()" style="width:38px;height:38px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:#1a0d00;flex-shrink:0;transition:transform 0.15s" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">▶</div>
+        <div onclick="skipFrames(10)" style="color:var(--muted);cursor:pointer;font-size:13px;user-select:none">+10s</div>
+        <div style="width:0.5px;height:20px;background:var(--brd2)"></div>
+        <div id="time-display" style="font-size:12px;color:var(--muted);font-family:monospace;min-width:70px">0:00 / 0:47</div>
+      </div>
+
+      <!-- crop handles (shown when crop active) -->
+      <div id="crop-overlay" style="display:none;position:absolute;inset:0;pointer-events:none">
+        <div style="position:absolute;inset:20px;border:2px solid var(--gold);border-radius:4px">
+          <div style="position:absolute;top:-4px;left:-4px;width:12px;height:12px;background:var(--gold);border-radius:2px"></div>
+          <div style="position:absolute;top:-4px;right:-4px;width:12px;height:12px;background:var(--gold);border-radius:2px"></div>
+          <div style="position:absolute;bottom:-4px;left:-4px;width:12px;height:12px;background:var(--gold);border-radius:2px"></div>
+          <div style="position:absolute;bottom:-4px;right:-4px;width:12px;height:12px;background:var(--gold);border-radius:2px"></div>
+          <!-- rule of thirds -->
+          <div style="position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr 1fr">
+            <div style="border-right:0.5px solid rgba(255,255,255,0.2)"></div>
+            <div style="border-right:0.5px solid rgba(255,255,255,0.2)"></div>
+          </div>
+          <div style="position:absolute;inset:0;display:grid;grid-template-rows:1fr 1fr 1fr">
+            <div style="border-bottom:0.5px solid rgba(255,255,255,0.2)"></div>
+            <div style="border-bottom:0.5px solid rgba(255,255,255,0.2)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIMELINE -->
+    <div style="background:var(--s1);border-top:0.5px solid var(--brd);padding:10px 10px 0;flex-shrink:0" id="timeline-wrap">
+      <!-- time ruler -->
+      <div style="position:relative;height:16px;margin-bottom:6px;padding:0 2px">
+        <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--hint);font-family:monospace">
+          <span>0:00</span><span>0:10</span><span>0:20</span><span>0:30</span><span>0:40</span><span>0:47</span>
+        </div>
+        <!-- tick marks -->
+        <div id="ruler-ticks" style="position:absolute;bottom:0;left:0;right:0;height:6px;display:flex;justify-content:space-evenly">
+          <!-- generated by JS -->
+        </div>
+        <!-- playhead -->
+        <div id="timeline-playhead" style="position:absolute;top:0;bottom:-6px;width:2px;background:var(--gold);left:0%;border-radius:1px;pointer-events:none">
+          <div style="width:8px;height:8px;background:var(--gold);border-radius:50%;position:absolute;top:-3px;left:-3px"></div>
+        </div>
+      </div>
+
+      <!-- layers -->
+      <div style="display:flex;flex-direction:column;gap:5px;padding-bottom:10px" id="layers-container">
+        <!-- main video track -->
+        <div style="display:flex;gap:6px;align-items:center">
+          <div style="width:30px;font-size:9px;color:var(--hint);flex-shrink:0;text-align:right">VID</div>
+          <div class="layer-row" style="flex:1">
+            <div class="clip-block" style="left:0;width:100%;background:#1D3D2A;border:0.5px solid rgba(29,158,117,0.35)">
+              <div class="trim-handle"></div>
+              <div style="flex:1;display:flex;gap:2px;align-items:flex-end;height:18px;padding:0 4px;overflow:hidden">
+                <div style="width:3px;background:rgba(29,158,117,0.6);border-radius:1px;height:60%;animation:pulse 0.8s infinite;animation-delay:0s"></div>
+                <div style="width:3px;background:rgba(29,158,117,0.6);border-radius:1px;height:80%;animation:pulse 0.8s infinite;animation-delay:0.1s"></div>
+                <div style="width:3px;background:rgba(29,158,117,0.6);border-radius:1px;height:50%;animation:pulse 0.8s infinite;animation-delay:0.2s"></div>
+                <div style="width:3px;background:rgba(29,158,117,0.6);border-radius:1px;height:90%;animation:pulse 0.8s infinite;animation-delay:0.15s"></div>
+                <div style="width:3px;background:rgba(29,158,117,0.6);border-radius:1px;height:70%;animation:pulse 0.8s infinite;animation-delay:0.3s"></div>
+                <div style="width:3px;background:rgba(29,158,117,0.6);border-radius:1px;height:55%;animation:pulse 0.8s infinite;animation-delay:0.05s"></div>
+                <div style="width:3px;background:rgba(29,158,117,0.6);border-radius:1px;height:85%;animation:pulse 0.8s infinite;animation-delay:0.25s"></div>
+                <div style="width:3px;background:rgba(29,158,117,0.6);border-radius:1px;height:45%;animation:pulse 0.8s infinite;animation-delay:0.4s"></div>
+              </div>
+              <div class="trim-handle"></div>
+            </div>
+          </div>
+        </div>
+        <!-- audio track -->
+        <div style="display:flex;gap:6px;align-items:center" id="audio-track">
+          <div style="width:30px;font-size:9px;color:var(--hint);flex-shrink:0;text-align:right">AUD</div>
+          <div class="layer-row" style="flex:1;background:var(--s2)">
+            <div class="clip-block" style="left:0;width:100%;background:#162233;border:0.5px solid rgba(55,138,221,0.3)">
+              <div class="trim-handle" style="background:rgba(55,138,221,0.2)"></div>
+              <div style="flex:1;display:flex;gap:1.5px;align-items:center;height:18px;padding:0 4px;overflow:hidden">
+                <div style="width:2px;background:rgba(55,138,221,0.5);border-radius:1px;height:70%;animation:pulse 0.6s infinite;animation-delay:0s"></div>
+                <div style="width:2px;background:rgba(55,138,221,0.5);border-radius:1px;height:40%;animation:pulse 0.6s infinite;animation-delay:0.07s"></div>
+                <div style="width:2px;background:rgba(55,138,221,0.5);border-radius:1px;height:90%;animation:pulse 0.6s infinite;animation-delay:0.14s"></div>
+                <div style="width:2px;background:rgba(55,138,221,0.5);border-radius:1px;height:60%;animation:pulse 0.6s infinite;animation-delay:0.21s"></div>
+                <div style="width:2px;background:rgba(55,138,221,0.5);border-radius:1px;height:75%;animation:pulse 0.6s infinite;animation-delay:0.28s"></div>
+                <div style="width:2px;background:rgba(55,138,221,0.5);border-radius:1px;height:50%;animation:pulse 0.6s infinite;animation-delay:0.1s"></div>
+                <div style="width:2px;background:rgba(55,138,221,0.5);border-radius:1px;height:80%;animation:pulse 0.6s infinite;animation-delay:0.17s"></div>
+                <div style="width:2px;background:rgba(55,138,221,0.5);border-radius:1px;height:35%;animation:pulse 0.6s infinite;animation-delay:0.24s"></div>
+                <div style="width:2px;background:rgba(55,138,221,0.5);border-radius:1px;height:65%;animation:pulse 0.6s infinite;animation-delay:0.31s"></div>
+              </div>
+              <div class="trim-handle" style="background:rgba(55,138,221,0.2)"></div>
+            </div>
+          </div>
+        </div>
+        <!-- dynamic extra layers -->
+        <div id="extra-layers"></div>
+      </div>
+    </div>
+
+  </div><!-- /center -->
+
+  <!-- RIGHT: PROPERTIES PANEL -->
+  <div style="width:220px;border-left:0.5px solid var(--brd);background:var(--s1);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden" id="props-panel">
+    <div style="padding:10px 14px;border-bottom:0.5px solid var(--brd);font-size:10px;color:var(--hint);letter-spacing:0.07em;text-transform:uppercase" id="props-title">Adjustments</div>
+    <div style="flex:1;overflow-y:auto;padding:12px 14px" id="props-content">
+      <!-- adjustments -->
+      <div id="adj-props">
+        <div style="margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px"><span style="color:var(--muted)">Brightness</span><span style="color:var(--txt);font-family:monospace" id="brightness-val">0</span></div>
+          <input type="range" id="brightness" min="-100" max="100" value="0" oninput="adjustments()" style="width:100%">
+        </div>
+        <div style="margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px"><span style="color:var(--muted)">Contrast</span><span style="color:var(--txt);font-family:monospace" id="contrast-val">0</span></div>
+          <input type="range" id="contrast" min="-100" max="100" value="0" oninput="adjustments()" style="width:100%">
+        </div>
+        <div style="margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px"><span style="color:var(--muted)">Saturation</span><span style="color:var(--txt);font-family:monospace" id="saturation-val">0</span></div>
+          <input type="range" id="saturation" min="-100" max="100" value="0" oninput="adjustments()" style="width:100%">
+        </div>
+        <div style="margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px"><span style="color:var(--muted)">Exposure</span><span style="color:var(--txt);font-family:monospace" id="exposure-val">0</span></div>
+          <input type="range" id="exposure" min="-100" max="100" value="0" oninput="adjustments()" style="width:100%">
+        </div>
+        <div style="margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px"><span style="color:var(--muted)">Warmth</span><span style="color:var(--txt);font-family:monospace" id="warmth-val">0</span></div>
+          <input type="range" id="warmth" min="-100" max="100" value="0" oninput="adjustments()" style="width:100%">
+        </div>
+        <div style="margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px"><span style="color:var(--muted)">Sharpness</span><span style="color:var(--txt);font-family:monospace" id="sharpness-val">0</span></div>
+          <input type="range" id="sharpness" min="0" max="100" value="0" oninput="adjustments()" style="width:100%">
+        </div>
+        <div style="margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px"><span style="color:var(--muted)">Vignette</span><span style="color:var(--txt);font-family:monospace" id="vignette-val">0</span></div>
+          <input type="range" id="vignette" min="0" max="100" value="0" oninput="adjustments()" style="width:100%">
+        </div>
+        <div style="margin-bottom:6px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px"><span style="color:var(--muted)">Fade</span><span style="color:var(--txt);font-family:monospace" id="fade-val">0</span></div>
+          <input type="range" id="fade" min="0" max="100" value="0" oninput="adjustments()" style="width:100%">
+        </div>
+        <button onclick="resetAdj()" style="width:100%;margin-top:10px;padding:8px;border-radius:8px;background:var(--s3);border:0.5px solid var(--brd2);color:var(--muted);font-size:11px;cursor:pointer">Reset all</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- ══ BOTTOM TOOLBAR ══ -->
+<div style="background:var(--s1);border-top:0.5px solid var(--brd);padding:8px 0;flex-shrink:0">
+  <div style="display:flex;overflow-x:auto;padding:0 10px;gap:2px;scrollbar-width:none">
+    <button class="tool-btn active" id="tb-trim" onclick="activateTool('trim')"><div class="ico">✂</div><div class="lbl">Trim</div></button>
+    <button class="tool-btn" id="tb-split" onclick="activateTool('split')"><div class="ico">⊕</div><div class="lbl">Split</div></button>
+    <button class="tool-btn" id="tb-filter" onclick="activateTool('filter')"><div class="ico">◑</div><div class="lbl">Filter</div></button>
+    <button class="tool-btn" id="tb-text" onclick="activateTool('text')"><div class="ico">T</div><div class="lbl">Text</div></button>
+    <button class="tool-btn" id="tb-sticker" onclick="activateTool('sticker')"><div class="ico">★</div><div class="lbl">Sticker</div></button>
+    <button class="tool-btn" id="tb-music" onclick="activateTool('music')"><div class="ico">♫</div><div class="lbl">Music</div></button>
+    <button class="tool-btn" id="tb-speed" onclick="activateTool('speed')"><div class="ico">⚡</div><div class="lbl">Speed</div></button>
+    <button class="tool-btn" id="tb-transition" onclick="activateTool('transition')"><div class="ico">⟿</div><div class="lbl">Transition</div></button>
+    <button class="tool-btn" id="tb-voice" onclick="activateTool('voice')"><div class="ico">⏺</div><div class="lbl">Voiceover</div></button>
+    <button class="tool-btn" id="tb-crop" onclick="activateTool('crop')"><div class="ico">⊡</div><div class="lbl">Crop</div></button>
+    <button class="tool-btn" id="tb-ai" onclick="activateTool('ai')"><div class="ico">✦</div><div class="lbl">AI Tools</div></button>
+    <button class="tool-btn" id="tb-caption" onclick="activateTool('caption')"><div class="ico">⊟</div><div class="lbl">Captions</div></button>
+  </div>
+</div>
+
+<!-- ══ TOOL PANELS ══ -->
+
+<!-- FILTER PANEL -->
+<div id="panel-filter" class="panel" style="display:none;padding:14px 16px">
+  <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none">
+    <div class="filter-chip sel" id="fc-none" onclick="setFilter('none','fc-none')">None</div>
+    <div class="filter-chip" id="fc-film" onclick="setFilter('film','fc-film')">Film</div>
+    <div class="filter-chip" id="fc-vivid" onclick="setFilter('vivid','fc-vivid')">Vivid</div>
+    <div class="filter-chip" id="fc-matte" onclick="setFilter('matte','fc-matte')">Matte</div>
+    <div class="filter-chip" id="fc-noir" onclick="setFilter('noir','fc-noir')">Noir</div>
+    <div class="filter-chip" id="fc-warm" onclick="setFilter('warm','fc-warm')">Warm</div>
+    <div class="filter-chip" id="fc-cool" onclick="setFilter('cool','fc-cool')">Cool</div>
+    <div class="filter-chip" id="fc-fade" onclick="setFilter('fade','fc-fade')">Fade</div>
+    <div class="filter-chip" id="fc-glow" onclick="setFilter('glow','fc-glow')">Glow</div>
+    <div class="filter-chip" id="fc-retro" onclick="setFilter('retro','fc-retro')">Retro</div>
+    <div class="filter-chip" id="fc-punch" onclick="setFilter('punch','fc-punch')">Punch</div>
+    <div class="filter-chip" id="fc-haze" onclick="setFilter('haze','fc-haze')">Haze</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+    <span style="font-size:11px;color:var(--muted)">Intensity</span>
+    <input type="range" id="filter-intensity" min="0" max="100" value="80" oninput="updateFilterIntensity()" style="flex:1;accent-color:var(--gold)">
+    <span style="font-size:11px;color:var(--txt);font-family:monospace" id="filter-int-val">80</span>
+  </div>
+</div>
+
+<!-- TEXT PANEL -->
+<div id="panel-text" class="panel" style="display:none;padding:14px 16px">
+  <div style="display:flex;gap:8px;align-items:stretch;margin-bottom:10px">
+    <input id="text-input" placeholder="Type your text…" style="flex:1;background:var(--s3);border:0.5px solid var(--brd2);border-radius:8px;padding:9px 12px;color:var(--txt);font-size:13px;outline:none" oninput="updateTextPreview()">
+    <button onclick="addTextOverlay()" style="background:var(--gold);border:none;border-radius:8px;padding:9px 14px;font-size:12px;color:#1a0d00;cursor:pointer;font-weight:500">Add</button>
+  </div>
+  <div style="display:flex;gap:6px;margin-bottom:10px">
+    <div class="text-style sel" id="ts-regular" onclick="setTextStyle('regular')">Aa</div>
+    <div class="text-style" id="ts-bold" onclick="setTextStyle('bold')" style="font-weight:700">B</div>
+    <div class="text-style" id="ts-italic" onclick="setTextStyle('italic')" style="font-style:italic">I</div>
+    <div class="text-style" id="ts-outline" onclick="setTextStyle('outline')" style="-webkit-text-stroke:1px white;color:transparent;font-weight:700">O</div>
+    <div class="text-style" id="ts-shadow" onclick="setTextStyle('shadow')" style="text-shadow:2px 2px 4px rgba(0,0,0,0.8)">S</div>
+    <div class="text-style" id="ts-glow" onclick="setTextStyle('glow')" style="text-shadow:0 0 8px var(--gold);color:var(--gold)">G</div>
+  </div>
+  <div style="display:flex;gap:7px;align-items:center;margin-bottom:8px">
+    <span style="font-size:11px;color:var(--muted)">Color</span>
+    <div class="color-dot sel" style="background:#ffffff" onclick="setTextColor('#fff',this)"></div>
+    <div class="color-dot" style="background:#EF9F27" onclick="setTextColor('#EF9F27',this)"></div>
+    <div class="color-dot" style="background:#E24B4A" onclick="setTextColor('#E24B4A',this)"></div>
+    <div class="color-dot" style="background:#378ADD" onclick="setTextColor('#378ADD',this)"></div>
+    <div class="color-dot" style="background:#1D9E75" onclick="setTextColor('#1D9E75',this)"></div>
+    <div class="color-dot" style="background:#7F77DD" onclick="setTextColor('#7F77DD',this)"></div>
+    <div class="color-dot" style="background:#0a0a0a;border:0.5px solid var(--brd2)" onclick="setTextColor('#000',this)"></div>
+    <span style="font-size:11px;color:var(--muted);margin-left:4px">Size</span>
+    <input type="range" id="text-size" min="10" max="48" value="24" style="flex:1;accent-color:var(--gold)">
+  </div>
+  <div style="display:flex;gap:6px;overflow-x:auto;scrollbar-width:none">
+    <div class="filter-chip" onclick="setFont('sans-serif')">Default</div>
+    <div class="filter-chip" onclick="setFont('serif')">Serif</div>
+    <div class="filter-chip" onclick="setFont('monospace')">Mono</div>
+    <div class="filter-chip" onclick="setFont('cursive')">Script</div>
+    <div class="filter-chip" onclick="setFont('fantasy')">Display</div>
+  </div>
+</div>
+
+<!-- STICKER PANEL -->
+<div id="panel-sticker" class="panel" style="display:none;padding:14px 16px">
+  <div style="font-size:10px;color:var(--hint);letter-spacing:0.06em;margin-bottom:8px">TRENDING</div>
+  <div style="display:flex;flex-wrap:wrap;gap:6px">
+    <div onclick="dropSticker('🎸')" style="width:38px;height:38px;border-radius:9px;background:var(--s3);border:0.5px solid var(--brd2);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;transition:transform 0.15s" onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform='scale(1)'">🎸</div>
+    <div onclick="dropSticker('🔥')" style="width:38px;height:38px;border-radius:9px;background:var(--s3);border:0.5px solid var(--brd2);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;transition:transform 0.15s" onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform='scale(1)'">🔥</div>
+    <div onclick="dropSticker('⭐')" style="width:38px;height:38px;border-radius:9px;background:var(--s3);border:0.5px solid var(--brd2);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;transition:transform 0.15s" onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform='scale(1)'">⭐</div>
+    <div onclick="dropSticker('💥')" style="width:38px;height:38px;border-radius:9px;background:var(--s3);border:0.5px solid var(--brd2);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;transition:transform 0.15s" onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform='scale(1)'">💥</div>
+    <div onclick="dropSticker('❤')" style="width:38px;height:38px;border-radius:9px;background:var(--s3);border:0.5px solid var(--brd2);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;transition:transform 0.15s" onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform='scale(1)'">❤</div>
+    <div onclick="dropSticker('🎵')" style="width:38px;height:38px;border-radius:9px;background:var(--s3);border:0.5px solid var(--brd2);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;transition:transform 0.15s" onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform='scale(1)'">🎵</div>
+    <div onclick="dropSticker('✨')" style="width:38px;height:38px;border-radius:9px;background:var(--s3);border:0.5px solid var(--brd2);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;transition:transform 0.15s" onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform='scale(1)'">✨</div>
+    <div onclick="dropSticker('📍')" style="width:38px;height:38px;border-radius:9px;background:var(--s3);border:0.5px solid var(--brd2);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;transition:transform 0.15s" onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform='scale(1)'">📍</div>
+    <div onclick="dropSticker('🏆')" style="width:38px;height:38px;border-radius:9px;background:var(--s3);border:0.5px solid var(--brd2);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;transition:transform 0.15s" onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform='scale(1)'">🏆</div>
+    <div onclick="dropSticker('⚡')" style="width:38px;height:38px;border-radius:9px;background:var(--s3);border:0.5px solid var(--brd2);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;transition:transform 0.15s" onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform='scale(1)'">⚡</div>
+    <div onclick="dropSticker('◈')" style="width:38px;height:38px;border-radius:9px;background:var(--gold-l);border:0.5px solid var(--gold-b);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;color:var(--gold);transition:transform 0.15s" onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform='scale(1)'">◈</div>
+    <div onclick="dropSticker('💰')" style="width:38px;height:38px;border-radius:9px;background:var(--s3);border:0.5px solid var(--brd2);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;transition:transform 0.15s" onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform='scale(1)'">💰</div>
+  </div>
+</div>
+
+<!-- MUSIC PANEL -->
+<div id="panel-music" class="panel" style="display:none;padding:14px 16px">
+  <div style="display:flex;gap:8px;margin-bottom:10px">
+    <button class="filter-chip sel" id="mu-library" onclick="musicTab('library')">Library</button>
+    <button class="filter-chip" id="mu-original" onclick="musicTab('original')">Original audio</button>
+    <button class="filter-chip" id="mu-extract" onclick="musicTab('extract')">Extract audio</button>
+  </div>
+  <div id="music-library" style="display:flex;flex-direction:column;gap:6px">
+    <div class="music-row" onclick="selectTrack(this,'Indie Acoustic Lo-fi')" style="display:flex;align-items:center;gap:10px;padding:9px 11px;background:var(--gold-l);border:0.5px solid var(--gold-b);border-radius:9px;cursor:pointer">
+      <div style="width:30px;height:30px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:12px;color:#1a0d00;flex-shrink:0">▶</div>
+      <div style="flex:1;min-width:0"><div style="font-size:12px;color:var(--gold);font-weight:500">Indie Acoustic Lo-fi</div><div style="font-size:10px;color:rgba(239,159,39,0.5)">2:14 · Recommended</div></div>
+      <div style="font-size:10px;color:var(--gold)">✓ added</div>
+    </div>
+    <div class="music-row" onclick="selectTrack(this,'Upbeat Motivational')" style="display:flex;align-items:center;gap:10px;padding:9px 11px;background:var(--s2);border:0.5px solid var(--brd);border-radius:9px;cursor:pointer">
+      <div style="width:30px;height:30px;border-radius:50%;background:var(--s4);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted);flex-shrink:0">▶</div>
+      <div style="flex:1;min-width:0"><div style="font-size:12px;color:var(--txt)">Upbeat Motivational</div><div style="font-size:10px;color:var(--hint)">1:48 · Trending</div></div>
+      <div style="font-size:10px;color:var(--hint)">+ use</div>
+    </div>
+    <div class="music-row" onclick="selectTrack(this,'Cinematic Build')" style="display:flex;align-items:center;gap:10px;padding:9px 11px;background:var(--s2);border:0.5px solid var(--brd);border-radius:9px;cursor:pointer">
+      <div style="width:30px;height:30px;border-radius:50%;background:var(--s4);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted);flex-shrink:0">▶</div>
+      <div style="flex:1;min-width:0"><div style="font-size:12px;color:var(--txt)">Cinematic Build</div><div style="font-size:10px;color:var(--hint)">3:02 · Licensed free</div></div>
+      <div style="font-size:10px;color:var(--hint)">+ use</div>
+    </div>
+  </div>
+</div>
+
+<!-- SPEED PANEL -->
+<div id="panel-speed" class="panel" style="display:none;padding:14px 16px">
+  <div style="display:flex;gap:7px;justify-content:center;margin-bottom:12px">
+    <button class="speed-btn" onclick="setSpeed(0.3,this)">0.3x</button>
+    <button class="speed-btn" onclick="setSpeed(0.5,this)">0.5x</button>
+    <button class="speed-btn" onclick="setSpeed(0.75,this)">0.75x</button>
+    <button class="speed-btn sel" onclick="setSpeed(1,this)" id="speed-1x">1x</button>
+    <button class="speed-btn" onclick="setSpeed(1.5,this)">1.5x</button>
+    <button class="speed-btn" onclick="setSpeed(2,this)">2x</button>
+    <button class="speed-btn" onclick="setSpeed(3,this)">3x</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <span style="font-size:11px;color:var(--muted)">Speed</span>
+    <input type="range" id="speed-fine" min="10" max="400" value="100" oninput="setSpeedFine()" style="flex:1;accent-color:var(--gold)">
+    <span style="font-size:12px;color:var(--gold);font-family:monospace;min-width:36px" id="speed-val">1x</span>
+  </div>
+  <div style="margin-top:10px;display:flex;align-items:center;justify-content:space-between">
+    <span style="font-size:11px;color:var(--muted)">Smooth slow-mo</span>
+    <div id="slowmo-toggle" onclick="toggleSlowmo()" style="width:36px;height:20px;border-radius:10px;background:var(--s4);border:0.5px solid var(--brd2);cursor:pointer;position:relative;transition:all 0.2s">
+      <div id="slowmo-knob" style="position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--muted);transition:all 0.2s"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TRANSITION PANEL -->
+<div id="panel-transition" class="panel" style="display:none;padding:14px 16px">
+  <div style="font-size:10px;color:var(--hint);letter-spacing:0.06em;margin-bottom:10px">TRANSITION STYLE</div>
+  <div style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none">
+    <div class="filter-chip sel" onclick="selectTransition(this,'none')">None</div>
+    <div class="filter-chip" onclick="selectTransition(this,'fade')">Fade</div>
+    <div class="filter-chip" onclick="selectTransition(this,'slide')">Slide</div>
+    <div class="filter-chip" onclick="selectTransition(this,'zoom')">Zoom</div>
+    <div class="filter-chip" onclick="selectTransition(this,'spin')">Spin</div>
+    <div class="filter-chip" onclick="selectTransition(this,'glitch')">Glitch</div>
+    <div class="filter-chip" onclick="selectTransition(this,'flash')">Flash</div>
+    <div class="filter-chip" onclick="selectTransition(this,'blur')">Blur</div>
+    <div class="filter-chip" onclick="selectTransition(this,'wipe')">Wipe</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
+    <span style="font-size:11px;color:var(--muted)">Duration</span>
+    <input type="range" min="1" max="20" value="5" style="flex:1;accent-color:var(--gold)" oninput="this.nextElementSibling.textContent=(this.value/10).toFixed(1)+'s'">
+    <span style="font-size:11px;color:var(--txt);font-family:monospace;min-width:28px">0.5s</span>
+  </div>
+</div>
+
+<!-- VOICEOVER PANEL -->
+<div id="panel-voice" class="panel" style="display:none;padding:14px 16px">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div id="rec-btn" onclick="toggleRecord()" style="width:52px;height:52px;border-radius:50%;border:2px solid var(--red);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all 0.2s">
+      <div style="width:20px;height:20px;border-radius:50%;background:var(--red)"></div>
+    </div>
+    <div>
+      <div id="rec-status" style="font-size:13px;font-weight:500;color:var(--txt)">Ready to record</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">Tap the button to start</div>
+    </div>
+    <div id="rec-timer" style="font-family:monospace;font-size:20px;color:var(--red);margin-left:auto;display:none;animation:blink 1s infinite">0:00</div>
+  </div>
+  <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+    <span style="font-size:11px;color:var(--muted)">Mic volume</span>
+    <input type="range" min="0" max="100" value="85" style="flex:1;accent-color:var(--gold)">
+    <span style="font-size:11px;color:var(--muted)">Noise cancel</span>
+    <div style="width:36px;height:20px;border-radius:10px;background:var(--gold);border:0.5px solid var(--gold-b);cursor:pointer;position:relative">
+      <div style="position:absolute;top:2px;right:2px;width:16px;height:16px;border-radius:50%;background:#fff"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CROP PANEL -->
+<div id="panel-crop" class="panel" style="display:none;padding:14px 16px">
+  <div style="display:flex;gap:8px;justify-content:center;margin-bottom:10px">
+    <div class="filter-chip sel" onclick="setCrop(this,'free')">Free</div>
+    <div class="filter-chip" onclick="setCrop(this,'9:16')">9:16</div>
+    <div class="filter-chip" onclick="setCrop(this,'1:1')">1:1</div>
+    <div class="filter-chip" onclick="setCrop(this,'4:5')">4:5</div>
+    <div class="filter-chip" onclick="setCrop(this,'16:9')">16:9</div>
+    <div class="filter-chip" onclick="setCrop(this,'4:3')">4:3</div>
+  </div>
+  <div style="display:flex;gap:8px;justify-content:center">
+    <button onclick="rotateCW()" style="padding:8px 18px;border-radius:8px;background:var(--s3);border:0.5px solid var(--brd2);color:var(--muted);font-size:13px;cursor:pointer">↻ Rotate</button>
+    <button onclick="flipH()" style="padding:8px 18px;border-radius:8px;background:var(--s3);border:0.5px solid var(--brd2);color:var(--muted);font-size:13px;cursor:pointer">⇄ Flip H</button>
+    <button onclick="flipV()" style="padding:8px 18px;border-radius:8px;background:var(--s3);border:0.5px solid var(--brd2);color:var(--muted);font-size:13px;cursor:pointer">⇅ Flip V</button>
+  </div>
+</div>
+
+<!-- AI TOOLS PANEL -->
+<div id="panel-ai" class="panel" style="display:none;padding:14px 16px">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+    <div onclick="runAI('bg-remove')" style="background:var(--s2);border:0.5px solid var(--brd2);border-radius:10px;padding:11px 12px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--brd2)'">
+      <div style="font-size:16px;margin-bottom:4px">✦</div>
+      <div style="font-size:12px;font-weight:500;color:var(--txt)">BG Remove</div>
+      <div style="font-size:10px;color:var(--hint);margin-top:2px">AI-powered cutout</div>
+    </div>
+    <div onclick="runAI('auto-caption')" style="background:var(--s2);border:0.5px solid var(--brd2);border-radius:10px;padding:11px 12px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--brd2)'">
+      <div style="font-size:16px;margin-bottom:4px">⊟</div>
+      <div style="font-size:12px;font-weight:500;color:var(--txt)">Auto Caption</div>
+      <div style="font-size:10px;color:var(--hint);margin-top:2px">Transcribe & style</div>
+    </div>
+    <div onclick="runAI('enhance')" style="background:var(--s2);border:0.5px solid var(--brd2);border-radius:10px;padding:11px 12px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--brd2)'">
+      <div style="font-size:16px;margin-bottom:4px">◐</div>
+      <div style="font-size:12px;font-weight:500;color:var(--txt)">Enhance</div>
+      <div style="font-size:10px;color:var(--hint);margin-top:2px">Upscale & denoise</div>
+    </div>
+    <div onclick="runAI('smart-cut')" style="background:var(--s2);border:0.5px solid var(--brd2);border-radius:10px;padding:11px 12px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--brd2)'">
+      <div style="font-size:16px;margin-bottom:4px">✂</div>
+      <div style="font-size:12px;font-weight:500;color:var(--txt)">Smart Cut</div>
+      <div style="font-size:10px;color:var(--hint);margin-top:2px">Remove silences</div>
+    </div>
+    <div onclick="runAI('reframe')" style="background:var(--s2);border:0.5px solid var(--brd2);border-radius:10px;padding:11px 12px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--brd2)'">
+      <div style="font-size:16px;margin-bottom:4px">⊡</div>
+      <div style="font-size:12px;font-weight:500;color:var(--txt)">Auto Reframe</div>
+      <div style="font-size:10px;color:var(--hint);margin-top:2px">Follow the subject</div>
+    </div>
+    <div onclick="runAI('voice-change')" style="background:var(--s2);border:0.5px solid var(--brd2);border-radius:10px;padding:11px 12px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--brd2)'">
+      <div style="font-size:16px;margin-bottom:4px">⏺</div>
+      <div style="font-size:12px;font-weight:500;color:var(--txt)">Voice Changer</div>
+      <div style="font-size:10px;color:var(--hint);margin-top:2px">Real-time effects</div>
+    </div>
+  </div>
+  <div id="ai-status" style="margin-top:10px;display:none;text-align:center;font-size:12px;color:var(--gold)"></div>
+</div>
+
+<!-- CAPTION PANEL -->
+<div id="panel-caption" class="panel" style="display:none;padding:14px 16px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+    <span style="font-size:12px;color:var(--muted)">Auto-generated captions</span>
+    <button onclick="generateCaptions()" style="background:var(--gold);border:none;border-radius:7px;padding:6px 13px;font-size:11px;font-weight:500;color:#1a0d00;cursor:pointer">Generate</button>
+  </div>
+  <div style="display:flex;gap:7px;margin-bottom:10px;overflow-x:auto;scrollbar-width:none">
+    <div class="filter-chip sel">Subtitles</div>
+    <div class="filter-chip">Bold pop</div>
+    <div class="filter-chip">Minimal</div>
+    <div class="filter-chip">Karaoke</div>
+    <div class="filter-chip">Outline</div>
+  </div>
+  <div id="caption-preview" style="background:var(--s2);border-radius:8px;padding:10px;font-size:11px;color:var(--hint)">
+    Tap Generate to transcribe your video automatically
+  </div>
+</div>
+
+<!-- EXPORT MODAL -->
+<div id="export-modal" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,0.75);z-index:100;display:none;align-items:center;justify-content:center">
+  <div style="background:var(--s1);border:0.5px solid var(--brd2);border-radius:18px;padding:22px;width:270px;animation:slide-up 0.25s ease">
+    <div style="font-size:15px;font-weight:500;color:var(--txt);margin-bottom:4px">Export settings</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Your video will be added to the campaign</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--hint)">Resolution</span><span style="color:var(--txt)">1080 × 1920</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--hint)">Format</span><span style="color:var(--txt)">MP4 · H.264</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--hint)">Duration</span><span style="color:var(--txt)">0:47</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--hint)">Est. size</span><span style="color:var(--txt)">~28 MB</span></div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button onclick="closeExport()" style="flex:1;padding:11px;border-radius:10px;background:var(--s3);border:0.5px solid var(--brd2);color:var(--muted);font-size:13px;cursor:pointer">Cancel</button>
+      <button onclick="confirmExport()" style="flex:1;padding:11px;border-radius:10px;background:var(--gold);border:none;color:#1a0d00;font-size:13px;font-weight:500;cursor:pointer">Use in campaign →</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+let isPlaying=false, playInterval=null, currentTime=0, totalDur=47;
+let activeTool='trim', isRecording=false, recInterval=null, recSecs=0;
+let muted=false, slowmo=false, previewRot=0, previewFlipH=false, previewFlipV=false;
+let aspects=['9:16','1:1','16:9','4:5'], aspectIdx=0;
+let undoStack=[], extraLayerCount=0;
+
+const FILTERS={
+  none:{filter:'none', overlay:'none', vignette:false},
+  film:{filter:'sepia(0.4) contrast(1.1)', overlay:'rgba(255,240,200,0.05)', vignette:true},
+  vivid:{filter:'saturate(1.6) contrast(1.1)', overlay:'none', vignette:false},
+  matte:{filter:'contrast(0.9) saturate(0.8) brightness(1.05)', overlay:'rgba(255,255,255,0.06)', vignette:false},
+  noir:{filter:'grayscale(1) contrast(1.2)', overlay:'none', vignette:true},
+  warm:{filter:'sepia(0.25) saturate(1.3)', overlay:'rgba(255,180,80,0.08)', vignette:false},
+  cool:{filter:'hue-rotate(20deg) saturate(0.9) brightness(1.05)', overlay:'rgba(80,120,255,0.07)', vignette:false},
+  fade:{filter:'brightness(1.1) contrast(0.85) saturate(0.85)', overlay:'rgba(255,255,255,0.08)', vignette:false},
+  glow:{filter:'brightness(1.2) contrast(1.05) saturate(1.2)', overlay:'rgba(255,255,200,0.05)', vignette:false},
+  retro:{filter:'sepia(0.6) contrast(1.1) saturate(0.8)', overlay:'rgba(255,150,0,0.07)', vignette:true},
+  punch:{filter:'contrast(1.3) saturate(1.4)', overlay:'none', vignette:true},
+  haze:{filter:'brightness(1.15) contrast(0.8) saturate(0.7)', overlay:'rgba(200,210,255,0.1)', vignette:false}
+};
+let currentFilter='none';
+
+function applyFilter(){
+  const bg=document.getElementById('video-bg');
+  const fo=document.getElementById('filter-overlay');
+  const f=FILTERS[currentFilter];
+  bg.style.filter=f.filter;
+  if(f.overlay!=='none'){fo.style.background=f.overlay;fo.style.opacity='1';}
+  else{fo.style.opacity='0';}
+  if(f.vignette){fo.style.boxShadow='inset 0 0 40px rgba(0,0,0,0.6)';}
+  else{fo.style.boxShadow='none';}
+}
+
+function setFilter(name,chipId){
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('sel'));
+  document.getElementById(chipId).classList.add('sel');
+  currentFilter=name; applyFilter();
+}
+
+function updateFilterIntensity(){
+  document.getElementById('filter-int-val').textContent=document.getElementById('filter-intensity').value;
+}
+
+function activateTool(t){
+  document.querySelectorAll('.tool-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tb-'+t).classList.add('active');
+  activeTool=t;
+  ['filter','text','sticker','music','speed','transition','voice','crop','ai','caption'].forEach(p=>{
+    const el=document.getElementById('panel-'+p);
+    if(el) el.style.display='none';
+  });
+  if(t!=='trim'&&t!=='split'){
+    const p=document.getElementById('panel-'+t);
+    if(p) p.style.display='block';
+  }
+  document.getElementById('crop-overlay').style.display=(t==='crop')?'flex':'none';
+  updatePropsPanel(t);
+}
+
+function updatePropsPanel(t){
+  const title=document.getElementById('props-title');
+  const content=document.getElementById('props-content');
+  if(t==='trim'||t==='filter'||t==='speed'||t==='crop'){
+    title.textContent='Adjustments';
+    document.getElementById('adj-props').style.display='block';
+  } else if(t==='text'){
+    title.textContent='Text';
+    document.getElementById('adj-props').style.display='none';
+  } else if(t==='music'){
+    title.textContent='Audio mix';
+    document.getElementById('adj-props').style.display='block';
+  } else {
+    title.textContent='Adjustments';
+    document.getElementById('adj-props').style.display='block';
+  }
+}
+
+function adjustments(){
+  const b=document.getElementById('brightness').value;
+  const c=document.getElementById('contrast').value;
+  const s=document.getElementById('saturation').value;
+  const e=document.getElementById('exposure').value;
+  const w=document.getElementById('warmth').value;
+  document.getElementById('brightness-val').textContent=b;
+  document.getElementById('contrast-val').textContent=c;
+  document.getElementById('saturation-val').textContent=s;
+  document.getElementById('exposure-val').textContent=e;
+  document.getElementById('warmth-val').textContent=w;
+  document.getElementById('sharpness-val').textContent=document.getElementById('sharpness').value;
+  document.getElementById('vignette-val').textContent=document.getElementById('vignette').value;
+  document.getElementById('fade-val').textContent=document.getElementById('fade').value;
+  const bg=document.getElementById('video-bg');
+  const bAdj=(parseFloat(b)/100)*0.5+1;
+  const cAdj=(parseFloat(c)/100)*0.5+1;
+  const sAdj=(parseFloat(s)/100)*0.8+1;
+  const wAdj=parseFloat(w);
+  bg.style.filter=FILTERS[currentFilter].filter+` brightness(${bAdj}) contrast(${cAdj}) saturate(${sAdj})`;
+  if(wAdj>0){document.getElementById('adj-overlay').style.opacity=(wAdj/100)*0.15;document.getElementById('adj-overlay').style.background='rgba(255,160,60,1)';}
+  else if(wAdj<0){document.getElementById('adj-overlay').style.opacity=(Math.abs(wAdj)/100)*0.1;document.getElementById('adj-overlay').style.background='rgba(60,100,255,1)';}
+  else{document.getElementById('adj-overlay').style.opacity='0';}
+}
+
+function resetAdj(){
+  ['brightness','contrast','saturation','exposure','warmth','sharpness','vignette','fade'].forEach(id=>{
+    document.getElementById(id).value=0;
+    const v=document.getElementById(id+'-val');
+    if(v) v.textContent=0;
+  });
+  document.getElementById('video-bg').style.filter=FILTERS[currentFilter].filter;
+  document.getElementById('adj-overlay').style.opacity='0';
+}
+
+function togglePlay(){
+  isPlaying=!isPlaying;
+  document.getElementById('play-btn').textContent=isPlaying?'⏸':'▶';
+  if(isPlaying){
+    playInterval=setInterval(()=>{
+      currentTime+=0.1;
+      if(currentTime>=totalDur){currentTime=0;}
+      updateTimeDisplay();
+    },100);
+  } else {clearInterval(playInterval);}
+}
+
+function updateTimeDisplay(){
+  const s=Math.floor(currentTime), tot=Math.floor(totalDur);
+  document.getElementById('time-display').textContent=fmt(s)+' / '+fmt(tot);
+  document.getElementById('play-progress').style.width=(currentTime/totalDur*100)+'%';
+  document.getElementById('timeline-playhead').style.left=(currentTime/totalDur*100)+'%';
+}
+
+function fmt(s){return Math.floor(s/60)+':'+(s%60<10?'0':'')+s%60;}
+function skipFrames(d){currentTime=Math.max(0,Math.min(totalDur,currentTime+d));updateTimeDisplay();}
+
+function setSpeed(v,btn){
+  document.querySelectorAll('.speed-btn').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  document.getElementById('speed-fine').value=v*100;
+  document.getElementById('speed-val').textContent=v+'x';
+}
+
+function setSpeedFine(){
+  const v=(document.getElementById('speed-fine').value/100).toFixed(2);
+  document.getElementById('speed-val').textContent=v+'x';
+  document.querySelectorAll('.speed-btn').forEach(b=>b.classList.remove('sel'));
+}
+
+function toggleSlowmo(){
+  slowmo=!slowmo;
+  const t=document.getElementById('slowmo-toggle');
+  const k=document.getElementById('slowmo-knob');
+  t.style.background=slowmo?'var(--gold)':'var(--s4)';
+  k.style.left=slowmo?'18px':'2px';
+  k.style.background=slowmo?'#fff':'var(--muted)';
+}
+
+function addTextOverlay(){
+  const txt=document.getElementById('text-input').value.trim();
+  if(!txt) return;
+  const el=document.createElement('div');
+  el.textContent=txt;
+  el.style.cssText=`position:absolute;top:${20+Math.random()*40}%;left:50%;transform:translateX(-50%);color:${currentTextColor};font-size:${document.getElementById('text-size').value}px;font-weight:${currentTextStyle==='bold'?'700':'400'};font-style:${currentTextStyle==='italic'?'italic':'normal'};text-align:center;white-space:nowrap;padding:4px 8px;background:rgba(0,0,0,0.25);border-radius:4px;pointer-events:auto;cursor:move;user-select:none`;
+  document.getElementById('text-overlays').appendChild(el);
+  addTimelineLayer('text',txt.substring(0,15));
+}
+
+function updateTextPreview(){
+  // live preview hook
+}
+
+let currentTextStyle='regular', currentTextColor='#fff';
+function setTextStyle(s){
+  document.querySelectorAll('.text-style').forEach(e=>e.classList.remove('sel'));
+  document.getElementById('ts-'+s).classList.add('sel');
+  currentTextStyle=s;
+}
+function setTextColor(c,el){
+  document.querySelectorAll('.color-dot').forEach(e=>e.classList.remove('sel'));
+  el.classList.add('sel');
+  currentTextColor=c;
+}
+function setFont(f){document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('sel'));}
+
+function dropSticker(emoji){
+  const el=document.createElement('div');
+  const top=15+Math.random()*55, left=10+Math.random()*70;
+  el.textContent=emoji;
+  el.style.cssText=`position:absolute;top:${top}%;left:${left}%;font-size:28px;cursor:move;pointer-events:auto;user-select:none;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))`;
+  document.getElementById('sticker-overlays').appendChild(el);
+  addTimelineLayer('sticker',emoji);
+}
+
+function selectTrack(row, name){
+  document.querySelectorAll('.music-row').forEach(r=>{
+    r.style.background='var(--s2)'; r.style.borderColor='var(--brd)';
+    r.querySelector('div div:last-child')&&(r.querySelector('div:last-child').style.color='var(--hint)');
+  });
+  row.style.background='var(--gold-l)'; row.style.borderColor='var(--gold-b)';
+}
+
+function musicTab(t){
+  ['library','original','extract'].forEach(tab=>{
+    document.getElementById('mu-'+tab).classList.remove('sel');
+  });
+  document.getElementById('mu-'+t).classList.add('sel');
+}
+
+function selectTransition(el,t){
+  document.querySelectorAll('#panel-transition .filter-chip').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+let recTimerInt=null;
+function toggleRecord(){
+  isRecording=!isRecording;
+  const btn=document.getElementById('rec-btn');
+  const status=document.getElementById('rec-status');
+  const timer=document.getElementById('rec-timer');
+  if(isRecording){
+    btn.style.borderColor='rgba(226,75,74,0.3)';
+    btn.querySelector('div').style.background='rgba(226,75,74,0.6)';
+    btn.querySelector('div').style.borderRadius='3px';
+    status.textContent='Recording…'; timer.style.display='block';
+    recSecs=0;
+    recTimerInt=setInterval(()=>{
+      recSecs++;
+      timer.textContent=fmt(recSecs);
+    },1000);
+  } else {
+    clearInterval(recTimerInt);
+    btn.style.borderColor='var(--red)';
+    btn.querySelector('div').style.borderRadius='50%';
+    btn.querySelector('div').style.background='var(--red)';
+    status.textContent='Recording saved ('+fmt(recSecs)+')';
+    timer.style.display='none';
+    addTimelineLayer('voice','Voiceover '+fmt(recSecs));
+  }
+}
+
+function setCrop(el,ratio){
+  document.querySelectorAll('#panel-crop .filter-chip').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function rotateCW(){
+  previewRot=(previewRot+90)%360;
+  updateFrameTransform();
+}
+function flipH(){previewFlipH=!previewFlipH; updateFrameTransform();}
+function flipV(){previewFlipV=!previewFlipV; updateFrameTransform();}
+function updateFrameTransform(){
+  const f=document.getElementById('preview-frame');
+  f.style.transform=`rotate(${previewRot}deg) scaleX(${previewFlipH?-1:1}) scaleY(${previewFlipV?-1:1})`;
+}
+
+function runAI(action){
+  const status=document.getElementById('ai-status');
+  const msgs={
+    'bg-remove':'Removing background… ✦',
+    'auto-caption':'Transcribing audio… ✦',
+    'enhance':'Enhancing quality… ✦',
+    'smart-cut':'Detecting silences… ✦',
+    'reframe':'Tracking subject… ✦',
+    'voice-change':'Applying effect… ✦'
+  };
+  status.style.display='block';
+  status.textContent=msgs[action];
+  setTimeout(()=>{status.textContent='Done! ✓ Applied to timeline';},1800);
+  setTimeout(()=>{status.style.display='none';},3400);
+}
+
+function generateCaptions(){
+  document.getElementById('caption-preview').innerHTML=
+    `<div style="display:flex;flex-direction:column;gap:5px">
+      <div style="display:flex;gap:6px;align-items:center"><span style="font-size:10px;color:var(--hint);font-family:monospace;min-width:40px">0:02</span><span style="font-size:11px;color:var(--txt)">"Hey everyone, welcome back!"</span></div>
+      <div style="display:flex;gap:6px;align-items:center"><span style="font-size:10px;color:var(--hint);font-family:monospace;min-width:40px">0:07</span><span style="font-size:11px;color:var(--txt)">"Today I'm going to play something special"</span></div>
+      <div style="display:flex;gap:6px;align-items:center"><span style="font-size:10px;color:var(--hint);font-family:monospace;min-width:40px">0:15</span><span style="font-size:11px;color:var(--txt)">"Follow me for more live sessions"</span></div>
+    </div>`;
+}
+
+function addLayer(type){
+  if(type==='text') activateTool('text');
+  else if(type==='sticker') activateTool('sticker');
+}
+
+function addTimelineLayer(type, label){
+  const colors={text:'#2a1a2a',sticker:'#1a1a2a',voice:'#1a2020',music:'#162233'};
+  const borders={text:'rgba(127,119,221,0.4)',sticker:'rgba(239,159,39,0.3)',voice:'rgba(226,75,74,0.3)',music:'rgba(55,138,221,0.3)'};
+  const abbrv={text:'TXT',sticker:'STK',voice:'VOX',music:'MUS'};
+  extraLayerCount++;
+  const start=10+Math.random()*30;
+  const width=20+Math.random()*40;
+  const el=document.createElement('div');
+  el.style.cssText='display:flex;gap:6px;align-items:center;animation:cond-add 0.25s ease';
+  el.innerHTML=`
+    <div style="width:30px;font-size:9px;color:var(--hint);flex-shrink:0;text-align:right">${abbrv[type]}</div>
+    <div class="layer-row" style="flex:1">
+      <div class="clip-block" style="left:${start}%;width:${width}%;background:${colors[type]};border:0.5px solid ${borders[type]}">
+        <div class="trim-handle"></div>
+        <div style="flex:1;padding:0 6px;font-size:9px;color:rgba(255,255,255,0.5);overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${label}</div>
+        <div class="trim-handle"></div>
+      </div>
+    </div>`;
+  document.getElementById('extra-layers').appendChild(el);
+}
+
+function cycleAspect(){
+  aspectIdx=(aspectIdx+1)%aspects.length;
+  const ar=aspects[aspectIdx];
+  document.getElementById('ar-toggle').textContent=ar;
+  const frame=document.getElementById('preview-frame');
+  const area=document.getElementById('preview-area');
+  const h=area.clientHeight-20||200;
+  if(ar==='9:16'){frame.style.width=Math.round(h*(9/16))+'px';frame.style.height=h+'px';}
+  else if(ar==='1:1'){frame.style.width=h+'px';frame.style.height=h+'px';}
+  else if(ar==='16:9'){frame.style.width='100%';frame.style.height='auto';}
+  else if(ar==='4:5'){frame.style.width=Math.round(h*0.8)+'px';frame.style.height=h+'px';}
+}
+
+function toggleMute(){
+  muted=!muted;
+  document.getElementById('mute-btn').textContent=muted?'✕':'♪';
+  document.getElementById('mute-btn').style.color=muted?'var(--red)':'var(--muted)';
+}
+
+function undo(){
+  const btn=document.getElementById('undo-btn');
+  btn.style.color='var(--gold)';
+  setTimeout(()=>btn.style.color='var(--muted)',400);
+}
+function redo(){}
+
+function exportVideo(){document.getElementById('export-modal').style.display='flex';}
+function closeExport(){document.getElementById('export-modal').style.display='none';}
+function confirmExport(){
+  document.getElementById('export-modal').style.display='none';
+  sendPrompt('Media is ready. Go back to campaign builder and attach this video.');
+}
+
+function exitStudio(){sendPrompt('Exit studio and return to campaign builder.');}
+
+// init preview frame size
+window.addEventListener('load',()=>{
+  const area=document.getElementById('preview-area');
+  const h=Math.max((area.clientHeight||240)-24,160);
+  const frame=document.getElementById('preview-frame');
+  frame.style.width=Math.round(h*(9/16))+'px';
+  frame.style.height=h+'px';
+  // waveform
+  const wf=document.getElementById('waveform-preview');
+  for(let i=0;i<14;i++){
+    const d=document.createElement('div');
+    const ht=20+Math.random()*30;
+    d.style.cssText=`width:4px;background:#1D9E75;border-radius:3px;height:${ht}px;opacity:0.5`;
+    wf.appendChild(d);
+  }
+  updateTimeDisplay();
+});
+</script>

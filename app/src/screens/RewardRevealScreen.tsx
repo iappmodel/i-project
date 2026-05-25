@@ -7,7 +7,7 @@ import { formatIcoinsAmount } from '../lib/format'
 import { useDemo } from '../state/useDemo'
 
 export function RewardRevealScreen() {
-  const { selectedOffer, finishRewardToWallet } = useDemo()
+  const { selectedOffer, finishRewardToWallet, canRedeemReward, attentionSession } = useDemo()
   const offer = selectedOffer ?? DEFAULT_SPONSORED_OFFER
   const refLine = useMemo(() => 'i·2f9b·7m4k', [])
   const dwell = offer.watchDuration ?? '4:30'
@@ -41,13 +41,27 @@ export function RewardRevealScreen() {
           </div>
           <p className="coin-tag-prot">{formatIcoinsAmount(offer.rewardICoins)} — routed on-platform only.</p>
           <div className="cta-row-unlock">
-            <Button variant="ghost" className="cta-btn-unlock ghost" onClick={() => finishRewardToWallet()}>
+            <Button
+              variant="ghost"
+              className="cta-btn-unlock ghost"
+              disabled={!canRedeemReward}
+              onClick={() => finishRewardToWallet()}
+            >
               Later
             </Button>
-            <Button className="cta-btn-unlock primary" onClick={() => finishRewardToWallet()}>
-              See wallet update
+            <Button
+              className="cta-btn-unlock primary"
+              disabled={!canRedeemReward}
+              onClick={() => finishRewardToWallet()}
+            >
+              {canRedeemReward ? 'See wallet update' : 'Session invalid'}
             </Button>
           </div>
+          {!canRedeemReward && attentionSession?.status === 'redeemed' ? (
+            <p className="mono-muted" style={{ marginTop: 12, fontSize: 12 }}>
+              Reward already redeemed for this session.
+            </p>
+          ) : null}
         </div>
       </div>
       <SourceEvidence

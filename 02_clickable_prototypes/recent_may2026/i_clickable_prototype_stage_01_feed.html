@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>[ i ] Prototype — Stage 01 Feed Complete</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07090a;--surface:#0c1012;--panel:#11171a;--raised:#171f22;--line:rgba(255,255,255,.08);
+  --line2:rgba(255,255,255,.14);--text:#f3f1ec;--muted:rgba(243,241,236,.62);--dim:rgba(243,241,236,.35);
+  --lime:#a6ff00;--green:#38e58a;--cyan:#78e6e1;--amber:#ffc04d;--danger:#ff4d6d;
+  --fd:'Syne',sans-serif;--fb:'DM Sans',sans-serif;--fm:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0} html,body{height:100%}
+body{background:radial-gradient(circle at 50% 0%,#142024 0%,#07090a 42%,#020303 100%);font-family:var(--fb);color:var(--text);display:flex;align-items:center;justify-content:center;padding:18px;overflow:hidden}
+.stage{display:flex;gap:22px;align-items:flex-start;max-width:1180px;width:100%;justify-content:center}.phone{width:390px;height:844px;background:linear-gradient(180deg,#0b1113,#050708);border:1.5px solid rgba(216,190,158,.55);border-radius:46px;box-shadow:0 42px 100px rgba(0,0,0,.74),inset 0 0 0 8px rgba(255,255,255,.025);overflow:hidden;position:relative;flex-shrink:0}.notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:114px;height:32px;border-radius:0 0 19px 19px;background:#030404;z-index:80}.status{position:absolute;top:20px;left:28px;right:28px;display:flex;justify-content:space-between;font:700 13px var(--fm);z-index:81;color:#fff}.homebar{position:absolute;left:50%;bottom:9px;transform:translateX(-50%);width:134px;height:5px;border-radius:10px;background:rgba(255,255,255,.34);z-index:90}.screen{position:absolute;inset:0;padding:58px 20px 96px;opacity:0;pointer-events:none;transform:translateX(14px) scale(.985);transition:.25s ease;overflow:auto;scrollbar-width:none}.screen::-webkit-scrollbar{display:none}.screen.on{opacity:1;pointer-events:auto;transform:none;z-index:10}.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.logo{font:800 25px var(--fd);color:var(--lime);letter-spacing:-.04em;text-shadow:0 0 18px rgba(166,255,0,.25);cursor:pointer}.balance{display:flex;align-items:center;gap:8px;font:700 16px var(--fm);cursor:pointer}.coin{width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#ffe064,#cb8d00);box-shadow:0 0 14px rgba(255,192,77,.25)}.bell{position:relative;font-size:22px;cursor:pointer}.bell:after{content:'';position:absolute;right:-1px;top:0;width:8px;height:8px;background:#ff3030;border-radius:50%;box-shadow:0 0 10px #ff3030}.label{font:700 15px var(--fd);color:#fff;margin:12px 0 8px}.stories{display:flex;gap:14px;overflow:hidden;margin-bottom:14px}.story{width:62px;text-align:center;cursor:pointer}.ring{width:58px;height:58px;border-radius:50%;padding:3px;background:linear-gradient(135deg,var(--lime),var(--cyan),#ef5cff);margin-bottom:5px}.story-inner{height:100%;border-radius:50%;background:#151a1d;display:flex;align-items:center;justify-content:center;font:800 18px var(--fd)}.story span{display:block;font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chips{display:flex;gap:8px;margin-bottom:14px;overflow:auto;padding-bottom:1px}.chip{border:0;background:#25292b;color:#fff;border-radius:13px;padding:10px 15px;font:700 14px var(--fb);cursor:pointer;white-space:nowrap}.chip.active{background:var(--lime);color:#111}.chip:active,.btn:active,.navitem:active,.card:active,.act:active,.story:active,.back:active,.share:active{transform:scale(.985)}.card{background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.025));border:1px solid var(--line);border-radius:18px;overflow:hidden;margin-bottom:16px;cursor:pointer;position:relative}.organic{height:190px;padding:22px;background:linear-gradient(105deg,#151a1d 45%,#303537)}.creator{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:12px;margin-bottom:26px}.avatar{width:28px;height:28px;border-radius:50%;background:#83929c;display:flex;align-items:center;justify-content:center;color:#111;font-weight:800}.title{font:800 26px/1.08 var(--fd);letter-spacing:-.04em;max-width:230px}.meta{position:absolute;left:20px;bottom:14px;color:var(--muted);font:700 13px var(--fb);display:flex;gap:15px}.sponsored{border-color:rgba(166,255,0,.24);padding:14px 14px 16px;background:linear-gradient(135deg,#101719,#151d20)}.spon-head{display:flex;align-items:center;gap:8px;color:#fff;font:700 13px var(--fb);margin-bottom:12px}.yt{width:28px;height:20px;background:#ff1111;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px}.shoe-row{display:flex;align-items:center;min-height:150px}.shoe-text{flex:1}.shoe-title{font:800 29px/1.05 var(--fd);letter-spacing:-.05em;margin-bottom:8px}.shoe-sub{color:var(--muted);font:700 15px var(--fb)}.shoe{width:150px;height:95px;border-radius:60% 45% 35% 55%;background:linear-gradient(145deg,#191d1f,#35393a 55%,#cfd3d4 56%,#e8e8e5 68%,#111 69%);position:relative;box-shadow:0 15px 28px rgba(0,0,0,.45);transform:rotate(-8deg)}.shoe:before{content:'✓';position:absolute;color:white;font:900 45px Arial;left:45px;top:22px;transform:rotate(-8deg)}.shoe:after{content:'4:30';position:absolute;right:4px;bottom:-44px;color:#fff;font-weight:800}.target{position:absolute;right:18px;top:58px;width:42px;height:42px;border-radius:50%;border:4px solid rgba(255,255,255,.75);display:flex;align-items:center;justify-content:center}.target:after{content:'';width:13px;height:13px;border-radius:50%;background:#fff}.nav{position:absolute;left:0;right:0;bottom:0;height:84px;padding:9px 20px 18px;background:linear-gradient(180deg,rgba(5,7,8,.4),rgba(5,7,8,.98));border-top:1px solid rgba(255,255,255,.06);display:grid;grid-template-columns:repeat(4,1fr);z-index:60}.navitem{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);font:700 12px var(--fb);cursor:pointer}.navitem b{font-size:24px}.navitem.active{color:var(--lime)}.header{display:flex;align-items:center;gap:10px;margin-bottom:18px}.back,.share{width:36px;height:36px;border-radius:12px;background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid var(--line);font-weight:900}.header h1{font:800 24px var(--fd);letter-spacing:-.04em;flex:1;text-align:center}.panel{background:rgba(255,255,255,.045);border:1px solid var(--line);border-radius:16px;padding:17px;margin-bottom:14px}.big{font:800 34px var(--fd);letter-spacing:-.05em}.accent{color:var(--lime)}.muted{color:var(--muted)}.row{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:13px 0}.row:last-child{border-bottom:0}.btn{border:0;border-radius:17px;background:var(--lime);color:#101408;font:800 17px var(--fb);padding:17px;width:100%;cursor:pointer;box-shadow:0 0 28px rgba(166,255,0,.2);margin-top:8px}.ghost{background:#202527;color:#fff;box-shadow:none;border:1px solid var(--line)}.mini-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.mini{border-radius:14px;background:#151b1d;border:1px solid var(--line);padding:14px;cursor:pointer;margin-bottom:10px}.check{width:42px;height:42px;border-radius:13px;background:var(--lime);color:#101408;display:flex;align-items:center;justify-content:center;font-size:25px;font-weight:900;flex-shrink:0}.verify-row{display:flex;gap:12px;align-items:center;background:#171d20;border:1px solid var(--line);border-radius:14px;padding:13px;margin-bottom:10px}.ringScore{width:250px;height:250px;border-radius:50%;margin:34px auto 28px;background:conic-gradient(var(--lime) 0 78%,var(--cyan) 78% 93%,#303739 93%);display:flex;align-items:center;justify-content:center}.ringScore div{width:190px;height:190px;border-radius:50%;background:#081012;display:flex;flex-direction:column;align-items:center;justify-content:center}.score{font:800 76px var(--fd)}.progress{height:7px;background:#2d3335;border-radius:10px;margin:12px 0 20px;overflow:hidden}.bar{height:100%;width:62%;background:linear-gradient(90deg,var(--lime),var(--cyan));border-radius:10px}.wallet-card{padding:22px;border-radius:18px;background:linear-gradient(180deg,#192023,#111719);border:1px solid var(--line);margin-bottom:12px}.actions{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0 24px}.act{background:#141b1e;border:1px solid var(--line);border-radius:15px;padding:13px 5px;text-align:center;cursor:pointer;color:#fff}.act i{display:block;color:var(--lime);font-size:24px;margin-bottom:5px}.side{width:430px;max-width:calc(100vw - 450px);background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:24px;padding:22px;min-height:690px}.side h2{font:800 25px/1.08 var(--fd);letter-spacing:-.04em;margin-bottom:10px}.side p{color:var(--muted);line-height:1.55;margin-bottom:16px}.map{display:grid;gap:8px}.map div{padding:11px 12px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--line);font-size:13px}.map b{color:var(--lime)}.audit-ok{color:var(--green);font-weight:800}.pill{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:5px 9px;color:var(--muted);font:700 11px var(--fm);margin:3px 4px 3px 0}.feed-note{position:absolute;right:13px;bottom:92px;z-index:65;background:rgba(0,0,0,.58);border:1px solid var(--line);border-radius:14px;padding:10px 12px;font:700 10px var(--fm);color:var(--muted)}
+@media(max-width:900px){body{align-items:flex-start;overflow:auto}.stage{display:block}.phone{margin:0 auto}.side{display:none}}
+</style>
+</head>
+<body>
+<div class="stage">
+  <main class="phone">
+    <div class="status"><span>9:41</span><span>▰▰▰ ◔ ▰</span></div><div class="notch"></div><div class="homebar"></div>
+
+    <!-- STAGE 01: FEED. NO GHOST TARGETS. EVERY TAP HERE ROUTES TO A REAL SCREEN. -->
+    <section id="feed" class="screen on">
+      <div class="top"><div class="logo" onclick="go('splash')">[i]</div><div style="display:flex;gap:14px;align-items:center"><div class="balance" onclick="go('wallet')">24.75 <span class="coin"></span></div><div class="bell" onclick="go('notifications')">♟</div></div></div>
+      <div class="label">Stories</div>
+      <div class="stories">
+        <div class="story" onclick="openStory('You','Your personal attention profile','Identity score, wallet readiness, connected devices, and privacy controls.')"><div class="ring"><div class="story-inner">i</div></div><span>You</span></div>
+        <div class="story" onclick="go('campaign')"><div class="ring"><div class="story-inner">✓</div></div><span>Nike</span></div>
+        <div class="story" onclick="openStory('Red Bull','Sponsor rail','Energy/sports campaigns available after Nike. This opens the campaign queue screen.')"><div class="ring"><div class="story-inner">RB</div></div><span>Red Bull</span></div>
+        <div class="story" onclick="openStory('McLaren','Campaign queue','Performance campaign queue with higher attention-score requirements.')"><div class="ring"><div class="story-inner">M</div></div><span>McLaren</span></div>
+        <div class="story" onclick="openStory('Duolingo','Creator challenge','Language-learning challenge with streak-based rewards.')"><div class="ring"><div class="story-inner">D</div></div><span>Duolingo</span></div>
+      </div>
+      <div class="chips">
+        <button class="chip active" onclick="openFilter(this,'All','All feed items shown: organic posts, sponsored campaigns, and earnable content.')">All</button>
+        <button class="chip" onclick="openFilter(this,'For You','Personalized recommendations based on verified attention behavior.')">For You</button>
+        <button class="chip" onclick="openFilter(this,'Gaming','Gaming campaigns and creator videos loaded.')">Gaming</button>
+        <button class="chip" onclick="openFilter(this,'Tech','Tech product demos, reviews, and app campaigns loaded.')">Tech</button>
+        <button class="chip" onclick="openFilter(this,'Sports','Sports campaigns loaded: Nike, Red Bull, McLaren, recovery, running.')">Sports</button>
+      </div>
+      <div class="label">Organic</div>
+      <article class="card organic" onclick="go('organic')">
+        <div class="creator"><div class="avatar">N</div><div><b>FocusLab</b><br>2h ago</div></div>
+        <h2 class="title">Morning rituals for better focus</h2><div class="meta"><span>◉ 4:12</span><span>◎ 1.8K</span></div>
+      </article>
+      <div class="label">Sponsored</div>
+      <article class="card sponsored" onclick="go('campaign')">
+        <div class="spon-head"><div class="yt">▶</div>YouTube · Sponsored</div><div class="target"></div>
+        <div class="shoe-row"><div class="shoe-text"><h2 class="shoe-title">Nike Running<br>Pegasus 41</h2><div class="shoe-sub">Go the distance</div></div><div class="shoe"></div></div>
+      </article>
+      <div class="feed-note">STAGE 01 · FEED COMPLETE</div>
+    </section>
+
+    <section id="splash" class="screen" onclick="go('feed')" style="display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden">
+      <div><div style="width:220px;height:220px;border-radius:50%;border:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 38px rgba(255,255,255,.025),0 0 0 78px rgba(255,255,255,.018),0 0 0 118px rgba(255,255,255,.012)"><div style="font:800 64px var(--fm);color:var(--lime)">[i]</div></div><h2 style="font:800 25px/1.2 var(--fd);margin-top:80px">Your attention.<br><span class="accent">Verified.</span> Rewarded.<br>Your choice.</h2><button class="btn ghost" style="margin-top:70px">Tap to continue</button></div>
+    </section>
+
+    <section id="notifications" class="screen">
+      <div class="header"><div class="back" onclick="go('feed')">‹</div><h1>Notifications</h1><div class="share" onclick="go('settings')">⚙</div></div>
+      <div class="panel"><b class="accent">Reward available</b><br><span class="muted">Nike Pegasus 41 campaign can earn +2.00 iCoins.</span><button class="btn" onclick="go('campaign')">Open Campaign</button></div>
+      <div class="panel"><b>KYC reminder</b><br><span class="muted">Real withdrawals require identity verification.</span><button class="btn ghost" onclick="go('profile')">Open Profile</button></div>
+      <div class="panel"><b>New sponsor available</b><br><span class="muted">Sports category has new campaigns.</span><button class="btn ghost" onclick="openFilter(null,'Sports','Sports campaigns loaded from notification.')">Open Sports Feed</button></div>
+    </section>
+
+    <section id="storyDetail" class="screen">
+      <div class="header"><div class="back" onclick="go('feed')">‹</div><h1 id="storyTitle">Story</h1><div class="share" onclick="go('shareSheet')">⌘</div></div>
+      <div class="panel" style="min-height:220px;display:flex;flex-direction:column;justify-content:center;text-align:center"><div style="font:800 58px var(--fd);color:var(--lime)" id="storyIcon">[i]</div><h2 id="storyHeadline" style="font:800 24px var(--fd);margin-top:12px">Story opened</h2><p class="muted" id="storyBody" style="margin-top:10px;line-height:1.5"></p></div>
+      <div class="mini-grid"><div class="mini" onclick="go('campaign')"><b>Open Campaign</b><br><span class="muted">Go to earnable content</span></div><div class="mini" onclick="go('profile')"><b>Open Profile</b><br><span class="muted">Identity and trust</span></div></div>
+    </section>
+
+    <section id="filterResults" class="screen">
+      <div class="header"><div class="back" onclick="go('feed')">‹</div><h1 id="filterTitle">Filter</h1><div class="share" onclick="go('settings')">⚙</div></div>
+      <div class="panel"><b id="filterHeadline" class="accent">Filter loaded</b><p class="muted" id="filterBody" style="margin-top:8px"></p></div>
+      <div class="mini" onclick="go('campaign')"><b>Nike Pegasus 41</b><br><span class="muted">Sponsored · Watch 4:30 · Earn +2.00 iCoins</span></div>
+      <div class="mini" onclick="go('organic')"><b>Morning rituals for better focus</b><br><span class="muted">Organic · Save/tip path only</span></div>
+      <button class="btn ghost" onclick="go('feed')">Return to Feed</button>
+    </section>
+
+    <section id="campaign" class="screen">
+      <div class="header"><div class="back" onclick="go('feed')">‹</div><h1>Nike Running<br>Pegasus 41 Campaign</h1><div class="share" onclick="go('shareSheet')">⌘</div></div>
+      <div class="shoe" style="width:245px;height:145px;margin:18px auto 36px"></div>
+      <div style="text-align:center;margin-bottom:22px"><div class="big accent">+2.00 iCoins</div><div class="muted" style="font-weight:800">Total Reward</div></div>
+      <div class="panel"><div class="row"><span>Required watch time</span><b>4:30</b></div><div class="row"><span>Attention verification</span><b>Required</b></div><div class="row"><span>Reward probability</span><b>100%</b></div></div>
+      <div class="panel muted">By starting I consent to attention verification using my device camera to ensure real attention.</div>
+      <button class="btn" onclick="go('watch')">Start Watching</button>
+    </section>
+
+    <section id="watch" class="screen">
+      <div class="header"><div class="back" onclick="go('campaign')">‹</div><h1>Watching & Verifying</h1><div class="share" onclick="go('verificationInfo')">⌘</div></div>
+      <p class="muted" style="text-align:center;font-weight:800">Your attention is being verified in real time.</p><div class="ringScore"><div><span class="score">87</span><span class="accent" style="font-weight:800">/100</span><span class="accent" style="font-weight:800;margin-top:8px">Attention Score</span></div></div>
+      <div style="text-align:center;font-weight:800">Watch Progress</div><div class="row" style="border:0"><span>0:00</span><b>2:10 / 4:30</b><span>4:30</span></div><div class="progress"><div class="bar"></div></div>
+      <div class="panel" style="text-align:center"><b>Reward locked</b><br><span class="muted">Complete & Verify to unlock +2.00 iCoins</span></div><button class="btn" onclick="go('verify')">Complete & Verify</button>
+    </section>
+
+    <section id="verify" class="screen">
+      <div class="header"><div class="back" onclick="go('watch')">‹</div><h1>Verification Result</h1><div class="share" onclick="go('proof')">⌘</div></div>
+      <p class="muted" style="text-align:center;font-weight:800;margin-bottom:20px">Our 5-layer verification engine results</p>
+      <div class="verify-row"><div class="check">✓</div><div><b>1. Presence detected</b><br><span class="muted">You are present</span></div></div>
+      <div class="verify-row"><div class="check">✓</div><div><b>2. Watch time met</b><br><span class="muted">Required 4:30 watched</span></div></div>
+      <div class="verify-row"><div class="check">✓</div><div><b>3. Attention score</b><br><span class="muted">Score 87/100 passed</span></div></div>
+      <div class="verify-row"><div class="check">✓</div><div><b>4. Completion required</b><br><span class="muted">Video completion detected</span></div></div>
+      <div class="verify-row"><div class="check">✓</div><div><b>5. Fraud flags clean</b><br><span class="muted">No suspicious behavior</span></div></div>
+      <div style="text-align:center;margin:56px 0 34px"><div class="big accent">All checks passed</div><div class="muted" style="font-weight:800">You earned your reward.</div></div><button class="btn" onclick="claimReward()">Claim Reward</button>
+    </section>
+
+    <section id="wallet" class="screen">
+      <div class="top"><h1 style="font:800 28px var(--fd)">Wallet</h1><div class="share" onclick="go('walletVisibility')">◉</div></div>
+      <div class="wallet-card"><div class="muted">Available Balance</div><div class="big">24.75 iCoins <span class="accent" style="font-size:26px">[i]</span></div><div class="muted">≈ $24.75</div></div>
+      <div class="mini-grid"><div class="mini"><b>iCoins</b><br>24.75</div><div class="mini"><b>aCoins</b><br>12.40</div><div class="mini"><b>Pending</b><br>3.20</div><div class="mini"><b>USD est.</b><br>$24.75</div></div>
+      <div class="actions"><div class="act" onclick="go('convert')"><i>⇄</i>Convert</div><div class="act" onclick="go('withdraw')"><i>▣</i>Withdraw</div><div class="act" onclick="go('pay')"><i>▱</i>Pay</div><div class="act" onclick="go('gift')"><i>✣</i>Gift</div></div>
+      <div class="label">Latest Transaction</div><div class="panel"><div class="row"><b>Nike Running<br><span class="muted">Pegasus 41 Campaign</span></b><b class="accent">+2.00<br>iCoins</b></div><div class="row"><span>May 14, 9:41 AM</span><span>TXN-14F7...A423</span></div></div>
+    </section>
+
+    <section id="organic" class="screen"><div class="header"><div class="back" onclick="go('feed')">‹</div><h1>Organic Content</h1><div class="share" onclick="go('shareSheet')">⌘</div></div><div class="panel" style="height:300px;display:flex;align-items:center;justify-content:center;text-align:center"><h2>Morning rituals<br>for better focus</h2></div><div class="panel muted">Organic content does not pay automatically. Saving, tipping, or sponsored boosts can create value paths.</div><button class="btn ghost" onclick="go('saved')">Save</button><button class="btn" onclick="go('tip')">Tip Creator</button></section>
+    <section id="earn" class="screen"><div class="header"><div class="back" onclick="go('feed')">‹</div><h1>Earn</h1><div></div></div><div class="panel"><h2 class="accent">Available campaigns</h2><p class="muted">Sponsored attention tasks ready now.</p></div><div class="mini" onclick="go('campaign')"><b>Nike Pegasus 41</b><br><span class="muted">Watch 4:30 · Earn +2.00 iCoins</span></div></section>
+    <section id="profile" class="screen"><div class="header"><div class="back" onclick="go('feed')">‹</div><h1>Profile</h1><div onclick="go('settings')" class="share">⚙</div></div><div class="panel"><h2>Your attention identity</h2><p class="muted">Reputation, verification quality, payout readiness, platform connections.</p></div><div class="mini-grid"><div class="mini"><b>Trust</b><br>94%</div><div class="mini"><b>KYC</b><br>Pending</div><div class="mini"><b>Platforms</b><br>2 linked</div><div class="mini"><b>Fraud flags</b><br>0</div></div></section>
+
+    <!-- Placeholder screens are intentional destinations, not ghost clicks. They give every current button somewhere concrete to land. Later stages replace these one by one. -->
+    <section id="settings" class="screen"><div class="header"><div class="back" onclick="go('feed')">‹</div><h1>Settings</h1><div></div></div><div class="panel"><b>Settings destination</b><p class="muted">Notifications, privacy, camera permission, account, payout rules.</p></div></section>
+    <section id="shareSheet" class="screen"><div class="header"><div class="back" onclick="go('feed')">‹</div><h1>Share</h1><div></div></div><div class="panel"><b>Share sheet</b><p class="muted">Copy link, send to contact, post externally, save campaign.</p></div><button class="btn ghost" onclick="go('feed')">Close</button></section>
+    <section id="verificationInfo" class="screen"><div class="header"><div class="back" onclick="go('watch')">‹</div><h1>Verification Info</h1><div></div></div><div class="panel"><b>What is being checked?</b><p class="muted">Presence, watch time, score, completion, fraud flags. No reward unlocks unless checks pass.</p></div></section>
+    <section id="proof" class="screen"><div class="header"><div class="back" onclick="go('verify')">‹</div><h1>Proof Artifact</h1><div></div></div><div class="panel"><b>Verification proof</b><p class="muted">Audit ID, score, campaign ID, timestamp, and fraud status.</p></div></section>
+    <section id="walletVisibility" class="screen"><div class="header"><div class="back" onclick="go('wallet')">‹</div><h1>Balance Privacy</h1><div></div></div><div class="panel"><b>Visibility controls</b><p class="muted">Hide amounts, show estimates, lock wallet with biometrics.</p></div></section>
+    <section id="convert" class="screen"><div class="header"><div class="back" onclick="go('wallet')">‹</div><h1>Convert aCoins</h1><div class="share" onclick="go('proof')">⌘</div></div><div class="panel"><h2>Convert your aCoins<br>to iCoins</h2></div><div class="muted">Your aCoin Balance</div><div class="big">12.40 aCoins</div><div class="panel"><div class="row"><span>You convert</span><b>10 aCoins</b></div><div style="text-align:center;font-size:30px">↓</div><div class="row"><span>You receive est.</span><b>9.50 iCoins</b></div><div class="row"><span>Rate</span><b>0.95 iCoins per aCoin</b></div><div class="row"><span>Reserve</span><b>98.7%</b></div></div><button class="btn" onclick="go('conversionConfirmation')">Convert Now</button></section>
+    <section id="withdraw" class="screen"><div class="header"><div class="back" onclick="go('wallet')">‹</div><h1>Withdraw Preview</h1><div class="share" onclick="go('settings')">⌘</div></div><div class="panel"><h2 class="accent">Simulated Withdrawal</h2><b>(Demo Model)</b></div><div class="muted">You are withdrawing</div><div class="big">10.00 iCoins</div><div class="muted">≈ $10.00</div><div class="panel"><div class="row"><span>You will receive est.</span><b style="color:#87f0b5">$9.80 USD</b></div><div class="row"><span>Network</span><b>USDC · Polygon</b></div><div class="row"><span>Destination</span><b>•••• 9571</b></div></div><div class="panel">KYC required for real withdrawals. This is a demo preview only.</div><button class="btn" onclick="go('withdrawQueued')">Continue (Demo)</button></section>
+    <section id="pay" class="screen"><div class="header"><div class="back" onclick="go('wallet')">‹</div><h1>Pay</h1><div></div></div><div class="panel"><div class="muted">Recipient</div><div class="big">@creator</div></div><div class="panel"><div class="muted">Amount</div><div class="big">2.00 iCoins</div></div><button class="btn" onclick="go('paymentConfirmation')">Confirm Payment</button></section>
+    <section id="gift" class="screen"><div class="header"><div class="back" onclick="go('wallet')">‹</div><h1>Gift</h1><div></div></div><div class="panel"><b>Gift iCoins</b><p class="muted">Send a reward to a creator, friend, or campaign pool.</p></div><button class="btn" onclick="go('paymentConfirmation')">Send Gift</button></section>
+    <section id="tip" class="screen"><div class="header"><div class="back" onclick="go('organic')">‹</div><h1>Tip Creator</h1><div></div></div><div class="panel"><b>Tip FocusLab</b><div class="big">1.00 iCoin</div></div><button class="btn" onclick="go('paymentConfirmation')">Confirm Tip</button></section>
+    <section id="saved" class="screen"><div class="header"><div class="back" onclick="go('organic')">‹</div><h1>Saved</h1><div></div></div><div class="panel"><b>Saved to Focus list</b><p class="muted">This organic content is now in your library.</p></div></section>
+    <section id="conversionConfirmation" class="screen"><div class="header"><div class="back" onclick="go('wallet')">‹</div><h1>Converted</h1><div></div></div><div class="panel" style="text-align:center"><div class="big accent">9.50 iCoins</div><p class="muted">Conversion completed in demo mode.</p></div><button class="btn" onclick="go('wallet')">Back to Wallet</button></section>
+    <section id="withdrawQueued" class="screen"><div class="header"><div class="back" onclick="go('wallet')">‹</div><h1>Withdrawal Queued</h1><div></div></div><div class="panel"><b>Demo withdrawal created</b><p class="muted">Real withdrawals require KYC and compliance review.</p></div></section>
+    <section id="paymentConfirmation" class="screen"><div class="header"><div class="back" onclick="go('wallet')">‹</div><h1>Payment Sent</h1><div></div></div><div class="panel" style="text-align:center"><div class="big accent">Success</div><p class="muted">Payment/tip/gift confirmation destination.</p></div></section>
+
+    <nav class="nav"><div class="navitem active" onclick="go('feed',this)"><b>⌂</b>Feed</div><div class="navitem" onclick="go('wallet',this)"><b>▣</b>Wallet</div><div class="navitem" onclick="go('earn',this)"><b>♙</b>Earn</div><div class="navitem" onclick="go('profile',this)"><b>♟</b>Profile</div></nav>
+  </main>
+  <aside class="side">
+    <h2>Stage 01: Feed only. Fully resolved.</h2>
+    <p>This pass does not pretend the whole app is done. It locks the first page only. Every visible clickable element on the Feed now goes to a real destination screen — no toast-only fake actions.</p>
+    <div class="map">
+      <div><b>[i] logo</b> → Splash / onboarding promise <span class="audit-ok">✓</span></div>
+      <div><b>Balance chip</b> → Wallet <span class="audit-ok">✓</span></div>
+      <div><b>Bell</b> → Notifications screen <span class="audit-ok">✓</span></div>
+      <div><b>You story</b> → Story detail screen <span class="audit-ok">✓</span></div>
+      <div><b>Nike story</b> → Campaign detail <span class="audit-ok">✓</span></div>
+      <div><b>Red Bull / McLaren / Duolingo stories</b> → Story detail screens <span class="audit-ok">✓</span></div>
+      <div><b>All / For You / Gaming / Tech / Sports chips</b> → Filter results screen <span class="audit-ok">✓</span></div>
+      <div><b>Organic card</b> → Organic content detail <span class="audit-ok">✓</span></div>
+      <div><b>Sponsored card</b> → Nike campaign detail <span class="audit-ok">✓</span></div>
+      <div><b>Bottom nav</b> → Feed / Wallet / Earn / Profile <span class="audit-ok">✓</span></div>
+    </div>
+    <p style="margin-top:18px">Next stage after approval: Campaign Detail. We audit every button on that screen the same way before touching Watch, Verify, or Wallet.</p>
+    <span class="pill">Model: GPT-5-mini / Composer 2</span><span class="pill">Mode: Agent</span><span class="pill">Scope: one page</span>
+  </aside>
+</div>
+<script>
+const screens=[...document.querySelectorAll('.screen')];
+function go(id,nav){
+  screens.forEach(s=>s.classList.remove('on'));
+  const target=document.getElementById(id)||document.getElementById('feed');
+  target.classList.add('on');
+  if(nav){document.querySelectorAll('.navitem').forEach(n=>n.classList.remove('active'));nav.classList.add('active')}
+  else{document.querySelectorAll('.navitem').forEach(n=>n.classList.remove('active'));const map={feed:0,wallet:1,earn:2,profile:3};if(map[id]!==undefined)document.querySelectorAll('.navitem')[map[id]].classList.add('active')}
+}
+function openStory(title,headline,body){
+  document.getElementById('storyTitle').textContent=title;
+  document.getElementById('storyHeadline').textContent=headline;
+  document.getElementById('storyBody').textContent=body;
+  document.getElementById('storyIcon').textContent=title==='You'?'[i]':title.split(' ').map(w=>w[0]).join('').slice(0,2);
+  go('storyDetail');
+}
+function openFilter(el,title,body){
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.getElementById('filterTitle').textContent=title;
+  document.getElementById('filterHeadline').textContent=title+' feed';
+  document.getElementById('filterBody').textContent=body;
+  go('filterResults');
+}
+function claimReward(){go('wallet')}
+</script>
+</body>
+</html>

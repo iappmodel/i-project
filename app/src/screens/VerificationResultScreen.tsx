@@ -10,7 +10,7 @@ import { useDemo } from '../state/useDemo'
 const GATE_STEP_MS = 480
 
 export function VerificationResultScreen() {
-  const { claimReward, selectedOffer, verificationStatus } = useDemo()
+  const { claimReward, selectedOffer, verificationStatus, canCollectReward, attentionSession } = useDemo()
   const offer = selectedOffer ?? DEFAULT_SPONSORED_OFFER
 
   const [passedIdx, setPassedIdx] = useState(-1)
@@ -87,8 +87,18 @@ export function VerificationResultScreen() {
           )
         })}
       </div>
-      <Button className="prot-cta cta-wallet" disabled={!collectReady} onClick={() => claimReward()}>
-        {collectReady ? 'Collect reward' : 'Checking gates…'}
+      <Button
+        className="prot-cta cta-wallet"
+        disabled={!collectReady || !canCollectReward}
+        onClick={() => claimReward()}
+      >
+        {!attentionSession
+          ? 'Session required'
+          : !canCollectReward
+            ? 'Validate attention first'
+            : collectReady
+              ? 'Collect reward'
+              : 'Checking gates…'}
       </Button>
       <SourceEvidence
         paths={[

@@ -26,13 +26,15 @@ const phases = [
 ] as const
 
 export function RoadmapScreen() {
-  const { setScreen, resetDemo } = useDemo()
+  const { setScreen, resetDemo, appMode, exitPresenter } = useDemo()
 
   return (
     <PhoneFrame scroll>
       <BackRow label="Proof layer" onBack={() => setScreen('proof-layer')} />
       <h1 className="screen-title">Roadmap</h1>
-      <p className="screen-sub">Investor narration · aligned to MVP_CANONICAL_FLOW.md</p>
+      <p className="screen-sub">
+        Build phases · module list deferred (MOD-01)
+      </p>
 
       <div className="timeline">
         {phases.map((p, idx) => (
@@ -47,9 +49,15 @@ export function RoadmapScreen() {
       </div>
 
       <Button onClick={() => resetDemo()}>Restart demo</Button>
-      <Button variant="ghost" style={{ marginTop: 8 }} onClick={() => setScreen('feed')}>
-        Return to feed
-      </Button>
+      {appMode === 'presenter' ? (
+        <Button variant="secondary" style={{ marginTop: 8 }} onClick={() => exitPresenter()}>
+          Exit presenter · product tabs
+        </Button>
+      ) : (
+        <Button variant="ghost" style={{ marginTop: 8 }} onClick={() => setScreen('profile')}>
+          Back to profile
+        </Button>
+      )}
       <SourceEvidence
         paths={[
           'docs/MVP_CANONICAL_FLOW.md',

@@ -24,13 +24,21 @@ function ReqOk() {
 }
 
 export function OfferDetailScreen() {
-  const { selectedOffer, setScreen, startWatchFlow } = useDemo()
+  const { selectedOffer, setScreen, setActiveTab, appMode, startWatchFlow } = useDemo()
   const offer = selectedOffer ?? DEFAULT_SPONSORED_OFFER
   const dwell = offer.watchDuration ?? '4:30'
 
+  const handleBack = () => {
+    if (appMode === 'presenter') {
+      setScreen('feed')
+      return
+    }
+    setActiveTab('earn')
+  }
+
   return (
     <PhoneFrame scroll>
-      <BackRow label="Feed" onBack={() => setScreen('feed')} />
+      <BackRow label={appMode === 'presenter' ? 'Feed' : 'Earn'} onBack={handleBack} />
       <div className="detail-hero detail-hero--play" style={{ background: offer.thumbnailGradient }}>
         <div className="detail-hero-overlay" />
       </div>

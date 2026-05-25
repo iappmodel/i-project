@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'events/blink_event.dart';
 import 'events/gaze_event.dart';
+import 'events/proof_packet_sealed_event.dart';
 import 'events/voice_event.dart';
 
 /// Application-wide event bus (broadcast).
@@ -17,13 +18,18 @@ class EventBus {
   Stream<VoiceEvent> get voiceEvents =>
       _bus.stream.where((e) => e is VoiceEvent).cast<VoiceEvent>();
 
-  /// All bus payloads ([GazeEvent], [BlinkEvent], [VoiceEvent]) for unified listeners.
+  Stream<ProofPacketSealedEvent> get proofPacketSealedEvents => _bus.stream
+      .where((e) => e is ProofPacketSealedEvent)
+      .cast<ProofPacketSealedEvent>();
+
+  /// All bus payloads for unified listeners.
   Stream<Object> get stream => _bus.stream;
 
   void emit(Object event) {
     if (event is! GazeEvent &&
         event is! BlinkEvent &&
-        event is! VoiceEvent) {
+        event is! VoiceEvent &&
+        event is! ProofPacketSealedEvent) {
       return;
     }
     if (!_bus.isClosed) {

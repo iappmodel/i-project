@@ -1,8 +1,8 @@
 # Chat Extraction Plan
 
-**Status:** Triage complete (2026-05-21). **P0 batches 1–4 complete** (ranks 1–40, 2026-05-22). Output: `CHAT_RECOVERY/EXTRACTED/conversations/` + batch summaries.
+**Status:** Triage complete (2026-05-21). **P0 batches 1–5 complete** (ranks 1–50, 2026-05-25). Output: `CHAT_RECOVERY/EXTRACTED/conversations/` + batch summaries.
 
-> **P0 chat extraction batch 4 completed; further P0/P1 extraction still required before final canonicalization.**
+> **50/104 P0 threads extracted.** Currency naming ADR-001 accepted as working default. Further P0 extraction + CR-01 session bypass still required.
 
 ## Phase 1 — P0 extraction (architecture & economy)
 
@@ -18,7 +18,10 @@
 | 02 | 11–20 | Complete |
 | 03 | 21–30 | Complete |
 | 04 | 31–40 | Complete |
-| 05+ | 41–104 | **Next** |
+| 05 | 41–50 | Complete |
+| 06 | 51–60 | Complete |
+| 07 | 61–70 | Complete |
+| 08+ | 71–104 | **Next** |
 
 ## Phase 1.5 — P0 synthesis (batches 01–04)
 

@@ -48,6 +48,7 @@ export const WALLET_INITIAL = {
   pendingBalance: 38,
   aCoins: 1840,
   iCoins: 847,
+  iCoinsPending: 18,
 }
 
 export const VERIFICATION_GATES: VerificationGateDef[] = [

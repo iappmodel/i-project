@@ -20,7 +20,7 @@ const PERMISSIONS = [
 ] as const
 
 export function ConsentCameraGateScreen() {
-  const { setScreen } = useDemo()
+  const { acceptConsentAndBeginSession, setScreen } = useDemo()
 
   return (
     <PhoneFrame scroll>
@@ -67,7 +67,7 @@ export function ConsentCameraGateScreen() {
         test.
       </p>
 
-      <Button className="prot-cta" style={{ marginTop: 'auto' }} onClick={() => setScreen('watch-verify')}>
+      <Button className="prot-cta" style={{ marginTop: 'auto' }} onClick={() => acceptConsentAndBeginSession()}>
         Allow demo verification
       </Button>
       <Button variant="ghost" style={{ marginTop: 8 }} onClick={() => setScreen('offer-detail')}>

@@ -67,6 +67,9 @@ import 'head_pitch_zone.dart';
 import 'user_engagement_state.dart';
 import 'debug_state.dart';
 import 'performance/pipeline_performance_monitor.dart';
+import 'proof/proof_live_loop_bridge.dart';
+import 'proof/proof_session_context.dart';
+import 'proof/proof_validator_bridge.dart';
 import 'verification/verification_stability_layer.dart';
 
 /// Native 0–100 [nativeAttention] plus a small bonus when [fatigueLevel] is low (EAR fatigue).
@@ -118,6 +121,7 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
   ]);
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  ProofValidatorBridge().install();
   runApp(const EyeTrackingApp());
 }
 
@@ -207,7 +211,8 @@ final class _FullScreenPreview extends StatefulWidget {
   State<_FullScreenPreview> createState() => _FullScreenPreviewState();
 }
 
-final class _FullScreenPreviewState extends State<_FullScreenPreview> {
+final class _FullScreenPreviewState extends State<_FullScreenPreview>
+    with WidgetsBindingObserver {
   static const int _dwellReleaseMs = 200;
   static const int _kFrameSpacingMs = 80;
   static const double _blinkCloseThreshold = BlinkDetector.EAR_CLOSED_THRESHOLD;
@@ -326,6 +331,9 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
       VerificationStabilityLayer();
   VerificationStabilitySnapshot _verificationSnapshot =
       VerificationStabilitySnapshot.empty;
+
+  /// Proof packet capture for the live camera/vision loop (local bus emission only).
+  final ProofLiveLoopBridge _proofBridge = ProofLiveLoopBridge();
 
   /// Reuse last good native frame for this long when detection drops (reduces flicker).
   static const int _faceHoldMs = 500;
@@ -539,6 +547,10 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _proofBridge.startSession(
+      ProofSessionContext.start(startedAt: DateTime.now().toUtc()),
+    );
     _intentEngine = IntentEngine(LearningStore(), System.bus);
     _intentPredictor =
         GazeCollectiveIntentPredictor(_intentEngine.learningStore.collectiveZones);
@@ -550,7 +562,24 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _proofBridge.setForeground(state == AppLifecycleState.resumed);
+  }
+
+  @override
   void dispose() {
+    if (_proofBridge.isActive &&
+        (_proofBridge.emitter.collector?.totalFrames ?? 0) > 0) {
+      try {
+        _proofBridge.sealAndEmit(
+          artifactId: 'PP-LIVE-END',
+          vslSnapshot: _verificationSnapshot,
+        );
+      } catch (e) {
+        debugPrint('PROOF_SEAL_ON_DISPOSE_FAILED: $e');
+      }
+    }
+    WidgetsBinding.instance.removeObserver(this);
     _autonomousConfirmTimer?.cancel();
     _intentEngine.endSession();
     _intentEngine.dispose();
@@ -670,7 +699,38 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
     _debugNotifier.value = _debugNotifier.value.copyWith(selected: zone);
     _selectedAnnouncedForStint = true;
     _intentEngine.syncDwellReady(true);
+    final zoneStart = _zoneStart;
+    if (zoneStart != null) {
+      _proofBridge.recordDwellSatisfied(
+        zone: zone,
+        zoneStartMs: zoneStart.millisecondsSinceEpoch,
+        nowMs: DateTime.now().millisecondsSinceEpoch,
+      );
+    }
     debugPrint('DWELL_READY: $zone');
+  }
+
+  void _sealProofPacketDebug() {
+    debugPrint('PROOF_SEAL_TAP');
+    if (!_proofBridge.isActive) {
+      debugPrint('PROOF_SEAL_FAILED: no active proof session');
+      return;
+    }
+    try {
+      final event = _proofBridge.sealAndEmit(
+        artifactId:
+            'PP-LIVE-${DateTime.now().toUtc().millisecondsSinceEpoch}',
+        vslSnapshot: _verificationSnapshot,
+      );
+      debugPrint(
+        'PROOF_SEALED: ${event.artifactId} session=${event.sessionId}',
+      );
+      _proofBridge.startSession(
+        ProofSessionContext.start(startedAt: DateTime.now().toUtc()),
+      );
+    } catch (e) {
+      debugPrint('PROOF_SEAL_FAILED: $e');
+    }
   }
 
   /// Applies a zone label from intent resolution only (today: [_intentEngine] results).
@@ -783,10 +843,22 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
         if (d.motion != EyeMotionState.noFace) {
           _debugNotifier.value = d.copyWith(motion: EyeMotionState.noFace);
         }
+        _proofBridge.onStableGazeTick(
+          nowMs: now,
+          stable: false,
+          zone: _currentZone ?? 'CENTER',
+          confidence: 0,
+        );
         final verificationDirty = _feedVerificationStability(
           nowMs: now,
           blinkDetected: false,
           validFrame: false,
+        );
+        _feedProofSession(
+          nowMs: now,
+          validFrame: false,
+          blinkDetected: false,
+          likelyFake: false,
         );
         if (verificationDirty && mounted) setState(() {});
         postprocessSw.stop();
@@ -960,7 +1032,15 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
             (result.varX ?? 1) < 0.00003 &&
             (result.varY ?? 1) < 0.00003;
 
-        if (stable && _fixationState == FixationState.fixation) {
+        final stableFixation =
+            stable && _fixationState == FixationState.fixation;
+        _proofBridge.onStableGazeTick(
+          nowMs: now,
+          stable: stableFixation,
+          zone: getZone(smoothGazeX),
+          confidence: (result.quality ?? 1.0).clamp(0.0, 1.0),
+        );
+        if (stableFixation) {
           zoneOverlayDirty |= updateZone(smoothGazeX);
         } else if (_currentZone != null && !_dwellSatisfiedForStint) {
           _zoneStart = DateTime.now();
@@ -1108,6 +1188,12 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
         blinkDetected: nextBlinking,
         validFrame: isValid,
         dwellReady: _dwellSatisfiedForStint,
+      );
+      _feedProofSession(
+        nowMs: now,
+        validFrame: isValid,
+        blinkDetected: nextBlinking,
+        likelyFake: face.likelyFake,
       );
 
       _updateFrameUi(
@@ -1377,6 +1463,13 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
     smoothGazeY = 0;
     var zoneOverlayDirty = false;
     if (_currentZone != null || _zoneStart != null) {
+      final nowMs = DateTime.now().millisecondsSinceEpoch;
+      _proofBridge.recordZoneTransition(
+        fromZone: _currentZone,
+        fromZoneStartMs: _zoneStart?.millisecondsSinceEpoch,
+        nowMs: nowMs,
+        wasSatisfied: _dwellSatisfiedForStint,
+      );
       zoneOverlayDirty = true;
     }
     _currentZone = null;
@@ -1412,6 +1505,13 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
       _debugNotifier.value = _debugNotifier.value.copyWith(zone: zone);
     }
     if (zone != _currentZone) {
+      final nowMs = DateTime.now().millisecondsSinceEpoch;
+      _proofBridge.recordZoneTransition(
+        fromZone: _currentZone,
+        fromZoneStartMs: _zoneStart?.millisecondsSinceEpoch,
+        nowMs: nowMs,
+        wasSatisfied: _dwellSatisfiedForStint,
+      );
       _currentZone = zone;
       _zoneStart = DateTime.now();
       _dwellSatisfiedForStint = false;
@@ -2056,6 +2156,23 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
     return _framePerf.processedCount / (windowMs / 1000.0);
   }
 
+  /// Mirrors live frame authority into [ProofSessionCollector] (same signals as VSL).
+  void _feedProofSession({
+    required int nowMs,
+    required bool validFrame,
+    required bool blinkDetected,
+    required bool likelyFake,
+  }) {
+    if (!_proofBridge.isActive) return;
+    _proofBridge.onFrame(
+      timestampMs: nowMs,
+      validFrame: validFrame,
+      processedFps: _processedFpsEstimate(nowMs),
+      blinkDetected: blinkDetected,
+      likelyFake: likelyFake,
+    );
+  }
+
   /// Feeds the verification rolling window; does not alter gaze, dwell, or intent.
   bool _feedVerificationStability({
     required int nowMs,
@@ -2199,6 +2316,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
                           zoneOffsets: _zoneOffsets,
                           zoneOpacity: _zoneOpacity,
                           compact: true,
+                          showSelectionLabel: false,
                           influenceListenable: _influenceNotifier,
                         );
                       },
@@ -2215,7 +2333,9 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
               child: SafeArea(
                 child: Material(
                   color: Colors.black45,
+                  elevation: 4,
                   borderRadius: BorderRadius.circular(8),
+                  clipBehavior: Clip.antiAlias,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -2301,6 +2421,14 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview> {
                             color: Colors.white70,
                             fontSize: 13,
                           ),
+                        ),
+                      ),
+                      const Divider(height: 8, color: Colors.white24),
+                      TextButton(
+                        onPressed: _sealProofPacketDebug,
+                        child: const Text(
+                          'Seal Proof',
+                          style: TextStyle(color: Colors.white70, fontSize: 13),
                         ),
                       ),
                     ],

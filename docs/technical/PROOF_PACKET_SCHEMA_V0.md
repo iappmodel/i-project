@@ -1,11 +1,24 @@
+> **Canonical location moved:** The authoritative Proof Packet v0 spec and contract live at [`integrations/pop-core/contracts/proof-packet-v0/`](../../integrations/pop-core/contracts/proof-packet-v0/). This file is retained as a redirect stub for existing links.
+
 # Proof Packet Schema v0
 
 **Date:** 2026-05-20  
-**Status:** Schema definition — docs + optional Dart types; **no runtime emission yet**  
-**Related:** [`POPS_MULTI_SIGNAL_VALIDATION_ARCHITECTURE.md`](POPS_MULTI_SIGNAL_VALIDATION_ARCHITECTURE.md), [`VERIFICATION_STABILITY_LAYER_V1.md`](VERIFICATION_STABILITY_LAYER_V1.md), [`MVP_CANONICAL_FLOW.md`](../MVP_CANONICAL_FLOW.md)  
-**Optional types:** [`proof_packet_v0.dart`](../../integrations/eye-tracking/flutter-runtime/lib/proof/proof_packet_v0.dart)
+**Status:** Redirect — see canonical copy under `integrations/pop-core/`  
+**Canonical spec:** [`integrations/pop-core/contracts/proof-packet-v0/PROOF_PACKET_SCHEMA_V0.md`](../../integrations/pop-core/contracts/proof-packet-v0/PROOF_PACKET_SCHEMA_V0.md)  
+**Dart types:** [`pop_core`](../../integrations/pop-core/contracts/proof-packet-v0/dart/lib/proof/proof_packet_v0.dart) via `integrations/pop-core/contracts/proof-packet-v0/dart/`  
+**Related:** [`POPS_MULTI_SIGNAL_VALIDATION_ARCHITECTURE.md`](POPS_MULTI_SIGNAL_VALIDATION_ARCHITECTURE.md), [`VERIFICATION_STABILITY_LAYER_V1.md`](VERIFICATION_STABILITY_LAYER_V1.md), [`MVP_CANONICAL_FLOW.md`](../MVP_CANONICAL_FLOW.md)
 
 ---
+
+## Redirect
+
+All schema content has moved to the canonical pop-core contract path. Open the link above for the full specification.
+
+**PR1 note:** Runtime emission is implemented in `integrations/eye-tracking/flutter-runtime/lib/proof/`. Golden artifact: `integrations/pop-core/fixtures/PP-000001.json`.
+
+---
+
+<!-- Original content preserved below for offline reference; canonical edits go to pop-core copy. -->
 
 ## 1. Purpose
 

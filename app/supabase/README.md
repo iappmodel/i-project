@@ -1,0 +1,41 @@
+# app/supabase — promoted financial core
+
+**Promoted:** 2026-05-25
+**Source:** `eye-earn-sparkle-archive` @ `/Users/2023macbookpro/Desktop/IVAULT/i-project-rescue/github-source-repos/eye-earn-sparkle-archive`
+**Script:** `scripts/promote_supabase_financial_core.sh`
+
+## Contents
+
+| Artifact | Count | Notes |
+|----------|------:|-------|
+| SQL migrations | 103 | Full ordered chain (profiles → wallet ledger → rewards) |
+| Edge functions | 3 | `issue-reward`, `validate-attention`, `_shared` |
+
+## Apply locally
+
+```bash
+cd app/supabase
+supabase start          # requires Supabase CLI
+supabase db reset       # applies all migrations
+supabase functions serve issue-reward validate-attention
+```
+
+## Wiring to POP validator
+
+1. Device seals proof → POST `integrations/pop-core/validator` (`/v1/proof-packets/validate`)
+2. Validator returns pending hold
+3. On approval, `issue-reward` / ledger RPCs settle via this Supabase stack
+
+## Re-promote
+
+When archive `main` changes:
+
+```bash
+./scripts/promote_supabase_financial_core.sh
+```
+
+Do **not** hand-edit promoted migrations — fix upstream in `eye-earn-sparkle-archive` and re-run.
+
+## Currency note
+
+Archive SQL uses `vicoin` / `icoin`. Demo app uses Tier-1 `a/i/v/e/o` labels per ADR-001 — map at integration boundary.

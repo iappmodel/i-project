@@ -1,0 +1,104 @@
+{
+  "packetVersion": "0",
+  "sessionId": "sess_8f3c2a1b-4e5d-6a7b-8c9d-0e1f2a3b4c5d",
+  "userId": null,
+  "localUserRef": "demo-user-001",
+  "offerId": "nike-pegasus-41-watch",
+  "contentId": "feed-card-sponsored-12",
+  "deviceId": null,
+  "deviceIdHash": "sha256:placeholder-device-hash",
+  "startedAt": "2026-05-20T18:04:12.000Z",
+  "endedAt": "2026-05-20T18:08:42.000Z",
+  "durationMs": 270000,
+  "appVersion": "1.0.0+1",
+  "runtimeVersion": "flutter-runtime@archive-promoted",
+  "signals": {
+    "presence": {
+      "score": 0.9299999999999999,
+      "confidence": 0.9,
+      "notes": "facePresentRatio=0.90; likelyFake=false"
+    },
+    "participation": {
+      "score": 0.92,
+      "confidence": 0.9,
+      "notes": "playbackCompleted=true"
+    },
+    "perception": {
+      "score": 0.78125,
+      "confidence": 1.0,
+      "notes": "centerDwellMet=true"
+    },
+    "signalIntegrity": {
+      "score": 0.96,
+      "confidence": 1.0,
+      "notes": "band=STRONG"
+    },
+    "sessionIntegrity": {
+      "score": 1.0,
+      "confidence": 0.85,
+      "notes": "foregroundRatio=1.00"
+    },
+    "rewardEligibility": {
+      "score": 0.8,
+      "confidence": 0.75,
+      "notes": "offerRulesMet=pending_review"
+    }
+  },
+  "eyeTracking": {
+    "facePresentRatio": 0.9,
+    "stableGazeWindows": [
+      {
+        "startedAtMs": 120400,
+        "endedAtMs": 125800,
+        "zone": "CENTER",
+        "confidence": 0.82
+      }
+    ],
+    "dwellEvents": [
+      {
+        "zone": "CENTER",
+        "startedAtMs": 118000,
+        "endedAtMs": 126500,
+        "satisfied": true
+      }
+    ],
+    "blinkEvents": [
+      {
+        "timestampMs": 1779300253000,
+        "detected": true
+      }
+    ],
+    "verificationStabilitySnapshot": {
+      "stableZone": "CENTER",
+      "confidenceBand": "STRONG",
+      "validFrameRatio": 1.0,
+      "zoneConsistency": 1.0,
+      "dwellReadiness": 0.5625,
+      "blinkConfidence": 0.5874999999999999,
+      "fpsConfidence": 0.8400000000000003,
+      "reason": "zone=CENTER · valid=100% · consist=100% · fps=84% · blink=59% · dwell=56% · stable window",
+      "sampleCount": 48,
+      "windowMs": 1880
+    },
+    "calibrationConfidence": 0.71,
+    "invalidFrameRatio": 0.09999999999999998,
+    "processedFpsAvg": 7.799999999999999
+  },
+  "interaction": {
+    "taps": 2,
+    "scrolls": 0,
+    "playbackStarted": true,
+    "playbackCompleted": true,
+    "foregroundRatio": 1.0,
+    "interactionTiming": {
+      "firstInteractionMs": 4500,
+      "lastInteractionMs": 268000,
+      "cadenceScore": 0.85
+    }
+  },
+  "review": {
+    "status": "pending",
+    "reviewedAt": null,
+    "reasons": []
+  }
+}

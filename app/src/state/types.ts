@@ -1,6 +1,14 @@
+import type { AttentionSession } from './attentionSession'
+
+export type ProductTabId = 'feed' | 'earn' | 'wallet' | 'profile'
+
+export type AppMode = 'product' | 'presenter'
+
 export type DemoScreenId =
   | 'splash'
   | 'feed'
+  | 'earn'
+  | 'profile'
   | 'offer-detail'
   | 'consent-camera-gate'
   | 'watch-verify'
@@ -72,23 +80,39 @@ export interface ProofLayerStatus {
 
 export interface DemoState {
   currentScreen: DemoScreenId
+  appMode: AppMode
+  activeTab: ProductTabId
   walletBalance: number
   pendingBalance: number
   aCoins: number
+  /** Settled, spendable iCoins (canonical i ledger) */
   iCoins: number
+  /** Pending iCoins awaiting attestation settlement */
+  iCoinsPending: number
   transactions: Transaction[]
   selectedOffer: Offer | null
   verificationStatus: VerificationStatus
+  /** Gate for attention-backed rewards — null until consent accepted */
+  attentionSession: AttentionSession | null
 }
 
 export interface DemoContextValue extends DemoState {
   setScreen: (s: DemoScreenId) => void
+  setActiveTab: (tab: ProductTabId) => void
+  startPresenterTour: () => void
+  exitPresenter: () => void
+  enterProduct: () => void
   resetDemo: () => void
   jumpFeed: () => void
+  jumpEarn: () => void
   jumpWallet: () => void
+  jumpProfile: () => void
   selectOffer: (o: Offer) => void
   startWatchFlow: () => void
+  acceptConsentAndBeginSession: () => void
   completeVerification: () => void
   claimReward: () => void
   finishRewardToWallet: () => void
+  canCollectReward: boolean
+  canRedeemReward: boolean
 }

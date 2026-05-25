@@ -1,37 +1,34 @@
-type Tab = 'feed' | 'discover' | 'wallet'
+import type { ProductTabId } from '../state/types'
 
 type Props = {
-  active: Tab
+  active: ProductTabId
   onFeed: () => void
-  onDiscover: () => void
+  onEarn: () => void
   onWallet: () => void
+  onProfile: () => void
 }
 
-export function BottomNav({ active, onFeed, onDiscover, onWallet }: Props) {
+export function BottomNav({ active, onFeed, onEarn, onWallet, onProfile }: Props) {
+  const tabs: { id: ProductTabId; label: string; onClick: () => void }[] = [
+    { id: 'feed', label: 'Feed', onClick: onFeed },
+    { id: 'earn', label: 'Earn', onClick: onEarn },
+    { id: 'wallet', label: 'Wallet', onClick: onWallet },
+    { id: 'profile', label: 'Profile', onClick: onProfile },
+  ]
+
   return (
-    <nav className="ds-bottom-nav tab-bar tab-bar--feed">
-      <button
-        type="button"
-        className={`ds-bottom-nav__tab tab ${active === 'feed' ? 'ds-bottom-nav__tab--active active' : ''}`}
-        onClick={onFeed}
-      >
-        Feed
-        {active === 'feed' && <span className="ds-bottom-nav__pip tab-pip" />}
-      </button>
-      <button
-        type="button"
-        className={`ds-bottom-nav__tab tab ${active === 'discover' ? 'ds-bottom-nav__tab--active active' : ''}`}
-        onClick={onDiscover}
-      >
-        Discover
-      </button>
-      <button
-        type="button"
-        className={`ds-bottom-nav__tab tab ${active === 'wallet' ? 'ds-bottom-nav__tab--active active' : ''}`}
-        onClick={onWallet}
-      >
-        Wallet
-      </button>
+    <nav className="ds-bottom-nav tab-bar tab-bar--four" aria-label="Main navigation">
+      {tabs.map((tab) => (
+        <button
+          key={tab.id}
+          type="button"
+          className={`ds-bottom-nav__tab tab ${active === tab.id ? 'ds-bottom-nav__tab--active active' : ''}`}
+          onClick={tab.onClick}
+        >
+          {tab.label}
+          <span className="ds-bottom-nav__pip tab-pip" />
+        </button>
+      ))}
     </nav>
   )
 }
