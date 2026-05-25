@@ -1,14 +1,16 @@
 # CANONICAL_CANDIDATES
 
 **Generated:** 2026-05-21  
-**Updated:** 2026-05-22 (P0 chat batches 01–04 synthesis)  
+**Updated:** 2026-05-25 (owner decision session)  
 **Purpose:** What should become canonical — with evidence, confidence, and competing alternatives
 
-**Synthesis:** [`CHAT_RECOVERY/EXTRACTED/P0_BATCHES_01_04_SYNTHESIS.md`](CHAT_RECOVERY/EXTRACTED/P0_BATCHES_01_04_SYNTHESIS.md) — **40 P0 conversations consolidated; nothing promoted.**
+**Synthesis:** [`CHAT_RECOVERY/EXTRACTED/P0_BATCHES_01_04_SYNTHESIS.md`](CHAT_RECOVERY/EXTRACTED/P0_BATCHES_01_04_SYNTHESIS.md) — 40 P0 conversations consolidated.
+
+**Owner session 2026-05-25:** ENT-01, ENT-05, CR-02–06, HI-01, HI-02 **resolved** — see `DECISIONS/`. MOD-01 **deferred**.
 
 **Legend:**  
 - **Confidence:** High / Medium / Low  
-- **Status:** Declared / Audit-backed / Gap / **Chat-candidate (blocked)**
+- **Status:** Declared / Audit-backed / Gap / Chat-candidate / **Accepted (owner)**
 
 ---
 
@@ -28,17 +30,17 @@
 **Source:** 40 P0 conversations (ranks 1–40) — see `CHAT_RECOVERY/EXTRACTED/conversations/` and batch `P0_BATCH_*_CANONICAL_CANDIDATES.md`.
 
 **Total unique candidate IDs:** ~125 (CC-B01 through CC-B04)  
-**Status:** **All blocked or candidate — not canonical.** Promotion requires owner decisions in synthesis §12.
+**Status:** Core blockers cleared 2026-05-25 — candidates may promote to Tier 1 after repo verification.
 
-### Highest-priority chat candidates (blocked on noted items)
+### Highest-priority chat candidates
 
-| ID | Candidate | Conv(s) | Blocker |
-|----|-----------|---------|---------|
-| CC-B04-27–31 | Attention sessions + ACS + split reward endpoints | 039 | **Session bypass (CR-01)** |
-| CC-B03-01, CC-B04-07–08 | aCoin + eCoin specs | 023, 033 | Currency pipeline |
-| CC-B02-01, CC-B04-23 | 4-tab product IA | 014, 038 | Demo lineage (HI-01) |
-| CC-B01-04, CC-B02-04 | Progressive trust ladder | 009, 014 | — |
-| CC-B03-16 | Tier 1 A/I/V/E/O | 028 | Letter semantics (CR-02–06) |
+| ID | Candidate | Conv(s) | Status |
+|----|-----------|---------|--------|
+| CC-B04-27–31 | Attention sessions + ACS + split reward endpoints | 039 | **Accepted** — CR-01 fixed in demo paths |
+| CC-B03-01, CC-B04-07–08 | aCoin + eCoin specs | 023, 033 | **Accepted** — build Tier 1 a/i/v/e/o (ADR-001) |
+| CC-B02-01, CC-B04-23 | 4-tab product IA | 014, 038 | **Accepted** — ADR-014 |
+| CC-B01-04, CC-B02-04 | Progressive trust ladder | 009, 014 | Candidate — promote |
+| CC-B03-16 | Tier 1 A/I/V/E/O | 028 | **Accepted** — ADR-001 |
 
 ### Chat candidate tiers (summary)
 
@@ -49,7 +51,7 @@
 | C — Experimental | ~35 | Preserve only |
 | D — Process/obsolete | ~15 | Do not promote to product canon |
 
-**Do not merge chat candidates with repo audit candidates below until currency + session bypass resolved.**
+**Remaining gate:** Wire proof → POPS → wallet in production; MOD-01 roadmap modules TBD.
 
 ---
 
@@ -148,10 +150,10 @@ See `OBSOLETE/INDEX.md`.
 | Item | Question |
 |------|----------|
 | Coin naming map | Vicoin/Icoin → aCoins/iCoins/vCoins? **See synthesis §5 + `P0_BATCH_03_CURRENCY_RECONCILIATION_NOTES.md`** |
-| rCoin definition | Pool vs hub vs reputation — **blocked (CR-04)** |
-| Demo canonical URL | 6+ lineages — **blocked (HI-01)** |
-| Product vs demo IA | 4-tab vs multi-screen — **blocked (HI-02)** |
-| Attention session bypass | Owner YES in conv 039 — **blocked (CR-01)** |
+| rCoin definition | Pool vs hub vs reputation — **resolved (CR-04)** — conversion hub per ADR-001 |
+| Demo canonical URL | 6+ lineages — **resolved (HI-01)** — `app/` linear pitch per ADR-014 |
+| Product vs demo IA | 4-tab vs multi-screen — **resolved (HI-02)** — 4-tab product law; linear presenter for pitch |
+| Attention session bypass | Owner YES in conv 039 — **resolved (CR-01)** in demo paths |
 | iVatar scope | Product concept vs cut feature? |
 | Fourth studio merge | Which lineage wins for ship? |
 | Full 35-system SoT | Verified in IVAULT `docs/technical/SYSTEM_PROMOTION_SOURCE_OF_TRUTH.md` §3 — reconcile with workspace checkout |

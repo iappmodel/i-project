@@ -30,6 +30,35 @@ MASTER_BRAIN/
 ├── CANONICAL_CANDIDATES.md            ← What should become canonical
 ├── MASTERBRAIN_STRUCTURE.md           ← This file
 │
+├── ENTITIES/                          ← Named organisms (Elo, POP, iAM…)
+│   ├── INDEX.md
+│   ├── ELO.md
+│   ├── POP.md
+│   ├── iAM.md
+│   ├── iVatar.md
+│   └── MASTER_BRAIN_ENTITY.md
+│
+├── SYSTEMS/                           ← Machinery (Wallet, ET, Studio…)
+│   ├── INDEX.md
+│   ├── Wallet.md
+│   ├── EyeTracking.md
+│   ├── AttentionVerification.md
+│   ├── ProofAndSeal.md
+│   ├── Studio.md
+│   ├── CreatorEconomy.md
+│   ├── RemoteControl.md
+│   └── ModuleAlphabet.md
+│
+├── RELATIONSHIPS/                     ← Cross-system connections
+│   ├── INDEX.md
+│   ├── UNIVERSE_MAP.md                ← Start here for full organism
+│   ├── Elo_POP.md
+│   ├── POP_Wallet.md
+│   ├── Elo_Studio.md
+│   ├── ThreeLoops_Economy.md
+│   ├── Modules_Currency.md
+│   └── Attention_Proof_Reward.md
+│
 ├── CANONICAL/                         ← Aligns with i Source of Truth
 │   ├── i_SOURCE_OF_TRUTH.md           ← Highest priority document
 │   ├── CORE_LOOP.md
@@ -175,8 +204,11 @@ Based on `docs/technical/MULTI_REPO_SYSTEM_RECOVERY_REPORT.md` (2026-05-21):
 | Question | Go to |
 |----------|-------|
 | What is [ i ]? | CANONICAL/i_SOURCE_OF_TRUTH.md |
+| Full organism map? | RELATIONSHIPS/UNIVERSE_MAP.md |
+| What is Elo / POP? | ENTITIES/ |
+| What is Wallet / Studio? | SYSTEMS/ |
 | Where does X live? | REPOSITORY_MAP.md |
-| How do concepts connect? | KNOWLEDGE_GRAPH.md |
+| How do concepts connect? | KNOWLEDGE_GRAPH.md + RELATIONSHIPS/ |
 | What conflicts exist? | DUPLICATES_AND_CONFLICTS.md |
 | What should we canonize? | CANONICAL_CANDIDATES.md |
 | What's wallet/POPS/trust? | ECONOMY/, TRUST_SYSTEM/ |

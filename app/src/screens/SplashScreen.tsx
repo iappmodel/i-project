@@ -3,27 +3,38 @@ import { SourceEvidence } from '../components/SourceEvidence'
 import { useDemo } from '../state/useDemo'
 
 export function SplashScreen() {
-  const { setScreen } = useDemo()
+  const { appMode, enterProduct, setScreen, startPresenterTour } = useDemo()
+
+  const handleEnter = () => {
+    if (appMode === 'presenter') {
+      setScreen('feed')
+      return
+    }
+    enterProduct()
+  }
 
   return (
     <PhoneFrame variant="void">
-      <button
-        type="button"
-        className="splash-root"
-        onClick={() => setScreen('feed')}
-        aria-label="Enter feed"
-      >
+      <button type="button" className="splash-root" onClick={handleEnter} aria-label="Enter app">
         <div className="splash-logo" aria-hidden>
           <span>[</span>
           <span className="splash-i">i</span>
           <span>]</span>
         </div>
         <p className="splash-tag">Attention wallet</p>
-        <p className="splash-hint">Tap to continue</p>
+        <p className="splash-hint">
+          {appMode === 'presenter' ? 'Tap to start presenter walkthrough' : 'Tap to open · 4-tab product shell'}
+        </p>
       </button>
+      {appMode === 'product' ? (
+        <button type="button" className="splash-presenter-link" onClick={() => startPresenterTour()}>
+          Investor presenter walkthrough
+        </button>
+      ) : null}
       <SourceEvidence
         paths={[
           '02_clickable_prototypes/index4.html',
+          'MASTER_BRAIN/DECISIONS/DEMO_IA_ADR.md',
           'integrations/eye-tracking/demos/investor-demo/src/screens/SplashScreen.tsx',
         ]}
       />

@@ -1,0 +1,1881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>[ i ] MVP Demo — Combined Interactive Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-void:#070709;
+  --bg-deep:#0a0a0f;
+  --bg-surface:#111118;
+  --bg-panel:#16161f;
+  --bg-raised:#1c1c28;
+  --bg-soft:#222231;
+  --border-subtle:rgba(255,255,255,.05);
+  --border-mid:rgba(255,255,255,.09);
+  --border-active:rgba(255,255,255,.18);
+  --text-primary:#f0ede8;
+  --text-secondary:#9997a0;
+  --text-muted:#4a4858;
+  --icoin:#4ade80;
+  --vcoin:#f59e0b;
+  --cyan:#00e5ff;
+  --lime:#b4ff47;
+  --rose:#ff4d6d;
+  --amber:#ffb300;
+  --blue:#378add;
+  --green:#1D9E75;
+  --font-display:'Syne',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --shadow-1:0 40px 100px rgba(0,0,0,.55),0 0 0 .5px rgba(255,255,255,.03);
+  --radius-phone:40px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:radial-gradient(circle at top left, rgba(0,229,255,.05), transparent 30%), radial-gradient(circle at bottom right, rgba(74,222,128,.04), transparent 25%), var(--bg-deep);
+  color:var(--text-primary);
+  font-family:var(--font-body);
+  overflow:auto;
+}
+button,input,select{font:inherit}
+button{border:none;background:none;color:inherit;cursor:pointer}
+.app-shell{
+  min-height:100svh;
+  width:100%;
+  max-width:520px;
+  margin:0 auto;
+  display:block;
+  padding:24px 16px;
+}
+.phone-wrap{
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  min-height:0;
+  width:100%;
+}
+.phone{
+  width:100%;
+  max-width:390px;
+  height:min(92svh,860px);
+  border-radius:var(--radius-phone);
+  background:var(--bg-surface);
+  border:1.5px solid rgba(255,255,255,.12);
+  overflow:hidden;
+  position:relative;
+  box-shadow:var(--shadow-1);
+}
+.notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:92px;height:26px;border-radius:0 0 16px 16px;background:var(--bg-surface);border:1.5px solid rgba(255,255,255,.08);border-top:none;z-index:50}
+.screen{
+  position:absolute; inset:0;
+  padding-top:28px;
+  background:var(--bg-surface);
+}
+.view{position:absolute;inset:0;opacity:0;pointer-events:none;transform:translateX(16px);transition:opacity .22s ease, transform .22s ease}
+.view.active{opacity:1;pointer-events:auto;transform:translateX(0)}
+.scroll{height:100%;overflow:auto;padding:22px 18px 104px;scrollbar-width:none}
+.scroll::-webkit-scrollbar{display:none}
+.top-space{height:10px}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.logo{font-family:var(--font-display);font-size:22px;font-weight:700;letter-spacing:-.02em}
+.subtle{color:var(--text-muted);font-size:12px}
+.section-label{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px}
+.section-title{font-family:var(--font-display);font-size:22px;font-weight:600;letter-spacing:-.02em;margin-bottom:4px}
+.section-sub{font-size:12px;color:var(--text-muted);line-height:1.5;margin-bottom:18px}
+.card{background:var(--bg-panel);border:0.5px solid var(--border-mid);border-radius:16px;padding:14px}
+.card + .card{margin-top:10px}
+.row{display:flex;align-items:center;gap:12px}
+.space{justify-content:space-between}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:rgba(74,222,128,.08);border:0.5px solid rgba(74,222,128,.22);font-size:11px;color:var(--icoin);font-family:var(--font-mono)}
+.chip.v{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.22);color:var(--vcoin)}
+.chip.cyan{background:rgba(0,229,255,.08);border-color:rgba(0,229,255,.22);color:var(--cyan)}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.iconbox{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:var(--bg-raised);border:0.5px solid var(--border-mid);font-family:var(--font-mono);font-size:13px;flex-shrink:0}
+.big-balance{font-family:var(--font-mono);font-size:46px;line-height:1;font-weight:500;letter-spacing:-.03em;margin:6px 0}
+.balance-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0 10px}
+.stat-card{background:var(--bg-raised);border:0.5px solid var(--border-subtle);border-radius:14px;padding:12px}
+.stat-label{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+.stat-value{font-family:var(--font-mono);font-size:20px;font-weight:500}
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.quick-btn{background:var(--bg-raised);border:0.5px solid var(--border-subtle);border-radius:14px;padding:11px 6px;text-align:center;transition:transform .12s,border-color .12s}
+.quick-btn:active{transform:scale(.97)}
+.quick-btn:hover{border-color:var(--border-active)}
+.quick-ico{font-size:18px;margin-bottom:5px}
+.quick-lbl{font-size:10px;color:var(--text-secondary)}
+.feed-card{border-radius:18px;overflow:hidden;background:var(--bg-panel);border:0.5px solid var(--border-subtle);margin-bottom:12px}
+.thumb{height:208px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.thumb.g1{background:linear-gradient(135deg,#0a1c17,#062013)}
+.thumb.g2{background:linear-gradient(135deg,#180f03,#2a1800)}
+.thumb.g3{background:linear-gradient(135deg,#0c1430,#1a2b57)}
+.thumb.g4{background:linear-gradient(135deg,#2b0720,#4d1038)}
+.thumb::after{content:'';position:absolute;inset:0;background:linear-gradient(to top, rgba(7,7,9,.82), transparent 58%)}
+.wave{display:flex;gap:4px;align-items:flex-end;height:44px;position:relative;z-index:2}
+.wave span{display:block;width:5px;border-radius:3px;background:#4fd6ae;animation:wave 1s ease-in-out infinite}
+.wave span:nth-child(2){animation-delay:.1s}.wave span:nth-child(3){animation-delay:.2s}.wave span:nth-child(4){animation-delay:.3s}.wave span:nth-child(5){animation-delay:.14s}.wave span:nth-child(6){animation-delay:.24s}.wave span:nth-child(7){animation-delay:.35s}
+@keyframes wave{0%,100%{height:8px}50%{height:32px}}
+.badge-top{position:absolute;top:12px;right:12px;z-index:2;background:rgba(245,158,11,.98);color:#271404;border-radius:999px;padding:4px 10px;font-size:11px;font-weight:600}
+.badge-left{position:absolute;top:12px;left:12px;z-index:2;padding:4px 10px;border-radius:10px;background:rgba(7,7,9,.5);backdrop-filter:blur(6px);border:0.5px solid rgba(255,255,255,.08);font-size:9px;font-family:var(--font-mono)}
+.feed-body{padding:13px}
+.feed-head{display:flex;gap:7px;align-items:center;margin-bottom:4px}
+.feed-name{font-size:14px;font-weight:600}
+.feed-meta{font-size:11px;color:rgba(255,255,255,.33)}
+.feed-text{font-size:12px;color:rgba(255,255,255,.5);line-height:1.5}
+.offer-list .card{padding:0;overflow:hidden}
+.offer-hero{height:84px;display:flex;align-items:flex-end;padding:12px;background:linear-gradient(135deg,#0b1f22,#123135);position:relative}
+.offer-hero.spotify{background:linear-gradient(135deg,#0e2519,#184927)}
+.offer-hero.local{background:linear-gradient(135deg,#281302,#472509)}
+.offer-hero.shop{background:linear-gradient(135deg,#10122c,#1c2451)}
+.offer-hero .chip{position:absolute;top:10px;right:10px}
+.offer-content{padding:12px}
+.offer-title{font-family:var(--font-display);font-size:13px;font-weight:600;margin-bottom:4px}
+.offer-sub{font-size:11px;color:var(--text-secondary);line-height:1.45;margin-bottom:7px}
+.offer-meta{display:flex;gap:10px;font-size:10px;color:var(--text-muted)}
+.list-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:0.5px solid var(--border-subtle)}
+.list-row:last-child{border-bottom:none}
+.list-main{flex:1;min-width:0}
+.list-title{font-size:13px;font-weight:500;margin-bottom:2px}
+.list-sub{font-size:10px;color:var(--text-muted);line-height:1.4}
+.list-value{font-family:var(--font-mono);font-size:12px;white-space:nowrap}
+.bottom-nav{position:absolute;left:14px;right:14px;bottom:14px;height:72px;border-radius:22px;background:rgba(17,17,24,.92);border:0.5px solid var(--border-mid);backdrop-filter:blur(16px);display:grid;grid-template-columns:repeat(4,1fr);padding:8px;z-index:30}
+.tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;color:var(--text-muted);transition:all .12s}
+.tab.active{background:var(--bg-raised);color:var(--text-primary)}
+.tab-ico{font-size:17px}
+.tab-lbl{font-size:10px}
+.immersive-stage{position:absolute;inset:0;background:#000;z-index:60;opacity:0;pointer-events:none;transition:opacity .2s ease}
+.immersive-stage.active{opacity:1;pointer-events:auto}
+.immersive-bg{position:absolute;inset:0;transition:background .35s ease}
+.immersive-bg.g1{background:linear-gradient(135deg,#0a1c17,#062013)}
+.immersive-bg.g2{background:linear-gradient(135deg,#180f03,#2a1800)}
+.immersive-bg.g3{background:linear-gradient(135deg,#0c1430,#1a2b57)}
+.immersive-bg.g4{background:linear-gradient(135deg,#2b0720,#4d1038)}
+.immersive-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.82),transparent 48%),linear-gradient(to bottom,rgba(0,0,0,.5),transparent 22%)}
+.immersive-persistent{position:absolute;inset:0;z-index:2}
+.immersive-top{position:absolute;top:36px;left:18px;right:18px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.immersive-wallet,.immersive-close,.immersive-source,.immersive-reward{background:rgba(7,7,9,.45);backdrop-filter:blur(10px);border:0.5px solid rgba(255,255,255,.1)}
+.immersive-wallet{display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;font-size:11px;font-family:var(--font-mono);color:var(--icoin)}
+.immersive-close{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.immersive-reward{position:absolute;top:36px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;font-size:10px;font-family:var(--font-mono);color:var(--icoin)}
+.immersive-reward.hidden{display:none!important}
+.immersive-bottom{position:absolute;left:18px;right:72px;bottom:94px;z-index:2}
+.immersive-source{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:8px;font-size:9px;font-family:var(--font-mono);color:rgba(240,237,232,.7);margin-bottom:10px}
+.immersive-title{font-family:var(--font-display);font-size:16px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
+.immersive-meta{font-size:11px;color:rgba(255,255,255,.5);margin-bottom:8px}
+.immersive-caption{font-size:12px;color:rgba(240,237,232,.78);line-height:1.5;max-width:240px}
+.immersive-actions{position:absolute;right:16px;bottom:88px;display:flex;flex-direction:column;align-items:center;gap:18px;z-index:2}
+.immersive-action{display:flex;flex-direction:column;align-items:center;gap:4px}
+.immersive-action button{width:42px;height:42px;border-radius:50%;background:rgba(7,7,9,.45);backdrop-filter:blur(10px);border:0.5px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:16px}
+.immersive-action button.on{background:rgba(255,77,109,.2);border-color:rgba(255,77,109,.32)}
+.immersive-action button.saved{background:rgba(0,229,255,.16);border-color:rgba(0,229,255,.3)}
+.immersive-action span{font-size:10px;font-family:var(--font-mono);color:rgba(255,255,255,.5)}
+.immersive-detail-toggle{position:absolute;left:50%;bottom:54px;transform:translateX(-50%);padding:6px 14px;border-radius:999px;background:rgba(240,237,232,.08);border:0.5px solid rgba(240,237,232,.12);font-size:10px;color:rgba(240,237,232,.5);z-index:2}
+.immersive-nav{position:absolute;inset:0;display:flex;justify-content:space-between;align-items:center;padding:0 10px;z-index:1;pointer-events:none}
+.immersive-nav button{pointer-events:auto;width:28px;height:42px;border-radius:14px;background:rgba(7,7,9,.28);border:0.5px solid rgba(255,255,255,.06);color:rgba(255,255,255,.45)}
+.immersive-revealed{position:absolute;inset:0;z-index:3;opacity:0;pointer-events:none;transition:opacity .18s ease;background:linear-gradient(to bottom,rgba(0,0,0,.16),rgba(0,0,0,.35))}
+.immersive-revealed.on{opacity:1;pointer-events:auto}
+.immersive-panel{position:absolute;left:16px;right:16px;bottom:108px;border-radius:20px;background:rgba(17,17,24,.78);backdrop-filter:blur(18px);border:0.5px solid rgba(255,255,255,.1);padding:16px}
+.immersive-panel-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.immersive-mini{background:rgba(255,255,255,.03);border:0.5px solid rgba(255,255,255,.08);border-radius:14px;padding:10px}
+.immersive-mini .k{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.35);margin-bottom:4px}
+.immersive-mini .v{font-size:13px;color:var(--text-primary);font-family:var(--font-mono)}
+.immersive-cta-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.immersive-feed-tools{display:flex;gap:8px;align-items:center}
+.overlay{position:absolute;inset:0;background:rgba(7,7,9,.76);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .18s ease;z-index:80}
+.overlay.active{opacity:1;pointer-events:auto}
+.sheet{position:absolute;left:12px;right:12px;bottom:12px;background:var(--bg-surface);border:0.5px solid var(--border-mid);border-radius:26px;max-height:84%;overflow:auto;transform:translateY(26px);transition:transform .2s ease;box-shadow:var(--shadow-1)}
+.overlay.active .sheet{transform:translateY(0)}
+.sheet-content{padding:18px 16px 24px}
+.sheet-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+.close{width:34px;height:34px;border-radius:50%;background:var(--bg-panel);display:flex;align-items:center;justify-content:center;border:0.5px solid var(--border-mid)}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px}
+.input,.select,.textarea{width:100%;background:var(--bg-panel);border:0.5px solid var(--border-mid);border-radius:12px;padding:12px 14px;color:var(--text-primary);outline:none}
+.textarea{min-height:88px;resize:vertical}
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.primary{width:100%;padding:14px;border-radius:14px;background:var(--text-primary);color:var(--bg-void);font-family:var(--font-display);font-weight:700;letter-spacing:-.01em}
+.secondary{width:100%;padding:13px;border-radius:14px;background:var(--bg-panel);border:0.5px solid var(--border-mid);color:var(--text-primary)}
+.note{font-size:11px;color:var(--text-muted);line-height:1.45}
+.watch-stage{position:absolute;inset:0;background:#000;color:#fff;z-index:70;opacity:0;pointer-events:none;transition:opacity .2s ease}
+.watch-stage.active{opacity:1;pointer-events:auto}
+.watch-bg{position:absolute;inset:0;background:linear-gradient(135deg,#0a2725,#0d4a45,#0a2725)}
+.watch-layer{position:absolute;inset:0;padding:48px 20px 26px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.watch-offer{font-family:var(--font-display);font-size:27px;font-weight:700;letter-spacing:-.02em}
+.watch-copy{font-size:13px;color:rgba(255,255,255,.54);line-height:1.55;max-width:260px;margin:8px auto 24px}
+.attention-wrap{position:relative;width:160px;height:160px;display:flex;align-items:center;justify-content:center;margin-bottom:18px}
+.attention-wrap svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.attention-num{font-family:var(--font-mono);font-size:34px;font-weight:500;color:var(--cyan);position:relative;z-index:2}
+.attention-label{position:absolute;bottom:16px;font-size:9px;letter-spacing:.08em;color:rgba(255,255,255,.34);text-transform:uppercase}
+.watch-progress{position:absolute;left:22px;right:22px;bottom:88px}
+.watch-progress-row{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.32);margin-bottom:6px}
+.progress-track{height:3px;background:rgba(255,255,255,.09);border-radius:999px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--lime));width:0%;transition:width .2s linear}
+.watch-actions{position:absolute;left:22px;right:22px;bottom:24px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.confirm-stage,.reward-stage{display:none;position:absolute;inset:0;padding:48px 20px 26px;align-items:center;justify-content:center;text-align:center;flex-direction:column}
+.confirm-stage.active,.reward-stage.active{display:flex}
+.pulse-ring{width:96px;height:96px;border-radius:50%;border:1.5px solid var(--icoin);display:flex;align-items:center;justify-content:center;position:relative;margin-bottom:18px;color:var(--icoin)}
+.pulse-ring::before,.pulse-ring::after{content:'';position:absolute;inset:-1px;border:1px solid currentColor;border-radius:50%;animation:ring 1.6s ease-out infinite}
+.pulse-ring::after{animation-delay:.8s}
+@keyframes ring{0%{opacity:.5;transform:scale(.8)}100%{opacity:0;transform:scale(1.9)}}
+.confirm-title{font-family:var(--font-display);font-size:24px;font-weight:700;margin-bottom:6px}
+.confirm-sub{font-size:13px;color:rgba(255,255,255,.5);line-height:1.55;max-width:270px}
+.gate-list{width:100%;max-width:290px;margin:18px auto 0;border:0.5px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden;background:rgba(255,255,255,.03)}
+.gate{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:0.5px solid rgba(255,255,255,.06)}
+.gate:last-child{border-bottom:none}
+.gate-ico{width:24px;height:24px;border-radius:8px;background:rgba(74,222,128,.1);display:flex;align-items:center;justify-content:center;color:var(--icoin);font-size:10px;font-family:var(--font-mono)}
+.reward-amount{font-family:var(--font-mono);font-size:56px;font-weight:500;color:var(--icoin);text-shadow:0 0 34px rgba(74,222,128,.3)}
+.reward-sub{font-size:14px;color:rgba(255,255,255,.55);margin-top:6px}
+.panel-side{min-height:0;display:flex;flex-direction:column;gap:14px;padding:8px 0;max-width:520px;width:100%}
+.side-card{background:rgba(17,17,24,.78);border:0.5px solid var(--border-mid);border-radius:22px;padding:18px;backdrop-filter:blur(14px)}
+.side-title{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px}
+.side-text{font-size:13px;color:var(--text-secondary);line-height:1.6}
+.side-list{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+.side-item{display:flex;gap:10px;align-items:flex-start}
+.side-num{width:20px;height:20px;border-radius:50%;background:var(--bg-raised);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--icoin);font-family:var(--font-mono);flex-shrink:0}
+.inline-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.ghost{padding:9px 12px;border-radius:12px;background:var(--bg-panel);border:0.5px solid var(--border-mid);font-size:12px}
+.toast{position:absolute;left:50%;bottom:94px;transform:translateX(-50%) translateY(10px);background:rgba(17,17,24,.96);border:0.5px solid var(--border-mid);color:var(--text-primary);padding:10px 14px;border-radius:12px;font-size:12px;opacity:0;pointer-events:none;transition:all .18s ease;z-index:100}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.small-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.kpi{padding:12px;border-radius:14px;background:var(--bg-panel);border:0.5px solid var(--border-mid)}
+.kpi .n{font-family:var(--font-mono);font-size:22px;font-weight:500;margin-bottom:3px}
+.kpi .t{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em}
+.hidden{display:none!important}
+
+.presenter-dock{position:absolute;top:36px;left:18px;right:18px;z-index:35;display:none;align-items:center;gap:8px;padding:8px 10px;border-radius:16px;background:rgba(7,7,9,.72);backdrop-filter:blur(12px);border:0.5px solid rgba(255,255,255,.1)}
+.presenter-dock.on{display:flex}
+
+.intro-overlay{position:absolute;inset:0;z-index:120;background:linear-gradient(180deg,rgba(7,7,9,.94),rgba(7,7,9,.98));display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .25s ease}
+.intro-overlay.on{opacity:1;pointer-events:auto}
+.intro-card{width:100%;max-width:320px;background:rgba(17,17,24,.96);border:0.5px solid var(--border-mid);border-radius:24px;padding:22px;box-shadow:var(--shadow-1)}
+.intro-kicker{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);margin-bottom:12px}
+.intro-head{font-family:var(--font-display);font-size:28px;line-height:1.05;letter-spacing:-.03em;margin-bottom:10px}
+.intro-copy{font-size:13px;color:var(--text-secondary);line-height:1.65;margin-bottom:16px}
+.intro-points{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
+.intro-point{display:flex;gap:9px;align-items:flex-start;font-size:12px;color:var(--text-secondary)}
+.intro-point b{color:var(--text-primary);font-weight:600}
+.intro-dot{width:6px;height:6px;border-radius:50%;background:var(--icoin);margin-top:6px;flex-shrink:0}
+.intro-actions{display:flex;flex-direction:column;gap:8px}
+.onboarding-overlay{position:absolute;inset:0;z-index:125;background:linear-gradient(180deg,rgba(7,7,9,.84),rgba(7,7,9,.95));display:flex;align-items:flex-end;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s ease}
+.onboarding-overlay.on{opacity:1;pointer-events:auto}
+.onboarding-card{width:100%;max-width:360px;background:rgba(17,17,24,.98);border:0.5px solid var(--border-mid);border-radius:26px;padding:20px;box-shadow:var(--shadow-1)}
+.onboarding-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+.onboarding-step{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber)}
+.onboarding-title{font-family:var(--font-display);font-size:24px;line-height:1.05;letter-spacing:-.03em;margin-bottom:6px}
+.onboarding-copy{font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:14px}
+.onboarding-progress{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px}
+.onboarding-bar{height:5px;border-radius:999px;background:var(--bg-panel);border:0.5px solid var(--border-subtle);overflow:hidden}
+.onboarding-bar > span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--lime));opacity:.25}
+.onboarding-bar.done > span,.onboarding-bar.active > span{opacity:1}
+.onboarding-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.onboarding-item{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--text-secondary)}
+.onboarding-item b{color:var(--text-primary)}
+.onboarding-chip-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
+.onboarding-chip{padding:10px 12px;border-radius:14px;border:0.5px solid var(--border-mid);background:var(--bg-panel);font-size:12px;color:var(--text-secondary);text-align:left}
+.onboarding-chip.active{background:var(--bg-raised);border-color:var(--cyan);color:var(--text-primary)}
+.onboarding-footer{display:flex;gap:8px}
+
+.personal-strip{display:grid;grid-template-columns:1.2fr .8fr;gap:10px;margin:0 0 14px}
+.personal-card{border-radius:16px;background:var(--bg-panel);border:0.5px solid var(--border-subtle);padding:14px}
+.personal-kicker{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);margin-bottom:6px}
+.personal-title{font-family:var(--font-display);font-size:16px;line-height:1.05;margin-bottom:4px}
+.personal-copy{font-size:12px;color:var(--text-secondary);line-height:1.55}
+.personal-mini{display:grid;gap:8px}
+.personal-mini .mini-row{padding:10px 12px;border-radius:14px;background:var(--bg-raised);border:0.5px solid var(--border-mid)}
+.personal-mini .mini-k{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px}
+.personal-mini .mini-v{font-size:12px;color:var(--text-primary)}
+.chart-block{display:grid;gap:10px;margin-top:12px}
+.chart-row{display:grid;grid-template-columns:90px 1fr 44px;gap:10px;align-items:center}
+.chart-label{font-size:11px;color:var(--text-secondary)}
+.chart-track{height:10px;border-radius:999px;background:var(--bg-raised);overflow:hidden;border:0.5px solid var(--border-subtle)}
+.chart-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--cyan),var(--lime))}
+.chart-fill.amber{background:linear-gradient(90deg,var(--amber),var(--icoin))}
+.chart-fill.purple{background:linear-gradient(90deg,#8b5cf6,var(--cyan))}
+.chart-val{font-family:var(--font-mono);font-size:11px;color:var(--text-primary);text-align:right}
+.settlement-lane{display:grid;gap:8px;margin-top:12px}
+.settlement-step{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:var(--bg-panel);border:0.5px solid var(--border-subtle)}
+.settlement-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;background:var(--bg-raised);color:var(--text-primary)}
+.settlement-copy{font-size:11px;color:var(--text-secondary);line-height:1.45}
+.settlement-copy b{color:var(--text-primary)}
+.map-toolbar{display:grid;grid-template-columns:1.3fr 1fr;gap:8px;margin-bottom:12px}
+.searchbox{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;background:var(--bg-panel);border:0.5px solid var(--border-mid);font-size:12px;color:var(--text-secondary)}
+.filter-mini{display:flex;gap:6px;overflow:auto;padding-bottom:2px}
+.filter-mini button{white-space:nowrap}
+.discovery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.discovery-card{background:var(--bg-panel);border:0.5px solid var(--border-subtle);border-radius:12px;padding:10px}
+.discovery-card .d1{font-size:10px;color:var(--text-muted);margin-bottom:4px}
+.discovery-card .d2{font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:2px}
+.discovery-card .d3{font-size:11px;color:var(--text-secondary)}
+.narrative-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.narrative-step{background:var(--bg-panel);border:0.5px solid var(--border-subtle);border-radius:12px;padding:10px}
+.narrative-step .n1{font-family:var(--font-mono);font-size:9px;color:var(--cyan);margin-bottom:4px}
+.narrative-step .n2{font-size:11px;color:var(--text-primary);margin-bottom:2px}
+.narrative-step .n3{font-size:10px;color:var(--text-secondary);line-height:1.4}
+.metric-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.metric-mini{background:var(--bg-raised);border:0.5px solid var(--border-subtle);border-radius:12px;padding:10px}
+.metric-mini .k{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.metric-mini .v{font-family:var(--font-mono);font-size:16px;font-weight:500}
+.stage-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:999px;font-size:10px;font-family:var(--font-mono);background:rgba(255,179,0,.08);border:0.5px solid rgba(255,179,0,.22);color:var(--amber)}
+
+.presenter-meta{flex:1;min-width:0}
+.presenter-kicker{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--cyan);font-family:var(--font-mono);margin-bottom:2px}
+.presenter-title{font-size:11px;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.presenter-btn{width:30px;height:30px;border-radius:10px;background:var(--bg-raised);border:0.5px solid var(--border-mid);display:flex;align-items:center;justify-content:center;font-size:13px}
+.presenter-count{font-size:10px;color:var(--text-muted);font-family:var(--font-mono)}
+.map-shell{position:relative;height:280px;border-radius:18px;overflow:hidden;background:linear-gradient(135deg,#111825,#0d1220);border:0.5px solid var(--border-mid);margin-bottom:14px}
+.map-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);background-size:28px 28px;opacity:.45}
+.map-road{position:absolute;background:rgba(255,255,255,.08);border-radius:999px}
+.map-road.h1{left:-10%;right:-10%;top:34%;height:18px;transform:rotate(-8deg)}
+.map-road.h2{left:-10%;right:-10%;top:58%;height:14px;transform:rotate(7deg)}
+.map-road.v1{top:-10%;bottom:-10%;left:28%;width:16px;transform:rotate(8deg)}
+.map-road.v2{top:-10%;bottom:-10%;right:26%;width:12px;transform:rotate(-6deg)}
+.map-pin{position:absolute;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center;gap:6px}
+.map-pin button{background:none}
+.pin-dot{width:18px;height:18px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:1px solid rgba(255,255,255,.15);box-shadow:0 10px 24px rgba(0,0,0,.28)}
+.pin-dot > span{display:block;transform:rotate(45deg);font-size:9px;line-height:18px;text-align:center;font-family:var(--font-mono)}
+.pin-label{padding:4px 8px;border-radius:999px;background:rgba(7,7,9,.8);border:0.5px solid rgba(255,255,255,.08);font-size:10px;white-space:nowrap}
+.pin-green{background:var(--green)} .pin-green > span{color:#052d24}
+.pin-amber{background:var(--vcoin)} .pin-amber > span{color:#2c1700}
+.pin-cyan{background:var(--cyan)} .pin-cyan > span{color:#002b31}
+.map-legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.legend-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:var(--bg-panel);border:0.5px solid var(--border-mid);font-size:10px;color:var(--text-secondary)}
+.legend-pill b{color:var(--text-primary)}
+
+@media (max-width: 640px){
+  .app-shell{padding:10px}
+  .phone{max-width:100%;height:100svh;border-radius:28px}
+}
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen">
+        <div id="view-feed" class="view active">
+          <div class="scroll">
+            <div class="top-space"></div>
+            <div class="topbar">
+              <div>
+                <div class="logo" onclick="togglePresenterMode()">[ i ]</div>
+                <div class="subtle">Attention marketplace</div>
+              </div>
+              <div class="immersive-feed-tools"><button class="chip cyan" onclick="openImmersive(0)"><span class="dot"></span>Immersive</button><button class="chip" onclick="openView('wallet')"><span class="dot"></span><span id="wallet-chip-val">$3.65</span></button></div>
+            </div>
+            <div class="section-label">Cross-platform feed</div>
+            <div class="personal-strip">
+              <div class="personal-card">
+                <div class="personal-kicker" id="feed-personal-kicker">Route</div>
+                <div class="personal-title" id="feed-personal-title">Default marketplace mix</div>
+                <div class="personal-copy" id="feed-personal-copy">The feed adapts to what you connected and why you came here. Finish onboarding to push the marketplace toward earning, creator support, local deals, or campaign tools.</div>
+              </div>
+              <div class="personal-mini">
+                <div class="mini-row"><div class="mini-k">Connected first</div><div class="mini-v" id="feed-personal-platform">TikTok</div></div>
+                <div class="mini-row"><div class="mini-k">Priority</div><div class="mini-v" id="feed-personal-intent">Earn + discover</div></div>
+              </div>
+            </div>
+            <div id="feed-card-list">
+            <div class="feed-card" id="marketplace-live-card" data-role="business" onclick="openPublishedCampaignFlow()">
+              <div class="thumb g4" id="marketplace-live-thumb">
+                <div class="badge-left" id="marketplace-live-source">Marketplace · Draft</div>
+                <div class="badge-top" id="marketplace-live-reward">Awaiting publish</div>
+                <div style="position:relative;z-index:2;font-size:34px" id="marketplace-live-emoji">◈</div>
+              </div>
+              <div class="feed-body">
+                <div class="feed-head"><div class="feed-name" id="marketplace-live-title">No live draft in feed yet</div><div class="feed-meta" id="marketplace-live-meta">business side</div></div>
+                <div class="feed-text" id="marketplace-live-text">Publish a campaign from Business Hub and this slot turns into a live marketplace card inside the feed.</div>
+              </div>
+            </div>
+            <div class="feed-card" id="feed-card-sponsored" data-role="earn" onclick="openImmersive(0)">
+              <div class="thumb g1">
+                <div class="badge-left">Spotify · Sponsored</div>
+                <div class="badge-top">Earn $0.25</div>
+                <div class="wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+              </div>
+              <div class="feed-body">
+                <div class="feed-head"><div class="feed-name">@melodymae</div><div class="feed-meta">2.1k followers</div></div>
+                <div class="feed-text">Follow the artist after the verified watch to unlock the acoustic drop and earn instantly.</div>
+              </div>
+            </div>
+            <div class="feed-card" id="feed-card-organic" data-role="discover" onclick="openImmersive(1)">
+              <div class="thumb g3"><div class="badge-left">YouTube · Organic</div></div>
+              <div class="feed-body">
+                <div class="feed-head"><div class="feed-name">@gearroom</div><div class="feed-meta">tutorial</div></div>
+                <div class="feed-text">Normal media still lives here. [ i ] does not replace platforms. It aggregates them and monetizes attention when relevant.</div>
+              </div>
+            </div>
+            <div class="feed-card" id="feed-card-local" data-role="local" onclick="openImmersive(2)">
+              <div class="thumb g2">
+                <div class="badge-left">Local promo · Sponsored</div>
+                <div class="badge-top">Earn $1.00</div>
+                <div style="position:relative;z-index:2;font-size:42px">🍕</div>
+              </div>
+              <div class="feed-body">
+                <div class="feed-head"><div class="feed-name">Mario's Pizza</div><div class="feed-meta">sample offer</div></div>
+                <div class="feed-text">Watch, tap “I’m Going”, check in locally, and move the reward to pending until visit verification clears.</div>
+              </div>
+            </div>
+            <div class="feed-card" id="feed-card-map" data-role="local" onclick="openSheet('igo-map')">
+              <div class="thumb g3">
+                <div class="badge-left">iGo · Local discovery</div>
+                <div class="badge-top">Nearby earns</div>
+                <div style="position:relative;z-index:2;font-size:34px">⌖</div>
+              </div>
+              <div class="feed-body">
+                <div class="feed-head"><div class="feed-name">iGo map</div><div class="feed-meta">local attention commerce</div></div>
+                <div class="feed-text">See nearby businesses running promotions, route to them, and trigger check-in based reward flows from one map layer.</div>
+              </div>
+            </div>
+            <div class="feed-card" id="feed-card-connections" data-role="creator" onclick="openImmersive(3)">
+              <div class="thumb g4"><div class="badge-left">TikTok · Connected</div><div style="position:relative;z-index:2;font-size:34px">◎</div></div>
+              <div class="feed-body">
+                <div class="feed-head"><div class="feed-name">Connections</div><div class="feed-meta">platform sync</div></div>
+                <div class="feed-text">The app is now a marketplace layer over existing platforms. Connected accounts define what content and actions can be monetized.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="view-earn" class="view">
+          <div class="scroll">
+            <div class="top-space"></div>
+            <div class="section-title">Earn</div>
+            <div class="section-sub">Marketplace of sponsored attention actions, check-ins, follows, and campaign tasks.</div>
+            <div class="balance-grid">
+              <div class="stat-card"><div class="stat-label">Available</div><div class="stat-value" id="earn-avail">$3.65</div></div>
+              <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-value" id="earn-pending">$2.25</div></div>
+            </div>
+            <div class="offer-list">
+              <div class="card">
+                <div class="offer-hero spotify"><span class="chip"><span class="dot"></span>$0.25</span></div>
+                <div class="offer-content">
+                  <div class="offer-title">Spotify artist boost</div>
+                  <div class="offer-sub">Watch 24 seconds, maintain attention score above 78, then follow the creator.</div>
+                  <div class="offer-meta"><span>24s</span><span>camera verified</span><span>instant</span></div>
+                  <div class="inline-actions"><button class="ghost" onclick="launchWatch('spotify')">Start flow</button><button class="ghost" onclick="openSheet('loop1')">See loop</button></div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="offer-hero local"><span class="chip v"><span class="dot"></span>$1.00</span></div>
+                <div class="offer-content">
+                  <div class="offer-title">Local business visit</div>
+                  <div class="offer-sub">Watch the promo, tap “I’m Going”, then simulate check-in. Reward lands in pending until verified.</div>
+                  <div class="offer-meta"><span>45s</span><span>GPS mock</span><span>pending</span></div>
+                  <div class="inline-actions"><button class="ghost" onclick="simulatePendingReward()">Mock visit</button><button class="ghost" onclick="openSheet('offer-detail')">Details</button></div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="offer-hero shop"><span class="chip cyan"><span class="dot"></span>$0.60</span></div>
+                <div class="offer-content">
+                  <div class="offer-title">Shop now action</div>
+                  <div class="offer-sub">Mock outbound action with reward held until external completion signal is received.</div>
+                  <div class="offer-meta"><span>30s</span><span>action button</span><span>conditional</span></div>
+                  <div class="inline-actions"><button class="ghost" onclick="openSheet('campaign-builder')">Campaign logic</button><button class="ghost" onclick="showToast('External purchase verification mocked.')">Mock completion</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="view-wallet" class="view">
+          <div class="scroll">
+            <div class="top-space"></div>
+            <div class="subtle">Your wallet</div>
+            <div class="big-balance" id="wallet-main">3.65</div>
+            <div class="section-sub">Available iCoins value. Pending rewards stay isolated until verification clears.</div>
+            <div class="balance-grid">
+              <div class="stat-card"><div class="stat-label">iCoins</div><div class="stat-value" id="icoin-val">$3.65</div></div>
+              <div class="stat-card"><div class="stat-label">vCoins</div><div class="stat-value">245</div></div>
+            </div>
+            <div class="card" style="margin-bottom:12px">
+              <div class="row space"><div class="list-title">Pending rewards</div><div class="chip v"><span class="dot"></span><span id="pending-chip">$2.25</span></div></div>
+              <div class="note" style="margin-top:8px">Pending includes external actions, in-store visits, and conditional sponsor outcomes.</div>
+            </div>
+            <div class="quick-grid">
+              <button class="quick-btn" onclick="openSheet('withdraw')"><div class="quick-ico">↑</div><div class="quick-lbl">Withdraw</div></button>
+              <button class="quick-btn" onclick="openSheet('convert')"><div class="quick-ico">⇄</div><div class="quick-lbl">Convert</div></button>
+              <button class="quick-btn" onclick="openSheet('pay')"><div class="quick-ico">◉</div><div class="quick-lbl">Pay</div></button>
+              <button class="quick-btn" onclick="openSheet('tip')"><div class="quick-ico">♥</div><div class="quick-lbl">Tip</div></button>
+            </div>
+            <div style="margin-top:18px" class="card">
+              <div class="section-label">Activity</div>
+              <div class="list-row"><div class="iconbox">SP</div><div class="list-main"><div class="list-title">Spotify artist boost</div><div class="list-sub">attention verified · instant release</div></div><div class="list-value" style="color:var(--icoin)">+$0.25</div></div>
+              <div class="list-row"><div class="iconbox">MP</div><div class="list-main"><div class="list-title">Mario's Pizza visit</div><div class="list-sub">pending until in-store check</div></div><div class="list-value" style="color:var(--amber)">+$1.00</div></div>
+              <div class="list-row"><div class="iconbox">QR</div><div class="list-main"><div class="list-title">Coffee payment</div><div class="list-sub">QR scan mock</div></div><div class="list-value" style="color:var(--rose)">-$0.80</div></div>
+              <div id="wallet-history-preview"></div>
+              <div class="inline-actions"><button class="ghost" onclick="openSheet('pending')">Open pending tab</button><button class="ghost" onclick="openSheet('wallet-history')">Full history</button><button class="ghost" onclick="openSheet('transfer')">Transfer</button><button class="ghost" onclick="openSheet('payment-architecture')">Payment system</button></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="view-profile" class="view">
+          <div class="scroll">
+            <div class="top-space"></div>
+            <div class="row" style="margin-bottom:16px">
+              <div class="iconbox" style="width:54px;height:54px;border-radius:50%;font-family:var(--font-display)">MR</div>
+              <div>
+                <div class="section-title" style="font-size:24px;margin-bottom:0">Marcelo</div>
+                <div class="section-sub" style="margin-bottom:6px">Investor demo operator</div>
+                <div class="chip cyan"><span class="dot"></span>Trust tier 3</div>
+              </div>
+            </div>
+            <div class="small-grid">
+              <div class="kpi"><div class="n">74</div><div class="t">Trust score</div></div>
+              <div class="kpi"><div class="n">12</div><div class="t">Campaigns touched</div></div>
+            </div>
+            <div style="margin-top:14px" class="card">
+              <div class="section-label">Integrations</div>
+              <div class="list-row"><div class="iconbox">TT</div><div class="list-main"><div class="list-title">TikTok</div><div class="list-sub">connected · monetizable actions enabled</div></div><button class="ghost" onclick="togglePlatform('tiktok')">Sync</button></div>
+              <div class="list-row"><div class="iconbox">IG</div><div class="list-main"><div class="list-title">Instagram</div><div class="list-sub">connected · creator actions enabled</div></div><button class="ghost" onclick="togglePlatform('instagram')">Sync</button></div>
+              <div class="list-row"><div class="iconbox">YT</div><div class="list-main"><div class="list-title">YouTube</div><div class="list-sub">available to connect</div></div><button class="ghost" onclick="openSheet('connect-platforms')">Manage</button></div>
+            </div>
+            <div class="card">
+              <div class="section-label">Creator & business tools</div>
+              <div class="inline-actions">
+                <button class="ghost" onclick="openSheet('business-hub')">Business hub</button>
+                <button class="ghost" onclick="openSheet('campaign-builder')">Campaign builder</button>
+                <button class="ghost" onclick="openSheet('studio')">Studio editor</button>
+                <button class="ghost" onclick="openSheet('creator-hub')">Creator hub</button>
+                <button class="ghost" onclick="openSheet('creator-analytics')">Creator analytics</button>
+                <button class="ghost" onclick="openSheet('business-reports')">Business reports</button>
+                <button class="ghost" onclick="openSheet('igo-live')">Local visit sim</button>
+              </div>
+              <div class="note" style="margin-top:10px">This combined MVP is demo-only. Every button resolves visually, but all data is mocked client-side.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-nav">
+          <button class="tab active" data-tab="feed" onclick="openView('feed')"><div class="tab-ico">▣</div><div class="tab-lbl">Feed</div></button>
+          <button class="tab" data-tab="earn" onclick="openView('earn')"><div class="tab-ico">◎</div><div class="tab-lbl">Earn</div></button>
+          <button class="tab" data-tab="wallet" onclick="openView('wallet')"><div class="tab-ico">◌</div><div class="tab-lbl">Wallet</div></button>
+          <button class="tab" data-tab="profile" onclick="openView('profile')"><div class="tab-ico">◈</div><div class="tab-lbl">Profile</div></button>
+        </div>
+
+        <div id="immersive-stage" class="immersive-stage">
+          <div id="immersive-bg" class="immersive-bg g1"></div>
+          <div class="immersive-persistent">
+            <div class="immersive-top">
+              <div class="immersive-wallet"><span class="dot"></span><span id="immersive-wallet-val">$3.65</span></div>
+              <button class="immersive-close" onclick="closeImmersive()">✕</button>
+            </div>
+            <div id="immersive-reward" class="immersive-reward"><span class="dot"></span><span id="immersive-reward-val">Earn $0.25</span></div>
+            <div class="immersive-bottom">
+              <div id="immersive-source" class="immersive-source">Spotify · Sponsored</div>
+              <div id="immersive-title" class="immersive-title">@melodymae</div>
+              <div id="immersive-meta" class="immersive-meta">2.1k followers · music drop</div>
+              <div id="immersive-caption" class="immersive-caption">Follow the artist after the verified watch to unlock the acoustic drop and earn instantly.</div>
+            </div>
+            <div class="immersive-actions">
+              <div class="immersive-action"><button id="immersive-like" onclick="toggleImmersiveLike()">♥</button><span id="immersive-like-count">12.4k</span></div>
+              <div class="immersive-action"><button onclick="openImmersiveComments()">◔</button><span id="immersive-comment-count">489</span></div>
+              <div class="immersive-action"><button id="immersive-save" onclick="toggleImmersiveSave()">⌑</button><span id="immersive-save-count">2.1k</span></div>
+              <div class="immersive-action"><button onclick="triggerImmersivePrimary()">◎</button><span id="immersive-cta-label">Earn</span></div>
+            </div>
+            <button id="immersive-toggle" class="immersive-detail-toggle" onclick="toggleImmersiveReveal()">Reveal details</button>
+            <div class="immersive-nav"><button onclick="prevImmersive()">‹</button><button onclick="nextImmersive()">›</button></div>
+          </div>
+          <div id="immersive-revealed" class="immersive-revealed" onclick="dismissImmersiveReveal(event)">
+            <div class="immersive-panel" onclick="event.stopPropagation()">
+              <div class="section-title" style="font-size:18px">Why this matters</div>
+              <div id="immersive-panel-copy" class="note">[ i ] is not replacing platforms. It is wrapping them with monetizable attention and measurable action.</div>
+              <div class="immersive-panel-grid">
+                <div class="immersive-mini"><div class="k">Source</div><div id="immersive-panel-source" class="v">Spotify</div></div>
+                <div class="immersive-mini"><div class="k">Reward logic</div><div id="immersive-panel-reward" class="v">Instant</div></div>
+                <div class="immersive-mini"><div class="k">Attention gate</div><div id="immersive-panel-gate" class="v">Camera verified</div></div>
+                <div class="immersive-mini"><div class="k">Next action</div><div id="immersive-panel-action" class="v">Follow creator</div></div>
+              </div>
+              <div class="immersive-cta-row">
+                <button class="secondary" onclick="toggleImmersiveReveal()">Hide</button>
+                <button class="primary" onclick="triggerImmersivePrimary()">Run this flow</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="sheet-overlay" class="overlay" onclick="closeSheet(event)">
+          <div class="sheet" onclick="event.stopPropagation()">
+            <div class="sheet-content" id="sheet-content"></div>
+          </div>
+        </div>
+
+        <div id="watch-stage" class="watch-stage">
+          <div class="watch-bg"></div>
+          <div id="watch-main" class="watch-layer">
+            <div class="chip cyan"><span class="dot"></span>camera verification active</div>
+            <div style="height:18px"></div>
+            <div class="watch-offer" id="watch-offer-title">Spotify Artist Boost</div>
+            <div class="watch-copy" id="watch-offer-copy">Keep your eyes on the content. This is a mock of the attention-certified reward loop.</div>
+            <div class="attention-wrap">
+              <svg viewBox="0 0 160 160">
+                <circle cx="80" cy="80" r="64" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="10"></circle>
+                <circle id="attention-ring" cx="80" cy="80" r="64" fill="none" stroke="var(--cyan)" stroke-width="10" stroke-linecap="round" stroke-dasharray="402" stroke-dashoffset="120"></circle>
+              </svg>
+              <div class="attention-num" id="attention-score">81</div>
+              <div class="attention-label">attention score</div>
+            </div>
+            <div class="watch-progress">
+              <div class="watch-progress-row"><span id="watch-left-label">verifying</span><span id="watch-right-label">$0.25 target</span></div>
+              <div class="progress-track"><div id="watch-progress-fill" class="progress-fill"></div></div>
+            </div>
+            <div class="watch-actions">
+              <button class="secondary" onclick="closeWatch()">Cancel</button>
+              <button class="primary" onclick="startWatchFlow()">Start</button>
+            </div>
+          </div>
+          <div id="confirm-stage" class="confirm-stage">
+            <div class="pulse-ring">✓</div>
+            <div class="confirm-title">Verification passed</div>
+            <div class="confirm-sub">The mock engine cleared the watch through the core gates before the reward is released.</div>
+            <div class="gate-list">
+              <div class="gate"><div class="gate-ico">eye</div><div>face present</div></div>
+              <div class="gate"><div class="gate-ico">gaze</div><div>gaze forward</div></div>
+              <div class="gate"><div class="gate-ico">pose</div><div>head stable</div></div>
+              <div class="gate"><div class="gate-ico">time</div><div>duration completed</div></div>
+              <div class="gate"><div class="gate-ico">safe</div><div>fraud screen clear</div></div>
+            </div>
+            <div class="watch-actions" style="position:static;margin-top:18px;width:100%;max-width:290px"><button class="primary" onclick="releaseReward()">Release reward</button></div>
+          </div>
+          <div id="reward-stage" class="reward-stage">
+            <div class="reward-amount" id="reward-amount">+$0.25</div>
+            <div class="reward-sub">Moved into your wallet</div>
+            <div class="watch-actions" style="position:static;margin-top:24px;width:100%;max-width:290px"><button class="primary" onclick="finishWatch()">Done</button></div>
+          </div>
+        </div>
+
+        <div id="toast" class="toast"></div>
+
+        <div id="presenter-dock" class="presenter-dock">
+          <button class="presenter-btn" onclick="prevPresenterStep()">‹</button>
+          <div class="presenter-meta">
+            <div class="presenter-kicker">Investor guided mode</div>
+            <div id="presenter-title" class="presenter-title">Step</div>
+          </div>
+          <div id="presenter-count" class="presenter-count">1/7</div>
+          <button class="presenter-btn" onclick="nextPresenterStep()">›</button>
+          <button class="presenter-btn" onclick="togglePresenterMode()">✕</button>
+        </div>
+
+        <div id="intro-overlay" class="intro-overlay on">
+          <div class="intro-card">
+            <div class="intro-kicker">Investor preview v9</div>
+            <div class="intro-head">[ i ] is a connected marketplace for attention.</div>
+            <div class="intro-copy">This demo now ties together onboarding, platform connections, publishing, immersive engagement, iGo local discovery, pending release, and wallet settlement in one narrative instead of isolated screens.</div>
+            <div class="intro-points">
+              <div class="intro-point"><div class="intro-dot"></div><div><b>Explore freely</b> and test every mocked touchpoint.</div></div>
+              <div class="intro-point"><div class="intro-dot"></div><div><b>Guided mode</b> runs the full investor story from publish to payout.</div></div>
+              <div class="intro-point"><div class="intro-dot"></div><div><b>New in v9:</b> reshuffled feed routing, stronger reports, wallet ledger realism, and tighter payout continuity.</div></div>
+            </div>
+            <div class="metric-strip">
+              <div class="metric-mini"><div class="k">Connected</div><div class="v" id="intro-connected">3</div></div>
+              <div class="metric-mini"><div class="k">Pending</div><div class="v" id="intro-pending">$2.25</div></div>
+              <div class="metric-mini"><div class="k">Published</div><div class="v" id="intro-published">0</div></div>
+            </div>
+            <div style="height:14px"></div>
+            <div class="intro-actions">
+              <button class="primary" onclick="dismissIntro(false)">Enter demo</button>
+              <button class="secondary" onclick="dismissIntro(true)">Run guided investor mode</button>
+              <button class="ghost" onclick="dismissIntro(false); setTimeout(()=>openOnboarding(),80)">Preview onboarding</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="onboarding-overlay" class="onboarding-overlay">
+          <div id="onboarding-content" class="onboarding-card"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="panel-side">
+    <div class="side-card">
+      <div class="side-title">Connected MVP v3</div>
+      <div class="side-text">This file merges the strongest parts of the source direction into one interactive investor demo: feed, earn flow, wallet, connected platforms, creator tools, payments, conversion, withdraw, tip, and campaign builder.</div>
+      <div class="side-list">
+        <div class="side-item"><div class="side-num">1</div><div class="side-text">Feed proves the new positioning: [ i ] is not a solo social app anymore. It sits on top of other platforms as an attention marketplace.</div></div>
+        <div class="side-item"><div class="side-num">2</div><div class="side-text">The watch → verify → earn loop is live as a fully mocked interaction, including release into wallet.</div></div>
+        <div class="side-item"><div class="side-num">3</div><div class="side-text">Wallet actions resolve visually. No dead buttons. No backend required.</div></div>
+      </div>
+    </div>
+    <div class="side-card">
+      <div class="side-title">What changed in v3</div>
+      <div class="side-list">
+        <div class="side-item"><div class="side-num">A</div><div class="side-text">iGo map is now in the prototype as a local discovery and promo-routing layer.</div></div>
+        <div class="side-item"><div class="side-num">B</div><div class="side-text">Investor guided mode now walks the demo through the strongest narrative instead of relying only on free exploration.</div></div>
+        <div class="side-item"><div class="side-num">C</div><div class="side-text">Local merchant actions can now chain from map → offer → pay / pending / release flows.</div></div>
+      </div>
+      <div class="inline-actions">
+        <button class="ghost" onclick="togglePresenterMode()">Guided mode</button>
+        <button class="ghost" onclick="openSheet('igo-map')">Open iGo</button>
+      </div>
+    </div>
+    <div class="side-card">
+      <div class="side-title">What still needs to be built next</div>
+      <div class="side-list">
+        <div class="side-item"><div class="side-num">A</div><div class="side-text">A true immersive full-screen feed mode based directly on the immersive source file, with hidden chrome and reveal layers.</div></div>
+        <div class="side-item"><div class="side-num">B</div><div class="side-text">A stronger wallet analytics layer and full pending ledger states.</div></div>
+        <div class="side-item"><div class="side-num">C</div><div class="side-text">More creator/business flows: campaign publishing, media editor states, igo map, and profile settings depth.</div></div>
+      </div>
+      <div class="inline-actions">
+        <button class="ghost" onclick="openView('feed')">Open feed</button>
+        <button class="ghost" onclick="openView('wallet')">Open wallet</button>
+        <button class="ghost" onclick="openSheet('campaign-builder')">Open builder</button>
+        <button class="ghost" onclick="openSheet('igo-map')">Open iGo</button>
+      </div>
+    </div>
+    <div class="side-card">
+      <div class="side-title">Fast test path</div>
+      <div class="side-text">Tap through this order:</div>
+      <div class="side-list">
+        <div class="side-item"><div class="side-num">1</div><div class="side-text">Feed → Spotify card → Start → Release reward.</div></div>
+        <div class="side-item"><div class="side-num">2</div><div class="side-text">Wallet → Convert / Pay / Withdraw / Tip.</div></div>
+        <div class="side-item"><div class="side-num">3</div><div class="side-text">Profile → Campaign Builder / Studio / Creator Economy.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+const state = {
+  currentView:'feed',
+  onboarding:{open:false,step:0,platform:'TikTok',intent:'Earn + discover'},
+  mapFilter:'all',
+  available:3.65,
+  pending:2.25,
+  vcoins:245,
+  reward:0.25,
+  rewardName:'Spotify Artist Boost',
+  watchTimer:null,
+  watchPct:0,
+  sheet:null,
+  connected:{
+    tiktok:true,
+    instagram:true,
+    youtube:false,
+    spotify:false
+  },
+  pendingQueue:[
+    {id:'mp-01',name:"Mario's Pizza visit",amount:1.00,status:'Awaiting visit proof',progress:68,type:'local'},
+    {id:'sn-02',name:'Shop now action',amount:0.60,status:'Merchant callback pending',progress:41,type:'commerce'},
+    {id:'gp-03',name:'Geo promo',amount:0.65,status:'Review window active',progress:53,type:'geo'}
+  ],
+  releasedCount:0,
+  history:[
+    {id:'hx-01',kind:'earn',title:'Spotify artist boost',sub:'attention verified · instant release',amount:0.25,sign:'+',color:'var(--icoin)'},
+    {id:'hx-02',kind:'pending',title:"Mario's Pizza visit",sub:'pending until in-store check',amount:1.00,sign:'+',color:'var(--amber)'},
+    {id:'hx-03',kind:'spend',title:'Coffee payment',sub:'QR scan mock',amount:0.80,sign:'-',color:'var(--rose)'}
+  ],
+  campaign:{
+    title:'Local Pizza Weekend Boost',
+    action:"I'm Going!",
+    reward:'1.00',
+    rules:'Watch at least 30 seconds, tap the CTA, and complete the local visit proof to move reward from pending to available.',
+    published:false,
+    mediaReady:false,
+    destination:'Local visit flow'
+  },
+  studio:{
+    aspect:'9:16',
+    tools:{trim:false,text:false,sticker:false,filter:false},
+    exported:false,
+    version:1
+  },
+  creator:{
+    mediaReady:false,
+    activeCampaigns:2,
+    revenueToday:14.20
+  },
+  business:{
+    liveCampaigns:1,
+    draftedCampaigns:2,
+    visitsToday:18
+  },
+  localFlow:{
+    business:"Mario's Pizza",
+    arrived:false,
+    scanned:false,
+    purchased:false
+  },
+  immersive:{
+    index:0,
+    revealed:false,
+    liked:false,
+    saved:false,
+    items:[
+      {bg:'g1', source:'Spotify · Sponsored', title:'@melodymae', meta:'2.1k followers · music drop', caption:'Follow the artist after the verified watch to unlock the acoustic drop and earn instantly.', reward:'Earn $0.25', rewardType:'Instant', gate:'Camera verified', action:'Follow creator', panel:'A sponsored watch can convert into immediate wallet value when attention stays above threshold.', primary:'watch', like:'12.4k', comments:'489', saves:'2.1k'},
+      {bg:'g3', source:'YouTube · Organic', title:'@gearroom', meta:'tutorial · organic media', caption:'Normal media still lives here. [ i ] does not replace platforms. It aggregates them and monetizes attention when relevant.', reward:'', rewardType:'No reward', gate:'None', action:'Keep browsing', panel:'Organic content keeps the product familiar. The marketplace only appears when an offer exists.', primary:'organic', like:'8.7k', comments:'188', saves:'1.2k'},
+      {bg:'g2', source:'Local promo · Sponsored', title:"Mario's Pizza", meta:'sample offer · local visit', caption:"Watch, tap ‘I’m Going’, check in locally, and move the reward to pending until visit verification clears.", reward:'Earn $1.00', rewardType:'Pending', gate:'Promo + visit proof', action:"I'm Going", panel:'This is where iGo ties media to physical-world action and moves the payout into a pending state.', primary:'local', like:'2.3k', comments:'95', saves:'640'},
+      {bg:'g4', source:'TikTok · Connected', title:'Connections layer', meta:'creator and business sync', caption:'Connected platforms define what inventory, actions, and business tools can be wrapped by the attention marketplace.', reward:'', rewardType:'Connector', gate:'Account linked', action:'Manage connectors', panel:'The app is now an orchestration layer across platforms, creators, brands, and local businesses.', primary:'connect', like:'3.9k', comments:'122', saves:'910'}
+    ]
+  },
+  presenter:{
+    on:false,
+    step:0,
+    steps:[
+      {title:'Onboarding sets the route', action:()=>{forceCloseSheet(); closeWatch(); closeImmersive(true); openView('feed'); openOnboarding();}},
+      {title:'Marketplace feed', action:()=>{closeOnboarding(); forceCloseSheet(); closeWatch(); closeImmersive(true); openView('feed');}},
+      {title:'Immersive feed mode', action:()=>{closeOnboarding(); forceCloseSheet(); closeWatch(); openView('feed'); openImmersive(0,true);}},
+      {title:'Reveal the monetization layer', action:()=>{openImmersive(0,true); setTimeout(()=>toggleImmersiveReveal(true),60);}},
+      {title:'Publish a campaign', action:()=>{toggleImmersiveReveal(false,true); closeImmersive(true); forceCloseSheet(); closeWatch(); openView('profile'); openSheet('campaign-builder');}},
+      {title:'Push it into the live feed', action:()=>{state.campaign.published=true; syncMarketplaceCard(); forceCloseSheet(); openView('feed'); showToast('Live marketplace slot updated from the campaign draft.');}},
+      {title:'Certified watch flow', action:()=>{forceCloseSheet(); closeImmersive(true); openView('feed'); launchWatch('spotify');}},
+      {title:'iGo local map', action:()=>{closeWatch(); forceCloseSheet(); openView('feed'); openSheet('igo-map');}},
+      {title:'Pending queue and release', action:()=>{forceCloseSheet(); closeWatch(); closeImmersive(true); openView('wallet'); openSheet('pending');}},
+      {title:'Wallet settlement', action:()=>{forceCloseSheet(); closeWatch(); closeImmersive(true); openView('wallet');}},
+      {title:'Business + creator reporting', action:()=>{forceCloseSheet(); closeWatch(); closeImmersive(true); openView('profile'); openSheet('business-reports');}}
+    ]
+  }
+};
+
+
+function immersiveItem(){
+  return state.immersive.items[state.immersive.index];
+}
+function renderImmersive(){
+  const item = immersiveItem();
+  const bg=document.getElementById('immersive-bg');
+  const reward=document.getElementById('immersive-reward');
+  const rewardVal=document.getElementById('immersive-reward-val');
+  const set=(id,val)=>{ const el=document.getElementById(id); if(el) el.textContent=val; };
+  if(bg) bg.className=`immersive-bg ${item.bg}`;
+  set('immersive-source', item.source);
+  set('immersive-title', item.title);
+  set('immersive-meta', item.meta);
+  set('immersive-caption', item.caption);
+  set('immersive-panel-copy', item.panel);
+  set('immersive-panel-source', item.source.split('·')[0].trim());
+  set('immersive-panel-reward', item.rewardType);
+  set('immersive-panel-gate', item.gate);
+  set('immersive-panel-action', item.action);
+  set('immersive-like-count', item.like);
+  set('immersive-comment-count', item.comments);
+  set('immersive-save-count', item.saves);
+  set('immersive-cta-label', item.primary==='watch' ? 'Earn' : item.primary==='local' ? 'Visit' : item.primary==='connect' ? 'Manage' : 'Browse');
+  if(item.reward){ reward.classList.remove('hidden'); rewardVal.textContent=item.reward; }
+  else{ reward.classList.add('hidden'); }
+  document.getElementById('immersive-like')?.classList.toggle('on', state.immersive.liked);
+  const save=document.getElementById('immersive-save');
+  if(save){ save.classList.toggle('saved', state.immersive.saved); }
+  document.getElementById('immersive-wallet-val').textContent=`$${state.available.toFixed(2)}`;
+}
+function openImmersive(index=0,silent=false){
+  state.immersive.index=index;
+  state.immersive.revealed=false;
+  renderImmersive();
+  document.getElementById('immersive-stage').classList.add('active');
+  document.getElementById('immersive-revealed').classList.remove('on');
+  document.getElementById('immersive-toggle').textContent='Reveal details';
+  if(!silent) showToast('Immersive feed mode opened.');
+}
+function closeImmersive(silent=false){
+  document.getElementById('immersive-stage').classList.remove('active');
+  toggleImmersiveReveal(false,true);
+  if(!silent) showToast('Returned to marketplace feed.');
+}
+function nextImmersive(){
+  state.immersive.index = (state.immersive.index + 1) % state.immersive.items.length;
+  state.immersive.revealed=false;
+  renderImmersive();
+  toggleImmersiveReveal(false,true);
+}
+function prevImmersive(){
+  state.immersive.index = (state.immersive.index - 1 + state.immersive.items.length) % state.immersive.items.length;
+  state.immersive.revealed=false;
+  renderImmersive();
+  toggleImmersiveReveal(false,true);
+}
+function toggleImmersiveReveal(force=null,silent=false){
+  state.immersive.revealed = force===null ? !state.immersive.revealed : !!force;
+  document.getElementById('immersive-revealed').classList.toggle('on', state.immersive.revealed);
+  document.getElementById('immersive-toggle').textContent = state.immersive.revealed ? 'Hide details' : 'Reveal details';
+  if(!silent) showToast(state.immersive.revealed ? 'Metadata layer revealed.' : 'Metadata layer hidden.');
+}
+function dismissImmersiveReveal(e){ if(e.target.id==='immersive-revealed') toggleImmersiveReveal(false,true); }
+function toggleImmersiveLike(){ state.immersive.liked=!state.immersive.liked; renderImmersive(); }
+function toggleImmersiveSave(){ state.immersive.saved=!state.immersive.saved; renderImmersive(); }
+function openImmersiveComments(){ showToast('Comments layer mocked in immersive mode.'); }
+function triggerImmersivePrimary(){
+  const item=immersiveItem();
+  if(item.primary==='watch'){ closeImmersive(true); launchWatch('spotify'); }
+  else if(item.primary==='local'){ closeImmersive(true); openSheet('offer-detail'); }
+  else if(item.primary==='connect'){ closeImmersive(true); openSheet('connect-platforms'); }
+  else { showToast('Organic content continues with no reward attached.'); }
+}
+
+function platformStatus(name){
+  return state.connected[name] ? 'connected' : 'available';
+}
+function platformLabel(name){
+  return state.connected[name] ? 'Connected' : 'Connect';
+}
+function esc(str){
+  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+const sheetTemplates = {
+  'withdraw': () => `
+    <div class="sheet-head"><div><div class="section-title">Withdraw</div><div class="section-sub">Mock payout flow from wallet to bank or card.</div></div><button class="close" onclick="forceCloseSheet()">✕</button></div>
+    <div class="field"><label>Available balance</label><div class="card"><div class="row space"><span>iCoins</span><strong>$${state.available.toFixed(2)}</strong></div></div></div>
+    <div class="field"><label>Amount</label><input id="withdraw-amount" class="input" type="number" min="0.25" step="0.01" value="${Math.min(state.available,2).toFixed(2)}"></div>
+    <div class="field"><label>Payout method</label><div class="row-2"><button class="secondary" onclick="selectOption(this,'withdraw-method')" data-group="withdraw-method">Bank</button><button class="secondary" onclick="selectOption(this,'withdraw-method')" data-group="withdraw-method">Virtual card</button></div></div>
+    <div class="field"><label>Processing note</label><div class="card"><div class="note">Demo logic only. Production would enforce KYC, trust tier, fraud checks, daily caps, and hold windows before payout.</div></div></div>
+    <button class="primary" onclick="mockWithdraw()">Confirm withdraw</button>
+  `,
+  'convert': () => `
+    <div class="sheet-head"><div><div class="section-title">Convert</div><div class="section-sub">Mock internal conversion between wallet currencies.</div></div><button class="close" onclick="forceCloseSheet()">✕</button></div>
+    <div class="field"><label>From</label><div class="card"><div class="row space"><span>vCoins</span><strong>${state.vcoins}</strong></div></div></div>
+    <div class="field"><label>Amount</label><input id="convert-v" class="input" type="number" min="1" step="1" value="100" oninput="updateConvertPreview()"></div>
+    <div class="field"><label>Preview</label><div class="card"><div class="list-row"><div class="list-main"><div class="list-title">Estimated output</div><div id="convert-preview-sub" class="list-sub">100 vCoins → $1.00 iCoins</div></div><div id="convert-preview-val" class="list-value" style="color:var(--icoin)">+$1.00</div></div></div></div>
+    <button class="primary" onclick="mockConvert()">Convert now</button>
+  `,
+  'pay': () => `
+    <div class="sheet-head"><div><div class="section-title">Pay</div><div class="section-sub">Mock in-person or remote payment using wallet balance.</div></div><button class="close" onclick="forceCloseSheet()">✕</button></div>
+    <div class="field"><label>Merchant</label><input id="pay-to" class="input" value="Coffee Lab"></div>
+    <div class="row-2">
+      <div class="field"><label>Amount</label><input id="pay-amount" class="input" type="number" step="0.01" value="0.80"></div>
+      <div class="field"><label>Method</label><select id="pay-method" class="select"><option>NFC tap</option><option>QR code</option><option>Scan to pay</option><option>Pay link</option><option>Virtual card</option></select></div>
+    </div>
+    <div class="field"><label>System note</label><div class="card"><div class="note">This demo treats [ i ] as a payment shell across in-person and digital merchant surfaces. Spend is simulated instantly from iCoins balance.</div></div></div>
+    <button class="primary" onclick="mockPay()">Confirm payment</button>
+  `,
+  'tip': () => `
+    <div class="sheet-head"><div><div class="section-title">Tip creator</div><div class="section-sub">Direct support flow from iCoins balance.</div></div><button class="close" onclick="forceCloseSheet()">✕</button></div>
+    <div class="card" style="margin-bottom:12px"><div class="row"><div class="iconbox" style="border-radius:50%">MM</div><div><div class="list-title">Melody Mae</div><div class="list-sub">verified creator</div></div></div></div>
+    <div class="field"><label>Quick amounts</label><div class="row-2"><button class="secondary" onclick="presetTip(1)">$1</button><button class="secondary" onclick="presetTip(3)">$3</button></div></div>
+    <div class="field"><input id="tip-amount" class="input" type="number" step="0.01" value="1.00"></div>
+    <button class="primary" onclick="mockTip()">Send tip</button>
+  `,
+  'pending': () => `
+    <div class="sheet-head"><div><div class="section-title">Pending rewards</div><div class="section-sub">Rewards move through release gates before becoming spendable balance.</div></div><button class="close" onclick="forceCloseSheet()">✕</button></div>
+    <div class="card">
+      ${renderPendingRows()}
+    </div>
+    <div class="metric-strip" style="margin-bottom:12px">
+      <div class="metric-mini"><div class="k">Queue</div><div class="v">${state.pendingQueue.length}</div></div>
+      <div class="metric-mini"><div class="k">Pending</div><div class="v">$${state.pending.toFixed(2)}</div></div>
+      <div class="metric-mini"><div class="k">Released</div><div class="v">${state.releasedCount}</div></div>
+    </div>
+    <div class="inline-actions"><button class="ghost" onclick="advancePendingQueue()">Advance queue</button><button class="ghost" onclick="releasePendingMock()">Release next reward</button><button class="ghost" onclick="simulatePendingReward()">Add another pending reward</button></div>
+  `,
+  'offer-detail': () => `
+    <div class="sheet-head"><div><div class="section-title">Offer detail</div><div class="section-sub">Cross-platform sponsored action with attention verification.</div></div><button class="close" onclick="forceCloseSheet()">✕</button></div>
+    <div class="card">
+      <div class="list-row"><div class="iconbox">$</div><div class="list-main"><div class="list-title">Reward</div><div class="list-sub">$1.00 pending until visit</div></div></div>
+      <div class="list-row"><div class="iconbox">⏱</div><div class="list-main"><div class="list-title">Duration</div><div class="list-sub">45 seconds media + action button</div></div></div>
+      <div class="list-row"><div class="iconbox">✓</div><div class="list-main"><div class="list-title">Requirements</div><div class="list-sub">Watch, tap “I’m Going”, simulate GPS check-in</div></div></div>
+    </div>
+    <div class="inline-actions"><button class="ghost" onclick="forceCloseSheet();launchWatch('local')">Run watch phase</button><button class="ghost" onclick="simulatePendingReward()">Mock local visit flow</button></div>
+  `,
+  'connect-platforms': () => `
+    <div class="sheet-head"><div><div class="section-title">Connect platforms</div><div class="section-sub">[ i ] integrates existing platforms instead of trying to replace them.</div></div><button class="close" onclick="forceCloseSheet()">✕</button></div>
+    <div class="card">
+      ${platformRow('tiktok','TT','TikTok','short-form watch and creator actions')}
+      ${platformRow('instagram','IG','Instagram','social and creator action routing')}
+      ${platformRow('youtube','YT','YouTube','long-form attention and ad flows')}
+      ${platformRow('spotify','SP','Spotify','music campaign watch flows')}
+    </div>
+    <div class="card"><div class="note">This demo now treats external platforms as connectors into the [ i ] marketplace instead of competitors to replace.</div></div>
+  `,
+  'campaign-builder': () => `
+    <div class="sheet-head"><div><div class="section-title">Campaign builder</div><div class="section-sub">Brand-side interface for building sponsored attention actions.</div></div><button class="close" onclick="forceCloseSheet()">✕</button></div>
+    <div class="field"><label>Campaign title</label><input id="campaign-title" class="input" value="${esc(state.campaign.title)}" oninput="updateCampaignField('title',this.value)"></div>
+    <div class="row-2">
+      <div class="field"><label>Action button</label><select id="campaign-action" class="select" onchange="updateCampaignField('action',this.value)"><option ${state.campaign.action==="I'm Going!"?'selected':''}>I'm Going!</option><option ${state.campaign.action==='Follow'?'selected':''}>Follow</option><option ${state.campaign.action==='Shop Now'?'selected':''}>Shop Now</option><option ${state.campaign.action==='Claim Offer'?'selected':''}>Claim Offer</option></select></div>
+      <div class="field"><label>Reward</label><input id="campaign-reward" class="input" value="${esc(state.campaign.reward)}" oninput="updateCampaignField('reward',this.value)"></div>
+    </div>
+    <div class="row-2">
+      <div class="field"><label>Destination</label><select class="select" onchange="updateCampaignField('destination',this.value)"><option ${state.campaign.destination==='Local visit flow'?'selected':''}>Local visit flow</option><option ${state.campaign.destination==='Creator follow flow'?'selected':''}>Creator follow flow</option><option ${state.campaign.destination==='Shop now flow'?'selected':''}>Shop now flow</option></select></div>
+      <div class="field"><label>Media</label><div class="card"><div class="row space"><span>${state.campaign.mediaReady ? 'Studio asset ready' : 'No approved asset yet'}</span><button class="ghost" onclick="openSheet('studio')">${state.campaign.mediaReady ? 'Open' : 'Create'}</button></div></div></div>
+    </div>
+    <div class="field"><label>Rules</label><textarea id="campaign-rules" class="textarea" oninput="updateCampaignField('rules',this.value)">${esc(state.campaign.rules)}</textarea></div>
+    <div class="card">
+      <div class="section-label">Live preview</div>
+      <div class="list-title" id="campaign-preview-title">${esc(state.campaign.title)}</div>
+      <div class="list-sub" id="campaign-preview-sub">CTA: ${esc(state.campaign.action)} • Earn $${esc(state.campaign.reward)} • ${esc(state.campaign.destination)}</div>
+      <div class="note" id="campaign-preview-rules" style="margin-top:6px">${esc(state.campaign.rules)}</div>
+      <div style="margin-top:10px">${state.campaign.published ? '<span class="stage-pill"><span class="dot"></span>published to marketplace</span>' : '<span class="stage-pill"><span class="dot"></span>draft mode</span>'}</div>
+    </div>
+    <div class="inline-actions"><button class="ghost" onclick="loadDemoCampaign('local')">Load local business</button><button class="ghost" onclick="loadDemoCampaign('creator')">Load creator follow</button><button class="ghost" onclick="openSheet('business-hub')">Business hub</button></div>
+    <button class="primary" onclick="publishCampaign()">Publish campaign</button>
+  `,
+  'studio': () => `
+    <div class="sheet-head"><div><div class="section-title">Studio editor</div><div class="section-sub">Mock editing suite for creator campaign media.</div></div><button class="close" onclick="forceCloseSheet()">✕</button></div>
+    <div class="card">
+      <div class="row space">
+        <div><div class="list-title">guitar_live_session_v${state.studio.version}.mp4</div><div class="list-sub">Preview ratio ${state.studio.aspect} • mock timeline</div></div>
+        <button class="ghost" onclick="exportStudio()">${state.studio.exported ? 'Re-export' : 'Export'}</button>
+      </div>
+    </div>
+    <div class="row-2">
+      ${studioBtn('trim','Trim')}
+      ${studioBtn('text','Text')}
+    </div>
+    <div class="row-2" style="margin-top:8px">
+      ${studioBtn('sticker','Sticker')}
+      ${studioBtn('filter','Filter')}
+    </div>
+    <div class="field" style="margin-top:12px"><label>Aspect ratio</label><div class="row-2"><button class="secondary" onclick="setStudioAspect('9:16')">9:16</button><button class="secondary" onclick="setStudioAspect('16:9')">16:9</button></div></div>
+    <div class="card">
+      <div class="note">Active tools: ${activeStudioTools().join(', ') || 'none'}.</div>
+      <div class="note" style="margin-top:8px">${state.studio.exported ? 'Last export approved for campaign use. Builder can now publish with attached media.' : 'No export approved yet. Export to push this asset into the campaign builder.'}</div>
+    </div>
+    <div class="inline-actions"><button class="ghost" onclick="openSheet('creator-hub')">Creator hub</button><button class="ghost" onclick="openSheet('campaign-builder')">Back to builder</button></div>
+  `,
+  'creator-economy': () => `
+    <div class="sheet-head"><div><div class="section-title">Creator economy</div><div class="section-sub">Demo summary of the value split logic.</div></div><button class="close" onclick="forceCloseSheet()">✕</button></div>
+    <div class="small-grid">
+      <div class="kpi"><div class="n">60%</div><div class="t">Creator</div></div>
+      <div class="kpi"><div class="n">30%</div><div class="t">Viewer</div></div>
+    </div>
+    <div class="kpi" style="margin-top:8px"><div class="n">10%</div><div class="t">Platform</div></div>
+    <div class="card" style="margin-top:12px"><div class="note">The strategic claim is unchanged: creators and viewers both participate in the upside while the platform stays thinner than legacy ad networks.</div></div>
+    <div class="inline-actions"><button class="ghost" onclick="openSheet('creator-hub')">Creator hub</button><button class="ghost" onclick="openSheet('business-hub')">Brand side</button></div>
+  `,
+  'creator-hub': () => `
+    <div class="sheet-head"><div><div class="section-title">Creator hub</div><div class="section-sub">Creator-side chain from media → campaign → earnings.</div></div><button class="close" onclick="forceCloseSheet()">✕</button></div>
+    <div class="metric-strip" style="margin-bottom:12px">
+      <div class="metric-mini"><div class="k">Media ready</div><div class="v">${state.creator.mediaReady ? 'yes' : 'no'}</div></div>
+      <div class="metric-mini"><div class="k">Active</div><div class="v">${state.creator.activeCampaigns}</div></div>
+      <div class="metric-mini"><div class="k">Today</div><div class="v">$${state.creator.revenueToday.toFixed(2)}</div></div>
+    </div>
+    <div class="card">
+      <div class="list-row"><div class="iconbox">ST</div><div class="list-main"><div class="list-title">Studio export</div><div class="list-sub">${state.creator.mediaReady ? 'approved and attached to a campaign' : 'not exported yet'}</div></div><button class="ghost" onclick="openSheet('studio')">Open</button></div>
+      <div class="list-row"><div class="iconbox">CB</div><div class="list-main"><div class="list-title">Campaign chain</div><div class="list-sub">${state.campaign.published ? 'live in marketplace' : 'still draft'}</div></div><button class="ghost" onclick="openSheet('campaign-builder')">${state.campaign.published ? 'Manage' : 'Finish'}</button></div>
+      <div class="list-row"><div class="iconbox">EC</div><div class="list-main"><div class="list-title">Economy split</div><div class="list-sub">viewer + creator incentives tied together</div></div><button class="ghost" onclick="openSheet('creator-economy')">View</button></div>
+    </div>
+    <div class="inline-actions"><button class="ghost" onclick="openSheet('creator-analytics')">Analytics</button><button class="ghost" onclick="openSheet('creator-analytics')">Audience</button></div>
+  `,
+  'business-hub': () => `
+    <div class="sheet-head"><div><div class="section-title">Business hub</div><div class="section-sub">Merchant-side chain from brief → asset → publish → visits → release.</div></div><button class="close" onclick="forceCloseSheet()">✕</button></div>
+    <div class="metric-strip" style="margin-bottom:12px">
+      <div class="metric-mini"><div class="k">Live</div><div class="v">${state.business.liveCampaigns}</div></div>
+      <div class="metric-mini"><div class="k">Drafts</div><div class="v">${state.business.draftedCampaigns}</div></div>
+      <div class="metric-mini"><div class="k">Visits</div><div class="v">${state.business.visitsToday}</div></div>
+    </div>
+    <div class="card">
+      <div class="list-row"><div class="iconbox">1</div><div class="list-main"><div class="list-title">Draft campaign</div><div class="list-sub">define action, reward, and rules</div></div><button class="ghost" onclick="openSheet('campaign-builder')">Open</button></div>
+      <div class="list-row"><div class="iconbox">2</div><div class="list-main"><div class="list-title">Attach media</div><div class="list-sub">${state.campaign.mediaReady ? 'studio asset connected' : 'waiting on creative export'}</div></div><button class="ghost" onclick="openSheet('studio')">${state.campaign.mediaReady ? 'View' : 'Create'}</button></div>
+      <div class="list-row"><div class="iconbox">3</div><div class="list-main"><div class="list-title">Pending release</div><div class="list-sub">${state.pendingQueue.length} rewards moving through the queue</div></div><button class="ghost" onclick="openSheet('pending')">Queue</button></div>
+    </div>
+    <div class="inline-actions"><button class="ghost" onclick="publishCampaign()">Quick publish</button><button class="ghost" onclick="openSheet('campaign-published')">Published state</button><button class="ghost" onclick="openSheet('business-reports')">Reports</button><button class="ghost" onclick="openSheet('igo-live')">In-store sim</button></div>
+  `,
+  'campaign-published': () => `
+    <div class="sheet-head"><div><div class="section-title">Published campaign</div><div class="section-sub">The campaign now routes into feed, iGo, wallet, and business monitoring.</div></div><button class="close" onclick="forceCloseSheet()">✕</button></div>
+    <div class="card">
+      <div class="list-title">${esc(state.campaign.title)}</div>
+      <div class="list-sub" style="margin-top:4px">CTA: ${esc(state.campaign.action)} • Earn $${esc(state.campaign.reward)} • ${esc(state.campaign.destination)}</div>
+      <div class="note" style="margin-top:8px">${esc(state.campaign.rules)}</div>
+    </div>
+    <div class="inline-actions"><button class="ghost" onclick="forceCloseSheet();openView('feed');showToast('Feed inventory refreshed with the published campaign.')">View in feed</button><button class="ghost" onclick="forceCloseSheet();openSheet('igo-map')">View on iGo</button><button class="ghost" onclick="forceCloseSheet();openSheet('pending')">See reward queue</button></div>
+  `,
+  'alphabet-currency': () => `
+    <div class="sheet-head"><div><div class="section-title">Alphabet currency</div><div class="section-sub">Compressed demo view of the broader coin taxonomy.</div></div><button class="close" onclick="forceCloseSheet()">✕</button></div>
+    <div class="card">
+      <div class="list-row"><div class="iconbox">A</div><div class="list-main"><div class="list-title">aCoins</div><div class="list-sub">attention earned</div></div></div>
+      <div class="list-row"><div class="iconbox">I</div><div class="list-main"><div class="list-title">iCoins</div><div class="list-sub">personal hard-value wallet</div></div></div>
+      <div class="list-row"><div class="iconbox">V</div><div class="list-main"><div class="list-title">vCoins</div><div class="list-sub">platform value and spend utility</div></div></div>
+      <div class="list-row"><div class="iconbox">R</div><div class="list-main"><div class="list-title">rCoins</div><div class="list-sub">reward routing / conversion bridge</div></div></div>
+    </div>
+    <div class="inline-actions"><button class="ghost" onclick="showToast('Full taxonomy is mapped in the architecture layer.')">Show taxonomy logic</button></div>
+  `,
+  'payment-architecture': () => `
+    <div class="sheet-head"><div><div class="section-title">Payment architecture</div><div class="section-sub">Mocked payment system routes inside the wallet.</div></div><button class="close" onclick="forceCloseSheet()">✕</button></div>
+    <div class="card">
+      <div class="list-row"><div class="iconbox">NFC</div><div class="list-main"><div class="list-title">NFC tap</div><div class="list-sub">instant in-person payment</div></div><button class="ghost" onclick="openPayWithMethod('NFC tap')">Use</button></div>
+      <div class="list-row"><div class="iconbox">QR</div><div class="list-main"><div class="list-title">QR code</div><div class="list-sub">merchant scans wallet code</div></div><button class="ghost" onclick="openPayWithMethod('QR code')">Use</button></div>
+      <div class="list-row"><div class="iconbox">VC</div><div class="list-main"><div class="list-title">Virtual card</div><div class="list-sub">online spend layer</div></div><button class="ghost" onclick="openPayWithMethod('Virtual card')">Use</button></div>
+      <div class="list-row"><div class="iconbox">WD</div><div class="list-main"><div class="list-title">Withdraw rail</div><div class="list-sub">payout out of platform</div></div><button class="ghost" onclick="openSheet('withdraw')">Open</button></div>
+    </div>
+  `,
+  'igo-map': () => `
+    <div class="sheet-head"><div><div class="section-title">iGo map</div><div class="section-sub">Local businesses paying for real-world attention, visits, and actions.</div></div><button class="close" onclick="forceCloseSheet()">✕</button></div>
+    <div class="narrative-strip">
+      <div class="narrative-step"><div class="n1">01</div><div class="n2">Discover</div><div class="n3">Find local campaigns by distance, category, or reward type.</div></div>
+      <div class="narrative-step"><div class="n1">02</div><div class="n2">Engage</div><div class="n3">Open the offer, watch or tap the CTA, then head in-store.</div></div>
+      <div class="narrative-step"><div class="n1">03</div><div class="n2">Prove</div><div class="n3">Scan proof, simulate merchant action, and push reward into pending.</div></div>
+      <div class="narrative-step"><div class="n1">04</div><div class="n2">Release</div><div class="n3">Advance the pending queue and release it to available balance.</div></div>
+    </div>
+    <div class="map-toolbar">
+      <div class="searchbox">⌕ <span>New Rochelle · coffee, pizza, gym, local promos</span></div>
+      <div class="filter-mini">
+        <button class="ghost ${state.mapFilter==='all' ? 'active-soft' : ''}" onclick="setMapFilter('all')">All</button>
+        <button class="ghost ${state.mapFilter==='visit' ? 'active-soft' : ''}" onclick="setMapFilter('visit')">Visit</button>
+        <button class="ghost ${state.mapFilter==='high' ? 'active-soft' : ''}" onclick="setMapFilter('high')">High value</button>
+      </div>
+    </div>
+    <div class="map-shell">
+      <div class="map-grid"></div>
+      <div class="map-road h1"></div><div class="map-road h2"></div><div class="map-road v1"></div><div class="map-road v2"></div>
+      ${(state.mapFilter!=='high') ? `<div class="map-pin" style="left:27%;top:34%">
+        <button onclick="openMapPlace('mario')">
+          <div class="pin-dot pin-amber"><span>MP</span></div>
+          <div class="pin-label">Mario's Pizza · $1.00</div>
+        </button>
+      </div>` : ``}
+      <div class="map-pin" style="left:59%;top:52%">
+        <button onclick="openMapPlace('pulse')">
+          <div class="pin-dot pin-green"><span>GY</span></div>
+          <div class="pin-label">Pulse Gym · $2.50</div>
+        </button>
+      </div>
+      ${(state.mapFilter==='all') ? `<div class="map-pin" style="left:76%;top:30%">
+        <button onclick="openMapPlace('brew')">
+          <div class="pin-dot pin-cyan"><span>CF</span></div>
+          <div class="pin-label">North Brew · $0.40</div>
+        </button>
+      </div>` : ``}
+    </div>
+    <div class="map-legend">
+      <div class="legend-pill"><span class="dot" style="background:var(--amber)"></span><b>Visit offers</b> pay after check-in</div>
+      <div class="legend-pill"><span class="dot" style="background:var(--green)"></span><b>High-value campaigns</b> combine watch + visit</div>
+      <div class="legend-pill"><span class="dot" style="background:var(--cyan)"></span><b>Instant stops</b> quick actions and scan-to-pay</div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <div class="list-row"><div class="iconbox">⌖</div><div class="list-main"><div class="list-title" id="igo-place-title">Mario's Pizza</div><div class="list-sub" id="igo-place-sub">2 min away · watch promo → tap “I'm Going” → simulate arrival → reward lands in pending.</div></div><div class="list-value" id="igo-place-val" style="color:var(--amber)">$1.00</div></div>
+      <div class="inline-actions">
+        <button class="ghost" onclick="launchMapOffer()">Open offer</button>
+        <button class="ghost" onclick="simulatePendingReward()">Mock check-in</button>
+        <button class="ghost" onclick="openPayWithMethod('QR code')">Pay there</button>
+      </div>
+    </div>
+    <div class="discovery-grid">
+      <div class="discovery-card"><div class="d1">Most urgent</div><div class="d2">Lunch rush</div><div class="d3">2 expiring promos within 10 minutes.</div></div>
+      <div class="discovery-card"><div class="d1">Best payout</div><div class="d2">Pulse Gym</div><div class="d3">Watch + visit stack worth $2.50.</div></div>
+      <div class="discovery-card"><div class="d1">Fastest action</div><div class="d2">North Brew</div><div class="d3">Instant scan-to-pay with micro reward.</div></div>
+    </div>
+    <div class="note">iGo is not separate from the product. It is the local extension of the same attention marketplace logic already running in the feed, wallet, and campaign tools.</div>
+  `,
+
+    'creator-analytics': () => `
+    <div class="sheet-head"><div><div class="section-title">Creator analytics</div><div class="section-sub">Mock creator-side reporting tied to campaign distribution and verified attention.</div></div><button class="close" onclick="forceCloseSheet()">✕</button></div>
+    <div class="metric-strip" style="margin-bottom:12px">
+      <div class="metric-mini"><div class="k">Verified views</div><div class="v">${Math.round(state.creator.revenueToday*92)}</div></div>
+      <div class="metric-mini"><div class="k">Active campaigns</div><div class="v">${state.creator.activeCampaigns}</div></div>
+      <div class="metric-mini"><div class="k">Today</div><div class="v">$${state.creator.revenueToday.toFixed(2)}</div></div>
+    </div>
+    <div class="card">
+      <div class="list-row"><div class="iconbox">AT</div><div class="list-main"><div class="list-title">Attention quality</div><div class="list-sub">82 average score across monetized sessions</div></div><div class="list-value" style="color:var(--icoin)">82</div></div>
+      <div class="chart-block">
+        <div class="chart-row"><div class="chart-label">Verified retention</div><div class="chart-track"><div class="chart-fill" style="width:${Math.min(95, 61 + state.creator.activeCampaigns*6)}%"></div></div><div class="chart-val">${Math.min(95, 61 + state.creator.activeCampaigns*6)}%</div></div>
+        <div class="chart-row"><div class="chart-label">CTA conversion</div><div class="chart-track"><div class="chart-fill amber" style="width:${state.campaign.action==='Follow' ? 31 : state.campaign.action==="I'm Going!" ? 27 : 23}%"></div></div><div class="chart-val">${state.campaign.action==='Follow' ? 31 : state.campaign.action==="I'm Going!" ? 27 : 23}%</div></div>
+        <div class="chart-row"><div class="chart-label">Revenue velocity</div><div class="chart-track"><div class="chart-fill purple" style="width:${state.studio.exported ? 74 : 56}%"></div></div><div class="chart-val">${state.studio.exported ? '+18%' : '+7%'}</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="list-row"><div class="iconbox">FN</div><div class="list-main"><div class="list-title">Follower actions</div><div class="list-sub">${state.campaign.action} is currently the highest converting CTA in this mock state.</div></div><div class="list-value">31%</div></div>
+      <div class="list-row"><div class="iconbox">AU</div><div class="list-main"><div class="list-title">Audience route</div><div class="list-sub">Top inflow is now biased toward ${esc(state.onboarding.platform)} because onboarding chose that as the first connected source.</div></div><div class="list-value">live</div></div>
+      <div class="list-row"><div class="iconbox">RV</div><div class="list-main"><div class="list-title">Wallet impact</div><div class="list-sub">Released creator-side value now maps into wallet history and payout chain sheets.</div></div><div class="list-value">$${state.available.toFixed(2)}</div></div>
+    </div>
+    <div class="inline-actions"><button class="ghost" onclick="openSheet('studio')">Back to studio</button><button class="ghost" onclick="openSheet('creator-hub')">Creator hub</button><button class="ghost" onclick="openView('feed');forceCloseSheet()">See routed feed</button></div>
+  `,
+  'business-reports': () => `
+    <div class="sheet-head"><div><div class="section-title">Business reports</div><div class="section-sub">Mock reporting for merchants using [ i ] as an attention marketplace and local action layer.</div></div><button class="close" onclick="forceCloseSheet()">✕</button></div>
+    <div class="metric-strip" style="margin-bottom:12px">
+      <div class="metric-mini"><div class="k">Live</div><div class="v">${state.business.liveCampaigns}</div></div>
+      <div class="metric-mini"><div class="k">Visits today</div><div class="v">${state.business.visitsToday}</div></div>
+      <div class="metric-mini"><div class="k">Pending queue</div><div class="v">${state.pendingQueue.filter(i=>i.type==='local').length}</div></div>
+    </div>
+    <div class="card">
+      <div class="list-row"><div class="iconbox">CP</div><div class="list-main"><div class="list-title">Current campaign</div><div class="list-sub">${esc(state.campaign.title)}</div></div><div class="list-value">$${esc(state.campaign.reward)}</div></div>
+      <div class="chart-block">
+        <div class="chart-row"><div class="chart-label">Impressions → CTA</div><div class="chart-track"><div class="chart-fill" style="width:${Math.min(92, 28 + state.business.liveCampaigns*11)}%"></div></div><div class="chart-val">${Math.min(92, 28 + state.business.liveCampaigns*11)}%</div></div>
+        <div class="chart-row"><div class="chart-label">CTA → Visit</div><div class="chart-track"><div class="chart-fill amber" style="width:${Math.min(88, 19 + state.business.visitsToday)}%"></div></div><div class="chart-val">${Math.min(88, 19 + state.business.visitsToday)}%</div></div>
+        <div class="chart-row"><div class="chart-label">Visit → Release</div><div class="chart-track"><div class="chart-fill purple" style="width:${Math.min(96, 54 + state.releasedCount*7)}%"></div></div><div class="chart-val">${Math.min(96, 54 + state.releasedCount*7)}%</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-label">Business dashboard snapshot</div>
+      <div class="list-row"><div class="iconbox">RO</div><div class="list-main"><div class="list-title">Release risk</div><div class="list-sub">Fraud / hold layer would normally review these rewards before release.</div></div><div class="list-value" style="color:var(--amber)">low</div></div>
+      <div class="list-row"><div class="iconbox">ET</div><div class="list-main"><div class="list-title">Estimated payout lag</div><div class="list-sub">Modeled from queue size, local proof status, and release flow.</div></div><div class="list-value">${Math.max(4, state.pendingQueue.length*3)}m</div></div>
+      <div class="list-row"><div class="iconbox">SV</div><div class="list-main"><div class="list-title">Store conversion</div><div class="list-sub">Mock walk-in conversion from media to visit.</div></div><div class="list-value" style="color:var(--green)">19%</div></div>
+      <div class="list-row"><div class="iconbox">RL</div><div class="list-main"><div class="list-title">Release-ready local rewards</div><div class="list-sub">${state.pendingQueue.filter(i=>i.progress>=90).length} entries are near or at release threshold.</div></div><div class="list-value">${state.pendingQueue.filter(i=>i.progress>=90).length}</div></div>
+    </div>
+    <div class="card">
+      <div class="section-label">Route pressure</div>
+      <div class="chart-block">
+        <div class="chart-row"><div class="chart-label">Feed prominence</div><div class="chart-track"><div class="chart-fill" style="width:${state.onboarding.intent==='Run campaigns' ? 91 : 63}%"></div></div><div class="chart-val">${state.onboarding.intent==='Run campaigns' ? 'high' : 'medium'}</div></div>
+        <div class="chart-row"><div class="chart-label">Local discovery bias</div><div class="chart-track"><div class="chart-fill amber" style="width:${state.onboarding.intent==='Local deals' ? 89 : 52}%"></div></div><div class="chart-val">${state.onboarding.intent==='Local deals' ? 'high' : 'normal'}</div></div>
+      </div>
+    </div>
+    <div class="inline-actions"><button class="ghost" onclick="openSheet('campaign-builder')">Edit campaign</button><button class="ghost" onclick="openSheet('igo-live')">Run in-store sim</button><button class="ghost" onclick="openSheet('payout-chain')">Payout chain</button></div>
+  `,
+
+  'wallet-history': () => `
+    <div class="sheet-head"><div><div class="section-title">Wallet history</div><div class="section-sub">A fuller ledger view of earn, spend, pending, transfer, and payout actions in this demo.</div></div><button class="close" onclick="forceCloseSheet()">✕</button></div>
+    <div class="metric-strip" style="margin-bottom:12px">
+      <div class="metric-mini"><div class="k">Entries</div><div class="v">${state.history.length}</div></div>
+      <div class="metric-mini"><div class="k">Available</div><div class="v">$${state.available.toFixed(2)}</div></div>
+      <div class="metric-mini"><div class="k">Pending</div><div class="v">$${state.pending.toFixed(2)}</div></div>
+    </div>
+    <div class="card">
+      ${state.history.map(item => `
+        <div class="list-row">
+          <div class="iconbox">${item.kind==='earn' ? '↑' : item.kind==='spend' ? '↓' : item.kind==='transfer' ? '⇄' : item.kind==='withdraw' ? '↗' : '◔'}</div>
+          <div class="list-main">
+            <div class="list-title">${esc(item.title)}</div>
+            <div class="list-sub">${esc(item.sub)}</div>
+          </div>
+          <div class="list-value" style="color:${item.color}">${item.sign}$${Number(item.amount).toFixed(2)}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="inline-actions"><button class="ghost" onclick="openSheet('transfer')">Mock transfer</button><button class="ghost" onclick="openSheet('withdraw')">Mock withdraw</button></div>
+  `,
+  'transfer': () => `
+    <div class="sheet-head"><div><div class="section-title">Transfer</div><div class="section-sub">Move value to another user wallet inside the demo before it leaves to external payout rails.</div></div><button class="close" onclick="forceCloseSheet()">✕</button></div>
+    <div class="field"><label>From</label><div class="card"><div class="row space"><span>Available iCoins</span><strong>$${state.available.toFixed(2)}</strong></div></div></div>
+    <div class="field"><label>Recipient</label><input id="transfer-to" class="input" type="text" value="@creatorhub"></div>
+    <div class="field"><label>Amount</label><input id="transfer-amount" class="input" type="number" min="0.10" step="0.05" value="${Math.min(state.available,1.25).toFixed(2)}"></div>
+    <div class="card">
+      <div class="list-row"><div class="iconbox">η</div><div class="list-main"><div class="list-title">Internal settlement</div><div class="list-sub">Instant in the demo. In production this would create a wallet ledger entry plus risk checks and recipient receipt.</div></div><div class="list-value">mock</div></div>
+      <div class="list-row"><div class="iconbox">⌛</div><div class="list-main"><div class="list-title">Post-transfer route</div><div class="list-sub">Transfer keeps value inside the [ i ] economy, unlike withdraw which exits to payout rails.</div></div><div class="list-value">internal</div></div>
+    </div>
+    <div class="inline-actions"><button class="ghost" onclick="openSheet('wallet-history')">See ledger</button><button class="primary" onclick="mockTransfer()">Send transfer</button></div>
+  `,
+  'igo-live': () => `
+    <div class="sheet-head"><div><div class="section-title">iGo local simulation</div><div class="section-sub">Mock the physical-world chain: route → arrival → scan → purchase → pending reward.</div></div><button class="close" onclick="forceCloseSheet()">✕</button></div>
+    <div class="card">
+      <div class="list-row"><div class="iconbox">📍</div><div class="list-main"><div class="list-title">${state.localFlow.business}</div><div class="list-sub">2 min away • tied to the live local campaign</div></div><div class="list-value" style="color:var(--icoin)">$${esc(state.campaign.reward)}</div></div>
+    </div>
+    <div class="card">
+      <div class="list-row"><div class="iconbox">1</div><div class="list-main"><div class="list-title">Arrival status</div><div class="list-sub">${state.localFlow.arrived ? 'Arrival confirmed in demo mode.' : 'User has not arrived yet.'}</div></div><button class="ghost" onclick="simulateLocalArrival()">${state.localFlow.arrived ? 'Redo' : 'Arrive'}</button></div>
+      <div class="list-row"><div class="iconbox">2</div><div class="list-main"><div class="list-title">QR / proof step</div><div class="list-sub">${state.localFlow.scanned ? 'Mock proof captured.' : 'Scan local proof to continue.'}</div></div><button class="ghost" onclick="simulateLocalScan()">${state.localFlow.scanned ? 'Redo' : 'Scan'}</button></div>
+      <div class="list-row"><div class="iconbox">3</div><div class="list-main"><div class="list-title">Purchase or visit completion</div><div class="list-sub">${state.localFlow.purchased ? 'Completion recorded.' : 'Complete the merchant action.'}</div></div><button class="ghost" onclick="simulateLocalPurchase()">${state.localFlow.purchased ? 'Redo' : 'Complete'}</button></div>
+    </div>
+    <div class="inline-actions"><button class="ghost" onclick="pushLocalRewardToQueue()">Push reward to pending</button><button class="ghost" onclick="openSheet('pending')">Open pending queue</button></div>
+  `,
+  'payout-chain': () => `
+    <div class="sheet-head"><div><div class="section-title">Payout chain</div><div class="section-sub">How value moves in this demo from immersive engagement to wallet availability.</div></div><button class="close" onclick="forceCloseSheet()">✕</button></div>
+    <div class="settlement-lane">
+      <div class="settlement-step"><div class="settlement-dot">1</div><div class="settlement-copy"><b>Immersive engagement</b><br>Sponsored content or local promo is completed with mock attention verification.</div></div>
+      <div class="settlement-step"><div class="settlement-dot">2</div><div class="settlement-copy"><b>Action outcome</b><br>Instant actions release directly, while local / conditional actions enter pending review.</div></div>
+      <div class="settlement-step"><div class="settlement-dot">3</div><div class="settlement-copy"><b>Pending queue</b><br>${state.pendingQueue.length} rewards are sitting in review with a current pending total of <b>$${state.pending.toFixed(2)}</b>.</div></div>
+      <div class="settlement-step"><div class="settlement-dot">4</div><div class="settlement-copy"><b>Wallet available</b><br>Current available balance is <b>$${state.available.toFixed(2)}</b> and can then be paid, tipped, transferred, converted, or withdrawn.</div></div>
+    </div>
+    <div class="card">
+      <div class="list-row"><div class="iconbox">IN</div><div class="list-main"><div class="list-title">Latest releaseable path</div><div class="list-sub">${state.rewardName} was the last immersive flow to touch wallet availability in this demo state.</div></div><div class="list-value">live</div></div>
+      <div class="list-row"><div class="iconbox">LG</div><div class="list-main"><div class="list-title">Ledger continuity</div><div class="list-sub">Transfers, spends, and withdrawals all append into wallet history after release.</div></div><div class="list-value">${state.history.length}</div></div>
+    </div>
+    <div class="inline-actions"><button class="ghost" onclick="openSheet('pending')">Open pending</button><button class="ghost" onclick="advancePendingQueue()">Advance queue</button><button class="ghost" onclick="releasePendingMock()">Release next</button><button class="ghost" onclick="openSheet('wallet-history')">Wallet history</button></div>
+  `,
+
+  'loop1': () => `
+    <div class="sheet-head"><div><div class="section-title">Loop 1</div><div class="section-sub">Watch → Verify → Earn</div></div><button class="close" onclick="forceCloseSheet()">✕</button></div>
+    <div class="card">
+      <div class="list-row"><div class="iconbox">1</div><div class="list-main"><div class="list-title">Open Earn</div><div class="list-sub">See available offers</div></div></div>
+      <div class="list-row"><div class="iconbox">2</div><div class="list-main"><div class="list-title">Tap offer</div><div class="list-sub">Inspect reward, duration, and gates</div></div></div>
+      <div class="list-row"><div class="iconbox">3</div><div class="list-main"><div class="list-title">Watch</div><div class="list-sub">Complete content action</div></div></div>
+      <div class="list-row"><div class="iconbox">4</div><div class="list-main"><div class="list-title">Verify</div><div class="list-sub">Attention engine clears the session</div></div></div>
+      <div class="list-row"><div class="iconbox">5</div><div class="list-main"><div class="list-title">Earn</div><div class="list-sub">Reward released or held pending</div></div></div>
+    </div>
+    <div class="inline-actions"><button class="ghost" onclick="forceCloseSheet();openView('earn')">Jump to Earn</button><button class="ghost" onclick="forceCloseSheet();launchWatch('spotify')">Run live demo</button></div>
+  `
+};
+
+function renderPendingRows(){
+  if(!state.pendingQueue.length){
+    return `<div class="note">No pending rewards right now.</div>`;
+  }
+  return state.pendingQueue.map(item=>`
+    <div class="list-row">
+      <div class="iconbox">${item.name.split(' ').map(x=>x[0]).slice(0,2).join('')}</div>
+      <div class="list-main">
+        <div class="list-title">${esc(item.name)}</div>
+        <div class="list-sub">${esc(item.status)}</div>
+        <div class="progress-track" style="margin-top:7px;height:4px"><div class="progress-fill" style="width:${item.progress}%;background:${item.progress>84?'var(--icoin)':'var(--amber)'}"></div></div>
+      </div>
+      <div class="list-value" style="color:${item.progress>84?'var(--icoin)':'var(--amber)'}">$${item.amount.toFixed(2)}</div>
+    </div>`).join('');
+}
+
+function platformRow(key, icon, name, desc){
+  return `<div class="list-row"><div class="iconbox">${icon}</div><div class="list-main"><div class="list-title">${name}</div><div class="list-sub">${platformStatus(key)} · ${desc}</div></div><button class="ghost" onclick="togglePlatform('${key}')">${platformLabel(key)}</button></div>`;
+}
+function studioBtn(key, label){
+  const on = state.studio.tools[key];
+  const style = on ? 'style="background:var(--bg-raised);border-color:var(--border-active)"' : '';
+  return `<button class="secondary" ${style} onclick="toggleStudioTool('${key}')">${label}</button>`;
+}
+function activeStudioTools(){
+  return Object.entries(state.studio.tools).filter(([k,v])=>v).map(([k])=>k);
+}
+
+function openView(name){
+  state.currentView=name;
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(`view-${name}`).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===name));
+}
+
+function openSheet(name){
+  state.sheet=name;
+  document.getElementById('sheet-content').innerHTML = sheetTemplates[name] ? sheetTemplates[name]() : '<div class="section-title">Missing sheet</div>';
+  document.getElementById('sheet-overlay').classList.add('active');
+  if(name==='convert') setTimeout(updateConvertPreview,0);
+}
+function forceCloseSheet(){ document.getElementById('sheet-overlay').classList.remove('active'); }
+function closeSheet(e){ if(e.target.id==='sheet-overlay') forceCloseSheet(); }
+
+function openOnboarding(){
+  state.onboarding.open=true;
+  state.onboarding.step=0;
+  renderOnboarding();
+}
+function closeOnboarding(){
+  state.onboarding.open=false;
+  const el=document.getElementById('onboarding-overlay');
+  if(el) el.classList.remove('on');
+}
+function pickOnboardingPlatform(platform){
+  state.onboarding.platform=platform;
+  renderOnboarding();
+}
+function pickOnboardingIntent(intent){
+  state.onboarding.intent=intent;
+  renderOnboarding();
+}
+function nextOnboardingStep(){
+  if(state.onboarding.step<2){ state.onboarding.step+=1; renderOnboarding(); }
+  else{
+    state.connected.youtube = true;
+    if(state.onboarding.intent==='Run campaigns') state.business.liveCampaigns = Math.max(state.business.liveCampaigns,2);
+    if(state.onboarding.intent==='Support creators') state.creator.activeCampaigns = Math.max(state.creator.activeCampaigns,3);
+    closeOnboarding();
+    openView('feed');
+    syncUI();
+    showToast(`Onboarding complete: ${state.onboarding.platform} + ${state.onboarding.intent}`);
+  }
+}
+function prevOnboardingStep(){
+  if(state.onboarding.step>0){ state.onboarding.step-=1; renderOnboarding(); }
+  else closeOnboarding();
+}
+function renderOnboarding(){
+  const overlay=document.getElementById('onboarding-overlay');
+  const content=document.getElementById('onboarding-content');
+  if(!overlay || !content) return;
+  overlay.classList.toggle('on', state.onboarding.open);
+  if(!state.onboarding.open) return;
+  const s=state.onboarding.step;
+  const bars=[0,1,2].map(i=>`<div class="onboarding-bar ${i<s?'done':''} ${i===s?'active':''}"><span style="width:${i<s?100:(i===s?65:0)}%"></span></div>`).join('');
+  let body='';
+  if(s===0){
+    body=`
+      <div class="onboarding-copy">Choose the first outside platform you want [ i ] to plug into for discovery, actions, and measured attention.</div>
+      <div class="onboarding-chip-grid">
+        <button class="onboarding-chip ${state.onboarding.platform==='TikTok'?'active':''}" onclick="pickOnboardingPlatform('TikTok')">TikTok<br><span class="mini">short video inflow</span></button>
+        <button class="onboarding-chip ${state.onboarding.platform==='Instagram'?'active':''}" onclick="pickOnboardingPlatform('Instagram')">Instagram<br><span class="mini">creator + brand reach</span></button>
+        <button class="onboarding-chip ${state.onboarding.platform==='YouTube'?'active':''}" onclick="pickOnboardingPlatform('YouTube')">YouTube<br><span class="mini">longer attention sessions</span></button>
+        <button class="onboarding-chip ${state.onboarding.platform==='Spotify'?'active':''}" onclick="pickOnboardingPlatform('Spotify')">Spotify<br><span class="mini">audio and fandom loops</span></button>
+      </div>`;
+  } else if(s===1){
+    body=`
+      <div class="onboarding-copy">Set the primary user intent. This changes what the marketplace emphasizes first.</div>
+      <div class="onboarding-chip-grid">
+        <button class="onboarding-chip ${state.onboarding.intent==='Earn + discover'?'active':''}" onclick="pickOnboardingIntent('Earn + discover')">Earn + discover</button>
+        <button class="onboarding-chip ${state.onboarding.intent==='Support creators'?'active':''}" onclick="pickOnboardingIntent('Support creators')">Support creators</button>
+        <button class="onboarding-chip ${state.onboarding.intent==='Local deals'?'active':''}" onclick="pickOnboardingIntent('Local deals')">Local deals</button>
+        <button class="onboarding-chip ${state.onboarding.intent==='Run campaigns'?'active':''}" onclick="pickOnboardingIntent('Run campaigns')">Run campaigns</button>
+      </div>`;
+  } else {
+    body=`
+      <div class="onboarding-list">
+        <div class="onboarding-item"><div class="intro-dot"></div><div><b>Primary platform:</b> ${state.onboarding.platform}</div></div>
+        <div class="onboarding-item"><div class="intro-dot"></div><div><b>Primary intent:</b> ${state.onboarding.intent}</div></div>
+        <div class="onboarding-item"><div class="intro-dot"></div><div><b>Next route:</b> feed → immersive offer → local or creator action → pending → release</div></div>
+      </div>
+      <div class="onboarding-copy">This is the tighter story investors need to feel: onboarding shapes discovery, discovery drives action, action drives release, and release proves the wallet.</div>`;
+  }
+  content.innerHTML=`
+    <div class="onboarding-top">
+      <div>
+        <div class="onboarding-step">Onboarding ${s+1}/3</div>
+        <div class="onboarding-title">${['Connect the first platform','Choose the starting mode','Finish the route'][s]}</div>
+      </div>
+      <button class="close" onclick="closeOnboarding()">✕</button>
+    </div>
+    <div class="onboarding-progress">${bars}</div>
+    ${body}
+    <div class="onboarding-footer">
+      <button class="secondary" onclick="prevOnboardingStep()">${s===0?'Close':'Back'}</button>
+      <button class="primary" onclick="nextOnboardingStep()">${s===2?'Enter feed':'Continue'}</button>
+    </div>`;
+}
+function setMapFilter(filter){
+  state.mapFilter=filter;
+  openSheet('igo-map');
+}
+
+
+function selectOption(btn, group){
+  document.querySelectorAll(`[data-group="${group}"]`).forEach(el=>el.style.background='var(--bg-panel)');
+  btn.style.background='var(--bg-raised)';
+}
+
+
+function openMapPlace(place){
+  const places = {
+    mario:{title:"Mario's Pizza", sub:"2 min away · watch promo → tap “I'm Going” → simulate arrival → reward lands in pending.", val:"$1.00", action:'local'},
+    pulse:{title:"Pulse Gym", sub:"6 min away · 45 second awareness clip → front-desk scan → higher conditional reward.", val:"$2.50", action:'local'},
+    brew:{title:"North Brew", sub:"1 min away · scan-to-pay discount and micro-reward for same-session visit.", val:"$0.40", action:'spotify'}
+  };
+  state.igo = places[place];
+  const t=document.getElementById('igo-place-title');
+  const s=document.getElementById('igo-place-sub');
+  const v=document.getElementById('igo-place-val');
+  if(t) t.textContent = state.igo.title;
+  if(s) s.textContent = state.igo.sub;
+  if(v) v.textContent = state.igo.val;
+}
+function launchMapOffer(){
+  const action = state.igo && state.igo.action ? state.igo.action : 'local';
+  forceCloseSheet();
+  if(action==='local'){ openSheet('offer-detail'); } else { launchWatch('spotify'); }
+}
+function updatePresenterUI(){
+  const dock=document.getElementById('presenter-dock');
+  const title=document.getElementById('presenter-title');
+  const count=document.getElementById('presenter-count');
+  if(!dock || !title || !count) return;
+  dock.classList.toggle('on', state.presenter.on);
+  const total=state.presenter.steps.length;
+  const idx=state.presenter.step;
+  title.textContent = state.presenter.steps[idx].title;
+  count.textContent = `${idx+1}/${total}`;
+}
+function togglePresenterMode(){
+  state.presenter.on = !state.presenter.on;
+  if(state.presenter.on){
+    state.presenter.step = 0;
+    state.presenter.steps[0].action();
+    showToast('Guided investor mode enabled.');
+  }else{
+    closeImmersive(true);
+    showToast('Guided investor mode disabled.');
+  }
+  updatePresenterUI();
+}
+function runPresenterStep(){
+  state.presenter.steps[state.presenter.step].action();
+  updatePresenterUI();
+}
+function nextPresenterStep(){
+  if(!state.presenter.on){ togglePresenterMode(); return; }
+  state.presenter.step = Math.min(state.presenter.steps.length - 1, state.presenter.step + 1);
+  runPresenterStep();
+}
+function prevPresenterStep(){
+  if(!state.presenter.on){ return; }
+  state.presenter.step = Math.max(0, state.presenter.step - 1);
+  runPresenterStep();
+}
+
+
+function applyOnboardingPersonalization(){
+  const routeMap = {
+    'Earn + discover': {
+      kicker:'Earn route',
+      title:`${state.onboarding.platform} inflow with highest reward density`,
+      copy:'The first cards now bias toward sponsored watch flows, quick payout actions, and shorter path-to-wallet moments.'
+    },
+    'Support creators': {
+      kicker:'Creator route',
+      title:`${state.onboarding.platform} creator-first marketplace mix`,
+      copy:'The feed now leans toward creator campaigns, follow unlocks, tipping paths, and creator-side performance loops.'
+    },
+    'Local deals': {
+      kicker:'Local route',
+      title:'Nearby offers and iGo actions move up',
+      copy:'The marketplace now prioritizes local promos, check-ins, map discovery, and merchant payout flows over passive browsing.'
+    },
+    'Run campaigns': {
+      kicker:'Business route',
+      title:'Campaign tools and live marketplace slots move first',
+      copy:'The demo now emphasizes publishing, business reporting, live campaign placement, and downstream settlement behavior.'
+    }
+  };
+  const cfg = routeMap[state.onboarding.intent] || routeMap['Earn + discover'];
+  const set = (id,val)=>{ const el=document.getElementById(id); if(el) el.textContent = val; };
+  set('feed-personal-kicker', cfg.kicker);
+  set('feed-personal-title', cfg.title);
+  set('feed-personal-copy', cfg.copy);
+  set('feed-personal-platform', state.onboarding.platform);
+  set('feed-personal-intent', state.onboarding.intent);
+}
+
+
+function logWalletEvent(kind,title,sub,amount,sign,color){
+  state.history.unshift({id:`hx-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,kind,title,sub,amount,sign,color});
+  state.history = state.history.slice(0,16);
+}
+function renderWalletHistoryPreview(){
+  const host=document.getElementById('wallet-history-preview');
+  if(!host) return;
+  host.innerHTML = state.history.slice(0,3).map(item => `
+    <div class="list-row">
+      <div class="iconbox">${item.kind==='earn' ? '↑' : item.kind==='spend' ? '↓' : item.kind==='transfer' ? '⇄' : item.kind==='withdraw' ? '↗' : '◔'}</div>
+      <div class="list-main"><div class="list-title">${esc(item.title)}</div><div class="list-sub">${esc(item.sub)}</div></div>
+      <div class="list-value" style="color:${item.color}">${item.sign}$${Number(item.amount).toFixed(2)}</div>
+    </div>
+  `).join('');
+}
+function reorderFeedByRoute(){
+  const host=document.getElementById('feed-card-list');
+  if(!host) return;
+  const cards = Array.from(host.querySelectorAll('.feed-card'));
+  const routeOrders = {
+    'Earn + discover':['business','earn','discover','local','local','creator'],
+    'Support creators':['business','creator','earn','discover','local','local'],
+    'Local deals':['business','local','local','earn','discover','creator'],
+    'Run campaigns':['business','creator','discover','earn','local','local']
+  };
+  const order = routeOrders[state.onboarding.intent] || routeOrders['Earn + discover'];
+  cards.sort((a,b)=>{
+    const ar = order.indexOf(a.dataset.role||'discover');
+    const br = order.indexOf(b.dataset.role||'discover');
+    return ar-br;
+  }).forEach(card=>host.appendChild(card));
+}
+function syncUI(){
+  const setText=(id,val)=>{const el=document.getElementById(id); if(el) el.textContent=val;};
+  setText('wallet-chip-val', `$${state.available.toFixed(2)}`);
+  setText('wallet-main', state.available.toFixed(2));
+  setText('icoin-val', `$${state.available.toFixed(2)}`);
+  setText('pending-chip', `$${state.pending.toFixed(2)}`);
+  setText('earn-avail', `$${state.available.toFixed(2)}`);
+  setText('earn-pending', `$${state.pending.toFixed(2)}`);
+  setText('immersive-wallet-val', `$${state.available.toFixed(2)}`);
+  setText('intro-pending', `$${state.pending.toFixed(2)}`);
+  setText('intro-published', state.campaign.published ? '1' : '0');
+  setText('intro-connected', Object.values(state.connected).filter(Boolean).length);
+  syncMarketplaceCard();
+  applyOnboardingPersonalization();
+  reorderFeedByRoute();
+  renderWalletHistoryPreview();
+}
+
+
+function syncMarketplaceCard(){
+  const source=document.getElementById('marketplace-live-source');
+  const reward=document.getElementById('marketplace-live-reward');
+  const title=document.getElementById('marketplace-live-title');
+  const meta=document.getElementById('marketplace-live-meta');
+  const text=document.getElementById('marketplace-live-text');
+  const emoji=document.getElementById('marketplace-live-emoji');
+  if(!source||!reward||!title||!meta||!text||!emoji) return;
+  if(state.campaign.published){
+    source.textContent = state.campaign.destination.includes('Local') ? 'Marketplace · Live local campaign' : 'Marketplace · Live creator campaign';
+    reward.textContent = `Earn $${Number(state.campaign.reward||0).toFixed(2)}`;
+    title.textContent = state.campaign.title;
+    meta.textContent = `${state.campaign.action} · ${state.campaign.destination}`;
+    text.textContent = state.campaign.rules;
+    emoji.textContent = state.campaign.destination.includes('Local') ? '📍' : '▶';
+  }else{
+    source.textContent = 'Marketplace · Draft';
+    reward.textContent = 'Awaiting publish';
+    title.textContent = 'No live draft in feed yet';
+    meta.textContent = 'business side';
+    text.textContent = 'Publish a campaign from Business Hub and this slot turns into a live marketplace card inside the feed.';
+    emoji.textContent = '◈';
+  }
+}
+function openPublishedCampaignFlow(){
+  if(!state.campaign.published){ showToast('Publish a campaign first to push it into the feed.'); return; }
+  if(state.campaign.destination.includes('Local')) openSheet('igo-live');
+  else launchWatch('spotify');
+}
+function resetLocalFlow(){ state.localFlow.arrived=false; state.localFlow.scanned=false; state.localFlow.purchased=false; }
+function simulateLocalArrival(){ state.localFlow.arrived=true; openSheet('igo-live'); showToast('Local arrival simulated.'); }
+function simulateLocalScan(){ if(!state.localFlow.arrived){ showToast('Simulate arrival first.'); return; } state.localFlow.scanned=true; openSheet('igo-live'); showToast('Local proof scanned.'); }
+function simulateLocalPurchase(){ if(!state.localFlow.scanned){ showToast('Scan local proof first.'); return; } state.localFlow.purchased=true; state.business.visitsToday += 1; openSheet('igo-live'); showToast('Merchant completion simulated.'); }
+function pushLocalRewardToQueue(){
+  if(!state.localFlow.purchased){ showToast('Complete the local flow first.'); return; }
+  const amt = Number(state.campaign.reward||1);
+  state.pendingQueue.unshift({id:`lg-${Date.now()}`,name:`${state.localFlow.business} live campaign`,amount:amt,status:'Ready for release review',progress:92,type:'local'});
+  logWalletEvent('pending', `${state.localFlow.business} reward queued`, 'local completion moved into pending review', amt, '+', 'var(--amber)');
+  refreshDerivedState();
+  resetLocalFlow();
+  openSheet('pending');
+  syncUI();
+  showToast('Local reward pushed into pending queue.');
+}
+function dismissIntro(runGuided=false){
+  const el=document.getElementById('intro-overlay');
+  if(el) el.classList.remove('on');
+  if(runGuided && !state.presenter.on) togglePresenterMode();
+}
+function refreshDerivedState(){
+  state.pending = Number(state.pendingQueue.reduce((s,item)=>s+item.amount,0).toFixed(2));
+  state.creator.mediaReady = !!state.studio.exported;
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer=setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+function togglePlatform(name){
+  const was = state.connected[name];
+  state.connected[name] = !state.connected[name];
+  if(state.sheet==='connect-platforms') openSheet('connect-platforms');
+  showToast(`${name[0].toUpperCase()+name.slice(1)} ${was ? 'disconnected' : 'connected'} in demo mode.`);
+}
+
+function updateCampaignField(field, value){
+  state.campaign[field]=value;
+  const title=document.getElementById('campaign-preview-title');
+  const sub=document.getElementById('campaign-preview-sub');
+  const rules=document.getElementById('campaign-preview-rules');
+  if(title) title.textContent=state.campaign.title;
+  if(sub) sub.textContent=`CTA: ${state.campaign.action} • Earn $${state.campaign.reward} • ${state.campaign.destination}`;
+  if(rules) rules.textContent=state.campaign.rules;
+}
+function loadDemoCampaign(kind){
+  if(kind==='local'){
+    state.campaign={...state.campaign,title:'Local Pizza Weekend Boost',action:"I'm Going!",reward:'1.00',rules:'Watch at least 30 seconds, tap the CTA, and complete the local visit proof to move reward from pending to available.',destination:'Local visit flow',published:false};
+  }else{
+    state.campaign={...state.campaign,title:'Creator Follow Unlock',action:'Follow',reward:'0.25',rules:'Watch the creator clip, tap Follow, and hold attention through the verification window.',destination:'Creator follow flow',published:false};
+  }
+  openSheet('campaign-builder');
+}
+function publishCampaign(){
+  refreshDerivedState();
+  state.campaign.published = true;
+  state.business.liveCampaigns = Math.max(state.business.liveCampaigns,1);
+  state.creator.activeCampaigns += 1;
+  forceCloseSheet();
+  openView('feed');
+  syncMarketplaceCard();
+  openSheet('campaign-published');
+  syncUI();
+  showToast(`Campaign published: ${state.campaign.title}`);
+}
+
+function toggleStudioTool(tool){
+  state.studio.tools[tool]=!state.studio.tools[tool];
+  state.studio.version += 1;
+  openSheet('studio');
+  showToast(`${tool} tool ${state.studio.tools[tool] ? 'enabled' : 'disabled'}.`);
+}
+function setStudioAspect(aspect){
+  state.studio.aspect=aspect;
+  openSheet('studio');
+  showToast(`Preview aspect set to ${aspect}.`);
+}
+function exportStudio(){
+  state.studio.exported = true;
+  state.campaign.mediaReady = true;
+  state.creator.mediaReady = true;
+  state.studio.version += 1;
+  forceCloseSheet();
+  openSheet('campaign-builder');
+  syncUI();
+  showToast('Studio asset exported and attached to the campaign draft.');
+}
+
+function updateConvertPreview(){
+  const input=document.getElementById('convert-v');
+  if(!input) return;
+  const amt=parseInt(input.value||'0',10);
+  const dollars=Math.max(0,amt/100);
+  const sub=document.getElementById('convert-preview-sub');
+  const val=document.getElementById('convert-preview-val');
+  if(sub) sub.textContent=`${amt} vCoins → $${dollars.toFixed(2)} iCoins`;
+  if(val) val.textContent=`+$${dollars.toFixed(2)}`;
+}
+function openPayWithMethod(method){
+  openSheet('pay');
+  setTimeout(()=>{
+    const sel=document.getElementById('pay-method');
+    if(sel) sel.value=method;
+  },0);
+}
+
+function launchWatch(type){
+  const map={
+    spotify:{title:'Spotify Artist Boost',copy:'Keep your eyes on the content and complete the watch flow. Reward will release instantly in this mock.',reward:0.25},
+    local:{title:'Local Visit Promo',copy:'This local promo moves into pending after media completion, then can be released later.',reward:1.00}
+  };
+  const cfg=map[type]||map.spotify;
+  state.reward=cfg.reward;
+  state.rewardName=cfg.title;
+  document.getElementById('watch-offer-title').textContent=cfg.title;
+  document.getElementById('watch-offer-copy').textContent=cfg.copy;
+  document.getElementById('reward-amount').textContent=`+$${cfg.reward.toFixed(2)}`;
+  resetWatchUI();
+  document.getElementById('watch-stage').classList.add('active');
+}
+function closeWatch(){
+  clearInterval(state.watchTimer);
+  document.getElementById('watch-stage').classList.remove('active');
+}
+function resetWatchUI(){
+  clearInterval(state.watchTimer);
+  state.watchPct=0;
+  document.getElementById('watch-main').style.display='flex';
+  document.getElementById('confirm-stage').classList.remove('active');
+  document.getElementById('reward-stage').classList.remove('active');
+  document.getElementById('watch-progress-fill').style.width='0%';
+  document.getElementById('attention-score').textContent='81';
+  document.getElementById('attention-ring').style.strokeDashoffset='120';
+}
+function startWatchFlow(){
+  clearInterval(state.watchTimer);
+  let pct=0;
+  let score=81;
+  state.watchTimer=setInterval(()=>{
+    pct += 5;
+    score = 78 + Math.round(Math.sin(pct/12)*6 + (pct/25));
+    document.getElementById('watch-progress-fill').style.width=`${pct}%`;
+    document.getElementById('attention-score').textContent=String(score);
+    const offset=Math.max(70,130-pct*.55);
+    document.getElementById('attention-ring').style.strokeDashoffset=offset;
+    if(pct>=100){
+      clearInterval(state.watchTimer);
+      document.getElementById('watch-main').style.display='none';
+      document.getElementById('confirm-stage').classList.add('active');
+    }
+  },180);
+}
+function releaseReward(){
+  document.getElementById('confirm-stage').classList.remove('active');
+  document.getElementById('reward-stage').classList.add('active');
+  state.available += state.reward;
+  logWalletEvent('earn', state.rewardName, 'released from immersive verification flow', state.reward, '+', 'var(--icoin)');
+  refreshDerivedState();
+  renderImmersive();
+  syncUI();
+  updatePresenterUI();
+}
+function finishWatch(){
+  closeWatch();
+  openView('wallet');
+  openSheet('payout-chain');
+  showToast(`${state.rewardName} released +$${state.reward.toFixed(2)}`);
+}
+
+
+function mockTransfer(){
+  const amount=parseFloat(document.getElementById('transfer-amount').value||'0');
+  const to=(document.getElementById('transfer-to').value||'@creatorhub').trim();
+  if(amount<=0||amount>state.available){showToast('Invalid transfer amount.');return}
+  state.available -= amount;
+  logWalletEvent('transfer', `Transfer to ${to}`, 'internal wallet settlement · instant in demo mode', amount, '-', 'var(--blue)');
+  refreshDerivedState();
+  renderImmersive();
+  syncUI();
+  updatePresenterUI();
+  forceCloseSheet();
+  openSheet('wallet-history');
+  showToast(`Transferred $${amount.toFixed(2)} to ${to}`);
+}
+function mockWithdraw(){
+  const amount=parseFloat(document.getElementById('withdraw-amount').value||'0');
+  if(amount<=0||amount>state.available){showToast('Invalid withdraw amount.');return}
+  state.available -= amount;
+  logWalletEvent('withdraw', 'Withdraw initiated', 'mock payout to external rail', amount, '-', 'var(--amber)');
+  refreshDerivedState();
+  renderImmersive();
+  syncUI();
+  updatePresenterUI();
+  forceCloseSheet();
+  showToast(`Withdraw mock created for $${amount.toFixed(2)}`);
+}
+function mockConvert(){
+  const amt=parseInt(document.getElementById('convert-v').value||'0',10);
+  if(amt<=0||amt>state.vcoins){showToast('Invalid conversion amount.');return}
+  const dollars=amt/100;
+  state.vcoins -= amt;
+  state.available += dollars;
+  logWalletEvent('earn', 'vCoin conversion', `${amt} vCoins converted to spendable balance`, dollars, '+', 'var(--icoin)');
+  refreshDerivedState();
+  renderImmersive();
+  syncUI();
+  updatePresenterUI();
+  forceCloseSheet();
+  showToast(`${amt} vCoins converted to $${dollars.toFixed(2)}`);
+}
+function mockPay(){
+  const amount=parseFloat(document.getElementById('pay-amount').value||'0');
+  const to=document.getElementById('pay-to').value||'merchant';
+  const method=document.getElementById('pay-method').value;
+  if(amount<=0||amount>state.available){showToast('Invalid payment amount.');return}
+  state.available -= amount;
+  logWalletEvent('spend', `Payment to ${to}`, `${method} payment route`, amount, '-', 'var(--rose)');
+  refreshDerivedState();
+  renderImmersive();
+  syncUI();
+  updatePresenterUI();
+  forceCloseSheet();
+  showToast(`${method} payment sent to ${to} for $${amount.toFixed(2)}`);
+}
+function presetTip(v){ document.getElementById('tip-amount').value = v.toFixed(2); }
+function mockTip(){
+  const amount=parseFloat(document.getElementById('tip-amount').value||'0');
+  if(amount<=0||amount>state.available){showToast('Invalid tip amount.');return}
+  state.available -= amount;
+  logWalletEvent('spend', 'Creator tip', 'support creators directly from wallet', amount, '-', 'var(--rose)');
+  refreshDerivedState();
+  renderImmersive();
+  syncUI();
+  updatePresenterUI();
+  forceCloseSheet();
+  showToast(`Tip sent: $${amount.toFixed(2)}`);
+}
+function simulatePendingReward(){
+  const id = `pd-${Date.now()}`;
+  state.pendingQueue.unshift({id:id,name:'New local visit reward',amount:1.00,status:'Awaiting check-in proof',progress:22,type:'local'});
+  logWalletEvent('pending', 'Local reward entered queue', 'awaiting visit proof before release', 1.00, '+', 'var(--amber)');
+  refreshDerivedState();
+  renderImmersive();
+  syncUI();
+  updatePresenterUI();
+  forceCloseSheet();
+  openView('wallet');
+  showToast('Local visit moved into pending rewards.');
+}
+function releasePendingMock(){
+  if(!state.pendingQueue.length){showToast('No pending reward to release.');return}
+  const next = state.pendingQueue.shift();
+  state.available += next.amount;
+  state.releasedCount += 1;
+  logWalletEvent('earn', `${next.name} released`, 'pending reward moved to available balance', next.amount, '+', 'var(--icoin)');
+  refreshDerivedState();
+  renderImmersive();
+  syncUI();
+  updatePresenterUI();
+  forceCloseSheet();
+  showToast(`Pending reward released: $${next.amount.toFixed(2)} from ${next.name}`);
+}
+
+function advancePendingQueue(){
+  if(!state.pendingQueue.length){showToast('Queue already clear.');return}
+  state.pendingQueue = state.pendingQueue.map((item,idx)=>{
+    const nextProgress = Math.min(100, item.progress + 18 + (idx===0 ? 8 : 0));
+    return {...item, progress: nextProgress, status: nextProgress >= 100 ? 'Ready to release' : item.status};
+  });
+  refreshDerivedState();
+  openSheet('pending');
+  syncUI();
+  showToast('Pending queue advanced in demo mode.');
+}
+
+state.igo = {title:"Mario's Pizza", sub:"2 min away · watch promo → tap “I'm Going” → simulate arrival → reward lands in pending.", val:"$1.00", action:'local'};
+refreshDerivedState();
+renderImmersive();
+syncUI();
+updatePresenterUI();
+
+</script>
+</body>
+</html>

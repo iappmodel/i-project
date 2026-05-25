@@ -670,6 +670,128 @@ button.pressable-card {
   background: linear-gradient(90deg, var(--accent-lime), var(--icoin-primary));
 }
 
+.tab-bar--four {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.product-tab-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  flex: 1;
+}
+
+.product-tab-layout__body {
+  flex: 1;
+}
+
+.earn-tab-header {
+  margin-bottom: 12px;
+}
+
+.earn-loop-card {
+  margin-bottom: 16px;
+}
+
+.earn-loop-card__label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.earn-steps-list {
+  margin: 0 0 16px;
+  padding-left: 18px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.presenter-link,
+.splash-presenter-link {
+  appearance: none;
+  background: none;
+  border: none;
+  color: var(--accent-cyan);
+  font-size: 12px;
+  font-family: var(--font-body);
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 8px 0;
+  text-align: center;
+  width: 100%;
+}
+
+.muted-caption {
+  color: var(--text-muted);
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.profile-trust-card {
+  padding: 14px;
+  border-radius: 12px;
+  border: 0.5px solid var(--border-subtle);
+  background: var(--surface-raised);
+  margin-bottom: 16px;
+}
+
+.profile-trust-card__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.profile-trust-card__label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.profile-trust-card__value {
+  font-size: 20px;
+  color: var(--icoin-primary);
+}
+
+.profile-trust-card__hint {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+.profile-section {
+  margin-bottom: 16px;
+}
+
+.profile-section__title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.profile-vision-card {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 0.5px solid var(--border-subtle);
+  margin-bottom: 8px;
+}
+
+.profile-vision-card__title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.profile-vision-card__body {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
 .tab-bar {
   margin-top: 12px;
   border-top: 0.6px solid var(--border-subtle);

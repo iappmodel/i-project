@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Button } from '../components/Button'
-import { PhoneFrame } from '../components/PhoneFrame'
-import { SourceEvidence } from '../components/SourceEvidence'
+import { TabScreenLayout } from '../components/TabScreenLayout'
 import { useDemo } from '../state/useDemo'
 
 function actDot(kind: string) {
@@ -11,7 +10,8 @@ function actDot(kind: string) {
 }
 
 export function WalletScreen() {
-  const { walletBalance, pendingBalance, aCoins, iCoins, transactions, setScreen, jumpFeed } = useDemo()
+  const { walletBalance, pendingBalance, aCoins, iCoins, iCoinsPending, transactions, setScreen, jumpEarn } =
+    useDemo()
   const [showAll, setShowAll] = useState(false)
 
   const usdFmt = walletBalance.toLocaleString(undefined, {
@@ -22,7 +22,15 @@ export function WalletScreen() {
   const visible = showAll ? transactions : transactions.slice(0, 5)
 
   return (
-    <PhoneFrame scroll>
+    <TabScreenLayout
+      activeTab="wallet"
+      evidence={[
+        '04_wallet_payments/iapp_wallet_dashboard.html',
+        '04_wallet_payments/iapp_wallet_ui (1).html',
+        '04_wallet_payments/wallet_pending_tab.html',
+        'integrations/eye-tracking/demos/investor-demo/src/screens/WalletScreen.tsx',
+      ]}
+    >
       <p className="wallet-ui-greeting">Good afternoon · sandbox</p>
       <p className="balance-label-wallet-ui">estimated value</p>
       <div className="balance-num-wallet-ui mono">${usdFmt}</div>
@@ -56,6 +64,11 @@ export function WalletScreen() {
         <div className="coin-card">
           <span className="cc-label">icoins</span>
           <span className="cc-val ic mono">{iCoins.toLocaleString()}</span>
+          {iCoinsPending > 0 ? (
+            <span className="cc-sub muted-num mono" style={{ fontSize: 11, marginTop: 4 }}>
+              +{iCoinsPending.toFixed(2)} pending
+            </span>
+          ) : null}
         </div>
       </section>
 
@@ -91,17 +104,9 @@ export function WalletScreen() {
       <Button variant="secondary" style={{ marginTop: 8 }} onClick={() => setScreen('creator-economics')}>
         Creator economics
       </Button>
-      <Button variant="ghost" style={{ marginTop: 8 }} onClick={() => jumpFeed()}>
-        Earn more in feed
+      <Button variant="ghost" style={{ marginTop: 8 }} onClick={() => jumpEarn()}>
+        Earn more
       </Button>
-      <SourceEvidence
-        paths={[
-          '04_wallet_payments/iapp_wallet_dashboard.html',
-          '04_wallet_payments/iapp_wallet_ui (1).html',
-          '04_wallet_payments/wallet_pending_tab.html',
-          'integrations/eye-tracking/demos/investor-demo/src/screens/WalletScreen.tsx',
-        ]}
-      />
-    </PhoneFrame>
+    </TabScreenLayout>
   )
 }

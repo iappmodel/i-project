@@ -1,7 +1,7 @@
 # DUPLICATES_AND_CONFLICTS
 
 **Generated:** 2026-05-21  
-**Updated:** 2026-05-22 (P0 chat batches 01–04 synthesis)  
+**Updated:** 2026-05-25 (owner decisions ENT-01, ENT-05, CR-02–06, HI-01/02)  
 **Purpose:** Explicit registry of repeated concepts, competing implementations, and contradictions vs [ i ] Source of Truth
 
 **Chat synthesis:** [`CHAT_RECOVERY/EXTRACTED/P0_BATCHES_01_04_SYNTHESIS.md`](CHAT_RECOVERY/EXTRACTED/P0_BATCHES_01_04_SYNTHESIS.md) — 40 P0 conversations; **no conflicts resolved silently.**
@@ -12,14 +12,17 @@
 
 | ID | Conflict | Severity | Status |
 |----|----------|----------|--------|
-| **CR-01** | **Attention session bypass** — reward issuable without valid `attentionSessionId` (conv 039; owner confirmed YES) | **Critical** | **Blocked** — fix before any reward canon |
-| **CR-02** | **iCoin semantics** — SoT cash-value vs OpenAI Identity-linked vs chat Icoins | **Critical** | **Blocked** — owner decision |
-| **CR-03** | **vCoin semantics** — SoT utility vs conv 020 spendable vs 028 platform value | **Critical** | **Blocked** — owner decision |
-| **CR-04** | **rCoin triple definition** — clearing pool (007) / hub (023) / Reputation (028) | **Critical** | **Blocked** — owner decision |
-| **CR-05** | **uCoin fork** — 007≈Vicoins vs 026 User Value | **Critical** | **Blocked** — owner decision |
-| **CR-06** | **Currency naming** — Vicoin/Icoin vs a/i/v/e/o across 40 convs | **Critical** | **Blocked** — owner decision |
-| **HI-01** | **Demo lineage** — 6+ URLs/architectures (HTML, Vite, 4-tab, 5-screen, 8-screen, 9-step) | **High** | **Blocked** — owner decision |
-| **HI-02** | **Product IA vs demo IA** — 4-tab (014, 038) vs multi-screen demos | **High** | **Blocked** — owner decision |
+| **CR-01** | **Attention session bypass** | **Critical** | **Resolved** — `app/` session gate (2026-05-25); sparkle-archive `Index.tsx` + `MediaCard.tsx` hardened (2026-05-25) |
+| **CR-02** | **iCoin semantics** | **Critical** | **Resolved** — ADR-001 owner confirmed 2026-05-25 |
+| **CR-03** | **vCoin semantics** | **Critical** | **Resolved** — ADR-001 |
+| **CR-04** | **rCoin triple definition** | **Critical** | **Resolved** — ADR-001 (conversion hub) |
+| **CR-05** | **uCoin fork** | **Critical** | **Resolved** — ADR-001 (Unlock, post-MVP) |
+| **CR-06** | **Currency naming** | **Critical** | **Resolved** — ADR-001 Tier 1 a/i/v/e/o; Tier 2 deferred |
+| **HI-01** | **Demo lineage** | **High** | **Resolved** — ADR-014: `app/` canonical pitch; archive v2 reference only |
+| **HI-02** | **Product IA vs demo IA** | **High** | **Resolved** — ADR-014: 4-tab product law; linear presenter in `app/` |
+| **ENT-01** | **Elo entity vs ELO mock** | **High** | **Resolved** — ADR-013: same product |
+| **ENT-05** | **Elo vs iAM** | **High** | **Resolved** — ADR-013: separate |
+| **MOD-01** | **Roadmap module list** | **Medium** | **Deferred** — owner not defined yet |
 
 **Currency evidence map:** `CHAT_RECOVERY/EXTRACTED/P0_BATCH_03_CURRENCY_RECONCILIATION_NOTES.md`
 

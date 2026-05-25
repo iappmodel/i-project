@@ -9,13 +9,28 @@
 | `app/` | Canonical runnable demo (replaces “future app workspace” placeholder) |
 | `app/src/components/` | Internal design system: `AppShell`, `PhoneFrame`, `BottomNav`, `HeaderBar`, `Button`, `Card`, `CurrencyChip`, `VerificationGate`, `ProgressBar`, `SourceEvidence` |
 | `app/src/data/demoData.ts` | Mock wallet, offer, campaign, gates, transactions, 60/30/10 split, proof-layer status |
-| `app/src/screens/` | Thirteen screens with state-based routing in `App.tsx` (no React Router) |
-| `app/src/state/` | `DemoProvider` session state (balances, selected offer, verification phase) |
+| `app/src/screens/` | Fifteen screens: 4-tab product shell + Loop 1 flow + presenter mode |
+| `app/src/state/` | `DemoProvider` — tabs, app mode (product vs presenter), attention session |
 
 ## Relationship to prototype-app launcher
 
 - **`prototype-app/index.html`** remains the archive index for rescued HTML, docs, and integration copies.
 - **`app/`** is the **live product-shaped shell** for the investor walkthrough. The launcher links to `app/index.html` (static entry) and this doc; run the dev server for the interactive flow.
+
+## Product shell (ADR-014 — 2026-05-25)
+
+**4-tab product IA:** Feed · Earn · Wallet · Profile (`BottomNav` via `TabScreenLayout`).
+
+| Mode | Navigation |
+|------|------------|
+| **Product** (default) | Tab bar on root screens; Loop 1 starts from **Earn** tab |
+| **Presenter** | Linear 13-screen walkthrough; launch from splash, Profile, or Earn |
+
+Presenter spine unchanged:
+
+`splash → feed → offer-detail → … → roadmap`
+
+Product tabs: `feed`, `earn`, `wallet`, `profile` — flow screens hide the tab bar.
 
 ## Relationship to MVP_CANONICAL_FLOW.md
 

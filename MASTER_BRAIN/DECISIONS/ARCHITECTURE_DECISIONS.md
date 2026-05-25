@@ -59,6 +59,21 @@
 **Evidence:** VISION_UNIFIED_PIPELINE audit §6
 
 ## ADR-012: ELO ≠ Recommendation Engine
-**Decision:** "ELO" in i-initial-structures = personal intelligence UI mock, not ranking engine. iVatar not implemented.  
+**Decision:** "ELO" in i-initial-structures is not a ranking engine. iVatar not implemented.  
+**Status:** Superseded in part by ADR-013 — Elo **entity** is canonical; ELO mock is its UI surface.  
+**Evidence:** I_INITIAL_STRUCTURES audit §4–5; `DECISIONS/ENTITY_ADR.md`
+
+## ADR-013: Entity Model — Elo & iAM
+**Decision:** Elo entity = ELO mock (same product). Elo and iAM are **separate** entities.  
+**Status:** Owner confirmed 2026-05-25.  
+**Evidence:** `DECISIONS/ENTITY_ADR.md`
+
+## ADR-014: Investor Demo & Product IA
+**Decision:** Canonical pitch = `app/` linear Loop 1. Product IA = 4-tab Feed/Earn/Wallet/Profile. MOD-01 deferred.  
+**Status:** Accepted 2026-05-25.  
+**Evidence:** `DECISIONS/DEMO_IA_ADR.md`
+
+## ADR-001: Currency Naming (see full doc)
+**Decision:** MVP Tier 1 a/i/v/e/o; 26+ω deferred. Owner confirmed build-as-is 2026-05-25.  
 **Status:** Accepted.  
-**Evidence:** I_INITIAL_STRUCTURES audit §4–5
+**Evidence:** `DECISIONS/CURRENCY_NAMING_ADR.md`

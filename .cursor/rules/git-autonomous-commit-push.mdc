@@ -1,0 +1,45 @@
+---
+description: Agent may commit and push without asking when work is complete
+alwaysApply: true
+---
+
+# Git — autonomous commit & push
+
+The owner delegated commit/push decisions to the agent for this repo.
+
+## When to commit and push
+
+Do both **without asking** when:
+
+- A bounded task is complete (feature, docs, audit slice, fix verified)
+- User says **go**, **yes**, **ship it**, **commit**, or equivalent
+- Build/typecheck passes for code changes (or failure is documented in commit if intentional WIP branch)
+
+## Safety (non-negotiable)
+
+- **Never** commit `.env`, credentials, Firebase keys, API secrets, or `*adminsdk*.json`
+- **Never** `git push --force` to main/master; warn on any force push
+- **Never** amend unless HEAD was created this session and not pushed
+- **Never** skip hooks unless user explicitly requests
+- **Never** update git config
+
+## Commit message
+
+- 1–2 sentences, focus on **why**
+- Use HEREDOC for formatting
+
+## Push
+
+- Push current branch after successful commit
+- Use `-u origin HEAD` if branch has no upstream
+- Report commit hash + branch + remote URL when done
+
+## When to still ask
+
+- Destructive git operations (hard reset, force push, mass delete)
+- Ambiguous scope with large unrelated dirty files
+- Commit would include suspected secrets
+
+## Canonical repo
+
+`~/Desktop/IVAULT/i-project-rescue/i_project_migration_archive`

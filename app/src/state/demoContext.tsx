@@ -4,10 +4,46 @@ import {
   initialTransactions,
   WALLET_INITIAL,
 } from '../data/demoData'
-import type { DemoContextValue, DemoScreenId, DemoState, Offer, Transaction } from './types'
+import {
+  canIssueAttentionReward,
+  canValidateSession,
+  createAttentionSession,
+} from './attentionSession'
+import type {
+  DemoContextValue,
+  DemoScreenId,
+  DemoState,
+  Offer,
+  ProductTabId,
+  Transaction,
+} from './types'
+
+const TAB_SCREENS: Record<ProductTabId, DemoScreenId> = {
+  feed: 'feed',
+  earn: 'earn',
+  wallet: 'wallet',
+  profile: 'profile',
+}
+
+function tabForScreen(screen: DemoScreenId): ProductTabId | null {
+  if (screen === 'feed' || screen === 'earn' || screen === 'wallet' || screen === 'profile') {
+    return screen
+  }
+  if (screen === 'convert' || screen === 'withdraw-preview' || screen === 'creator-economics') {
+    return 'wallet'
+  }
+  if (screen === 'proof-layer' || screen === 'roadmap') {
+    return 'profile'
+  }
+  return null
+}
 
 function withScreen(prev: DemoState, screen: DemoScreenId): DemoState {
   const next: DemoState = { ...prev, currentScreen: screen }
+  const tab = tabForScreen(screen)
+  if (tab) {
+    next.activeTab = tab
+  }
   if (screen === 'watch-verify' && prev.verificationStatus !== 'verifying') {
     next.verificationStatus = 'watching'
   }
@@ -16,13 +52,17 @@ function withScreen(prev: DemoState, screen: DemoScreenId): DemoState {
 
 const defaultState = (): DemoState => ({
   currentScreen: 'splash',
+  appMode: 'product',
+  activeTab: 'feed',
   walletBalance: WALLET_INITIAL.walletBalanceUsd,
   pendingBalance: WALLET_INITIAL.pendingBalance,
   aCoins: WALLET_INITIAL.aCoins,
   iCoins: WALLET_INITIAL.iCoins,
+  iCoinsPending: WALLET_INITIAL.iCoinsPending,
   transactions: initialTransactions(),
   selectedOffer: null,
   verificationStatus: 'idle',
+  attentionSession: null,
 })
 
 export const DemoContext = createContext<DemoContextValue | null>(null)
@@ -34,6 +74,42 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     setState((prev) => withScreen(prev, screen))
   }, [])
 
+  const setActiveTab = useCallback((tab: ProductTabId) => {
+    setState((prev) => ({
+      ...prev,
+      appMode: 'product',
+      activeTab: tab,
+      currentScreen: TAB_SCREENS[tab],
+    }))
+  }, [])
+
+  const startPresenterTour = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      appMode: 'presenter',
+      currentScreen: 'splash',
+      activeTab: 'feed',
+    }))
+  }, [])
+
+  const exitPresenter = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      appMode: 'product',
+      activeTab: 'feed',
+      currentScreen: 'feed',
+    }))
+  }, [])
+
+  const enterProduct = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      appMode: 'product',
+      activeTab: 'feed',
+      currentScreen: 'feed',
+    }))
+  }, [])
+
   const resetDemo = useCallback(() => {
     setState(defaultState())
   }, [])
@@ -43,6 +119,9 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       ...prev,
       selectedOffer: offer,
       currentScreen: 'offer-detail',
+      activeTab: 'earn',
+      attentionSession: null,
+      verificationStatus: 'idle',
     }))
   }, [])
 
@@ -50,70 +129,161 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     navigateTo('consent-camera-gate')
   }, [navigateTo])
 
+  const acceptConsentAndBeginSession = useCallback(() => {
+    setState((prev) => {
+      const offerId = prev.selectedOffer?.id ?? DEFAULT_SPONSORED_OFFER.id
+      return {
+        ...prev,
+        attentionSession: createAttentionSession(offerId),
+        verificationStatus: 'watching',
+        currentScreen: 'watch-verify',
+        activeTab: 'earn',
+      }
+    })
+  }, [])
+
   const completeVerification = useCallback(() => {
-    setState((prev) => ({
-      ...prev,
-      verificationStatus: 'verifying',
-      currentScreen: 'verification-result',
-    }))
+    setState((prev) => {
+      if (!canValidateSession(prev.attentionSession)) {
+        return prev
+      }
+      if (prev.verificationStatus !== 'watching') {
+        return {
+          ...prev,
+          attentionSession: { ...prev.attentionSession, status: 'failed' },
+        }
+      }
+      return {
+        ...prev,
+        verificationStatus: 'verifying',
+        currentScreen: 'verification-result',
+        activeTab: 'earn',
+        attentionSession: {
+          ...prev.attentionSession,
+          status: 'validated',
+          validatedAt: Date.now(),
+          acsScore: 80,
+        },
+      }
+    })
   }, [])
 
   const claimReward = useCallback(() => {
-    setState((prev) => ({
-      ...prev,
-      currentScreen: 'reward-reveal',
-    }))
+    setState((prev) => {
+      if (!canIssueAttentionReward(prev.attentionSession)) {
+        return prev
+      }
+      return {
+        ...prev,
+        currentScreen: 'reward-reveal',
+        activeTab: 'earn',
+      }
+    })
   }, [])
 
   const finishRewardToWallet = useCallback(() => {
     setState((prev) => {
+      if (!canIssueAttentionReward(prev.attentionSession)) {
+        return prev
+      }
+
       const add =
         prev.selectedOffer?.rewardICoins ?? DEFAULT_SPONSORED_OFFER.rewardICoins
-      const nextICoins = prev.iCoins + add
-      const nextPending = Math.max(0, prev.pendingBalance - Math.min(prev.pendingBalance, 12))
-      const nextUsd = prev.walletBalance + add * 0.11
       const brand = prev.selectedOffer?.brand ?? 'Campaign'
       const tx: Transaction = {
         id: `tx-${Date.now()}`,
         source: brand === 'Nike Running' ? 'Nike campaign' : `${brand}`,
-        timeLabel: 'Just now',
-        amountDisplay: `+${add.toFixed(2)} i · just now`,
-        kind: 'positive',
+        timeLabel: 'Settling…',
+        amountDisplay: `+${add.toFixed(2)} i pending`,
+        kind: 'pending',
       }
       return {
         ...prev,
-        iCoins: nextICoins,
-        pendingBalance: nextPending,
-        walletBalance: nextUsd,
+        iCoinsPending: prev.iCoinsPending + add,
         transactions: [tx, ...prev.transactions],
         verificationStatus: 'idle',
         currentScreen: 'wallet',
+        activeTab: 'wallet',
+        attentionSession: {
+          ...prev.attentionSession,
+          status: 'redeemed',
+          redeemedAt: Date.now(),
+        },
       }
     })
+
+    window.setTimeout(() => {
+      setState((prev) => {
+        if (prev.attentionSession?.status !== 'redeemed') return prev
+        const pendingTx = prev.transactions.find(
+          (t) => t.kind === 'pending' && t.timeLabel === 'Settling…',
+        )
+        if (!pendingTx) return prev
+        const match = pendingTx.amountDisplay.match(/\+([\d.]+)/)
+        const add = match ? parseFloat(match[1]) : 0
+        if (add <= 0) return prev
+        return {
+          ...prev,
+          iCoins: prev.iCoins + add,
+          iCoinsPending: Math.max(0, prev.iCoinsPending - add),
+          walletBalance: prev.walletBalance + add * 0.11,
+          attentionSession: null,
+          transactions: prev.transactions.map((t) =>
+            t.id === pendingTx.id
+              ? {
+                  ...t,
+                  timeLabel: 'Just now',
+                  amountDisplay: t.amountDisplay.replace(' pending', ''),
+                  kind: 'positive' as const,
+                }
+              : t,
+          ),
+        }
+      })
+    }, 1200)
   }, [])
+
+  const canCollectReward = canIssueAttentionReward(state.attentionSession)
+  const canRedeemReward = canIssueAttentionReward(state.attentionSession)
 
   const value = useMemo<DemoContextValue>(
     () => ({
       ...state,
       setScreen: navigateTo,
+      setActiveTab,
+      startPresenterTour,
+      exitPresenter,
+      enterProduct,
       resetDemo,
-      jumpFeed: () => navigateTo('feed'),
-      jumpWallet: () => navigateTo('wallet'),
+      jumpFeed: () => setActiveTab('feed'),
+      jumpEarn: () => setActiveTab('earn'),
+      jumpWallet: () => setActiveTab('wallet'),
+      jumpProfile: () => setActiveTab('profile'),
       selectOffer,
       startWatchFlow,
+      acceptConsentAndBeginSession,
       completeVerification,
       claimReward,
       finishRewardToWallet,
+      canCollectReward,
+      canRedeemReward,
     }),
     [
       state,
       navigateTo,
+      setActiveTab,
+      startPresenterTour,
+      exitPresenter,
+      enterProduct,
       resetDemo,
       selectOffer,
       startWatchFlow,
+      acceptConsentAndBeginSession,
       completeVerification,
       claimReward,
       finishRewardToWallet,
+      canCollectReward,
+      canRedeemReward,
     ],
   )
 

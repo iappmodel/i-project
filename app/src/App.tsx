@@ -5,7 +5,9 @@ import { useDemo } from './state/useDemo'
 import type { DemoScreenId } from './state/types'
 import { ConvertScreen } from './screens/ConvertScreen'
 import { CreatorEconomicsScreen } from './screens/CreatorEconomicsScreen'
+import { EarnScreen } from './screens/EarnScreen'
 import { FeedScreen } from './screens/FeedScreen'
+import { ProfileScreen } from './screens/ProfileScreen'
 import { ConsentCameraGateScreen } from './screens/ConsentCameraGateScreen'
 import { OfferDetailScreen } from './screens/OfferDetailScreen'
 import { ProofLayerScreen } from './screens/ProofLayerScreen'
@@ -23,6 +25,8 @@ function ScreenRouter() {
   const table: Record<DemoScreenId, ReactElement> = {
     splash: <SplashScreen />,
     feed: <FeedScreen />,
+    earn: <EarnScreen />,
+    profile: <ProfileScreen />,
     'offer-detail': <OfferDetailScreen />,
     'consent-camera-gate': <ConsentCameraGateScreen />,
     'watch-verify': <WatchVerifyScreen />,

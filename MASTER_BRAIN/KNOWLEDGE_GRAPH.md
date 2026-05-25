@@ -184,6 +184,10 @@ flowchart TD
 
 | Graph node | Detail file |
 |------------|-------------|
+| **Full organism** | **RELATIONSHIPS/UNIVERSE_MAP.md** |
+| Elo, POP, iAM | ENTITIES/ |
+| Wallet, Studio, modules | SYSTEMS/ |
+| Elo↔POP, loops, pipeline | RELATIONSHIPS/ |
 | Core Loop | CANONICAL/CORE_LOOP.md |
 | Currencies | ECONOMY/CURRENCY_ECOSYSTEM.md |
 | Wallet | ECONOMY/WALLET_SYSTEM.md |
@@ -202,7 +206,10 @@ flowchart TD
 
 - ProofPacket → POPS (wire format reconciliation incomplete)
 - SafeAction → live wallet state (not connected in i-initial-structures)
-- iVatar concept → any implementation (none found)
+- Elo vs iAM entity merge (see ENT-05)
+- iVatar concept → any implementation (none found) — see ENTITIES/iVatar.md
 - Full 35-system SoT → source doc referenced but not readable during quality review
 
 See `RESEARCH/GAPS_AND_UNKNOWNS.md`.
+
+> **2026-05-25:** For cross-platform vision clarity, prefer `RELATIONSHIPS/UNIVERSE_MAP.md` over inferring from this graph alone.

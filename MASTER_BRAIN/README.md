@@ -7,16 +7,25 @@ This directory is the classified memory of the [ i ] Attention Wallet and Media 
 ## Start Here
 
 1. **[CANONICAL/i_SOURCE_OF_TRUTH.md](CANONICAL/i_SOURCE_OF_TRUTH.md)** — Product constitution (wins all conflicts)
-2. **[MASTERBRAIN_STRUCTURE.md](MASTERBRAIN_STRUCTURE.md)** — How this corpus is organized
-3. **[REPOSITORY_MAP.md](REPOSITORY_MAP.md)** — Where evidence lives
-4. **[KNOWLEDGE_GRAPH.md](KNOWLEDGE_GRAPH.md)** — Concept map
-5. **[DUPLICATES_AND_CONFLICTS.md](DUPLICATES_AND_CONFLICTS.md)** — Competing implementations
-6. **[CANONICAL_CANDIDATES.md](CANONICAL_CANDIDATES.md)** — What should become canonical
+2. **[IVAULT_FULL_AUDIT_2026-05-25.md](IVAULT_FULL_AUDIT_2026-05-25.md)** — Full 56 GB archive audit (promote/keep/discard)
+3. **[DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md)** — Chronological work log
+4. **[PROMOTION_AND_DISCARD_QUEUE.md](PROMOTION_AND_DISCARD_QUEUE.md)** — Next actions
+5. **[RELATIONSHIPS/UNIVERSE_MAP.md](RELATIONSHIPS/UNIVERSE_MAP.md)** — **Cross-platform organism map** (entities + systems + loops)
+6. **[ENTITIES/INDEX.md](ENTITIES/INDEX.md)** — Elo, POP, iAM, iVatar
+7. **[SYSTEMS/INDEX.md](SYSTEMS/INDEX.md)** — Wallet, Eye Tracking, Studio, modules…
+8. **[MASTERBRAIN_STRUCTURE.md](MASTERBRAIN_STRUCTURE.md)** — How this corpus is organized
+9. **[REPOSITORY_MAP.md](REPOSITORY_MAP.md)** — Where evidence lives
+10. **[KNOWLEDGE_GRAPH.md](KNOWLEDGE_GRAPH.md)** — Concept map
+11. **[DUPLICATES_AND_CONFLICTS.md](DUPLICATES_AND_CONFLICTS.md)** — Competing implementations
+12. **[CANONICAL_CANDIDATES.md](CANONICAL_CANDIDATES.md)** — What should become canonical
 
 ## Domain Folders
 
 | Folder | Contents |
 |--------|----------|
+| `ENTITIES/` | Named organisms — Elo, POP, iAM, iVatar |
+| `SYSTEMS/` | Machinery — Wallet, Eye Tracking, Studio, i* modules |
+| `RELATIONSHIPS/` | How entities and systems connect |
 | `CANONICAL/` | Constitution-aligned definitions |
 | `ECONOMY/` | Currencies, wallet |
 | `TRUST_SYSTEM/` | POPS, proof, trust, governance |
@@ -71,4 +80,4 @@ Regenerate: `python3 scripts/chat_export_triage.py` (read-only on IVAULT).
 
 ## Status
 
-Migration-archive archaeology **v1.0 complete** (2026-05-21). **Full IVAULT global intake census complete.** **Chat exports triaged** (648 conversation records scored). **P0 chat extraction batches 1–4 complete** (40/104 P0 threads structured). P0 chat extraction batch 4 completed; **further P0/P1 extraction still required before final canonicalization.** Canonicalization and owner decisions remain **blocked** until remaining P0/P1 extraction, visual review, and duplicate resolution. Implementation and promotion are separate phases.
+Migration-archive archaeology **v1.0 complete** (2026-05-21). **Full IVAULT global intake census complete.** **Full audit v2** (2026-05-25): critical docs promoted (economy rules, feature bible, remote control brief, May 2026 prototypes). **Chat exports triaged** (648 conversation records scored). **P0 chat extraction: 70/104** structured in `CHAT_RECOVERY/`. **Desktop portable copy:** 189 threads at `~/Desktop/[i]_PROJECT_CHAT_EXTRACTION/` (292 attachments). **ENTITIES/SYSTEMS/RELATIONSHIPS map** (2026-05-25) — cross-platform vision index. CR-01 session bypass **resolved in demo paths**. Canonicalization **unblocked for MVP build** on currency, demo lineage, product IA, and Elo/iAM (2026-05-25 owner decisions). MOD-01 and iVatar scope remain open.

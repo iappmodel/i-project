@@ -38,11 +38,22 @@ MASTER_BRAIN claims must cite IVAULT paths until the workspace is unified.
 | Proof Packet runtime emission | **Confirmed gap** per schema doc and Dart types |
 | `demoState.ts` in migration archive tree | **Clone-only** — `github-source-repos/eye-earn-sparkle-archive/src/lib/` |
 
+## Partially Addressed (2026-05-25 ENTITIES map)
+
+| Topic | Status |
+|-------|--------|
+| Elo vs ELO mock vs LO | **Resolved** — same product (ADR-013) |
+| Elo vs iAM | **Resolved** — separate (ADR-013) |
+| Currency naming | **Resolved** — ADR-001 owner confirmed |
+| Demo lineage + 4-tab IA | **Resolved** — ADR-014 |
+| Roadmap modules (MOD-01) | **Deferred** |
+
 ## Unknown Classifications
 
 | Topic | Question |
 |-------|----------|
-| iVatar | Product concept in SoT — **zero implementation** found |
+| iVatar | Product concept in SoT — **zero implementation** — see `ENTITIES/iVatar.md` |
+| Elo vs iAM merge | Overlap on memory/identity — ENT-05 |
 | Coin naming final mapping | Vicoin/Icoin vs aCoins/iCoins — **no owner decision in repo** |
 | Fourth studio rewrite risk | Three lineages + archive AI components — merge strategy undefined |
 | `app/` vs MVP flow exact alignment | `app/` adds `consent-camera-gate` and `proof-layer`; pending-wallet timing may differ |
