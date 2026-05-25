@@ -1,9 +1,25 @@
 /** Demo identity — matches PP-000001 and flutter POP_VALIDATOR default. */
 export const DEMO_LOCAL_USER_REF = 'demo-user-001'
 
+/** Fallback demo auth user when Supabase ledger settle is enabled locally. */
+export const DEFAULT_DEMO_USER_ID = '00000000-0000-4000-8000-000000000001'
+
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
 export function getPopValidatorBaseUrl(): string | null {
   const raw = import.meta.env.VITE_POP_VALIDATOR_URL?.trim()
   return raw || null
+}
+
+export function getDemoUserId(): string | null {
+  const raw = import.meta.env.VITE_DEMO_USER_ID?.trim()
+  if (!raw) return null
+  return UUID_RE.test(raw) ? raw : null
+}
+
+export function resolveDemoUserId(): string {
+  return getDemoUserId() ?? DEFAULT_DEMO_USER_ID
 }
 
 export function isLiveWalletEnabled(): boolean {

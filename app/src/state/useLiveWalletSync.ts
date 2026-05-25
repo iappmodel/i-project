@@ -4,16 +4,19 @@ import {
   mergeHoldTransactions,
   sumPendingIcoins,
 } from '../lib/walletHoldMerge'
-import { fetchPendingHolds, type PopPendingHold } from '../lib/popValidator'
+import { fetchPendingHolds, fetchValidatorHealth, settlePendingHold, type PopPendingHold } from '../lib/popValidator'
 import { isLiveWalletEnabled } from '../lib/settlementConfig'
 import type { DemoState } from '../state/types'
 
 export interface LiveWalletSyncState {
   walletBackend: 'mock' | 'live'
+  settlementMode: 'supabase' | 'local-json' | null
   popHolds: PopPendingHold[]
   syncError: string | null
   isSyncing: boolean
+  settlingSessionId: string | null
   refreshPendingHolds: () => Promise<void>
+  settlePopHold: (sessionId: string) => Promise<void>
   applyHoldSync: (prev: DemoState, holds: PopPendingHold[]) => DemoState
   resetLiveWallet: () => void
 }
@@ -23,6 +26,8 @@ export function useLiveWalletSync(): LiveWalletSyncState {
   const [popHolds, setPopHolds] = useState<PopPendingHold[]>([])
   const [syncError, setSyncError] = useState<string | null>(null)
   const [isSyncing, setIsSyncing] = useState(false)
+  const [settlementMode, setSettlementMode] = useState<'supabase' | 'local-json' | null>(null)
+  const [settlingSessionId, setSettlingSessionId] = useState<string | null>(null)
   const creditedSessionsRef = useRef<Set<string>>(new Set())
 
   const resetLiveWallet = useCallback(() => {
@@ -74,6 +79,30 @@ export function useLiveWalletSync(): LiveWalletSyncState {
     }
   }, [live])
 
+  const settlePopHold = useCallback(
+    async (sessionId: string) => {
+      if (!live) return
+      setSettlingSessionId(sessionId)
+      try {
+        await settlePendingHold(sessionId)
+        await refreshPendingHolds()
+        setSyncError(null)
+      } catch (error) {
+        setSyncError(error instanceof Error ? error.message : 'Settle failed')
+      } finally {
+        setSettlingSessionId(null)
+      }
+    },
+    [live, refreshPendingHolds],
+  )
+
+  useEffect(() => {
+    if (!live) return
+    void fetchValidatorHealth().then((health) => {
+      setSettlementMode(health?.settlement ?? null)
+    })
+  }, [live])
+
   useEffect(() => {
     if (!live) return
     void refreshPendingHolds()
@@ -85,10 +114,13 @@ export function useLiveWalletSync(): LiveWalletSyncState {
 
   return {
     walletBackend: live ? 'live' : 'mock',
+    settlementMode,
     popHolds,
     syncError,
     isSyncing,
+    settlingSessionId,
     refreshPendingHolds,
+    settlePopHold,
     applyHoldSync,
     resetLiveWallet,
   }

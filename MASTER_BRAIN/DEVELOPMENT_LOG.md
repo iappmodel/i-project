@@ -15,8 +15,17 @@ Chronological record of archaeology, promotion, and implementation work.
 - Promotion script preserves `*pop_*.sql` migrations on re-promote
 
 ### Next
-1. Docker + `supabase start` for ledger-backed settle (production path)
-2. Auth-backed user_id on settle (replace manual curl)
+1. Docker + `supabase start` for real ledger credits
+2. Real Supabase Auth sign-in (replace demo UUID)
+
+---
+
+## 2026-05-25 — Wallet settle UX + demo auth config
+
+### Delivered
+- **`VITE_DEMO_USER_ID`** — optional UUID for Supabase ledger settle
+- **Wallet Settle button** on each pending POP hold (local-json or Supabase auto-detect via `/health`)
+- **`settlePopHold(sessionId)`** in demo context — no manual curl
 
 ---
 

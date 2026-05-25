@@ -1,4 +1,4 @@
-import { DEMO_LOCAL_USER_REF, getPopValidatorBaseUrl } from './settlementConfig'
+import { DEMO_LOCAL_USER_REF, getPopValidatorBaseUrl, resolveDemoUserId } from './settlementConfig'
 import type { ProofPacketV0Json } from './demoProofPacket'
 
 export interface PopPendingHold {
@@ -13,6 +13,18 @@ export interface PopPendingHold {
   releaseStatus: string
   createdAt: string
   settledAt: string | null
+}
+
+export interface ValidatorHealth {
+  ok: boolean
+  settlement: 'supabase' | 'local-json'
+  supabaseEnabled: boolean
+}
+
+export interface SettleHoldResponse {
+  sessionId: string
+  source: 'supabase' | 'local'
+  settlement: Record<string, unknown>
 }
 
 export interface ValidateProofResponse {
@@ -78,15 +90,60 @@ export async function fetchPendingHolds(
   return (body.holds ?? []).map(mapHold)
 }
 
-export async function checkValidatorHealth(): Promise<boolean> {
+export async function fetchValidatorHealth(): Promise<ValidatorHealth | null> {
   const url = getPopValidatorBaseUrl()
-  if (!url) return false
+  if (!url) return null
   try {
     const res = await fetch(`${url.replace(/\/$/, '')}/health`)
-    return res.ok
+    if (!res.ok) return null
+    const body = (await res.json()) as {
+      ok?: boolean
+      settlement?: string
+      supabase?: { enabled?: boolean }
+    }
+    const settlement =
+      body.settlement === 'supabase' || body.supabase?.enabled ? 'supabase' : 'local-json'
+    return {
+      ok: Boolean(body.ok),
+      settlement,
+      supabaseEnabled: Boolean(body.supabase?.enabled),
+    }
   } catch {
-    return false
+    return null
   }
+}
+
+export async function settlePendingHold(sessionId: string): Promise<SettleHoldResponse> {
+  const health = await fetchValidatorHealth()
+  const useSupabase = health?.supabaseEnabled === true
+
+  if (useSupabase) {
+    const res = await fetch(`${baseUrl()}/v1/pending-holds/${encodeURIComponent(sessionId)}/settle`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ userId: resolveDemoUserId() }),
+    })
+    const body = (await res.json()) as SettleHoldResponse & { error?: string }
+    if (!res.ok) {
+      throw new Error(body.error ?? `settle failed (${res.status})`)
+    }
+    return body
+  }
+
+  const res = await fetch(
+    `${baseUrl()}/v1/pending-holds/${encodeURIComponent(sessionId)}/settle-demo`,
+    { method: 'POST' },
+  )
+  const body = (await res.json()) as SettleHoldResponse & { error?: string }
+  if (!res.ok) {
+    throw new Error(body.error ?? `settle-demo failed (${res.status})`)
+  }
+  return body
+}
+
+export async function checkValidatorHealth(): Promise<boolean> {
+  const health = await fetchValidatorHealth()
+  return health?.ok === true
 }
 
 export function holdToTransaction(hold: PopPendingHold): {

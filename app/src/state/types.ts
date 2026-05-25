@@ -98,9 +98,11 @@ export interface DemoState {
   /** Gate for attention-backed rewards — null until consent accepted */
   attentionSession: AttentionSession | null
   walletBackend: WalletBackend
+  settlementMode: 'supabase' | 'local-json' | null
   popHolds: PopPendingHold[]
   walletSyncError: string | null
   walletSyncing: boolean
+  settlingSessionId: string | null
 }
 
 export interface DemoContextValue extends DemoState {
@@ -121,6 +123,7 @@ export interface DemoContextValue extends DemoState {
   claimReward: () => void
   finishRewardToWallet: () => void
   refreshPendingHolds: () => Promise<void>
+  settlePopHold: (sessionId: string) => Promise<void>
   canCollectReward: boolean
   canRedeemReward: boolean
 }

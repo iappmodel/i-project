@@ -18,10 +18,13 @@ export function WalletScreen() {
     iCoinsPending,
     transactions,
     walletBackend,
+    settlementMode,
     popHolds,
     walletSyncError,
     walletSyncing,
+    settlingSessionId,
     refreshPendingHolds,
+    settlePopHold,
     setScreen,
     jumpEarn,
   } = useDemo()
@@ -51,6 +54,7 @@ export function WalletScreen() {
           <span className="ps-dot" aria-hidden />
           <span className="ps-text">
             Live POP settlement
+            {settlementMode ? ` · ${settlementMode}` : ''}
             {walletSyncing ? ' · syncing…' : ''}
           </span>
           <button
@@ -125,15 +129,24 @@ export function WalletScreen() {
       {walletBackend === 'live' && pendingHolds.length > 0 ? (
         <div className="activity-stack-wu" style={{ marginBottom: 12 }}>
           {pendingHolds.slice(0, 3).map((h) => (
-            <div key={h.sessionId} className="activity-card-wu pending">
+            <div key={h.sessionId} className="activity-card-wu pending" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span className="act-dot-wu" style={{ background: 'var(--accent-amber)' }} />
-              <div className="act-body-wu">
+              <div className="act-body-wu" style={{ flex: 1 }}>
                 <p className="act-title-wu">{h.offerId.replace(/-watch$/, '')}</p>
                 <p className="act-time-wu">{h.reviewStatus} · {h.releaseStatus}</p>
               </div>
               <span className="act-amount-wu mono pending">
                 +{h.amount} {h.currency === 'vicoin' ? 'v' : 'i'}
               </span>
+              <button
+                type="button"
+                className="sec-link-wu"
+                disabled={settlingSessionId === h.sessionId}
+                onClick={() => void settlePopHold(h.sessionId)}
+                style={{ fontSize: 11, whiteSpace: 'nowrap' }}
+              >
+                {settlingSessionId === h.sessionId ? 'Settling…' : 'Settle'}
+              </button>
             </div>
           ))}
         </div>

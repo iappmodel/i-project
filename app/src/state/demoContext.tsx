@@ -67,9 +67,11 @@ const defaultState = (): DemoState => ({
   verificationStatus: 'idle',
   attentionSession: null,
   walletBackend: 'mock',
+  settlementMode: null,
   popHolds: [],
   walletSyncError: null,
   walletSyncing: false,
+  settlingSessionId: null,
 })
 
 export const DemoContext = createContext<DemoContextValue | null>(null)
@@ -313,9 +315,11 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     () => ({
       ...state,
       walletBackend: liveWallet.walletBackend,
+      settlementMode: liveWallet.settlementMode,
       popHolds: liveWallet.popHolds,
       walletSyncError: liveWallet.syncError ?? state.walletSyncError,
       walletSyncing: liveWallet.isSyncing,
+      settlingSessionId: liveWallet.settlingSessionId,
       setScreen: navigateTo,
       setActiveTab,
       startPresenterTour,
@@ -333,6 +337,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       claimReward,
       finishRewardToWallet,
       refreshPendingHolds: liveWallet.refreshPendingHolds,
+      settlePopHold: liveWallet.settlePopHold,
       canCollectReward,
       canRedeemReward,
     }),
