@@ -14,6 +14,22 @@
 ## Apply locally
 
 ```bash
+# From repo root (Docker Desktop must show "Engine running"):
+./scripts/start_local_stack.sh --reset
+```
+
+Or manually:
+
+```bash
+export PATH="/Applications/Docker.app/Contents/Resources/bin:$PATH"
+cd app/supabase
+supabase start
+supabase db reset   # migrations + seed.sql demo user
+```
+
+Demo user seeded: `00000000-0000-4000-8000-000000000001` (`demo-user-001@i.local`)
+
+```bash
 cd app/supabase
 supabase start          # requires Supabase CLI
 supabase db reset       # applies all migrations

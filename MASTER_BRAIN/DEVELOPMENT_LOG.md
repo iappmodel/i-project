@@ -15,8 +15,20 @@ Chronological record of archaeology, promotion, and implementation work.
 - Promotion script preserves `*pop_*.sql` migrations on re-promote
 
 ### Next
-1. Docker + `supabase start` for real ledger credits
+1. `./scripts/start_local_stack.sh --reset` once Docker engine is running
 2. Real Supabase Auth sign-in (replace demo UUID)
+
+---
+
+## 2026-05-25 — Docker / Supabase local stack prep
+
+### Delivered
+- **`app/supabase/seed.sql`** — demo user `00000000-0000-4000-8000-000000000001`
+- **`scripts/start_local_stack.sh`** — start Supabase + print validator/app env
+- **`scripts/smoke_pop_wallet_loop_supabase.sh`** — ledger settle smoke (needs Docker engine)
+
+### Blocker observed
+Docker Desktop UI open but CLI could not reach daemon — restart Docker Desktop until `docker info` works.
 
 ---
 
