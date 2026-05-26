@@ -14,6 +14,7 @@ integrations/pop-core/validator/data/
 
 # Node
 **/node_modules/
+integrations/pop-core/validator/node_modules/.vite/
 
 # OS
 .DS_Store
