@@ -88,7 +88,7 @@ export const VERIFICATION_GATES: VerificationGateDef[] = [
 export const CONSENT_PROOF_STATUS = {
   reactDemo: 'simulated',
   flutterRuntime: 'promoted',
-  androidSmokeTest: 'pending',
+  androidSmokeTest: 'smoke_android_env · run_android_dev_loop',
 } as const
 
 /** Proof layer — docs/technical/* + flutter-runtime promotion */

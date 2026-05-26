@@ -65,6 +65,13 @@ Demo user (seed): `00000000-0000-4000-8000-000000000001`
 
 # All unit/type tests
 ./scripts/run_all_tests.sh
+
+# Full organism spine (local-json + Supabase if Docker running)
+./scripts/smoke_organism_spine.sh
+
+# Stripe live (when keys in .env.local.stack)
+./scripts/enable_stripe_live_env.sh
+./scripts/deploy_stripe_functions_local.sh
 ```
 
 ---

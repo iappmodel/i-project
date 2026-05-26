@@ -6,6 +6,11 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 DOCKER_BIN="/Applications/Docker.app/Contents/Resources/bin"
 export PATH="$DOCKER_BIN:$PATH"
 
+if [[ -z "${STRIPE_SECRET_KEY:-}" && -f "$ROOT/.env.local.stack" ]]; then
+  # shellcheck disable=SC1090
+  source "$ROOT/.env.local.stack"
+fi
+
 if [[ -z "${STRIPE_SECRET_KEY:-}" ]]; then
   echo "SKIP: STRIPE_SECRET_KEY not set."
   echo "Promote functions: ./scripts/promote_stripe_functions.sh"

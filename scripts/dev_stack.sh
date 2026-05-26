@@ -83,6 +83,8 @@ grep -q '^VITE_SUPABASE_ANON_KEY=' "$ENV_LOCAL" 2>/dev/null || echo "VITE_SUPABA
 grep -q '^VITE_STRIPE_FUNCTIONS_READY=' "$ENV_LOCAL" 2>/dev/null || echo "VITE_STRIPE_FUNCTIONS_READY=true" >>"$ENV_LOCAL"
 grep -q '^VITE_APP_BASE_URL=' "$ENV_LOCAL" 2>/dev/null || echo "VITE_APP_BASE_URL=http://localhost:5173" >>"$ENV_LOCAL"
 
+"$ROOT/scripts/enable_stripe_live_env.sh" 2>/dev/null || true
+
 cd "$ROOT/app"
 npm run dev >"$PID_DIR/app.log" 2>&1 &
 echo $! >"$APP_PID"
@@ -105,8 +107,8 @@ cat <<EOF
     $PID_DIR/app.log
 
   Smoke:
-    ./scripts/smoke_pop_wallet_loop_supabase.sh
-    ./scripts/smoke_proof_events.sh
+    ./scripts/smoke_organism_spine.sh
+    ./scripts/run_android_dev_loop.sh
 
   Stop:
     kill \$(cat $VALIDATOR_PID) \$(cat $APP_PID) 2>/dev/null; rm -f $VALIDATOR_PID $APP_PID

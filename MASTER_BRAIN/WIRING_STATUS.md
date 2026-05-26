@@ -47,7 +47,8 @@ flowchart LR
 | `./scripts/smoke_capacitor_prep.sh` | Capacitor deps + web build |
 | `./scripts/setup_capacitor_shell.sh` | Cap sync / `--add` native |
 | `./scripts/smoke_android_env.sh` | Flutter + adb toolchain check |
-| `./scripts/run_android_dev_loop.sh` | Device loop command sheet |
+| `./scripts/smoke_organism_spine.sh` | Full spine (local + optional Supabase) |
+| `./scripts/enable_stripe_live_env.sh` | Stripe checkout env when keys in stack |
 
 ---
 
@@ -147,10 +148,23 @@ flowchart LR
 
 ---
 
+## Phase 8 (2026-05-26)
+
+| Item | Status |
+|------|--------|
+| `ORGANISM_STATUS.md` | ✅ One-page synthesis |
+| `smoke_organism_spine.sh` | ✅ Local + optional Supabase |
+| Stripe live env | ✅ `enable_stripe_live_env.sh` |
+| Wallet Elo card | ✅ Live wallet tab |
+| Device Seal Proof tap | Manual |
+
+---
+
 ## Knowledge map
 
 | Question | Read |
 |----------|------|
+| Organism overview | `ORGANISM_STATUS.md` |
 | What is Seal Proof? | `TRUST_SYSTEM/SEAL_PROOF.md` |
 | Elo vs POP | `ENTITIES/ELO.md`, `RELATIONSHIPS/Elo_POP.md` |
 | Full organism | `RELATIONSHIPS/UNIVERSE_MAP.md` |

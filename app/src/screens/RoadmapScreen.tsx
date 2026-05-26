@@ -45,6 +45,12 @@ const phases = [
     id: 'p7',
     title: 'Phase 7 · Organism hardening',
     body: 'Elo companion card, Android env smokes, phase index, Stripe checkout when keys live.',
+    status: 'done',
+  },
+  {
+    id: 'p8',
+    title: 'Phase 8 · Spine consolidation',
+    body: 'ORGANISM_STATUS, unified spine smoke, Stripe live env wiring, wallet Elo.',
     status: 'active',
   },
 ] as const

@@ -20,7 +20,7 @@ const PERMISSIONS = [
 ] as const
 
 export function ConsentCameraGateScreen() {
-  const { acceptConsentAndBeginSession, setScreen } = useDemo()
+  const { acceptConsentAndBeginSession, setScreen, walletBackend, proofEventsConnected } = useDemo()
 
   return (
     <PhoneFrame scroll>
@@ -28,6 +28,11 @@ export function ConsentCameraGateScreen() {
       <p className="screen-sub">
         Production uses camera-based attention proof before payout. This React investor demo simulates the gaze
         signal — no camera stream is opened in the browser.
+        {walletBackend === 'live'
+          ? proofEventsConnected
+            ? ' Flutter Seal Proof can post real packets in parallel (SSE bridge live).'
+            : ' Set ./scripts/dev_stack.sh for live POP bridge.'
+          : ''}
       </p>
 
       <div className="req-list-loop consent-permissions">

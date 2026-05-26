@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Button } from '../components/Button'
+import { EloCompanionCard } from '../components/EloCompanionCard'
 import { TabScreenLayout } from '../components/TabScreenLayout'
 import { useDemo } from '../state/useDemo'
 
@@ -30,6 +31,7 @@ export function WalletScreen() {
     proofFlash,
     eloStatusLine,
     proofEventsConnected,
+    lastProofEvent,
   } = useDemo()
   const [showAll, setShowAll] = useState(false)
 
@@ -197,6 +199,16 @@ export function WalletScreen() {
       <Button variant="ghost" style={{ marginTop: 8 }} onClick={() => jumpEarn()}>
         Earn more
       </Button>
+
+      {walletBackend === 'live' ? (
+        <div style={{ marginTop: 16 }}>
+          <EloCompanionCard
+            proofEventsConnected={proofEventsConnected}
+            eloStatusLine={eloStatusLine}
+            lastProofEvent={lastProofEvent}
+          />
+        </div>
+      ) : null}
     </TabScreenLayout>
   )
 }

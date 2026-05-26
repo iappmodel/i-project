@@ -11,9 +11,11 @@
 | 4 | [AUTONOMOUS_QUEUE_PHASE4.md](AUTONOMOUS_QUEUE_PHASE4.md) | Deep links, wallet flash, Stripe UX |
 | 5 | [AUTONOMOUS_QUEUE_PHASE5.md](AUTONOMOUS_QUEUE_PHASE5.md) | Flutter WALLET_APP_URL return path |
 | 6 | [AUTONOMOUS_QUEUE_PHASE6.md](AUTONOMOUS_QUEUE_PHASE6.md) | Capacitor packages + setup |
-| 7 | [AUTONOMOUS_QUEUE_PHASE7.md](AUTONOMOUS_QUEUE_PHASE7.md) | Android env, Elo card, organism index |
+| 7 | [AUTONOMOUS_QUEUE_PHASE7.md](AUTONOMOUS_QUEUE_PHASE7.md) | Android env, Elo card, phase index |
+| 8 | [AUTONOMOUS_QUEUE_PHASE8.md](AUTONOMOUS_QUEUE_PHASE8.md) | Organism status, spine smoke, Stripe env |
 
+**One-page status:** [ORGANISM_STATUS.md](ORGANISM_STATUS.md)  
 **Truth page:** [WIRING_STATUS.md](WIRING_STATUS.md)  
 **Local dev:** [../docs/RUNBOOK_LOCAL.md](../docs/RUNBOOK_LOCAL.md)
 
-**Still owner/device deferred:** Android Seal Proof tap on hardware, Stripe live keys.
+**Still owner/device deferred:** Android Seal Proof tap on hardware, Stripe live keys in `.env.local.stack`.

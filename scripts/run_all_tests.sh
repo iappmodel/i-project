@@ -11,16 +11,8 @@ cd "$ROOT/integrations/pop-core/validator"
 npm test
 
 echo ""
-echo "== Proof events SSE smoke =="
-"$ROOT/scripts/smoke_proof_events.sh"
-
-echo ""
-echo "== Local-json wallet smoke =="
-"$ROOT/scripts/smoke_pop_wallet_loop.sh"
-
-echo ""
-echo "== Full loop smoke =="
-"$ROOT/scripts/smoke_full_loop.sh"
+echo "== Organism spine smoke =="
+"$ROOT/scripts/smoke_organism_spine.sh"
 
 echo ""
 echo "== Capacitor prep smoke =="
@@ -43,6 +35,10 @@ if docker info >/dev/null 2>&1; then
 else
   echo "SKIP: Docker not running"
 fi
+
+echo ""
+echo "== Stripe env smoke (optional keys) =="
+"$ROOT/scripts/smoke_stripe_env.sh"
 
 echo ""
 echo "== Stripe webhook smoke (optional keys) =="

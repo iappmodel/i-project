@@ -5,6 +5,19 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-26 — Phase 8 autonomous queue complete
+
+### Delivered
+- **ORGANISM_STATUS.md** — one-page synthesis + owner gates
+- **Spine smoke** — `smoke_organism_spine.sh` (local + Supabase when Docker up)
+- **Stripe wiring** — `enable_stripe_live_env.sh`, `smoke_stripe_env.sh`, dev_stack hook
+- **UX** — Elo on Wallet, consent bridge copy
+
+### Deferred Phase 9
+- Device tap automation, production deploy
+
+---
+
 ## 2026-05-26 — Phase 7 autonomous queue complete
 
 ### Delivered
