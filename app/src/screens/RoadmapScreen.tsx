@@ -8,13 +8,13 @@ const phases = [
   {
     id: 'p1',
     title: 'Phase 1 · Presenter fidelity',
-    body: 'Canonical app workspace (`app/`) aligned to HTML comps. Mock ledger + linear demo loop.',
+    body: 'Canonical `app/` + live POP validator + Supabase ledger settle (local smoke PASS).',
     status: 'active',
   },
   {
     id: 'p2',
     title: 'Phase 2 · Native signal stack',
-    body: 'Wire flutter-runtime gaze channel into watch-verify; Android smoke test pass.',
+    body: 'Flutter Seal Proof → validator on Android device; bridge gaze into watch-verify.',
     status: 'next',
   },
   {

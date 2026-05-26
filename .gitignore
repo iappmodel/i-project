@@ -1,1 +1,19 @@
-integrations/pop-core/backend/node_modules/
+# Local stack env (generated — do not commit secrets from prod)
+.env.local.stack
+.dev-stack/
+
+# App local env
+app/.env.local
+
+# Supabase CLI temp
+app/supabase/.temp/
+app/supabase/.branches/
+
+# Validator runtime data
+integrations/pop-core/validator/data/
+
+# Node
+**/node_modules/
+
+# OS
+.DS_Store

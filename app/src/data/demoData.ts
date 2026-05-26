@@ -93,14 +93,15 @@ export const CONSENT_PROOF_STATUS = {
 
 /** Proof layer — docs/technical/* + flutter-runtime promotion */
 export const PROOF_LAYER_STATUS: ProofLayerStatus = {
-  demoMode: 'mocked-gaze',
-  flutterRuntime: 'promoted-not-wired',
-  androidSmokeTest: 'planned',
+  demoMode: 'mocked-gaze · live wallet wired',
+  flutterRuntime: 'promoted · ProofValidatorBridge listens for Seal Proof',
+  androidSmokeTest: 'runbook ready · device tap pending',
   signalPath: [
     'Camera → MediaPipe landmarks',
     'gaze x/y + quality',
     'fixation / dwell',
-    'attention score → payout gate',
+    'Seal Proof → Proof Packet v0',
+    'POP validator → pending hold → ledger',
   ],
   governanceKernelPresent: true,
 }

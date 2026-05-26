@@ -5,7 +5,7 @@ import {
   sumPendingIcoins,
 } from '../lib/walletHoldMerge'
 import { fetchPendingHolds, fetchValidatorHealth, settlePendingHold, type PopPendingHold } from '../lib/popValidator'
-import { isLiveWalletEnabled } from '../lib/settlementConfig'
+import { getPopValidatorBaseUrl, isLiveWalletEnabled } from '../lib/settlementConfig'
 import type { DemoState } from '../state/types'
 
 export interface LiveWalletSyncState {
@@ -19,6 +19,17 @@ export interface LiveWalletSyncState {
   settlePopHold: (sessionId: string) => Promise<void>
   applyHoldSync: (prev: DemoState, holds: PopPendingHold[]) => DemoState
   resetLiveWallet: () => void
+}
+
+function formatSyncError(error: unknown): string {
+  const base = getPopValidatorBaseUrl() ?? 'validator'
+  if (error instanceof TypeError && /fetch/i.test(error.message)) {
+    return `Validator unreachable at ${base} — run ./scripts/dev_stack.sh`
+  }
+  if (error instanceof Error) {
+    return error.message
+  }
+  return 'Sync failed'
 }
 
 export function useLiveWalletSync(): LiveWalletSyncState {
@@ -73,7 +84,7 @@ export function useLiveWalletSync(): LiveWalletSyncState {
       setPopHolds(holds)
       setSyncError(null)
     } catch (error) {
-      setSyncError(error instanceof Error ? error.message : 'Sync failed')
+      setSyncError(formatSyncError(error))
     } finally {
       setIsSyncing(false)
     }
@@ -88,7 +99,7 @@ export function useLiveWalletSync(): LiveWalletSyncState {
         await refreshPendingHolds()
         setSyncError(null)
       } catch (error) {
-        setSyncError(error instanceof Error ? error.message : 'Settle failed')
+        setSyncError(formatSyncError(error))
       } finally {
         setSettlingSessionId(null)
       }

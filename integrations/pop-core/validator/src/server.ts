@@ -15,6 +15,7 @@ import {
 } from "./hold-query.js";
 import type { SettleHoldRequestBody } from "./settle-handler.js";
 import { readSupabaseSettlementConfig } from "./supabase-settlement.js";
+import { applyCors } from "./cors.js";
 
 const PORT = Number(process.env.POP_VALIDATOR_PORT ?? "8787");
 const DATA_DIR = process.env.POP_VALIDATOR_DATA_DIR ?? "./data/validator";
@@ -50,6 +51,10 @@ const UUID_RE =
 
 const server = createServer(async (req, res) => {
   try {
+    if (applyCors(req, res)) {
+      return;
+    }
+
     const url = new URL(req.url ?? "/", `http://${req.headers.host ?? "localhost"}`);
 
     if (req.method === "GET" && url.pathname === "/health") {

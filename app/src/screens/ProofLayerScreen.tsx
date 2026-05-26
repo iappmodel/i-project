@@ -31,8 +31,16 @@ export function ProofLayerScreen() {
       <div className="proof-layer-card">
         <p className="proof-layer-card__title">Flutter runtime</p>
         <p className="proof-layer-card__body">
-          Status: {status.flutterRuntime}. Promoted under `integrations/eye-tracking/flutter-runtime/` — not wired to
-          this React shell yet.
+          Status: {status.flutterRuntime}. Seal Proof builds Proof Packet v0 and POSTs to the POP
+          validator when `POP_VALIDATOR_URL` is set. This React shell uses a mock packet on Loop 1.
+        </p>
+      </div>
+
+      <div className="proof-layer-card">
+        <p className="proof-layer-card__title">POP settlement</p>
+        <p className="proof-layer-card__body">
+          Validator stub + Supabase `pop_pending_holds` → `wallet_ledger` wired locally. Run
+          `./scripts/dev_stack.sh` then Wallet → Settle (or `VITE_AUTO_SETTLE=true`).
         </p>
       </div>
 

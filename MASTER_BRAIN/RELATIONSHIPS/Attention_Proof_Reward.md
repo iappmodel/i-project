@@ -43,10 +43,10 @@ sequenceDiagram
 | Session create | attentionSession.ts | ✅ CR-01 |
 | Signal capture | POP + Eye Tracking | Partial (Flutter) |
 | Stability | VSL | ✅ v1 |
-| Seal | Proof Packet v0 | ✅ local |
-| Server validate | POPS / validate-attention | ⚠️ partial |
-| Pending credit | Supabase wallet | ⚠️ not wired to packet |
-| Claim UX | iGET (concept) / Wallet screens | Demo |
+| Seal | Proof Packet v0 | ✅ local + validator |
+| Server validate | POPS / validate-attention | ✅ validator stub |
+| Pending credit | Supabase wallet | ✅ pop_pending_holds |
+| Claim UX | iGET (concept) / Wallet screens | ✅ Settle button + live sync |
 
 ---
 

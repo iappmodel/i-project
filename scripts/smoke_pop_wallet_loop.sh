@@ -41,6 +41,12 @@ done
 health="$(curl -sf "$BASE/health")"
 echo "health: $health"
 
+cors_code="$(curl -s -o /dev/null -w '%{http_code}' -X OPTIONS "$BASE/health" \
+  -H 'Origin: http://localhost:5173' \
+  -H 'Access-Control-Request-Method: POST')"
+echo "cors-preflight: $cors_code"
+[[ "$cors_code" == "204" ]] || { echo "FAIL: CORS preflight expected 204" >&2; exit 1; }
+
 packet="$ROOT/integrations/pop-core/fixtures/PP-000001.json"
 validate_body="$(node -e "
 const fs = require('fs');

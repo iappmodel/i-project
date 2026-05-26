@@ -5,6 +5,7 @@ import {
   WALLET_INITIAL,
 } from '../data/demoData'
 import { buildDemoProofPacket } from '../lib/demoProofPacket'
+import { isAutoSettleEnabled } from '../lib/settlementConfig'
 import { submitProofPacket } from '../lib/popValidator'
 import {
   canIssueAttentionReward,
@@ -72,6 +73,7 @@ const defaultState = (): DemoState => ({
   walletSyncError: null,
   walletSyncing: false,
   settlingSessionId: null,
+  proofSubmitting: false,
 })
 
 export const DemoContext = createContext<DemoContextValue | null>(null)
@@ -273,13 +275,19 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       const session = prev.attentionSession
 
       void (async () => {
+        setState((inner) => ({ ...inner, proofSubmitting: true }))
         try {
           const packet = buildDemoProofPacket({ session, offer })
-          await submitProofPacket(packet, `WEB-${session.id.slice(0, 8)}`)
+          const result = await submitProofPacket(packet, `WEB-${session.id.slice(0, 8)}`)
           await liveWallet.refreshPendingHolds()
+          if (isAutoSettleEnabled() && result.sessionId) {
+            await liveWallet.settlePopHold(result.sessionId)
+          }
+          setState((inner) => ({ ...inner, proofSubmitting: false, walletSyncError: null }))
         } catch (error) {
           setState((inner) => ({
             ...inner,
+            proofSubmitting: false,
             walletSyncError:
               error instanceof Error ? error.message : 'Proof submission failed',
           }))
@@ -318,8 +326,9 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       settlementMode: liveWallet.settlementMode,
       popHolds: liveWallet.popHolds,
       walletSyncError: liveWallet.syncError ?? state.walletSyncError,
-      walletSyncing: liveWallet.isSyncing,
+      walletSyncing: liveWallet.isSyncing || state.proofSubmitting,
       settlingSessionId: liveWallet.settlingSessionId,
+      proofSubmitting: state.proofSubmitting,
       setScreen: navigateTo,
       setActiveTab,
       startPresenterTour,

@@ -74,9 +74,9 @@ export interface EconomicSplit {
 }
 
 export interface ProofLayerStatus {
-  demoMode: 'mocked-gaze'
-  flutterRuntime: 'promoted-not-wired'
-  androidSmokeTest: 'planned'
+  demoMode: string
+  flutterRuntime: string
+  androidSmokeTest: string
   signalPath: string[]
   governanceKernelPresent: boolean
 }
@@ -103,6 +103,7 @@ export interface DemoState {
   walletSyncError: string | null
   walletSyncing: boolean
   settlingSessionId: string | null
+  proofSubmitting: boolean
 }
 
 export interface DemoContextValue extends DemoState {

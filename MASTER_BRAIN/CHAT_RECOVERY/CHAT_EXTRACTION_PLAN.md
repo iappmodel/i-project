@@ -21,7 +21,9 @@
 | 05 | 41–50 | Complete |
 | 06 | 51–60 | Complete |
 | 07 | 61–70 | Complete |
-| 08+ | 71–104 | **Next** |
+| 08 | 71–80 | Complete |
+| 09 | 81–90 | Complete |
+| 10+ | 91–104 | **Next** |
 
 ## Phase 1.5 — P0 synthesis (batches 01–04)
 

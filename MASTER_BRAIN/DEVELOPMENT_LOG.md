@@ -5,6 +5,26 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-26 — Autonomous queue (30 steps) complete
+
+### Delivered
+- **CORS** on POP validator — fixes browser wallet "Failed to fetch"
+- **`scripts/dev_stack.sh`** — one-command Supabase + validator + app
+- **Wallet UX** — reconnect messaging, `VITE_AUTO_SETTLE`, reward sealing spinner
+- **Docs** — `RUNBOOK_LOCAL.md`, `WIRING_STATUS.md`, `ANDROID_SEAL_PROOF_RUNBOOK.md`
+- **CI** — `.github/workflows/ci.yml` + `run_all_tests.sh` + smoke scripts
+- **Chat** — P0 batches 08–09 (90/104 extracted)
+- **MASTER_BRAIN** — post-P1 audit §14, SEAL_PROOF wire status updates
+
+### Smokes
+- `./scripts/smoke_pop_wallet_loop.sh` — PASS
+- `./scripts/smoke_pop_wallet_loop_supabase.sh` — PASS (prior session)
+
+### Next (device)
+- Flutter Seal Proof on Android per runbook
+
+---
+
 ## 2026-05-25 — P1 Supabase settlement wire
 
 ### Delivered

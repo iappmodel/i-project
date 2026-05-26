@@ -27,7 +27,7 @@ Ordered action list — not yet executed unless noted.
 | 7 | Remote control master brief | `MASTER_BRAIN/ATTENTION_SYSTEM/` | ✅ Done 2026-05-25 |
 | 8 | Feature bible, demo spec | `MASTER_BRAIN/CANONICAL/`, `INVESTOR_DEMO/` | ✅ Done 2026-05-25 |
 | 9 | Recent HTML prototypes (May 2026) | `02_clickable_prototypes/recent_may2026/` | ✅ Done 2026-05-25 |
-| 10 | Chat extraction ranks 41–104 | `CHAT_RECOVERY/EXTRACTED/` | ⬜ In progress (70/104 done) |
+| 10 | Chat extraction ranks 41–104 | `CHAT_RECOVERY/EXTRACTED/` | 🔄 **90/104** (2026-05-26) |
 | 11 | `i_app_notion_md_package/` (15 module MDs) | `MASTER_BRAIN/` domain folders | ⬜ Pending |
 | 12 | MVP HTML v11 wallet hardened | `04_wallet_payments/` or PROTOTYPES | ⬜ Pending |
 

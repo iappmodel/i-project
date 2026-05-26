@@ -270,3 +270,22 @@ flowchart LR
 ---
 
 *Phase 2 complete. Next engineering milestone: **merge proof-collector branch + promote Supabase financial core**.*
+
+---
+
+## 14. Post-P1 update (2026-05-26)
+
+**Verdict revision:** Proof → wallet loop is **wired locally** (not production-deployed).
+
+| Item | Status |
+|------|--------|
+| PR #1 merged to `main` | ✅ |
+| POP validator + CORS | ✅ |
+| Supabase `pop_pending_holds` + settle RPC | ✅ smoke PASS |
+| App live wallet + Settle + auto-settle option | ✅ |
+| `./scripts/dev_stack.sh` one-command local stack | ✅ |
+| CI workflow (validator + app + smoke) | ✅ |
+| Chat P0 extraction | **90/104** (batches 08–09) |
+| Flutter device Seal Proof E2E | Runbook ready — **device tap pending** |
+
+See [`WIRING_STATUS.md`](WIRING_STATUS.md) for current spine map.

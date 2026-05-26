@@ -73,8 +73,9 @@ sequenceDiagram
 |------|--------|
 | Packet schema v0 | Canonical |
 | Local seal + bus event | Implemented (flutter-runtime) |
-| Wallet settlement on seal | **Not wired** (pop-core PR sequence) |
-| Web/React demo seal | **Not implemented** — mocked in `app/` |
+| Validator HTTP + pending holds | ✅ Wired (2026-05-25) |
+| Supabase ledger settle | ✅ Wired (2026-05-26 smoke PASS) |
+| Web/React demo seal | **Mock packet** — `buildDemoProofPacket()` |
 
 ---
 

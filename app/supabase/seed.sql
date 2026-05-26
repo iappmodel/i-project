@@ -45,3 +45,10 @@ ON CONFLICT (user_id) DO NOTHING;
 INSERT INTO public.user_roles (user_id, role)
 VALUES ('00000000-0000-4000-8000-000000000001', 'user')
 ON CONFLICT (user_id, role) DO NOTHING;
+
+-- Baseline wallet balances for repeatable demos (matches app WALLET_INITIAL mock when live sync off)
+UPDATE public.profiles
+SET
+  icoin_balance = 847,
+  vicoin_balance = 0
+WHERE user_id = '00000000-0000-4000-8000-000000000001';

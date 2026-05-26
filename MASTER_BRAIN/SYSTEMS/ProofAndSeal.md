@@ -31,7 +31,8 @@ Active attention session
 | **What** | Verb — finalize Proof Packet v0 at session end |
 | **Where** | Flutter debug UI + `proof_packet_emitter.dart` |
 | **Invariant** | Throws without active session |
-| **PR1 scope** | Local event only — wallet not wired |
+| **PR1 scope** | Local event + validator POST when configured |
+| **Production** | POPS validate → pending hold → ledger settle ✅ (local) |
 
 ---
 

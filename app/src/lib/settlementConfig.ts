@@ -32,3 +32,8 @@ export function resolveValidatorOfferId(offerId: string): string {
   if (offerId.endsWith('-watch')) return offerId
   return `${offerId}-watch`
 }
+
+export function isAutoSettleEnabled(): boolean {
+  const raw = import.meta.env.VITE_AUTO_SETTLE?.trim().toLowerCase()
+  return raw === '1' || raw === 'true' || raw === 'yes'
+}

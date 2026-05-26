@@ -7,7 +7,7 @@ import { formatIcoinsAmount } from '../lib/format'
 import { useDemo } from '../state/useDemo'
 
 export function RewardRevealScreen() {
-  const { selectedOffer, finishRewardToWallet, canRedeemReward, attentionSession } = useDemo()
+  const { selectedOffer, finishRewardToWallet, canRedeemReward, attentionSession, proofSubmitting, walletSyncing } = useDemo()
   const offer = selectedOffer ?? DEFAULT_SPONSORED_OFFER
   const refLine = useMemo(() => 'i·2f9b·7m4k', [])
   const dwell = offer.watchDuration ?? '4:30'
@@ -51,10 +51,14 @@ export function RewardRevealScreen() {
             </Button>
             <Button
               className="cta-btn-unlock primary"
-              disabled={!canRedeemReward}
+              disabled={!canRedeemReward || proofSubmitting || walletSyncing}
               onClick={() => finishRewardToWallet()}
             >
-              {canRedeemReward ? 'See wallet update' : 'Session invalid'}
+              {proofSubmitting || walletSyncing
+                ? 'Sealing proof…'
+                : canRedeemReward
+                  ? 'See wallet update'
+                  : 'Session invalid'}
             </Button>
           </div>
           {!canRedeemReward && attentionSession?.status === 'redeemed' ? (
