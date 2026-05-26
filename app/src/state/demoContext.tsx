@@ -13,6 +13,7 @@ import {
   createAttentionSession,
 } from './attentionSession'
 import { useLiveWalletSync } from './useLiveWalletSync'
+import { useSupabaseAuth } from './useSupabaseAuth'
 import type {
   DemoContextValue,
   DemoScreenId,
@@ -81,6 +82,8 @@ export const DemoContext = createContext<DemoContextValue | null>(null)
 export function DemoProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<DemoState>(defaultState)
   const liveWallet = useLiveWalletSync()
+  const supabaseAuth = useSupabaseAuth()
+  const authUserId = supabaseAuth.user?.id ?? null
 
   useEffect(() => {
     if (liveWallet.walletBackend !== 'live' || liveWallet.popHolds.length === 0) return
@@ -281,7 +284,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
           const result = await submitProofPacket(packet, `WEB-${session.id.slice(0, 8)}`)
           await liveWallet.refreshPendingHolds()
           if (isAutoSettleEnabled() && result.sessionId) {
-            await liveWallet.settlePopHold(result.sessionId)
+            await liveWallet.settlePopHold(result.sessionId, authUserId)
           }
           setState((inner) => ({ ...inner, proofSubmitting: false, walletSyncError: null }))
         } catch (error) {
@@ -314,7 +317,12 @@ export function DemoProvider({ children }: { children: ReactNode }) {
           : prev,
       )
     }, 500)
-  }, [finishRewardMock, liveWallet])
+  }, [finishRewardMock, liveWallet, authUserId])
+
+  const settlePopHoldWithAuth = useCallback(
+    (sessionId: string) => liveWallet.settlePopHold(sessionId, authUserId),
+    [liveWallet, authUserId],
+  )
 
   const canCollectReward = canIssueAttentionReward(state.attentionSession)
   const canRedeemReward = canIssueAttentionReward(state.attentionSession)
@@ -346,13 +354,23 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       claimReward,
       finishRewardToWallet,
       refreshPendingHolds: liveWallet.refreshPendingHolds,
-      settlePopHold: liveWallet.settlePopHold,
+      settlePopHold: settlePopHoldWithAuth,
       canCollectReward,
       canRedeemReward,
+      supabaseAuthEnabled: supabaseAuth.enabled,
+      authUserEmail: supabaseAuth.user?.email ?? null,
+      authUserId: authUserId,
+      authLoading: supabaseAuth.loading,
+      authError: supabaseAuth.authError,
+      signInDemo: supabaseAuth.signInDemo,
+      signOutDemo: supabaseAuth.signOut,
     }),
     [
       state,
       liveWallet,
+      supabaseAuth,
+      authUserId,
+      settlePopHoldWithAuth,
       navigateTo,
       setActiveTab,
       startPresenterTour,

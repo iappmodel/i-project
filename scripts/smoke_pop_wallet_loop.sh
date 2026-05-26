@@ -28,6 +28,7 @@ npm test --silent
 
 export POP_VALIDATOR_PORT="$PORT"
 export POP_VALIDATOR_DATA_DIR="$SMOKE_DIR/data"
+unset SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY
 node --import tsx src/server.ts &
 SERVER_PID=$!
 

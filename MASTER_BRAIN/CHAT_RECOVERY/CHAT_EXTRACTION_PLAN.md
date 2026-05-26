@@ -23,7 +23,7 @@
 | 07 | 61–70 | Complete |
 | 08 | 71–80 | Complete |
 | 09 | 81–90 | Complete |
-| 10+ | 91–104 | **Next** |
+| 10+ | 91–104 | **Complete** (2026-05-26) |
 
 ## Phase 1.5 — P0 synthesis (batches 01–04)
 

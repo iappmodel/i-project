@@ -127,4 +127,11 @@ export interface DemoContextValue extends DemoState {
   settlePopHold: (sessionId: string) => Promise<void>
   canCollectReward: boolean
   canRedeemReward: boolean
+  supabaseAuthEnabled: boolean
+  authUserEmail: string | null
+  authUserId: string | null
+  authLoading: boolean
+  authError: string | null
+  signInDemo: () => Promise<void>
+  signOutDemo: () => Promise<void>
 }

@@ -113,7 +113,10 @@ export async function fetchValidatorHealth(): Promise<ValidatorHealth | null> {
   }
 }
 
-export async function settlePendingHold(sessionId: string): Promise<SettleHoldResponse> {
+export async function settlePendingHold(
+  sessionId: string,
+  authUserId?: string | null,
+): Promise<SettleHoldResponse> {
   const health = await fetchValidatorHealth()
   const useSupabase = health?.supabaseEnabled === true
 
@@ -121,7 +124,7 @@ export async function settlePendingHold(sessionId: string): Promise<SettleHoldRe
     const res = await fetch(`${baseUrl()}/v1/pending-holds/${encodeURIComponent(sessionId)}/settle`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ userId: resolveDemoUserId() }),
+      body: JSON.stringify({ userId: resolveDemoUserId(authUserId) }),
     })
     const body = (await res.json()) as SettleHoldResponse & { error?: string }
     if (!res.ok) {

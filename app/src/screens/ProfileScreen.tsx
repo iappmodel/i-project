@@ -28,7 +28,17 @@ const visionCategories = [
 ] as const
 
 export function ProfileScreen() {
-  const { setScreen, startPresenterTour, appMode, exitPresenter } = useDemo()
+  const {
+    setScreen,
+    startPresenterTour,
+    appMode,
+    exitPresenter,
+    supabaseAuthEnabled,
+    authUserEmail,
+    authLoading,
+    authError,
+    signInDemo,
+  } = useDemo()
 
   return (
     <TabScreenLayout
@@ -42,6 +52,23 @@ export function ProfileScreen() {
       <h1 className="screen-title">Profile</h1>
       <p className="screen-sub">Trust · account · vision</p>
 
+      {supabaseAuthEnabled ? (
+        <p className="profile-trust-card__hint" style={{ marginBottom: 12 }}>
+          {authLoading
+            ? 'Signing in demo user…'
+            : authUserEmail
+              ? `Signed in · ${authUserEmail}`
+              : authError
+                ? `Auth: ${authError}`
+                : 'Demo auth — tap to sign in'}
+          {!authLoading && !authUserEmail ? (
+            <button type="button" className="sec-link-wu" onClick={() => void signInDemo()} style={{ marginLeft: 8 }}>
+              Sign in
+            </button>
+          ) : null}
+        </p>
+      ) : null}
+
       <section className="profile-trust-card">
         <div className="profile-trust-card__row">
           <span className="profile-trust-card__label">Trust score</span>
@@ -49,6 +76,17 @@ export function ProfileScreen() {
         </div>
         <ProgressBar percent={72} />
         <p className="profile-trust-card__hint">Simulated · affects payout speed in production</p>
+      </section>
+
+      <section className="profile-section elo-companion-card">
+        <h2 className="profile-section__title">Elo · companion</h2>
+        <p className="profile-vision-card__body">
+          POP is the senses of Elo — perception feeds continuity, memory, and guidance across loops.
+          Full companion UI ships post Loop 1 spine (ADR-013).
+        </p>
+        <p className="profile-trust-card__hint mono" style={{ marginTop: 8 }}>
+          POP senses → Proof → Wallet
+        </p>
       </section>
 
       <section className="profile-section">

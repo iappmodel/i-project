@@ -14,7 +14,9 @@ INSERT INTO auth.users (
   created_at,
   updated_at,
   confirmation_token,
-  recovery_token
+  recovery_token,
+  email_change,
+  email_change_token_new
 )
 VALUES (
   '00000000-0000-4000-8000-000000000001',
@@ -28,6 +30,8 @@ VALUES (
   '{"username":"demo-user-001","display_name":"Demo User"}',
   now(),
   now(),
+  '',
+  '',
   '',
   ''
 )
@@ -45,6 +49,29 @@ ON CONFLICT (user_id) DO NOTHING;
 INSERT INTO public.user_roles (user_id, role)
 VALUES ('00000000-0000-4000-8000-000000000001', 'user')
 ON CONFLICT (user_id, role) DO NOTHING;
+
+-- Required for GoTrue email/password login (without this, auth returns 500)
+INSERT INTO auth.identities (
+  id,
+  user_id,
+  identity_data,
+  provider,
+  provider_id,
+  last_sign_in_at,
+  created_at,
+  updated_at
+)
+VALUES (
+  '00000000-0000-4000-8000-000000000001',
+  '00000000-0000-4000-8000-000000000001',
+  '{"sub":"00000000-0000-4000-8000-000000000001","email":"demo-user-001@i.local"}'::jsonb,
+  'email',
+  '00000000-0000-4000-8000-000000000001',
+  now(),
+  now(),
+  now()
+)
+ON CONFLICT DO NOTHING;
 
 -- Baseline wallet balances for repeatable demos (matches app WALLET_INITIAL mock when live sync off)
 UPDATE public.profiles

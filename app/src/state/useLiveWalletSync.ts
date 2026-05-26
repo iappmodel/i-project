@@ -16,7 +16,7 @@ export interface LiveWalletSyncState {
   isSyncing: boolean
   settlingSessionId: string | null
   refreshPendingHolds: () => Promise<void>
-  settlePopHold: (sessionId: string) => Promise<void>
+  settlePopHold: (sessionId: string, authUserId?: string | null) => Promise<void>
   applyHoldSync: (prev: DemoState, holds: PopPendingHold[]) => DemoState
   resetLiveWallet: () => void
 }
@@ -91,11 +91,11 @@ export function useLiveWalletSync(): LiveWalletSyncState {
   }, [live])
 
   const settlePopHold = useCallback(
-    async (sessionId: string) => {
+    async (sessionId: string, authUserId?: string | null) => {
       if (!live) return
       setSettlingSessionId(sessionId)
       try {
-        await settlePendingHold(sessionId)
+        await settlePendingHold(sessionId, authUserId)
         await refreshPendingHolds()
         setSyncError(null)
       } catch (error) {

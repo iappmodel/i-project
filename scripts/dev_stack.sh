@@ -70,8 +70,16 @@ if [[ ! -f "$ROOT/app/.env.local" ]]; then
   cat >"$ROOT/app/.env.local" <<EOF
 VITE_POP_VALIDATOR_URL=http://127.0.0.1:8787
 VITE_DEMO_USER_ID=00000000-0000-4000-8000-000000000001
+VITE_AUTO_SETTLE=true
 EOF
 fi
+
+# Merge Supabase auth vars for app (idempotent append)
+ANON_KEY="$(grep '^ANON_KEY=' "$ROOT/.env.local.stack" | cut -d= -f2- | tr -d '"')"
+API_URL="$(grep '^API_URL=' "$ROOT/.env.local.stack" | cut -d= -f2- | tr -d '"')"
+ENV_LOCAL="$ROOT/app/.env.local"
+grep -q '^VITE_SUPABASE_URL=' "$ENV_LOCAL" 2>/dev/null || echo "VITE_SUPABASE_URL=$API_URL" >>"$ENV_LOCAL"
+grep -q '^VITE_SUPABASE_ANON_KEY=' "$ENV_LOCAL" 2>/dev/null || echo "VITE_SUPABASE_ANON_KEY=$ANON_KEY" >>"$ENV_LOCAL"
 
 cd "$ROOT/app"
 npm run dev >"$PID_DIR/app.log" 2>&1 &

@@ -5,6 +5,22 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-26 — Phase 2 autonomous queue complete
+
+### Delivered
+- **P0 chat 104/104** — batches 10–11 (ranks 91–104)
+- **Supabase Auth** — `@supabase/supabase-js`, auto demo sign-in, settle uses session user id
+- **Elo** — Profile companion card (entity teaser, ADR-013)
+- **Docs** — `REACT_FLUTTER_BRIDGE.md`, `STRIPE_PHASE2.md`, `smoke_auth_demo.sh`
+- **`dev_stack.sh`** — appends `VITE_SUPABASE_URL` + anon key to `.env.local`
+
+### Deferred Phase 3
+- Capacitor/WebSocket React↔Flutter bridge
+- Stripe edge function promotion (owner keys)
+- Android Seal Proof device tap
+
+---
+
 ## 2026-05-26 — Autonomous queue (30 steps) complete
 
 ### Delivered

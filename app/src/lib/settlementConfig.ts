@@ -18,7 +18,8 @@ export function getDemoUserId(): string | null {
   return UUID_RE.test(raw) ? raw : null
 }
 
-export function resolveDemoUserId(): string {
+export function resolveDemoUserId(authUserId?: string | null): string {
+  if (authUserId && UUID_RE.test(authUserId)) return authUserId
   return getDemoUserId() ?? DEFAULT_DEMO_USER_ID
 }
 
