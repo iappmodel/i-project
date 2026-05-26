@@ -16,7 +16,14 @@ function watchTotalTicks(duration?: string): number {
 }
 
 export function WatchVerifyScreen() {
-  const { selectedOffer, setScreen, completeVerification, verificationStatus } = useDemo()
+  const {
+    selectedOffer,
+    setScreen,
+    completeVerification,
+    verificationStatus,
+    walletBackend,
+    proofEventsConnected,
+  } = useDemo()
   const offer = selectedOffer ?? DEFAULT_SPONSORED_OFFER
 
   const totalTicks = useMemo(() => watchTotalTicks(offer.watchDuration), [offer.watchDuration])
@@ -59,7 +66,13 @@ export function WatchVerifyScreen() {
         <div className="watch-scrim-prot" aria-hidden />
         <div className="watch-hud-top-prot watch-hud-top-prot-ext">
           <div className="tracking-badge-prot tracking-badge-prot-camera">
-            <span className="tb-label-prot mono">Eye / camera · demo harness</span>
+            <span className="tb-label-prot mono">
+              {walletBackend === 'live'
+                ? proofEventsConnected
+                  ? 'Eye / camera · mock gaze · SSE bridge live'
+                  : 'Eye / camera · mock gaze · validator live'
+                : 'Eye / camera · demo harness'}
+            </span>
           </div>
           <div className="timer-badge-prot mono">{timerLabel}</div>
         </div>

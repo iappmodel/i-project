@@ -43,6 +43,8 @@ flowchart LR
 | `./scripts/run_all_tests.sh` | validator + app + flutter |
 | `./scripts/smoke_auth_demo.sh` | Supabase demo user sign-in |
 | `./scripts/smoke_proof_events.sh` | SSE proof-sealed on validate |
+| `./scripts/smoke_flutter_seal_prep.sh` | Flutter deep link + bridge tests |
+| `./scripts/open_wallet_deep_link.sh` | Manual wallet deep link open |
 
 ---
 
@@ -89,12 +91,25 @@ flowchart LR
 
 ---
 
+## Phase 5 (2026-05-26)
+
+| Item | Status |
+|------|--------|
+| Flutter `WALLET_APP_URL` deep link | ✅ Logs after validate |
+| Earn / Watch bridge UX | ✅ Live proof-events status |
+| `stripeCheckout.ts` client | ✅ Ready when `VITE_STRIPE_CHECKOUT_URL` set |
+| Capacitor shell | Prep doc only — `CAPACITOR_SHELL_PREP.md` |
+| Android device E2E | Deferred — runbook + prep smoke |
+| Stripe live deploy | Owner keys required |
+
+---
+
 ## Still mocked / open
 
 | Item | Notes |
 |------|-------|
 | React gaze signals | Mocked — Flutter has real pipeline |
-| Capacitor / in-process bridge | Phase 5 — SSE + deep links live today |
+| Capacitor install | Phase 6 — prep doc ready |
 | Android device E2E | Deferred — runbook only |
 | Production Stripe | `STRIPE_PHASE2.md` — keys deferred |
 | Full Elo companion UI | Profile teaser only (ADR-013) |

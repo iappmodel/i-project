@@ -12,6 +12,19 @@ export function getPopValidatorBaseUrl(): string | null {
   return raw || null
 }
 
+export function getAppBaseUrl(): string | null {
+  const raw = import.meta.env.VITE_APP_BASE_URL?.trim()
+  return raw || null
+}
+
+export function buildWalletDeepLink(sessionId: string): string | null {
+  const base = getAppBaseUrl() ?? (typeof window !== 'undefined' ? window.location.origin : null)
+  if (!base) return null
+  const url = new URL(base)
+  url.searchParams.set('proofSession', sessionId)
+  return url.toString()
+}
+
 export function getDemoUserId(): string | null {
   const raw = import.meta.env.VITE_DEMO_USER_ID?.trim()
   if (!raw) return null

@@ -18,7 +18,15 @@ Host `localhost:8787` is reachable from Android emulator as **`10.0.2.2:8787`**.
 
 ```bash
 cd integrations/eye-tracking/flutter-runtime
-flutter run --dart-define=POP_VALIDATOR_URL=http://10.0.2.2:8787
+flutter run \
+  --dart-define=POP_VALIDATOR_URL=http://10.0.2.2:8787 \
+  --dart-define=WALLET_APP_URL=http://10.0.2.2:5173
+```
+
+After successful validation, logcat prints `WALLET_DEEP_LINK:` — open in emulator browser or run on host:
+
+```bash
+./scripts/open_wallet_deep_link.sh SESSION_ID
 ```
 
 ---

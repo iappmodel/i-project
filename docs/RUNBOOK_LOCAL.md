@@ -31,6 +31,11 @@ Open **http://localhost:5173** → Earn → Loop 1 → Wallet → Settle.
 
 **Deep link (Flutter return path):** `http://localhost:5173/?proofSession=sess_…` opens Wallet tab.
 
+```bash
+./scripts/open_wallet_deep_link.sh sess_test123   # manual browser test
+./scripts/smoke_flutter_seal_prep.sh              # flutter tests + validator check
+```
+
 | Service | URL |
 |---------|-----|
 | App | http://localhost:5173 |

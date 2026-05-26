@@ -19,6 +19,14 @@ echo "== Local-json wallet smoke =="
 "$ROOT/scripts/smoke_pop_wallet_loop.sh"
 
 echo ""
+echo "== Full loop smoke =="
+"$ROOT/scripts/smoke_full_loop.sh"
+
+echo ""
+echo "== Flutter seal prep (optional) =="
+"$ROOT/scripts/smoke_flutter_seal_prep.sh"
+
+echo ""
 echo "== App typecheck + build =="
 cd "$ROOT/app"
 npm run typecheck

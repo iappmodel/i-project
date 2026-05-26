@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import '../core/events/proof_packet_sealed_event.dart';
 import '../core/system.dart';
 import 'proof_validator_client.dart';
+import 'wallet_deep_link.dart';
 
 /// Forwards sealed proof packets to the POP validator stub when configured.
 final class ProofValidatorBridge {
@@ -44,6 +45,15 @@ final class ProofValidatorBridge {
         'review=${result.reviewStatus} '
         'hold=${result.holdAmount ?? 0} (${result.holdOutcome})',
       );
+
+      final walletLink = WalletDeepLink.build(sessionId: result.sessionId);
+      if (walletLink != null) {
+        debugPrint('WALLET_DEEP_LINK: $walletLink');
+      } else {
+        debugPrint(
+          'WALLET_DEEP_LINK: skipped (set WALLET_APP_URL e.g. http://10.0.2.2:5173)',
+        );
+      }
     } catch (error, stack) {
       debugPrint('PROOF_VALIDATION_FAILED: $error');
       debugPrint('$stack');

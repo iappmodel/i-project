@@ -25,8 +25,14 @@ const phases = [
   },
   {
     id: 'p4',
-    title: 'Phase 4 · Rails & compliance',
-    body: 'Stripe functions promoted; deep links + wallet flash; deploy needs owner keys.',
+    title: 'Phase 4 · Rails prep',
+    body: 'Deep links, wallet flash, Stripe functions promoted, readiness UX.',
+    status: 'done',
+  },
+  {
+    id: 'p5',
+    title: 'Phase 5 · Native return path',
+    body: 'Flutter WALLET_APP_URL deep link; Earn/Watch bridge UX; Capacitor prep doc.',
     status: 'active',
   },
 ] as const

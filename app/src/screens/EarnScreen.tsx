@@ -5,7 +5,14 @@ import { formatIcoinsAmount } from '../lib/format'
 import { useDemo } from '../state/useDemo'
 
 export function EarnScreen() {
-  const { selectOffer, appMode, startPresenterTour } = useDemo()
+  const {
+    selectOffer,
+    appMode,
+    startPresenterTour,
+    walletBackend,
+    proofEventsConnected,
+    eloStatusLine,
+  } = useDemo()
 
   return (
     <TabScreenLayout
@@ -19,6 +26,11 @@ export function EarnScreen() {
       <header className="earn-tab-header">
         <h1 className="screen-title">Earn</h1>
         <p className="screen-sub">Loop 1 · Watch → Verify → Earn</p>
+        {walletBackend === 'live' ? (
+          <p className="profile-trust-card__hint mono" style={{ marginTop: 8, fontSize: 11 }}>
+            {proofEventsConnected ? '●' : '○'} proof bridge · {eloStatusLine}
+          </p>
+        ) : null}
       </header>
 
       <section className="earn-loop-card">

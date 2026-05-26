@@ -5,6 +5,20 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-26 — Phase 5 autonomous queue complete
+
+### Delivered
+- **Flutter return path** — `WalletDeepLink` + `WALLET_APP_URL` → logcat `WALLET_DEEP_LINK`
+- **Bridge UX** — Earn + WatchVerify show live proof-events status
+- **Stripe client** — `stripeCheckout.ts` for subscription checkout when keys live
+- **Smokes** — `smoke_flutter_seal_prep.sh`, `open_wallet_deep_link.sh`
+- **Capacitor** — prep doc (install deferred)
+
+### Deferred Phase 6
+- Capacitor `cap init`, Android device tap, Stripe deploy
+
+---
+
 ## 2026-05-26 — Phase 4 autonomous queue complete
 
 ### Delivered
