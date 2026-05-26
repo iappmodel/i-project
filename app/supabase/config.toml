@@ -16,104 +16,15 @@ enabled = true
 port = 54323
 api_url = "http://127.0.0.1"
 
-[functions.analyze-video]
-verify_jwt = false
-
-[functions.ai-content-analyzer]
-verify_jwt = false
-
-[functions.check-subscription]
-verify_jwt = false
-
-[functions.create-checkout]
-verify_jwt = false
-
-[functions.merchant-checkout-resolve]
-verify_jwt = false
-
-[functions.merchant-checkout-draft]
-verify_jwt = false
-
-[functions.merchant-checkout-confirm]
-verify_jwt = false
-
-[functions.merchant-checkout-tip]
-verify_jwt = false
-
-[functions.merchant-checkout-preferences]
-verify_jwt = false
-
-[functions.merchant-checkout-event]
-verify_jwt = false
-
-[functions.merchant-checkout-payment-status]
-verify_jwt = false
-
-[functions.merchant-checkout-funnel]
-verify_jwt = false
-
-[functions.customer-portal]
-verify_jwt = false
-
-[functions.export-user-data]
-verify_jwt = false
-
-[functions.generate-reply]
-verify_jwt = false
-
-[functions.generate-sfx]
-verify_jwt = false
-
-[functions.generate-music]
-verify_jwt = false
-
-[functions.generate-voiceover]
-verify_jwt = false
-
-[functions.generate-subtitles]
-verify_jwt = false
-
-[functions.get-mapbox-token]
-verify_jwt = false
-
-[functions.get-nearby-promotions]
-verify_jwt = false
-
-[functions.get-personalized-feed]
-verify_jwt = false
+# Disable analytics for local POP/wallet dev — avoids startup race on first boot.
+[analytics]
+enabled = false
 
 [functions.issue-reward]
 verify_jwt = false
 
-[functions.manage-referral]
-verify_jwt = false
-
-[functions.request-payout]
-verify_jwt = false
-
-[functions.send-notification-email]
-verify_jwt = false
-
-[functions.tip-creator]
-verify_jwt = false
-
-[functions.track-interaction]
-verify_jwt = false
-
-[functions.transfer-coins]
-verify_jwt = false
-
 [functions.validate-attention]
 verify_jwt = false
-
-[functions.verify-checkin]
-verify_jwt = false
-
-[functions.stripe-webhook]
-verify_jwt = false
-
-[functions.admin-users]
-verify_jwt = true
 
 [db.seed]
 enabled = true

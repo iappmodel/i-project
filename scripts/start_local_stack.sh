@@ -10,7 +10,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-SUPABASE_DIR="$ROOT/app/supabase"
+APP_DIR="$ROOT/app"
 DOCKER_BIN="/Applications/Docker.app/Contents/Resources/bin"
 
 export PATH="$DOCKER_BIN:$PATH"
@@ -22,7 +22,8 @@ fi
 
 if ! docker info >/dev/null 2>&1; then
   echo "Waiting for Docker daemon (open Docker Desktop → wait for 'Engine running')..."
-  for _ in $(seq 1 30); do
+  open -a Docker 2>/dev/null || true
+  for _ in $(seq 1 45); do
     sleep 2
     if docker info >/dev/null 2>&1; then
       break
@@ -31,26 +32,52 @@ if ! docker info >/dev/null 2>&1; then
 fi
 
 if ! docker info >/dev/null 2>&1; then
-  echo "Docker daemon not reachable." >&2
-  echo "Fix:" >&2
-  echo "  1. Quit and reopen Docker Desktop" >&2
-  echo "  2. Wait until bottom bar shows 'Engine running'" >&2
-  echo "  3. Delete stale exited containers if needed (e.g. busy_lederberg)" >&2
-  echo "  4. Re-run: ./scripts/start_local_stack.sh --reset" >&2
-  echo "" >&2
-  echo "Note: /usr/local/bin/docker may point to a broken symlink." >&2
-  echo "This script uses: $DOCKER_BIN/docker" >&2
+  echo "Docker daemon not reachable. Quit and reopen Docker Desktop, then retry." >&2
   exit 1
 fi
 
-cd "$SUPABASE_DIR"
+cd "$APP_DIR"
 
-echo "Starting Supabase local stack..."
-supabase start
+wait_for_supabase() {
+  for _ in $(seq 1 60); do
+    if supabase status >/dev/null 2>&1; then
+      return 0
+    fi
+    sleep 2
+  done
+  return 1
+}
+
+echo "Starting Supabase local stack (workdir: $APP_DIR)..."
+if ! supabase start; then
+  echo "First start attempt failed — retrying after stop..."
+  supabase stop --no-backup 2>/dev/null || true
+  sleep 3
+  supabase start
+fi
+
+if ! wait_for_supabase; then
+  echo "Supabase did not become healthy in time." >&2
+  supabase status || true
+  exit 1
+fi
 
 if [[ "${1:-}" == "--reset" ]]; then
   echo "Resetting database (migrations + seed)..."
-  supabase db reset
+  if ! supabase db reset; then
+    echo "Reset returned non-zero — waiting and checking health..."
+    sleep 5
+    if ! wait_for_supabase; then
+      echo "Retrying supabase start after reset..."
+      supabase start
+      wait_for_supabase
+    fi
+  fi
+fi
+
+if ! wait_for_supabase; then
+  echo "Supabase unhealthy after reset." >&2
+  exit 1
 fi
 
 echo ""

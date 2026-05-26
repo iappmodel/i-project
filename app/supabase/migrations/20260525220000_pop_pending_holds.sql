@@ -112,10 +112,11 @@ BEGIN
 
   v_ledger_result := public.ledger_append(
     p_user_id,
-    'reward',
+    'reward'::TEXT,
     v_hold.amount,
-    v_hold.currency,
-    v_ref_id
+    v_hold.currency::TEXT,
+    v_ref_id,
+    NULL::JSONB
   );
 
   v_new_balance := (v_ledger_result->>'new_balance')::INTEGER;
