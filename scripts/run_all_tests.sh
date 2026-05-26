@@ -58,4 +58,8 @@ else
 fi
 
 echo ""
+echo "== Android env smoke (optional) =="
+"$ROOT/scripts/smoke_android_env.sh"
+
+echo ""
 echo "PASS: run_all_tests"

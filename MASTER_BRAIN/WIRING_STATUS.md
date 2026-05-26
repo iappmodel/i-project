@@ -46,10 +46,14 @@ flowchart LR
 | `./scripts/smoke_flutter_seal_prep.sh` | Flutter deep link + bridge tests |
 | `./scripts/smoke_capacitor_prep.sh` | Capacitor deps + web build |
 | `./scripts/setup_capacitor_shell.sh` | Cap sync / `--add` native |
+| `./scripts/smoke_android_env.sh` | Flutter + adb toolchain check |
+| `./scripts/run_android_dev_loop.sh` | Device loop command sheet |
 
 ---
 
 | `./scripts/dev_stack.sh` | start everything |
+
+**Phase index:** `MASTER_BRAIN/PHASE_QUEUE_INDEX.md`
 
 ---
 
@@ -118,12 +122,25 @@ flowchart LR
 
 ---
 
+## Phase 7 (2026-05-26)
+
+| Item | Status |
+|------|--------|
+| `EloCompanionCard` | ✅ Last seal + wallet jump |
+| Android env smoke | ✅ `smoke_android_env.sh` |
+| Android dev orchestration | ✅ `run_android_dev_loop.sh` |
+| Phase queue index | ✅ `PHASE_QUEUE_INDEX.md` |
+| Stripe Pro checkout UI | ✅ When `VITE_STRIPE_CHECKOUT_URL` live |
+| Device Seal Proof tap | Manual — runbook + smokes |
+
+---
+
 ## Still mocked / open
 
 | Item | Notes |
 |------|-------|
 | React gaze signals | Mocked — Flutter has real pipeline |
-| Capacitor native build | Run `setup_capacitor_shell.sh --add` locally |
+| Capacitor native build | `setup_capacitor_shell.sh --add` |
 | Android device E2E | Deferred — runbook only |
 | Production Stripe | `STRIPE_PHASE2.md` — keys deferred |
 | Full Elo companion UI | Profile teaser only (ADR-013) |

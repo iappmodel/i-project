@@ -39,6 +39,12 @@ const phases = [
     id: 'p6',
     title: 'Phase 6 · Capacitor shell',
     body: '@capacitor/* installed; cap:sync scripts; native add via setup_capacitor_shell.sh --add.',
+    status: 'done',
+  },
+  {
+    id: 'p7',
+    title: 'Phase 7 · Organism hardening',
+    body: 'Elo companion card, Android env smokes, phase index, Stripe checkout when keys live.',
     status: 'active',
   },
 ] as const

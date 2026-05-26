@@ -1,7 +1,11 @@
 import { Button } from '../components/Button'
+import { EloCompanionCard } from '../components/EloCompanionCard'
 import { TabScreenLayout } from '../components/TabScreenLayout'
 import { ProgressBar } from '../components/ProgressBar'
+import { createSubscriptionCheckout } from '../lib/stripeCheckout'
+import { getStripeReadiness, stripeReadinessLabel } from '../lib/stripeConfig'
 import { useDemo } from '../state/useDemo'
+import { useState } from 'react'
 
 /** MOD-01: vision categories only — no committed module list */
 const visionCategories = [
@@ -42,7 +46,26 @@ export function ProfileScreen() {
     eloStatusLine,
     isNativeShell,
     nativePlatform,
+    lastProofEvent,
+    jumpWallet,
   } = useDemo()
+
+  const stripeReadiness = getStripeReadiness()
+  const [stripeLoading, setStripeLoading] = useState(false)
+  const [stripeError, setStripeError] = useState<string | null>(null)
+
+  const startProCheckout = async () => {
+    setStripeLoading(true)
+    setStripeError(null)
+    try {
+      const { url } = await createSubscriptionCheckout('pro')
+      window.location.href = url
+    } catch (error) {
+      setStripeError(error instanceof Error ? error.message : 'Checkout failed')
+    } finally {
+      setStripeLoading(false)
+    }
+  }
 
   return (
     <TabScreenLayout
@@ -88,18 +111,34 @@ export function ProfileScreen() {
         <p className="profile-trust-card__hint">Simulated · affects payout speed in production</p>
       </section>
 
-      <section className="profile-section elo-companion-card">
-        <h2 className="profile-section__title">Elo · companion</h2>
-        <p className="profile-vision-card__body">
-          POP is the senses of Elo — perception feeds continuity, memory, and guidance across loops.
-        </p>
-        <p className="profile-trust-card__hint mono" style={{ marginTop: 8 }}>
-          {proofEventsConnected ? '● proof-events live' : '○ proof-events offline'} · {eloStatusLine}
-        </p>
-        <p className="profile-trust-card__hint mono" style={{ marginTop: 4 }}>
-          POP senses → Proof → Wallet
-        </p>
-      </section>
+      <EloCompanionCard
+        proofEventsConnected={proofEventsConnected}
+        eloStatusLine={eloStatusLine}
+        lastProofEvent={lastProofEvent}
+        onViewWallet={lastProofEvent ? () => jumpWallet() : undefined}
+      />
+
+      {stripeReadiness !== 'demo' ? (
+        <section className="profile-section">
+          <h2 className="profile-section__title">Subscription</h2>
+          <p className="profile-trust-card__hint mono">{stripeReadinessLabel(stripeReadiness)}</p>
+          {stripeReadiness === 'live' ? (
+            <Button
+              variant="secondary"
+              style={{ marginTop: 8 }}
+              disabled={stripeLoading}
+              onClick={() => void startProCheckout()}
+            >
+              {stripeLoading ? 'Opening checkout…' : 'Upgrade to Pro (test)'}
+            </Button>
+          ) : null}
+          {stripeError ? (
+            <p className="profile-trust-card__hint" style={{ color: 'var(--accent-rose)', marginTop: 8 }}>
+              {stripeError}
+            </p>
+          ) : null}
+        </section>
+      ) : null}
 
       <section className="profile-section">
         <h2 className="profile-section__title">Vision categories</h2>

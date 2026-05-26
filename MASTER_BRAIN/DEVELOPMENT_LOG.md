@@ -5,6 +5,20 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-26 — Phase 7 autonomous queue complete
+
+### Delivered
+- **Elo** — `EloCompanionCard` with last seal + wallet jump
+- **Android** — `smoke_android_env.sh`, `run_android_dev_loop.sh`
+- **Index** — `PHASE_QUEUE_INDEX.md` (phases 1–7)
+- **Stripe** — Pro checkout button on Profile when live mode env set
+- **Proof layer** — Capacitor + Android status cards
+
+### Deferred Phase 8
+- Automated device E2E, Stripe owner keys deploy
+
+---
+
 ## 2026-05-26 — Phase 6 autonomous queue complete
 
 ### Delivered

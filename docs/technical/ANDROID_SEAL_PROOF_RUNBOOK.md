@@ -75,6 +75,16 @@ Or Supabase Studio → `pop_pending_holds`.
 
 ---
 
+## Prep smokes (no device required)
+
+```bash
+./scripts/smoke_android_env.sh      # Flutter + adb + validator check
+./scripts/run_android_dev_loop.sh   # full command cheat sheet
+./scripts/smoke_flutter_seal_prep.sh
+```
+
+---
+
 ## Troubleshooting
 
 | Issue | Fix |

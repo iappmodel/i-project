@@ -6,7 +6,15 @@ import { PROOF_LAYER_STATUS } from '../data/demoData'
 import { useDemo } from '../state/useDemo'
 
 export function ProofLayerScreen() {
-  const { setScreen, proofEventsConnected, eloStatusLine, walletBackend } = useDemo()
+  const {
+    setScreen,
+    proofEventsConnected,
+    eloStatusLine,
+    walletBackend,
+    isNativeShell,
+    nativePlatform,
+    lastProofEvent,
+  } = useDemo()
   const status = PROOF_LAYER_STATUS
 
   return (
@@ -56,7 +64,26 @@ export function ProofLayerScreen() {
       </div>
 
       <div className="proof-layer-card">
-        <p className="proof-layer-card__title">Android smoke test</p>
+        <p className="proof-layer-card__title">Capacitor shell</p>
+        <p className="proof-layer-card__body">
+          {isNativeShell
+            ? `Running in native WebView · ${nativePlatform}`
+            : 'Web browser · run ./scripts/setup_capacitor_shell.sh --add for Android/iOS'}
+        </p>
+      </div>
+
+      <div className="proof-layer-card">
+        <p className="proof-layer-card__title">Android device loop</p>
+        <p className="proof-layer-card__body">
+          {status.androidSmokeTest}. Prep: ./scripts/smoke_android_env.sh · orchestration: ./scripts/run_android_dev_loop.sh
+          {lastProofEvent?.source === 'flutter'
+            ? ` · Last Flutter seal: ${lastProofEvent.sessionId.slice(0, 12)}…`
+            : ''}
+        </p>
+      </div>
+
+      <div className="proof-layer-card">
+        <p className="proof-layer-card__title">Android smoke test (legacy plan)</p>
         <p className="proof-layer-card__body">
           Plan: {status.androidSmokeTest} per `docs/technical/ANDROID_EYE_TRACKING_SMOKE_TEST_PLAN.md`.
         </p>

@@ -95,7 +95,7 @@ export const CONSENT_PROOF_STATUS = {
 export const PROOF_LAYER_STATUS: ProofLayerStatus = {
   demoMode: 'mocked-gaze · live wallet + SSE relay',
   flutterRuntime: 'promoted · posts to validator · SSE notifies React wallet',
-  androidSmokeTest: 'runbook ready · device tap deferred',
+  androidSmokeTest: 'runbook + smoke_android_env · device tap manual',
   signalPath: [
     'Camera → MediaPipe landmarks',
     'gaze x/y + quality',

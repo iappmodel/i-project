@@ -36,6 +36,8 @@ Open **http://localhost:5173** → Earn → Loop 1 → Wallet → Settle.
 ./scripts/smoke_flutter_seal_prep.sh              # flutter tests + validator check
 ./scripts/smoke_capacitor_prep.sh                 # capacitor deps + build
 ./scripts/setup_capacitor_shell.sh --add          # generate android/ios locally
+./scripts/smoke_android_env.sh                   # toolchain check
+./scripts/run_android_dev_loop.sh                # device loop cheat sheet
 ```
 
 | Service | URL |
