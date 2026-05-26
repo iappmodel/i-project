@@ -65,13 +65,16 @@ No separate `VITE_PROOF_WS_URL` — SSE shares validator origin.
 - `app/src/state/useProofEvents.ts` — EventSource subscriber
 - Profile **Elo · companion** shows live `proof-events` status
 - Wallet refreshes pending holds when external proof is sealed
+- **Deep link** — `?proofSession=sess_…` opens wallet with flash banner
+- Flutter seal auto-navigates wallet tab when SSE `source: flutter`
 
 ---
 
-## Deferred (Phase 4+)
+## Deferred (Phase 5+)
 
 1. **Capacitor shell** — embed Flutter module in WebView
-2. **Deep link return** — `iapp://proof?session=…` from Flutter to wallet tab
-3. **Replace mock gaze** in watch-verify when Flutter bridge is in-process
+2. **Replace mock gaze** in watch-verify when Flutter bridge is in-process
+
+**Return path today:** open `http://host:5173/?proofSession={sessionId}` after Flutter seal.
 
 See `docs/technical/ANDROID_SEAL_PROOF_RUNBOOK.md` for device path today.

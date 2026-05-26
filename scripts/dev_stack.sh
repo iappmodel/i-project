@@ -80,6 +80,7 @@ API_URL="$(grep '^API_URL=' "$ROOT/.env.local.stack" | cut -d= -f2- | tr -d '"')
 ENV_LOCAL="$ROOT/app/.env.local"
 grep -q '^VITE_SUPABASE_URL=' "$ENV_LOCAL" 2>/dev/null || echo "VITE_SUPABASE_URL=$API_URL" >>"$ENV_LOCAL"
 grep -q '^VITE_SUPABASE_ANON_KEY=' "$ENV_LOCAL" 2>/dev/null || echo "VITE_SUPABASE_ANON_KEY=$ANON_KEY" >>"$ENV_LOCAL"
+grep -q '^VITE_STRIPE_FUNCTIONS_READY=' "$ENV_LOCAL" 2>/dev/null || echo "VITE_STRIPE_FUNCTIONS_READY=true" >>"$ENV_LOCAL"
 
 cd "$ROOT/app"
 npm run dev >"$PID_DIR/app.log" 2>&1 &

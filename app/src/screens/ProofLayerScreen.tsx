@@ -6,7 +6,7 @@ import { PROOF_LAYER_STATUS } from '../data/demoData'
 import { useDemo } from '../state/useDemo'
 
 export function ProofLayerScreen() {
-  const { setScreen } = useDemo()
+  const { setScreen, proofEventsConnected, eloStatusLine, walletBackend } = useDemo()
   const status = PROOF_LAYER_STATUS
 
   return (
@@ -26,6 +26,17 @@ export function ProofLayerScreen() {
             <li key={step}>{step}</li>
           ))}
         </ul>
+      </div>
+
+      <div className="proof-layer-card">
+        <p className="proof-layer-card__title">Proof-events relay (SSE)</p>
+        <p className="proof-layer-card__body">
+          {walletBackend === 'live'
+            ? proofEventsConnected
+              ? `Live · ${eloStatusLine}`
+              : 'Configured but offline — start validator via ./scripts/dev_stack.sh'
+            : 'Set VITE_POP_VALIDATOR_URL to enable SSE bridge from Flutter Seal Proof.'}
+        </p>
       </div>
 
       <div className="proof-layer-card">

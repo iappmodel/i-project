@@ -27,6 +27,9 @@ export function WalletScreen() {
     settlePopHold,
     setScreen,
     jumpEarn,
+    proofFlash,
+    eloStatusLine,
+    proofEventsConnected,
   } = useDemo()
   const [showAll, setShowAll] = useState(false)
 
@@ -49,6 +52,19 @@ export function WalletScreen() {
         'app/supabase/migrations/20260525220000_pop_pending_holds.sql',
       ]}
     >
+      {proofFlash ? (
+        <p className="wallet-live-banner" style={{ marginBottom: 12, fontSize: 12 }}>
+          <span className="ps-dot" aria-hidden />
+          {proofFlash}
+        </p>
+      ) : null}
+
+      {walletBackend === 'live' && proofEventsConnected ? (
+        <p className="profile-trust-card__hint mono" style={{ marginBottom: 8, fontSize: 11 }}>
+          Elo · {eloStatusLine}
+        </p>
+      ) : null}
+
       {walletBackend === 'live' ? (
         <div className="wallet-live-banner" style={{ marginBottom: 12 }}>
           <span className="ps-dot" aria-hidden />

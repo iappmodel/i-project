@@ -75,12 +75,26 @@ flowchart LR
 
 ---
 
+## Phase 4 (2026-05-26)
+
+| Item | Status |
+|------|--------|
+| Deep link `?proofSession=` | ✅ Opens wallet tab |
+| Wallet proof flash | ✅ Flutter seal → banner + auto-nav |
+| SSE `localUserRef` filter | ✅ Stream query param |
+| Stripe readiness UX | ✅ Withdraw banner + `stripeConfig.ts` |
+| Stripe local deploy script | ✅ Skips without keys |
+| Capacitor in-process bridge | Deferred Phase 5 |
+| Android device E2E | Deferred — runbook only |
+
+---
+
 ## Still mocked / open
 
 | Item | Notes |
 |------|-------|
 | React gaze signals | Mocked — Flutter has real pipeline |
-| Capacitor / in-process bridge | Phase 4 — SSE relay live today |
+| Capacitor / in-process bridge | Phase 5 — SSE + deep links live today |
 | Android device E2E | Deferred — runbook only |
 | Production Stripe | `STRIPE_PHASE2.md` — keys deferred |
 | Full Elo companion UI | Profile teaser only (ADR-013) |

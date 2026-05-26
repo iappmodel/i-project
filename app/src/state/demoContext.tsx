@@ -12,8 +12,9 @@ import {
   canValidateSession,
   createAttentionSession,
 } from './attentionSession'
+import { useDeepLinkProofSession } from './useDeepLinkProofSession'
 import { useLiveWalletSync } from './useLiveWalletSync'
-import { useProofEvents } from './useProofEvents'
+import { useProofEvents, type ProofSealedEvent } from './useProofEvents'
 import { useSupabaseAuth } from './useSupabaseAuth'
 import type {
   DemoContextValue,
@@ -76,8 +77,7 @@ const defaultState = (): DemoState => ({
   walletSyncing: false,
   settlingSessionId: null,
   proofSubmitting: false,
-  proofEventsConnected: false,
-  eloStatusLine: 'Listening for POP senses via proof-events stream…',
+  proofFlash: null,
 })
 
 export const DemoContext = createContext<DemoContextValue | null>(null)
@@ -88,20 +88,41 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   const supabaseAuth = useSupabaseAuth()
   const authUserId = supabaseAuth.user?.id ?? null
 
-  const onProofSealed = useCallback(() => {
-    void liveWallet.refreshPendingHolds()
-  }, [liveWallet.refreshPendingHolds])
+  const navigateTo = useCallback((screen: DemoScreenId) => {
+    setState((prev) => withScreen(prev, screen))
+  }, [])
+
+  const onProofSealed = useCallback(
+    (event: ProofSealedEvent) => {
+      void liveWallet.refreshPendingHolds()
+      const label =
+        event.source === 'flutter'
+          ? `Flutter proof sealed · ${event.sessionId.slice(0, 12)}…`
+          : `Proof sealed · ${event.reviewStatus}`
+      setState((prev) => {
+        const next = { ...prev, proofFlash: label }
+        return event.source === 'flutter' ? withScreen(next, 'wallet') : next
+      })
+      window.setTimeout(() => {
+        setState((prev) => (prev.proofFlash === label ? { ...prev, proofFlash: null } : prev))
+      }, 6000)
+    },
+    [liveWallet.refreshPendingHolds],
+  )
 
   const proofEvents = useProofEvents(onProofSealed)
+
+  useDeepLinkProofSession(navigateTo, (sessionId) => {
+    setState((prev) => ({
+      ...prev,
+      proofFlash: `Deep link · ${sessionId.slice(0, 12)}…`,
+    }))
+  })
 
   useEffect(() => {
     if (liveWallet.walletBackend !== 'live' || liveWallet.popHolds.length === 0) return
     setState((prev) => liveWallet.applyHoldSync(prev, liveWallet.popHolds))
   }, [liveWallet.popHolds, liveWallet.applyHoldSync, liveWallet.walletBackend])
-
-  const navigateTo = useCallback((screen: DemoScreenId) => {
-    setState((prev) => withScreen(prev, screen))
-  }, [])
 
   const setActiveTab = useCallback((tab: ProductTabId) => {
     setState((prev) => ({
@@ -375,6 +396,8 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       signOutDemo: supabaseAuth.signOut,
       proofEventsConnected: proofEvents.connected,
       eloStatusLine: proofEvents.eloStatusLine,
+      lastProofEvent: proofEvents.lastEvent,
+      proofFlash: state.proofFlash,
     }),
     [
       state,
@@ -383,6 +406,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       authUserId,
       proofEvents.connected,
       proofEvents.eloStatusLine,
+      proofEvents.lastEvent,
       settlePopHoldWithAuth,
       navigateTo,
       setActiveTab,

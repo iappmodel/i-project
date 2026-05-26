@@ -3,6 +3,7 @@ import { BackRow } from '../components/BackRow'
 import { Button } from '../components/Button'
 import { PhoneFrame } from '../components/PhoneFrame'
 import { SourceEvidence } from '../components/SourceEvidence'
+import { getStripeReadiness, stripeReadinessLabel } from '../lib/stripeConfig'
 import { useDemo } from '../state/useDemo'
 
 type WD = 'bank' | 'card' | 'ext'
@@ -14,6 +15,7 @@ export function WithdrawPreviewScreen() {
   const [amt, setAmt] = useState(200)
   const [dest, setDest] = useState<WD>('bank')
   const icMax = Math.max(1, iCoins)
+  const stripeReadiness = getStripeReadiness()
 
   const { feeI, usdReceive } = useMemo(() => {
     const fee = Math.round(amt * wFees[dest])
@@ -26,6 +28,9 @@ export function WithdrawPreviewScreen() {
       <BackRow label="Wallet" onBack={() => setScreen('wallet')} />
       <h1 className="screen-title">Withdraw</h1>
       <p className="screen-sub">Move icoins to bank or card · demo preview only.</p>
+      <p className="profile-trust-card__hint mono" style={{ marginBottom: 12 }}>
+        {stripeReadinessLabel(stripeReadiness)}
+      </p>
       <input
         className="withdraw-big-input mono"
         type="number"

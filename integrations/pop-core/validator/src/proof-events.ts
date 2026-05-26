@@ -11,28 +11,47 @@ export interface ProofSealedEvent {
   source: "web" | "flutter" | "unknown";
 }
 
-const subscribers = new Set<ServerResponse>();
+interface ProofEventSubscriber {
+  res: ServerResponse;
+  localUserRef: string | null;
+}
 
-export function subscribeProofEvents(res: ServerResponse): void {
+const subscribers = new Set<ProofEventSubscriber>();
+
+export function subscribeProofEvents(
+  res: ServerResponse,
+  localUserRef: string | null = null
+): void {
   res.writeHead(200, {
     "Content-Type": "text/event-stream",
     "Cache-Control": "no-cache",
     Connection: "keep-alive",
   });
   res.write(": connected\n\n");
-  subscribers.add(res);
+  const entry: ProofEventSubscriber = { res, localUserRef };
+  subscribers.add(entry);
   res.on("close", () => {
-    subscribers.delete(res);
+    subscribers.delete(entry);
   });
+}
+
+function matchesFilter(
+  subscriberRef: string | null,
+  eventRef: string | null
+): boolean {
+  if (!subscriberRef) return true;
+  if (!eventRef) return true;
+  return subscriberRef === eventRef;
 }
 
 export function broadcastProofSealed(event: ProofSealedEvent): void {
   const payload = `data: ${JSON.stringify(event)}\n\n`;
-  for (const res of subscribers) {
+  for (const sub of subscribers) {
+    if (!matchesFilter(sub.localUserRef, event.localUserRef)) continue;
     try {
-      res.write(payload);
+      sub.res.write(payload);
     } catch {
-      subscribers.delete(res);
+      subscribers.delete(sub);
     }
   }
 }

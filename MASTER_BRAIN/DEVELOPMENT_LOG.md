@@ -5,6 +5,20 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-26 — Phase 4 autonomous queue complete
+
+### Delivered
+- **Deep links** — `?proofSession=` opens wallet with flash banner
+- **Wallet UX** — proof flash on seal; auto-nav on Flutter proof; Elo status strip
+- **SSE filter** — `localUserRef` query param on proof-events stream
+- **Stripe UX** — readiness banner on withdraw; `deploy_stripe_functions_local.sh`
+- **Smokes** — `smoke_full_loop.sh` chains wallet + proof-events
+
+### Deferred Phase 5
+- Capacitor shell, Android device tap, Stripe live deploy
+
+---
+
 ## 2026-05-26 — Phase 3 autonomous queue complete
 
 ### Delivered

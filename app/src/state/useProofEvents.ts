@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react'
-import { getPopValidatorBaseUrl, isLiveWalletEnabled } from '../lib/settlementConfig'
+import {
+  DEMO_LOCAL_USER_REF,
+  getPopValidatorBaseUrl,
+  isLiveWalletEnabled,
+} from '../lib/settlementConfig'
 
 export interface ProofSealedEvent {
   type: 'proof-sealed'
@@ -23,7 +27,12 @@ function formatEloStatus(event: ProofSealedEvent | null): string {
   if (!event) {
     return 'Listening for POP senses via proof-events stream…'
   }
-  const who = event.source === 'flutter' ? 'Flutter Seal Proof' : event.source === 'web' ? 'Web demo' : 'Unknown client'
+  const who =
+    event.source === 'flutter'
+      ? 'Flutter Seal Proof'
+      : event.source === 'web'
+        ? 'Web demo'
+        : 'Unknown client'
   return `${who} sealed ${event.sessionId.slice(0, 12)}… · ${event.reviewStatus}`
 }
 
@@ -38,7 +47,10 @@ export function useProofEvents(onSealed?: (event: ProofSealedEvent) => void): Pr
     const base = getPopValidatorBaseUrl()
     if (!base) return
 
-    const source = new EventSource(`${base.replace(/\/$/, '')}/v1/proof-events/stream`)
+    const params = new URLSearchParams({ localUserRef: DEMO_LOCAL_USER_REF })
+    const source = new EventSource(
+      `${base.replace(/\/$/, '')}/v1/proof-events/stream?${params.toString()}`,
+    )
 
     source.onopen = () => setConnected(true)
     source.onerror = () => setConnected(false)

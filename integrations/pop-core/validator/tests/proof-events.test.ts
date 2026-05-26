@@ -39,6 +39,48 @@ describe("proof-events", () => {
     expect(chunks.join("")).toContain("sess_test");
   });
 
+  it("filters events by localUserRef when subscriber requests it", () => {
+    const allChunks: string[] = [];
+    const filteredChunks: string[] = [];
+
+    const allRes = {
+      writeHead() {},
+      write(chunk: string) {
+        allChunks.push(chunk);
+      },
+      on() {},
+    } as unknown as import("node:http").ServerResponse;
+
+    const filteredRes = {
+      writeHead() {},
+      write(chunk: string) {
+        filteredChunks.push(chunk);
+      },
+      on() {},
+    } as unknown as import("node:http").ServerResponse;
+
+    subscribeProofEvents(allRes, null);
+    subscribeProofEvents(filteredRes, "demo-user-001");
+
+    const event: ProofSealedEvent = {
+      type: "proof-sealed",
+      sessionId: "sess_filter",
+      localUserRef: "other-user",
+      mode: "pending",
+      reviewStatus: "approved",
+      holdOutcome: "created",
+      timestamp: new Date().toISOString(),
+      source: "flutter",
+    };
+    broadcastProofSealed(event);
+
+    expect(allChunks.join("")).toContain("sess_filter");
+    expect(filteredChunks.join("")).not.toContain("sess_filter");
+
+    broadcastProofSealed({ ...event, localUserRef: "demo-user-001" });
+    expect(filteredChunks.join("")).toContain("sess_filter");
+  });
+
   it("infers proof source from runtimeVersion", () => {
     expect(inferProofSource("flutter-runtime@1")).toBe("flutter");
     expect(inferProofSource("vite-web-demo")).toBe("web");

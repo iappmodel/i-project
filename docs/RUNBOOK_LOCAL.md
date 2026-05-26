@@ -29,6 +29,8 @@ cd ~/Desktop/IVAULT/i-project-rescue/i_project_migration_archive
 
 Open **http://localhost:5173** → Earn → Loop 1 → Wallet → Settle.
 
+**Deep link (Flutter return path):** `http://localhost:5173/?proofSession=sess_…` opens Wallet tab.
+
 | Service | URL |
 |---------|-----|
 | App | http://localhost:5173 |
@@ -46,11 +48,28 @@ Demo user (seed): `00000000-0000-4000-8000-000000000001`
 # Local-json only (no Docker)
 ./scripts/smoke_pop_wallet_loop.sh
 
+# Wallet + proof-events SSE
+./scripts/smoke_full_loop.sh
+
 # Full Supabase ledger (needs Docker)
 ./scripts/smoke_pop_wallet_loop_supabase.sh
 
 # All unit/type tests
 ./scripts/run_all_tests.sh
+```
+
+---
+
+## Stripe (optional)
+
+Functions promoted from archive — deploy when owner provides keys:
+
+```bash
+./scripts/promote_stripe_functions.sh   # already run in Phase 3
+export STRIPE_SECRET_KEY=sk_test_...
+export STRIPE_WEBHOOK_SECRET=whsec_...
+./scripts/deploy_stripe_functions_local.sh
+./scripts/smoke_stripe_webhook.sh
 ```
 
 ---

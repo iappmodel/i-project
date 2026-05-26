@@ -77,7 +77,8 @@ const server = createServer(async (req, res) => {
     }
 
     if (req.method === "GET" && url.pathname === "/v1/proof-events/stream") {
-      subscribeProofEvents(res);
+      const localUserRef = url.searchParams.get("localUserRef")?.trim() || null;
+      subscribeProofEvents(res, localUserRef);
       return;
     }
 

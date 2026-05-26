@@ -1,5 +1,6 @@
 import type { AttentionSession } from './attentionSession'
 import type { PopPendingHold } from '../lib/popValidator'
+import type { ProofSealedEvent } from './useProofEvents'
 
 export type WalletBackend = 'mock' | 'live'
 
@@ -104,8 +105,7 @@ export interface DemoState {
   walletSyncing: boolean
   settlingSessionId: string | null
   proofSubmitting: boolean
-  proofEventsConnected: boolean
-  eloStatusLine: string
+  proofFlash: string | null
 }
 
 export interface DemoContextValue extends DemoState {
@@ -138,4 +138,6 @@ export interface DemoContextValue extends DemoState {
   signOutDemo: () => Promise<void>
   proofEventsConnected: boolean
   eloStatusLine: string
+  lastProofEvent: ProofSealedEvent | null
+  proofFlash: string | null
 }

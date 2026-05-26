@@ -13,15 +13,21 @@ const phases = [
   },
   {
     id: 'p2',
-    title: 'Phase 2 · Proof bridge',
-    body: 'SSE proof-events relay; Flutter Seal Proof posts to same validator (device tap deferred).',
-    status: 'active',
+    title: 'Phase 2 · Auth + extraction',
+    body: 'Supabase demo auth, settle user id, P0 chat 104/104 complete.',
+    status: 'done',
   },
   {
     id: 'p3',
-    title: 'Phase 3 · Rails & compliance',
-    body: 'Stripe checkout promotion (owner keys) + KYC-lite withdrawal rails.',
-    status: 'next',
+    title: 'Phase 3 · Proof bridge',
+    body: 'SSE proof-events relay; Flutter and web share validator; Elo live status.',
+    status: 'done',
+  },
+  {
+    id: 'p4',
+    title: 'Phase 4 · Rails & compliance',
+    body: 'Stripe functions promoted; deep links + wallet flash; deploy needs owner keys.',
+    status: 'active',
   },
 ] as const
 
