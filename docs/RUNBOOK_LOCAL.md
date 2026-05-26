@@ -34,6 +34,8 @@ Open **http://localhost:5173** → Earn → Loop 1 → Wallet → Settle.
 ```bash
 ./scripts/open_wallet_deep_link.sh sess_test123   # manual browser test
 ./scripts/smoke_flutter_seal_prep.sh              # flutter tests + validator check
+./scripts/smoke_capacitor_prep.sh                 # capacitor deps + build
+./scripts/setup_capacitor_shell.sh --add          # generate android/ios locally
 ```
 
 | Service | URL |

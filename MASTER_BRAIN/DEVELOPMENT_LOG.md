@@ -5,6 +5,20 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-26 — Phase 6 autonomous queue complete
+
+### Delivered
+- **Capacitor** — `@capacitor/*` installed, `capacitor.config.ts`, `cap:sync` scripts
+- **Setup** — `setup_capacitor_shell.sh --add` for android/ios (gitignored)
+- **UX** — Feed/Profile native shell + proof bridge badges
+- **Smokes** — `smoke_capacitor_prep.sh` in CI + `run_all_tests.sh`
+- **Secrets template** — `.env.local.stack.example`
+
+### Deferred Phase 7
+- Native SDK builds on CI, Android device tap, Stripe deploy
+
+---
+
 ## 2026-05-26 — Phase 5 autonomous queue complete
 
 ### Delivered

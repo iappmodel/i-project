@@ -23,6 +23,10 @@ echo "== Full loop smoke =="
 "$ROOT/scripts/smoke_full_loop.sh"
 
 echo ""
+echo "== Capacitor prep smoke =="
+"$ROOT/scripts/smoke_capacitor_prep.sh"
+
+echo ""
 echo "== Flutter seal prep (optional) =="
 "$ROOT/scripts/smoke_flutter_seal_prep.sh"
 

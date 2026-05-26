@@ -40,6 +40,8 @@ export function ProfileScreen() {
     signInDemo,
     proofEventsConnected,
     eloStatusLine,
+    isNativeShell,
+    nativePlatform,
   } = useDemo()
 
   return (
@@ -53,6 +55,12 @@ export function ProfileScreen() {
     >
       <h1 className="screen-title">Profile</h1>
       <p className="screen-sub">Trust · account · vision</p>
+
+      {isNativeShell ? (
+        <p className="profile-trust-card__hint mono" style={{ marginBottom: 12 }}>
+          Capacitor · {nativePlatform}
+        </p>
+      ) : null}
 
       {supabaseAuthEnabled ? (
         <p className="profile-trust-card__hint" style={{ marginBottom: 12 }}>

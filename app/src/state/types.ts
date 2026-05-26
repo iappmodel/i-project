@@ -140,4 +140,6 @@ export interface DemoContextValue extends DemoState {
   eloStatusLine: string
   lastProofEvent: ProofSealedEvent | null
   proofFlash: string | null
+  isNativeShell: boolean
+  nativePlatform: string
 }

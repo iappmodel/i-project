@@ -6,7 +6,15 @@ import { formatIcoinsAmount } from '../lib/format'
 import { useDemo } from '../state/useDemo'
 
 export function FeedScreen() {
-  const { iCoins, selectOffer, jumpWallet, setActiveTab } = useDemo()
+  const {
+    iCoins,
+    selectOffer,
+    jumpWallet,
+    setActiveTab,
+    walletBackend,
+    proofEventsConnected,
+    isNativeShell,
+  } = useDemo()
 
   return (
     <TabScreenLayout
@@ -19,6 +27,12 @@ export function FeedScreen() {
     >
       <div className="feed-top-chrome">
         <HeaderBar walletBalance={iCoins} onWalletClick={() => jumpWallet()} />
+        {walletBackend === 'live' || isNativeShell ? (
+          <p className="profile-trust-card__hint mono" style={{ padding: '0 16px 8px', fontSize: 11 }}>
+            {isNativeShell ? 'Capacitor shell · ' : ''}
+            {proofEventsConnected ? '● proof bridge live' : '○ proof bridge'}
+          </p>
+        ) : null}
         <div className="stories-row">
           {['Add', '@maya', '@jake', '@nora', '@chef', '@alex'].map((name, idx) => (
             <button

@@ -7,9 +7,16 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc -b --noEmit"
+    "typecheck": "tsc -b --noEmit",
+    "cap:sync": "npm run build && npx cap sync",
+    "cap:android": "npx cap open android",
+    "cap:ios": "npx cap open ios"
   },
   "dependencies": {
+    "@capacitor/android": "^7.6.5",
+    "@capacitor/cli": "^7.6.5",
+    "@capacitor/core": "^7.6.5",
+    "@capacitor/ios": "^7.6.5",
     "@supabase/supabase-js": "^2.106.2",
     "react": "^19.2.6",
     "react-dom": "^19.2.6"

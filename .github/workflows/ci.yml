@@ -33,3 +33,7 @@ jobs:
 
       - name: Proof events SSE smoke
         run: ./scripts/smoke_proof_events.sh
+
+      - name: Capacitor prep smoke
+        working-directory: app
+        run: ../scripts/smoke_capacitor_prep.sh

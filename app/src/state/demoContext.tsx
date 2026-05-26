@@ -5,6 +5,7 @@ import {
   WALLET_INITIAL,
 } from '../data/demoData'
 import { buildDemoProofPacket } from '../lib/demoProofPacket'
+import { capacitorPlatform, isCapacitorNative } from '../lib/capacitorShell'
 import { isAutoSettleEnabled } from '../lib/settlementConfig'
 import { submitProofPacket } from '../lib/popValidator'
 import {
@@ -398,6 +399,8 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       eloStatusLine: proofEvents.eloStatusLine,
       lastProofEvent: proofEvents.lastEvent,
       proofFlash: state.proofFlash,
+      isNativeShell: isCapacitorNative(),
+      nativePlatform: capacitorPlatform(),
     }),
     [
       state,

@@ -33,6 +33,12 @@ const phases = [
     id: 'p5',
     title: 'Phase 5 · Native return path',
     body: 'Flutter WALLET_APP_URL deep link; Earn/Watch bridge UX; Capacitor prep doc.',
+    status: 'done',
+  },
+  {
+    id: 'p6',
+    title: 'Phase 6 · Capacitor shell',
+    body: '@capacitor/* installed; cap:sync scripts; native add via setup_capacitor_shell.sh --add.',
     status: 'active',
   },
 ] as const

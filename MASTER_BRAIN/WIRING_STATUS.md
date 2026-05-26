@@ -44,7 +44,8 @@ flowchart LR
 | `./scripts/smoke_auth_demo.sh` | Supabase demo user sign-in |
 | `./scripts/smoke_proof_events.sh` | SSE proof-sealed on validate |
 | `./scripts/smoke_flutter_seal_prep.sh` | Flutter deep link + bridge tests |
-| `./scripts/open_wallet_deep_link.sh` | Manual wallet deep link open |
+| `./scripts/smoke_capacitor_prep.sh` | Capacitor deps + web build |
+| `./scripts/setup_capacitor_shell.sh` | Cap sync / `--add` native |
 
 ---
 
@@ -104,12 +105,25 @@ flowchart LR
 
 ---
 
+## Phase 6 (2026-05-26)
+
+| Item | Status |
+|------|--------|
+| Capacitor packages | ✅ `@capacitor/*` in `app/` |
+| `capacitor.config.ts` | ✅ |
+| Setup script | ✅ `setup_capacitor_shell.sh --add` |
+| Native platform dirs | On demand (gitignored) |
+| Android device E2E | Deferred — runbook |
+| Stripe live deploy | Owner keys — `.env.local.stack.example` |
+
+---
+
 ## Still mocked / open
 
 | Item | Notes |
 |------|-------|
 | React gaze signals | Mocked — Flutter has real pipeline |
-| Capacitor install | Phase 6 — prep doc ready |
+| Capacitor native build | Run `setup_capacitor_shell.sh --add` locally |
 | Android device E2E | Deferred — runbook only |
 | Production Stripe | `STRIPE_PHASE2.md` — keys deferred |
 | Full Elo companion UI | Profile teaser only (ADR-013) |

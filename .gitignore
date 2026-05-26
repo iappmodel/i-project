@@ -5,6 +5,10 @@
 # App local env
 app/.env.local
 
+# Capacitor native projects (generated — run setup_capacitor_shell.sh --add)
+app/android/
+app/ios/
+
 # Supabase CLI temp
 app/supabase/.temp/
 app/supabase/.branches/

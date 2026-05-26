@@ -1,59 +1,46 @@
-# Capacitor shell — Phase 5 prep
+# Capacitor shell — Phase 6
 
-**Status:** Documented scaffold — not installed in `app/` yet  
+**Status:** Packages installed · native platforms on demand  
 **Goal:** Wrap canonical `app/` Vite build in Capacitor for iOS/Android WebView shell.
 
 ---
 
-## Why defer full install
-
-- Loop 1 spine works in browser + Flutter posts to same validator via SSE/deep links
-- Capacitor adds native build toolchain (Xcode, Android SDK) without replacing mock gaze yet
-- Cherry-pick web vision (`22cabd3`) only after shell decision is locked
-
----
-
-## Promotion steps (when owner approves)
+## Quick start
 
 ```bash
 cd app
-npm install @capacitor/core @capacitor/cli @capacitor/android @capacitor/ios
-npx cap init "i Attention Wallet" com.iapp.wallet --web-dir dist
-npm run build
-npx cap add android
-npx cap add ios
-npx cap sync
+npm run cap:sync                    # build + sync web assets
+
+# First time — generates app/android + app/ios (gitignored):
+../scripts/setup_capacitor_shell.sh --add
 ```
 
-`capacitor.config.ts` should point `server.url` at dev Vite during development:
+---
 
-```typescript
-import type { CapacitorConfig } from '@capacitor/cli'
+## Dev with live Vite (emulator)
 
-const config: CapacitorConfig = {
-  appId: 'com.iapp.wallet',
-  appName: 'i Attention Wallet',
-  webDir: 'dist',
-  server: {
-    // Dev only — remove for production builds
-    url: 'http://10.0.2.2:5173',
-    cleartext: true,
-  },
-}
-
-export default config
+```bash
+./scripts/dev_stack.sh
+cd app
+CAPACITOR_SERVER_URL=http://10.0.2.2:5173 npx cap run android
 ```
+
+---
+
+## Config
+
+- **`app/capacitor.config.ts`** — `com.iapp.attentionwallet` / webDir `dist`
+- Native dirs **`app/android/`**, **`app/ios/`** — generated locally, not committed
 
 ---
 
 ## Bridge strategy (with Flutter)
 
-| Layer | Today (Phase 5) | Capacitor shell |
-|-------|-------------------|-----------------|
-| Proof submit | Flutter native → validator | Same |
-| Wallet UI | React in browser / WebView | React in Capacitor WebView |
-| Return path | `WALLET_APP_URL/?proofSession=` | Same deep link in WebView |
-| Gaze signals | Mock in React; real in Flutter | Optional in-web MediaPipe promote |
+| Layer | Browser | Capacitor WebView |
+|-------|---------|-------------------|
+| Wallet UI | React Vite | Same build in WebView |
+| Proof submit | Web mock + Flutter native | Flutter → validator |
+| Return path | `?proofSession=` deep link | Same |
 
 See `docs/technical/REACT_FLUTTER_BRIDGE.md`.
 
@@ -61,5 +48,6 @@ See `docs/technical/REACT_FLUTTER_BRIDGE.md`.
 
 ## References
 
+- `scripts/setup_capacitor_shell.sh`
+- `scripts/smoke_capacitor_prep.sh`
 - `eye-earn-sparkle-archive/capacitor.config.ts`
-- `docs/technical/VISION_UNIFIED_PIPELINE_BRANCH_AUDIT.md` § cherry-pick `22cabd3`
