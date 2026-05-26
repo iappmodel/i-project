@@ -16,6 +16,11 @@ import {
 import type { SettleHoldRequestBody } from "./settle-handler.js";
 import { readSupabaseSettlementConfig } from "./supabase-settlement.js";
 import { applyCors } from "./cors.js";
+import {
+  broadcastProofSealed,
+  inferProofSource,
+  subscribeProofEvents,
+} from "./proof-events.js";
 
 const PORT = Number(process.env.POP_VALIDATOR_PORT ?? "8787");
 const DATA_DIR = process.env.POP_VALIDATOR_DATA_DIR ?? "./data/validator";
@@ -71,6 +76,11 @@ const server = createServer(async (req, res) => {
       return;
     }
 
+    if (req.method === "GET" && url.pathname === "/v1/proof-events/stream") {
+      subscribeProofEvents(res);
+      return;
+    }
+
     if (req.method === "POST" && url.pathname === "/v1/proof-packets/validate") {
       const body = (await readJsonBody(req)) as ValidateRequestBody;
       if (!body?.packet?.sessionId) {
@@ -83,6 +93,17 @@ const server = createServer(async (req, res) => {
       }
 
       const result = await validateProofPacket(body, { stores, supabase });
+      const mode = result.mode;
+      broadcastProofSealed({
+        type: "proof-sealed",
+        sessionId: result.sessionId,
+        localUserRef: body.packet.localUserRef ?? null,
+        mode,
+        reviewStatus: result.reviewStatus,
+        holdOutcome: mode === "pending" ? result.holdOutcome : "created",
+        timestamp: new Date().toISOString(),
+        source: inferProofSource(body.packet.runtimeVersion),
+      });
       sendJson(res, 200, result);
       return;
     }
@@ -174,6 +195,7 @@ server.listen(PORT, () => {
   console.log(`  POST /v1/pending-holds/:sessionId/settle-demo`);
   console.log(`  GET  /v1/pending-holds?localUserRef=...`);
   console.log(`  GET  /v1/pending-holds/:sessionId`);
+  console.log(`  GET  /v1/proof-events/stream`);
   console.log(`  GET  /health`);
   console.log(`  data: ${DATA_DIR}`);
   console.log(

@@ -42,6 +42,7 @@ flowchart LR
 | `./scripts/smoke_full_loop.sh` | unified entry |
 | `./scripts/run_all_tests.sh` | validator + app + flutter |
 | `./scripts/smoke_auth_demo.sh` | Supabase demo user sign-in |
+| `./scripts/smoke_proof_events.sh` | SSE proof-sealed on validate |
 
 ---
 
@@ -61,12 +62,25 @@ flowchart LR
 
 ---
 
+## Phase 3 (2026-05-26)
+
+| Item | Status |
+|------|--------|
+| Proof-events SSE relay | ✅ `GET /v1/proof-events/stream` |
+| React `useProofEvents` | ✅ Profile Elo live status |
+| Stripe function promotion script | ✅ `promote_stripe_functions.sh` |
+| Stripe deploy / webhook smoke | ⏸ Owner keys required |
+| Capacitor in-process bridge | Deferred Phase 4 |
+| Android device E2E | Deferred — runbook only |
+
+---
+
 ## Still mocked / open
 
 | Item | Notes |
 |------|-------|
 | React gaze signals | Mocked — Flutter has real pipeline |
-| Capacitor / WS bridge | Phase 3 — see `REACT_FLUTTER_BRIDGE.md` |
+| Capacitor / in-process bridge | Phase 4 — SSE relay live today |
 | Android device E2E | Deferred — runbook only |
 | Production Stripe | `STRIPE_PHASE2.md` — keys deferred |
 | Full Elo companion UI | Profile teaser only (ADR-013) |

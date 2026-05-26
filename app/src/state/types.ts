@@ -104,6 +104,8 @@ export interface DemoState {
   walletSyncing: boolean
   settlingSessionId: string | null
   proofSubmitting: boolean
+  proofEventsConnected: boolean
+  eloStatusLine: string
 }
 
 export interface DemoContextValue extends DemoState {
@@ -134,4 +136,6 @@ export interface DemoContextValue extends DemoState {
   authError: string | null
   signInDemo: () => Promise<void>
   signOutDemo: () => Promise<void>
+  proofEventsConnected: boolean
+  eloStatusLine: string
 }

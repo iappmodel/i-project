@@ -1731,6 +1731,11 @@ button.pressable-card {
   box-shadow: var(--neu-out);
 }
 
+.timeline-card.done {
+  border-color: rgba(76, 175, 80, 0.35);
+  opacity: 0.9;
+}
+
 .timeline-rail {
   width: 30px;
   height: 30px;

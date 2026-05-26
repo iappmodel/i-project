@@ -38,6 +38,8 @@ export function ProfileScreen() {
     authLoading,
     authError,
     signInDemo,
+    proofEventsConnected,
+    eloStatusLine,
   } = useDemo()
 
   return (
@@ -82,9 +84,11 @@ export function ProfileScreen() {
         <h2 className="profile-section__title">Elo · companion</h2>
         <p className="profile-vision-card__body">
           POP is the senses of Elo — perception feeds continuity, memory, and guidance across loops.
-          Full companion UI ships post Loop 1 spine (ADR-013).
         </p>
         <p className="profile-trust-card__hint mono" style={{ marginTop: 8 }}>
+          {proofEventsConnected ? '● proof-events live' : '○ proof-events offline'} · {eloStatusLine}
+        </p>
+        <p className="profile-trust-card__hint mono" style={{ marginTop: 4 }}>
           POP senses → Proof → Wallet
         </p>
       </section>

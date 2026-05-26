@@ -104,6 +104,7 @@ cat <<EOF
 
   Smoke:
     ./scripts/smoke_pop_wallet_loop_supabase.sh
+    ./scripts/smoke_proof_events.sh
 
   Stop:
     kill \$(cat $VALIDATOR_PID) \$(cat $APP_PID) 2>/dev/null; rm -f $VALIDATOR_PID $APP_PID

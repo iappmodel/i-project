@@ -1,43 +1,77 @@
-# React ↔ Flutter proof bridge (Phase 2 design)
+# React ↔ Flutter proof bridge
 
-**Status:** Design + env hooks — implementation deferred to Phase 3  
+**Status:** SSE relay implemented (Phase 3) — Capacitor shell deferred  
 **Goal:** Real gaze from `flutter-runtime` into `app/` watch-verify without duplicating POP logic.
 
 ---
 
-## Recommended architecture
+## Architecture (current)
 
 ```mermaid
 flowchart LR
   Flutter[flutter-runtime Seal Proof]
   Val[POP validator :8787]
-  WS[Optional WS relay]
+  SSE[/v1/proof-events/stream]
   App[app/ React shell]
 
   Flutter -->|POST ProofPacketV0| Val
+  App -->|EventSource| SSE
+  Val --> SSE
   App -->|poll pending holds| Val
-  Flutter -.->|future: proof-sealed events| WS
-  WS -.-> App
 ```
 
-**Phase 2 decision:** Keep React mock packet for Loop 1 presenter fidelity. Flutter posts real packets independently to the same validator.
+**Loop 1 web:** React still uses mock `buildDemoProofPacket()` for presenter fidelity.  
+**Flutter:** Posts real packets to the same validator; app receives `proof-sealed` events and refreshes wallet.
 
 ---
 
-## Env hooks (future)
+## Endpoints
+
+| Endpoint | Purpose |
+|----------|---------|
+| `POST /v1/proof-packets/validate` | Submit proof (web or Flutter) |
+| `GET /v1/proof-events/stream` | SSE stream of `proof-sealed` events |
+
+Event shape:
+
+```json
+{
+  "type": "proof-sealed",
+  "sessionId": "sess_…",
+  "localUserRef": "demo-user-001",
+  "mode": "pending",
+  "reviewStatus": "approved",
+  "holdOutcome": "created",
+  "timestamp": "2026-05-26T…",
+  "source": "flutter"
+}
+```
+
+---
+
+## Env
 
 | Surface | Variable |
 |---------|----------|
 | Flutter | `POP_VALIDATOR_URL` (dart-define) |
-| React | `VITE_POP_VALIDATOR_URL` |
-| Optional relay | `VITE_PROOF_WS_URL` (not implemented) |
+| React | `VITE_POP_VALIDATOR_URL` (EventSource uses same base) |
+
+No separate `VITE_PROOF_WS_URL` — SSE shares validator origin.
 
 ---
 
-## Phase 3 implementation options
+## App integration
 
-1. **Capacitor shell** — embed Flutter module in WebView (heaviest)
-2. **WebSocket relay** — validator broadcasts `ProofPacketSealedEvent` to subscribed tabs
-3. **Shared session id** — deep link `iapp://proof?session=…` from Flutter back to app wallet tab
+- `app/src/state/useProofEvents.ts` — EventSource subscriber
+- Profile **Elo · companion** shows live `proof-events` status
+- Wallet refreshes pending holds when external proof is sealed
+
+---
+
+## Deferred (Phase 4+)
+
+1. **Capacitor shell** — embed Flutter module in WebView
+2. **Deep link return** — `iapp://proof?session=…` from Flutter to wallet tab
+3. **Replace mock gaze** in watch-verify when Flutter bridge is in-process
 
 See `docs/technical/ANDROID_SEAL_PROOF_RUNBOOK.md` for device path today.

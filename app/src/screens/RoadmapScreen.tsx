@@ -7,21 +7,21 @@ import { useDemo } from '../state/useDemo'
 const phases = [
   {
     id: 'p1',
-    title: 'Phase 1 · Presenter fidelity',
-    body: 'Canonical `app/` + live POP validator + Supabase ledger settle (local smoke PASS).',
-    status: 'active',
+    title: 'Phase 1 · Loop 1 spine',
+    body: 'React demo + POP validator + Supabase ledger settle + demo auth (smokes PASS).',
+    status: 'done',
   },
   {
     id: 'p2',
-    title: 'Phase 2 · Native signal stack',
-    body: 'Flutter Seal Proof → validator on Android device; bridge gaze into watch-verify.',
-    status: 'next',
+    title: 'Phase 2 · Proof bridge',
+    body: 'SSE proof-events relay; Flutter Seal Proof posts to same validator (device tap deferred).',
+    status: 'active',
   },
   {
     id: 'p3',
     title: 'Phase 3 · Rails & compliance',
-    body: 'KYC-lite withdrawal + conversion with audited providers.',
-    status: 'future',
+    body: 'Stripe checkout promotion (owner keys) + KYC-lite withdrawal rails.',
+    status: 'next',
   },
 ] as const
 

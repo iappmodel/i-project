@@ -5,6 +5,19 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-26 — Phase 3 autonomous queue complete
+
+### Delivered
+- **Proof-events SSE** — validator broadcasts `proof-sealed`; React `useProofEvents` + Elo live status
+- **Stripe scaffold** — `promote_stripe_functions.sh`, `smoke_stripe_webhook.sh` (skip without keys)
+- **CI / smokes** — `smoke_proof_events.sh` in CI + `run_all_tests.sh`
+- **Roadmap** — spine phases aligned with migration queue
+
+### Deferred Phase 4
+- Capacitor in-process bridge, Stripe edge deploy, Android device tap
+
+---
+
 ## 2026-05-26 — Phase 2 autonomous queue complete
 
 ### Delivered

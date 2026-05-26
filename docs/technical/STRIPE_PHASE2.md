@@ -22,8 +22,8 @@ See `docs/technical/SYSTEM_PROMOTION_SOURCE_OF_TRUTH.md` § Payments.
 1. Owner adds to `.env.local.stack` or Supabase secrets:
    - `STRIPE_SECRET_KEY` (test mode `sk_test_…`)
    - `STRIPE_WEBHOOK_SECRET`
-2. Run promotion script (Phase 3): copy edge functions → `app/supabase/functions/`
-3. `./scripts/smoke_stripe_webhook.sh` (Phase 3)
+2. Run `./scripts/promote_stripe_functions.sh` → copies edge functions into `app/supabase/functions/`
+3. Deploy functions to Supabase; run `./scripts/smoke_stripe_webhook.sh`
 4. Wire `WithdrawPreviewScreen` to test-mode checkout (not mock ACH copy only)
 
 ---

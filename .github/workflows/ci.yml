@@ -30,3 +30,6 @@ jobs:
 
       - name: Local-json wallet smoke
         run: ./scripts/smoke_pop_wallet_loop.sh
+
+      - name: Proof events SSE smoke
+        run: ./scripts/smoke_proof_events.sh

@@ -11,10 +11,30 @@ cd "$ROOT/integrations/pop-core/validator"
 npm test
 
 echo ""
+echo "== Proof events SSE smoke =="
+"$ROOT/scripts/smoke_proof_events.sh"
+
+echo ""
+echo "== Local-json wallet smoke =="
+"$ROOT/scripts/smoke_pop_wallet_loop.sh"
+
+echo ""
 echo "== App typecheck + build =="
 cd "$ROOT/app"
 npm run typecheck
 npm run build
+
+echo ""
+echo "== Auth demo smoke (optional Docker) =="
+if docker info >/dev/null 2>&1; then
+  "$ROOT/scripts/smoke_auth_demo.sh"
+else
+  echo "SKIP: Docker not running"
+fi
+
+echo ""
+echo "== Stripe webhook smoke (optional keys) =="
+"$ROOT/scripts/smoke_stripe_webhook.sh"
 
 echo ""
 echo "== Flutter runtime tests =="

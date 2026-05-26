@@ -13,6 +13,7 @@ import {
   createAttentionSession,
 } from './attentionSession'
 import { useLiveWalletSync } from './useLiveWalletSync'
+import { useProofEvents } from './useProofEvents'
 import { useSupabaseAuth } from './useSupabaseAuth'
 import type {
   DemoContextValue,
@@ -75,6 +76,8 @@ const defaultState = (): DemoState => ({
   walletSyncing: false,
   settlingSessionId: null,
   proofSubmitting: false,
+  proofEventsConnected: false,
+  eloStatusLine: 'Listening for POP senses via proof-events stream…',
 })
 
 export const DemoContext = createContext<DemoContextValue | null>(null)
@@ -84,6 +87,12 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   const liveWallet = useLiveWalletSync()
   const supabaseAuth = useSupabaseAuth()
   const authUserId = supabaseAuth.user?.id ?? null
+
+  const onProofSealed = useCallback(() => {
+    void liveWallet.refreshPendingHolds()
+  }, [liveWallet.refreshPendingHolds])
+
+  const proofEvents = useProofEvents(onProofSealed)
 
   useEffect(() => {
     if (liveWallet.walletBackend !== 'live' || liveWallet.popHolds.length === 0) return
@@ -364,12 +373,16 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       authError: supabaseAuth.authError,
       signInDemo: supabaseAuth.signInDemo,
       signOutDemo: supabaseAuth.signOut,
+      proofEventsConnected: proofEvents.connected,
+      eloStatusLine: proofEvents.eloStatusLine,
     }),
     [
       state,
       liveWallet,
       supabaseAuth,
       authUserId,
+      proofEvents.connected,
+      proofEvents.eloStatusLine,
       settlePopHoldWithAuth,
       navigateTo,
       setActiveTab,
