@@ -5,6 +5,19 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-27 — Phase 25 remote-control runtime settings promotion complete
+
+### Delivered
+- **Active runtime tuning** — `useWebVisionEngine` now consumes `remoteControlSettings` for mirror/invert axes, gaze reach, blink timeout, and backend selection.
+- **Live settings sync** — vision runtime refreshes when `remoteControlSettingsChanged` is emitted.
+- **Scope control** — kept calibration and blink-remote UI deferred while still promoting operator tuning knobs into the running vision stack.
+
+### Deferred Phase 26+
+- Promote selected `useBlinkRemoteControl` gesture dispatch into Loop 1 without shipping full settings surface.
+- Add chunking strategy for >500 kB app bundle warnings.
+
+---
+
 ## 2026-05-27 — Phase 24 shared vision context mount complete
 
 ### Delivered
