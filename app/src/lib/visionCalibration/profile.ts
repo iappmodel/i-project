@@ -25,6 +25,11 @@ export interface VisionCalibrationProfile {
   version: 2
   profileQuality: number
   livenessMinScore: number
+  handPinchMinConfidence: number
+  handPointMinConfidence: number
+  handOpenPalmMinConfidence: number
+  headYawCommandThreshold: number
+  nodRangeThreshold: number
   residualModel?: VisionResidualModel
   deviceClass?: VisionDeviceClass
 }
@@ -37,6 +42,11 @@ const DEFAULT_CALIBRATION: VisionCalibrationProfile = {
   version: 2,
   profileQuality: 0.5,
   livenessMinScore: 0.55,
+  handPinchMinConfidence: 0.58,
+  handPointMinConfidence: 0.62,
+  handOpenPalmMinConfidence: 0.55,
+  headYawCommandThreshold: 18,
+  nodRangeThreshold: 12,
   deviceClass: 'desktop',
 }
 
@@ -122,6 +132,27 @@ export function normalizeVisionCalibration(value: unknown): VisionCalibrationPro
     livenessMinScore: clamp01(
       typeof obj.livenessMinScore === 'number' ? obj.livenessMinScore : DEFAULT_CALIBRATION.livenessMinScore,
     ),
+    handPinchMinConfidence: clamp01(
+      typeof obj.handPinchMinConfidence === 'number'
+        ? obj.handPinchMinConfidence
+        : DEFAULT_CALIBRATION.handPinchMinConfidence,
+    ),
+    handPointMinConfidence: clamp01(
+      typeof obj.handPointMinConfidence === 'number'
+        ? obj.handPointMinConfidence
+        : DEFAULT_CALIBRATION.handPointMinConfidence,
+    ),
+    handOpenPalmMinConfidence: clamp01(
+      typeof obj.handOpenPalmMinConfidence === 'number'
+        ? obj.handOpenPalmMinConfidence
+        : DEFAULT_CALIBRATION.handOpenPalmMinConfidence,
+    ),
+    headYawCommandThreshold:
+      typeof obj.headYawCommandThreshold === 'number'
+        ? obj.headYawCommandThreshold
+        : DEFAULT_CALIBRATION.headYawCommandThreshold,
+    nodRangeThreshold:
+      typeof obj.nodRangeThreshold === 'number' ? obj.nodRangeThreshold : DEFAULT_CALIBRATION.nodRangeThreshold,
     residualModel: normalizeResidualModel(obj.residualModel),
     deviceClass,
   }

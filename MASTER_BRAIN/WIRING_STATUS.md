@@ -150,7 +150,7 @@ flowchart LR
 
 | Item | Notes |
 |------|-------|
-| React gaze signals | First active non-UI `vision-unified` slice wired behind `VITE_VISION_ENGINE` with live worker-side EAR/gaze/head-pose math |
+| React gaze signals | `useVisionEngine` on Earn + `useEyeTracking` on Watch behind `VITE_VISION_ENGINE`; blink-remote UI still deferred |
 | Capacitor native build | `setup_capacitor_shell.sh --add` |
 | Production Stripe | `STRIPE_PHASE2.md` — keys deferred |
 | Full Elo companion UI | Profile teaser only (ADR-013) |

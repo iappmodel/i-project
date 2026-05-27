@@ -13,7 +13,7 @@ import React, {
 } from 'react';
 import { useVisionEngine } from '@/hooks/useVisionEngine';
 import { useVisionStream } from '@/contexts/VisionStreamContext';
-import { loadRemoteControlSettings } from '@/hooks/useBlinkRemoteControl';
+import { loadRemoteControlSettings } from '@/lib/remoteControlSettings';
 import { logger } from '@/lib/logger';
 import { analyzeSkinToneFrame } from '@/lib/skinToneFallback';
 import {

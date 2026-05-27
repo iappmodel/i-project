@@ -7,7 +7,7 @@ import {
   type AttentionPresetId,
 } from '@/constants/attention';
 import { getPassThreshold, isCashEligible } from '@/constants/attentionPass';
-import { loadRemoteControlSettings } from '@/hooks/useBlinkRemoteControl';
+import { loadRemoteControlSettings } from '@/lib/remoteControlSettings';
 import { useVisionEngine } from '@/hooks/useVisionEngine';
 import { useVision, USE_VISION_CONTEXT } from '@/contexts/VisionContext';
 import { getCameraRuntimeIssue, isDemoVisionSimulationEnabled } from '@/lib/demoRuntime';
@@ -117,13 +117,6 @@ interface UseEyeTrackingOptions extends AttentionThresholds {
   visionFallbackMs?: number;
 }
 
-const DEFAULT_EAR = 0.18;
-const DEFAULT_GAZE_RANGE = 0.22;
-const DEFAULT_MAX_YAW = 20;
-const DEFAULT_MAX_PITCH = 15;
-const DEFAULT_ATTENTIVE_FRAME = 0.70;
-const ROLLING_WINDOW_MS = 2000;
-const EMA_ALPHA = 0.2;
 /** Default wait for Vision Engine before falling back to skin-tone (ms). */
 const DEFAULT_VISION_FALLBACK_MS = 5000;
 /** When on fallback, retry Vision every 30s (model may have loaded late). */
@@ -132,8 +125,6 @@ const VISION_RETRY_INTERVAL_MS = 30000;
 const SAMPLE_INTERVAL_MS = 100;
 /** Starvation: if no valid sample for this long, apply fail-closed 'none' sample. */
 const STARVATION_MS = 700;
-/** Fallback only when no valid vision sample for this long, or MediaPipe no face > VISION_FALLBACK_MS. */
-const FALLBACK_STARVING_MS = 500;
 const EMPTY_SESSION_STATS: AttentionSessionStats = {
   minScore: 100,
   maxScore: 0,
@@ -220,7 +211,7 @@ export function useEyeTracking(options: UseEyeTrackingOptions = {}) {
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const detectionIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const detectionIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const visionFallbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const visionRetryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const demoVisionIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -237,7 +228,7 @@ export function useEyeTracking(options: UseEyeTrackingOptions = {}) {
   const useOwnVision = !useAlternateGaze && enabled && !rcEnabled && !useContextPath;
   const vision = useVisionEngine({
     enabled: useOwnVision,
-    videoRef,
+    videoRef: videoRef as import('react').RefObject<HTMLVideoElement>,
     mirrorX: true,
     invertY: true,
     gazeScale: 1.6,

@@ -6,6 +6,7 @@ import { ProgressBar } from '../components/ProgressBar'
 import { SourceEvidence } from '../components/SourceEvidence'
 import { DEFAULT_SPONSORED_OFFER } from '../data/demoData'
 import { formatCoinLabel } from '../lib/format'
+import { isWebVisionEnabled, useWebEyeTracking } from '../lib/visionEngine'
 import { useDemo } from '../state/useDemo'
 
 function watchTotalTicks(duration?: string): number {
@@ -26,6 +27,8 @@ export function WatchVerifyScreen() {
     proofEventsConnected,
   } = useDemo()
   const offer = selectedOffer ?? DEFAULT_SPONSORED_OFFER
+  const webVisionEnabled = isWebVisionEnabled()
+  const eyeTracking = useWebEyeTracking(webVisionEnabled && verificationStatus === 'watching')
 
   const totalTicks = useMemo(() => watchTotalTicks(offer.watchDuration), [offer.watchDuration])
   const [elapsed, setElapsed] = useState(0)
@@ -54,7 +57,11 @@ export function WatchVerifyScreen() {
   const remS = remaining % 60
   const timerLabel = `${remM}:${String(remS).padStart(2, '0')}`
 
-  const ringScore = Math.min(98, Math.max(72, Math.round(75 + Math.sin(elapsed * 0.1) * 12)))
+  const mockRingScore = Math.min(98, Math.max(72, Math.round(75 + Math.sin(elapsed * 0.1) * 12)))
+  const ringScore =
+    webVisionEnabled && eyeTracking.isTracking
+      ? Math.min(98, Math.max(0, eyeTracking.attentionScore))
+      : mockRingScore
   const arcCirc = 213
   const dashOffset = arcCirc - (arcCirc * ringScore) / 100
   const accruedI = Number(((pct / 100) * offer.rewardICoins).toFixed(2))
@@ -68,11 +75,13 @@ export function WatchVerifyScreen() {
         <div className="watch-hud-top-prot watch-hud-top-prot-ext">
           <div className="tracking-badge-prot tracking-badge-prot-camera">
             <span className="tb-label-prot mono">
-              {walletBackend === 'live'
-                ? proofEventsConnected
-                  ? 'Eye / camera · mock gaze · SSE bridge live'
-                  : 'Eye / camera · mock gaze · validator live'
-                : 'Eye / camera · demo harness'}
+              {webVisionEnabled
+                ? `Eye / camera · web vision (${eyeTracking.visionStatus}, face=${eyeTracking.isFaceDetected ? 'yes' : 'no'})`
+                : walletBackend === 'live'
+                  ? proofEventsConnected
+                    ? 'Eye / camera · mock gaze · SSE bridge live'
+                    : 'Eye / camera · mock gaze · validator live'
+                  : 'Eye / camera · demo harness'}
             </span>
           </div>
           <div className="timer-badge-prot mono">{timerLabel}</div>

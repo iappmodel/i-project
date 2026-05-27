@@ -5,6 +5,20 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-27 — Phase 23 eye-tracking bridge + Watch screen activation complete
+
+### Delivered
+- **Archive alias bridge** — added `hooks/`, `constants/`, `contexts/`, `services/`, and `integrations/supabase` shims so `useEyeTracking` resolves in Loop 1.
+- **Attention stack** — promoted `attentionScoring`, `attention`, `attentionPass`, full `skinToneFallback`, and `eyeTracking.worker`.
+- **Watch integration** — `WatchVerifyScreen` uses `useWebEyeTracking` behind `VITE_VISION_ENGINE` for live attention ring + HUD status.
+- **Remote control settings** — extracted `remoteControlSettings.ts` to decouple eye-tracking from full blink-remote-control UI.
+
+### Deferred Phase 24+
+- Promote `useBlinkRemoteControl` UI shell and calibration wizard into product tabs.
+- Mount `VisionProvider` when shared-camera path is required on mobile Safari.
+
+---
+
 ## 2026-05-27 — Phase 22 vision worker signal fusion pass complete
 
 ### Delivered

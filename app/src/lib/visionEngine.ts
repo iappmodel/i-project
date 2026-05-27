@@ -1,5 +1,6 @@
 import { detectVisionDeviceClass, getVisionRuntimePreset } from './visionCalibration/profile'
 import { useVisionEngine } from '../vision-unified/hooks/useVisionEngine'
+import { useEyeTracking } from '../vision-unified/hooks/useEyeTracking'
 import type { RefObject } from 'react'
 
 const TRUE_VALUES = new Set(['1', 'true', 'yes', 'on'])
@@ -26,5 +27,12 @@ export function useWebVisionEngine(enabled: boolean, videoRef: RefObject<HTMLVid
     gazeSmoothing: runtime.preset.gazeSmoothing,
     visionBackend: 'face_landmarker',
     useWorker: true,
+  })
+}
+
+export function useWebEyeTracking(enabled: boolean) {
+  return useEyeTracking({
+    enabled,
+    preset: 'normal',
   })
 }
