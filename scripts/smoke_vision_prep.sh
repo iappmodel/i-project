@@ -11,6 +11,10 @@ echo "== Vision prep smoke =="
   echo "FAIL: visionEngine.ts missing" >&2
   exit 1
 }
+[[ -f "$APP/src/lib/visionCalibration/profile.ts" ]] || {
+  echo "FAIL: visionCalibration/profile.ts missing" >&2
+  exit 1
+}
 
 if ! grep -q "VITE_VISION_ENGINE" "$APP/src/lib/visionEngine.ts"; then
   echo "FAIL: vision feature flag not wired" >&2

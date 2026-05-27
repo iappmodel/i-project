@@ -22,6 +22,8 @@
 | 15 | [AUTONOMOUS_QUEUE_PHASE15.md](AUTONOMOUS_QUEUE_PHASE15.md) | Loop 2 save/return scaffold |
 | 16 | [AUTONOMOUS_QUEUE_PHASE16.md](AUTONOMOUS_QUEUE_PHASE16.md) | Validator Docker packaging + smoke |
 | 17 | [AUTONOMOUS_QUEUE_PHASE17.md](AUTONOMOUS_QUEUE_PHASE17.md) | Artifact build + CI hardening |
+| 18 | [AUTONOMOUS_QUEUE_PHASE18.md](AUTONOMOUS_QUEUE_PHASE18.md) | Web-vision subset vendoring + guardrails |
+| 19 | [AUTONOMOUS_QUEUE_PHASE19.md](AUTONOMOUS_QUEUE_PHASE19.md) | Compilable vision-core adapter wiring |
 
 **One-page status:** [ORGANISM_STATUS.md](ORGANISM_STATUS.md)  
 **Truth page:** [WIRING_STATUS.md](WIRING_STATUS.md)  

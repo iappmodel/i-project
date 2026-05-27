@@ -123,6 +123,7 @@ These paths describe the **intended production stack** (Flutter + Android native
 
 - `app/src/lib/visionEngine.ts` introduces `VITE_VISION_ENGINE` with **default off** behavior.
 - `app/src/screens/EarnScreen.tsx` now surfaces an explicit banner when web-vision experimental mode is enabled.
+- `app/src/lib/visionCalibration/profile.ts` mirrors core runtime preset logic (device class + smoothing) without archive UI coupling.
 - This is intentionally additive only: no settlement, payout, or POP validator contract changes.
 
 ---

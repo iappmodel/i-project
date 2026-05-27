@@ -1,7 +1,7 @@
 # [ i ] Organism status — one page
 
 **Updated:** 2026-05-27  
-**Phases complete:** 1–17 (see [PHASE_QUEUE_INDEX.md](PHASE_QUEUE_INDEX.md))
+**Phases complete:** 1–19 (see [PHASE_QUEUE_INDEX.md](PHASE_QUEUE_INDEX.md))
 
 ---
 
@@ -17,6 +17,7 @@
 | Capacitor | Packages installed; `setup_capacitor_shell.sh --add` for native |
 | Loop 2 scaffold | ✅ Save/return flow (`saved` screen + localStorage) |
 | Validator packaging | ✅ Dockerfile + `smoke_validator_docker.sh` |
+| Web vision core | ✅ audited subset vendored + compile-safe core adapters behind flag |
 | CI | Validator + app + readiness + vision + artifact upload |
 
 **One command:** `./scripts/dev_stack.sh`

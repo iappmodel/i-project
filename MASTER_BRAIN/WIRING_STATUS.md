@@ -259,6 +259,26 @@ flowchart LR
 
 ---
 
+## Phase 18 (2026-05-27)
+
+| Item | Status |
+|------|--------|
+| Audited vision subset vendored | ✅ `app/src/vision-unified/*` from `22cabd3` |
+| Cherry-pick automation | ✅ `scripts/cherry_pick_vision_unified_22cabd3.sh` |
+| Compile guardrail | ✅ `tsconfig.app.json` excludes `vision-unified/**` |
+
+---
+
+## Phase 19 (2026-05-27)
+
+| Item | Status |
+|------|--------|
+| Vision calibration core adapter | ✅ `app/src/lib/visionCalibration/profile.ts` |
+| Residual model normalizer | ✅ `app/src/lib/visionCalibration/residualModel.ts` |
+| Runtime banner wiring | ✅ Earn screen shows runtime details when flag on |
+
+---
+
 ## Knowledge map
 
 | Question | Read |

@@ -5,6 +5,20 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-27 — Phases 18–19 autonomous bundle complete
+
+### Delivered
+- **Audited vision vendoring** — `22cabd3` subset copied into `app/src/vision-unified`.
+- **Deterministic recovery script** — `cherry_pick_vision_unified_22cabd3.sh`.
+- **Compile-safe bridge** — `vision-unified` guarded from TS compile while retained in-repo.
+- **Vision core adapter** — added local `visionCalibration/profile.ts` + `residualModel.ts` and runtime helper usage.
+
+### Deferred Phase 20+
+- Bridge archive-only deps (`@/` aliases, UI libs, services) to fully compile `vision-unified`.
+- Decide if/when to activate full unified wizard UX in product screens.
+
+---
+
 ## 2026-05-27 — Phases 11–17 autonomous bundle complete
 
 ### Delivered
