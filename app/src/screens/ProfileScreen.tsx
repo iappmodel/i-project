@@ -5,6 +5,7 @@ import { ProgressBar } from '../components/ProgressBar'
 import { createSubscriptionCheckout } from '../lib/stripeCheckout'
 import { getStripeReadiness, stripeReadinessLabel } from '../lib/stripeConfig'
 import { isWebVisionEnabled, useRemoteGestureListener } from '../lib/visionEngine'
+import { useScreenTargetActionListener } from '../lib/visionScreenTargets'
 import { useDemo } from '../state/useDemo'
 import { useState } from 'react'
 
@@ -54,6 +55,7 @@ export function ProfileScreen() {
   const stripeReadiness = getStripeReadiness()
   const webVisionEnabled = isWebVisionEnabled()
   const lastRemoteGesture = useRemoteGestureListener(webVisionEnabled)
+  const lastTargetAction = useScreenTargetActionListener(webVisionEnabled)
   const [stripeLoading, setStripeLoading] = useState(false)
   const [stripeError, setStripeError] = useState<string | null>(null)
 
@@ -85,6 +87,7 @@ export function ProfileScreen() {
       {webVisionEnabled ? (
         <p className="profile-trust-card__hint mono" style={{ marginBottom: 12 }}>
           Remote gesture bridge · last event: {lastRemoteGesture ?? 'waiting'}
+          {lastTargetAction ? ` · target: ${lastTargetAction}` : ''}
         </p>
       ) : null}
 

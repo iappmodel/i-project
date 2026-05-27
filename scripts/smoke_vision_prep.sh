@@ -60,6 +60,18 @@ if ! grep -q "useWebGestureDispatch" "$APP/src/screens/WatchVerifyScreen.tsx"; t
   echo "FAIL: Watch screen is not wired to gesture dispatch slice" >&2
   exit 1
 fi
+[[ -f "$APP/src/hooks/useScreenTargets.ts" ]] || {
+  echo "FAIL: useScreenTargets bridge missing" >&2
+  exit 1
+}
+[[ -f "$APP/src/lib/visionScreenTargets.ts" ]] || {
+  echo "FAIL: visionScreenTargets.ts missing" >&2
+  exit 1
+}
+if ! grep -q "VisionScreenTargetBridge" "$APP/src/App.tsx"; then
+  echo "FAIL: App must mount VisionScreenTargetBridge for screen-target actions" >&2
+  exit 1
+fi
 
 if ! grep -q "vision-unified/\\*\\*" "$APP/tsconfig.app.json"; then
   echo "FAIL: tsconfig.app.json must exclude src/vision-unified/** until wired" >&2

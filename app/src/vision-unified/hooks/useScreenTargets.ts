@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ComboAction, COMBO_ACTION_LABELS } from './useGestureCombos';
+import type { ComboAction } from './useGestureCombos';
+import { COMBO_ACTION_LABELS } from './useGestureCombos';
 
 // --- Types ---
 

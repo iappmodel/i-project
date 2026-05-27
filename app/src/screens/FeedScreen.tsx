@@ -4,9 +4,15 @@ import { TabScreenLayout } from '../components/TabScreenLayout'
 import { DEFAULT_SPONSORED_OFFER } from '../data/demoData'
 import { formatIcoinsAmount } from '../lib/format'
 import { saveLoopItem } from '../lib/savedLoop'
+import { isWebVisionEnabled } from '../lib/visionEngine'
+import { useScreenTargetActionListener } from '../lib/visionScreenTargets'
+import { loadTargets } from '../hooks/useScreenTargets'
 import { useDemo } from '../state/useDemo'
 
 export function FeedScreen() {
+  const webVisionEnabled = isWebVisionEnabled()
+  const lastTargetAction = useScreenTargetActionListener(webVisionEnabled)
+  const screenTargetCount = webVisionEnabled ? loadTargets().filter((t) => t.enabled).length : 0
   const {
     iCoins,
     selectOffer,
@@ -33,6 +39,12 @@ export function FeedScreen() {
           <p className="profile-trust-card__hint mono" style={{ padding: '0 16px 8px', fontSize: 11 }}>
             {isNativeShell ? 'Capacitor shell · ' : ''}
             {proofEventsConnected ? '● proof bridge live' : '○ proof bridge'}
+          </p>
+        ) : null}
+        {webVisionEnabled ? (
+          <p className="profile-trust-card__hint mono" style={{ padding: '0 16px 8px', fontSize: 11 }}>
+            Screen targets: {screenTargetCount} mapped
+            {lastTargetAction ? ` · last=${lastTargetAction}` : ''}
           </p>
         ) : null}
         <div className="stories-row">

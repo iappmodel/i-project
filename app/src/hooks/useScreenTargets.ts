@@ -1,0 +1,14 @@
+export {
+  useScreenTargets,
+  loadTargets,
+  saveTargets,
+  getTargetAtPosition,
+  getTriggerLabel,
+  TRIGGER_LABELS,
+  TARGET_PRESETS,
+  type ScreenTarget,
+  type GestureTrigger,
+  type SimpleGestureTrigger,
+  type AppCommand,
+  type TargetPreset,
+} from '../vision-unified/hooks/useScreenTargets'

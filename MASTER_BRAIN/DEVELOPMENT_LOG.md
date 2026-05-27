@@ -5,6 +5,20 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-27 — Phase 27 screen-target action mapping complete
+
+### Delivered
+- **useScreenTargets promotion** — vendored hook + minimal `useGestureCombos` types; bridges at `hooks/useScreenTargets.ts` and `hooks/useGestureCombos.ts`.
+- **Action executor** — `visionScreenTargets.ts` seeds navigation preset on first run, listens for `remoteGestureTrigger` / `remoteBlinkPattern`, dispatches `screenTargetAction`, and runs Loop 1 tab/wallet/save commands.
+- **Global bridge** — `VisionScreenTargetBridge` mounted in `App.tsx` (no `TargetOverlay` UI).
+- **HUD** — Feed + Profile show target count / last action when `VITE_VISION_ENGINE=1`.
+
+### Deferred Phase 28+
+- Promote `TargetOverlay` gaze-dwell UI (requires accessibility/haptic stubs).
+- Gaze-position hit testing (`remoteGazePosition`) for `gazeActivated` / `gazeAndBlink` triggers.
+
+---
+
 ## 2026-05-27 — Phase 26 remote gesture dispatch slice complete
 
 ### Delivered

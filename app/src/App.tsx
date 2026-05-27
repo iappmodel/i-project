@@ -2,6 +2,7 @@ import type { ReactElement } from 'react'
 import { AppShell } from './components/AppShell'
 import { VisionProvider } from './contexts/VisionContext'
 import { VisionStreamProvider } from './contexts/VisionStreamContext'
+import { VisionScreenTargetBridge } from './components/VisionScreenTargetBridge'
 import { DemoProvider } from './state/demoContext'
 import { useDemo } from './state/useDemo'
 import type { DemoScreenId } from './state/types'
@@ -52,6 +53,7 @@ export default function App() {
     <DemoProvider>
       <VisionStreamProvider>
         <VisionProvider>
+          <VisionScreenTargetBridge />
           <AppShell>
             <ScreenRouter />
           </AppShell>
