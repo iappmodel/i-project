@@ -17,6 +17,11 @@ if ! grep -q "VITE_VISION_ENGINE" "$APP/src/lib/visionEngine.ts"; then
   exit 1
 fi
 
+if ! grep -q "vision-unified/\\*\\*" "$APP/tsconfig.app.json"; then
+  echo "FAIL: tsconfig.app.json must exclude src/vision-unified/** until wired" >&2
+  exit 1
+fi
+
 cd "$APP"
 npm run typecheck --silent
 npm run build --silent
