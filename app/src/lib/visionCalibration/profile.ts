@@ -1,4 +1,7 @@
 import { normalizeResidualModel, type VisionResidualModel } from './residualModel'
+import type { AffineParams } from './calibrationFit'
+
+export type { AffineParams } from './calibrationFit'
 
 export type VisionDeviceClass = 'iphone' | 'android' | 'desktop'
 
@@ -20,8 +23,15 @@ export interface VisionRuntimePreset {
 }
 
 export interface VisionCalibrationProfile {
+  offsetX: number
+  offsetY: number
+  scaleX: number
+  scaleY: number
   isCalibrated: boolean
   calibratedAt: number
+  autoCalibrationEnabled: boolean
+  autoAdjustments: number
+  affineParams?: AffineParams
   version: 2
   profileQuality: number
   livenessMinScore: number
@@ -37,8 +47,14 @@ export interface VisionCalibrationProfile {
 export const VISION_CALIBRATION_STORAGE_KEY = 'app_remote_control_calibration'
 
 const DEFAULT_CALIBRATION: VisionCalibrationProfile = {
+  offsetX: 0,
+  offsetY: 0,
+  scaleX: 1,
+  scaleY: 1,
   isCalibrated: false,
   calibratedAt: 0,
+  autoCalibrationEnabled: true,
+  autoAdjustments: 0,
   version: 2,
   profileQuality: 0.5,
   livenessMinScore: 0.55,
@@ -124,9 +140,22 @@ export function normalizeVisionCalibration(value: unknown): VisionCalibrationPro
   if (!value || typeof value !== 'object') return { ...DEFAULT_CALIBRATION, deviceClass: detectVisionDeviceClass() }
   const obj = value as Record<string, unknown>
   const deviceClass = asDeviceClass(obj.deviceClass) ?? detectVisionDeviceClass()
+  const affineRaw = obj.affineParams
+  const affineParams =
+    Array.isArray(affineRaw) && affineRaw.length === 6 && affineRaw.every((n) => typeof n === 'number')
+      ? (affineRaw as AffineParams)
+      : undefined
+
   return {
+    offsetX: typeof obj.offsetX === 'number' ? obj.offsetX : 0,
+    offsetY: typeof obj.offsetY === 'number' ? obj.offsetY : 0,
+    scaleX: typeof obj.scaleX === 'number' ? obj.scaleX : 1,
+    scaleY: typeof obj.scaleY === 'number' ? obj.scaleY : 1,
     isCalibrated: obj.isCalibrated === true,
     calibratedAt: typeof obj.calibratedAt === 'number' ? obj.calibratedAt : 0,
+    autoCalibrationEnabled: obj.autoCalibrationEnabled !== false,
+    autoAdjustments: typeof obj.autoAdjustments === 'number' ? obj.autoAdjustments : 0,
+    affineParams,
     version: 2,
     profileQuality: clamp01(typeof obj.profileQuality === 'number' ? obj.profileQuality : DEFAULT_CALIBRATION.profileQuality),
     livenessMinScore: clamp01(
@@ -173,4 +202,9 @@ export function saveVisionCalibration(value: VisionCalibrationProfile): void {
   if (typeof window === 'undefined') return
   const normalized = normalizeVisionCalibration(value)
   window.localStorage.setItem(VISION_CALIBRATION_STORAGE_KEY, JSON.stringify(normalized))
+  try {
+    window.dispatchEvent(new CustomEvent('visionCalibrationChanged'))
+  } catch {
+    // ignore
+  }
 }

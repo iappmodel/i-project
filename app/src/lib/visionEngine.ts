@@ -43,7 +43,11 @@ function useRemoteVisionSettings() {
   return settings
 }
 
-export function useWebVisionEngine(enabled: boolean, videoRef: RefObject<HTMLVideoElement | null>) {
+export function useWebVisionEngine(
+  enabled: boolean,
+  videoRef: RefObject<HTMLVideoElement | null>,
+  options?: { calibrationMode?: boolean },
+) {
   const runtime = getWebVisionRuntime()
   const settings = useRemoteVisionSettings()
   const vision = useVisionEngine({
@@ -57,6 +61,7 @@ export function useWebVisionEngine(enabled: boolean, videoRef: RefObject<HTMLVid
     patternTimeout: settings.blinkPatternTimeout,
     enableHandTracking: true,
     useWorker: true,
+    blinkConfig: options?.calibrationMode ? { calibrationMode: true } : undefined,
     onBlink: () => emitRemoteGesture('bothBlink'),
     onBlinkPattern: emitRemoteBlinkPattern,
     onLeftWink: () => emitRemoteGesture('leftWink'),

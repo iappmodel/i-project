@@ -4,6 +4,7 @@ import { TabScreenLayout } from '../components/TabScreenLayout'
 import { ProgressBar } from '../components/ProgressBar'
 import { createSubscriptionCheckout } from '../lib/stripeCheckout'
 import { getStripeReadiness, stripeReadinessLabel } from '../lib/stripeConfig'
+import { VisionCalibrationHost } from '../components/VisionCalibrationHost'
 import { VisionRemoteSettingsCard } from '../components/VisionRemoteSettingsCard'
 import { VisionTargetPresetPicker } from '../components/VisionTargetPresetPicker'
 import { isWebVisionEnabled, useRemoteGestureListener } from '../lib/visionEngine'
@@ -156,6 +157,7 @@ export function ProfileScreen() {
 
       {webVisionEnabled ? (
         <>
+          <VisionCalibrationHost />
           <VisionRemoteSettingsCard />
           <VisionTargetPresetPicker />
         </>

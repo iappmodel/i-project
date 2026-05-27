@@ -5,6 +5,19 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-27 — Phase 30 quick gaze calibration wizard complete
+
+### Delivered
+- **VisionCalibrationWizard** — 3-step ready/track/verify flow on Profile (camera starts when wizard opens); saves affine + residual fit to `app_remote_control_calibration`.
+- **calibrationFit + residualModel** — promoted poly2 residual compensation from archive; emits `calibrationMode` to suspend `TargetOverlay` during capture.
+- **VisionCalibrationHost** — Profile entry with quality readout and recalibrate action behind `VITE_VISION_ENGINE`.
+
+### Deferred Phase 31+
+- Full archive `BlinkRemoteControl` panel + drag-and-drop `TargetEditor`.
+- Vision bundle code-split for >500 kB main chunk.
+
+---
+
 ## 2026-05-27 — Phase 29 Profile vision operator controls complete
 
 ### Delivered
