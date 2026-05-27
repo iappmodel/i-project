@@ -1,7 +1,7 @@
 # [ i ] Organism status — one page
 
 **Updated:** 2026-05-27  
-**Phases complete:** 1–9 (see [PHASE_QUEUE_INDEX.md](PHASE_QUEUE_INDEX.md))
+**Phases complete:** 1–10 (see [PHASE_QUEUE_INDEX.md](PHASE_QUEUE_INDEX.md))
 
 ---
 
@@ -21,6 +21,8 @@
 
 **Full smoke:** `./scripts/smoke_organism_spine.sh`
 
+**Pre-deploy:** `./scripts/smoke_production_readiness.sh` · runbook: `docs/technical/PRODUCTION_DEPLOY_RUNBOOK.md`
+
 ---
 
 ## Owner / device gates
@@ -30,7 +32,7 @@
 | Stripe live checkout | `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET` in `.env.local.stack` → `./scripts/enable_stripe_live_env.sh` |
 | Capacitor store build | Xcode / Android Studio after `--add` |
 
-**Device test:** `./scripts/run_android_device_test.sh` (USB) · postcheck: `./scripts/smoke_android_seal_postcheck.sh`
+**Device test:** `./scripts/run_android_device_test.sh` (USB) · postcheck: `./scripts/smoke_android_seal_postcheck.sh` · open wallet: `./scripts/open_wallet_on_device.sh <session>`
 
 ---
 
@@ -45,11 +47,11 @@ React app (mock gaze) ──POST──►     │
 
 ---
 
-## Next phase candidates (10+)
+## Next phase candidates (11+)
 
-- P1 chat extraction pass
 - In-web MediaPipe promote (`22cabd3` cherry-pick)
-- Production deploy runbook
+- P1 chat extraction pass
 - Stripe live deploy (owner keys)
+- Capacitor store build
 
 See [WIRING_STATUS.md](WIRING_STATUS.md) for file-level truth.

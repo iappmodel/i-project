@@ -5,6 +5,19 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-27 — Phase 10 autonomous queue complete
+
+### Delivered
+- **Production runbook** — `docs/technical/PRODUCTION_DEPLOY_RUNBOOK.md`
+- **Pre-deploy smoke** — `smoke_production_readiness.sh` (builds + organism spine + Stripe skip)
+- **Device wallet return** — `open_wallet_on_device.sh` (adb deep link)
+- **CI** — consolidated on production readiness smoke
+
+### Deferred Phase 11
+- Stripe live keys, MediaPipe `22cabd3`, Capacitor store build
+
+---
+
 ## 2026-05-27 — Phase 9 autonomous queue complete
 
 ### Delivered

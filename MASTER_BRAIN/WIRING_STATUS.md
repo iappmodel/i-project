@@ -49,7 +49,9 @@ flowchart LR
 | `./scripts/smoke_android_env.sh` | Flutter + adb toolchain check |
 | `./scripts/run_android_device_test.sh` | One-shot USB deploy + logcat |
 | `./scripts/smoke_android_seal_postcheck.sh` | Verify pending hold after Seal Proof |
+| `./scripts/open_wallet_on_device.sh` | Open wallet deep link on Android device |
 | `./scripts/android_device_urls.sh` | Resolve POP/WALLET URLs for device mode |
+| `./scripts/smoke_production_readiness.sh` | Pre-deploy builds + spine + templates |
 | `./scripts/smoke_organism_spine.sh` | Full spine (local + optional Supabase) |
 | `./scripts/enable_stripe_live_env.sh` | Stripe checkout env when keys in stack |
 
@@ -172,6 +174,17 @@ flowchart LR
 | `smoke_android_seal_postcheck.sh` | ✅ pending hold verify |
 | Vite LAN host | ✅ `host: true` for WiFi fallback |
 | Runbook | ✅ USB reverse primary path |
+
+---
+
+## Phase 10 (2026-05-27)
+
+| Item | Status |
+|------|--------|
+| Production deploy runbook | ✅ `PRODUCTION_DEPLOY_RUNBOOK.md` |
+| Pre-deploy smoke | ✅ `smoke_production_readiness.sh` |
+| Device wallet deep link | ✅ `open_wallet_on_device.sh` |
+| CI consolidation | ✅ production readiness job |
 
 ---
 

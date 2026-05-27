@@ -14,9 +14,11 @@
 | 7 | [AUTONOMOUS_QUEUE_PHASE7.md](AUTONOMOUS_QUEUE_PHASE7.md) | Android env, Elo card, phase index |
 | 8 | [AUTONOMOUS_QUEUE_PHASE8.md](AUTONOMOUS_QUEUE_PHASE8.md) | Organism status, spine smoke, Stripe env |
 | 9 | [AUTONOMOUS_QUEUE_PHASE9.md](AUTONOMOUS_QUEUE_PHASE9.md) | Android device E2E, USB reverse, postcheck |
+| 10 | [AUTONOMOUS_QUEUE_PHASE10.md](AUTONOMOUS_QUEUE_PHASE10.md) | Production deploy runbook, readiness smoke, CI |
 
 **One-page status:** [ORGANISM_STATUS.md](ORGANISM_STATUS.md)  
 **Truth page:** [WIRING_STATUS.md](WIRING_STATUS.md)  
-**Local dev:** [../docs/RUNBOOK_LOCAL.md](../docs/RUNBOOK_LOCAL.md)
+**Local dev:** [../docs/RUNBOOK_LOCAL.md](../docs/RUNBOOK_LOCAL.md)  
+**Production:** [../docs/technical/PRODUCTION_DEPLOY_RUNBOOK.md](../docs/technical/PRODUCTION_DEPLOY_RUNBOOK.md)
 
-**Still owner/device deferred:** Stripe live keys in `.env.local.stack`, Capacitor store build.
+**Still owner-gated:** Stripe live keys, Capacitor store build, MediaPipe web promote.

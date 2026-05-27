@@ -58,4 +58,13 @@ echo "== Android env smoke (optional) =="
 "$ROOT/scripts/smoke_android_env.sh"
 
 echo ""
+echo "== Production deploy templates =="
+[[ -f "$ROOT/docs/technical/PRODUCTION_DEPLOY_RUNBOOK.md" ]] || {
+  echo "FAIL: PRODUCTION_DEPLOY_RUNBOOK.md missing" >&2
+  exit 1
+}
+echo "deploy runbook: OK"
+echo "Pre-deploy full check: ./scripts/smoke_production_readiness.sh"
+
+echo ""
 echo "PASS: run_all_tests"

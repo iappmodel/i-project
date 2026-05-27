@@ -105,6 +105,12 @@ WALLET_DEEP_LINK: http://127.0.0.1:5173?proofSession=…
 ./scripts/smoke_android_seal_postcheck.sh sess_8f3c2a1b-4e5d-6a7b-8c9d-0e1f2a3b4c5d
 ```
 
+Open wallet on device (return path):
+
+```bash
+./scripts/open_wallet_on_device.sh sess_8f3c2a1b-4e5d-6a7b-8c9d-0e1f2a3b4c5d
+```
+
 Or Supabase Studio → `pop_pending_holds`.
 
 ---

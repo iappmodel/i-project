@@ -41,14 +41,20 @@ else
   echo "Skip cap sync — no native platforms yet (use --add)"
 fi
 
+# shellcheck source=android_device_urls.sh
+source "$ROOT/scripts/android_device_urls.sh" 2>/dev/null || true
+CAP_URL="${WALLET_URL:-http://10.0.2.2:5173}"
+
 cat <<EOF
 
 Done. Native dirs (gitignored): app/android app/ios
 
-Dev with live Vite (emulator → host):
-  CAPACITOR_SERVER_URL=http://10.0.2.2:5173 npx cap run android
+Dev with live Vite (device/emulator → host):
+  CAPACITOR_SERVER_URL=$CAP_URL npx cap run android
 
 Or open IDE:
   cd app && npx cap open android
+
+Physical USB: use ./scripts/android_device_urls.sh for resolved URLs.
 
 EOF

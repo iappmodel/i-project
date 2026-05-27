@@ -77,3 +77,6 @@ grep -E 'PROOF_SEAL|PROOF_VALIDAT|WALLET_DEEP_LINK|PROOF_VALIDATION_FAILED' "$LO
 echo ""
 echo "Verify hold on Mac:"
 echo "  ./scripts/smoke_android_seal_postcheck.sh"
+echo ""
+echo "Open wallet on device (after PROOF_VALIDATED):"
+echo "  ./scripts/open_wallet_on_device.sh <session_id>"

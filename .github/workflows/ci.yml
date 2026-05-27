@@ -20,20 +20,13 @@ jobs:
             integrations/pop-core/validator/package-lock.json
             app/package-lock.json
 
-      - name: POP validator tests
+      - name: Install validator dependencies
         working-directory: integrations/pop-core/validator
-        run: npm ci && npm test
+        run: npm ci
 
-      - name: App typecheck and build
+      - name: Install app dependencies
         working-directory: app
-        run: npm ci && npm run typecheck && npm run build
+        run: npm ci
 
-      - name: Local-json wallet smoke
-        run: ./scripts/smoke_pop_wallet_loop.sh
-
-      - name: Proof events SSE smoke
-        run: ./scripts/smoke_proof_events.sh
-
-      - name: Capacitor prep smoke
-        working-directory: app
-        run: ../scripts/smoke_capacitor_prep.sh
+      - name: Production readiness smoke
+        run: ./scripts/smoke_production_readiness.sh

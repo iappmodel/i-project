@@ -39,6 +39,9 @@ Logcat (Seal Proof):
 Verify hold after tap:
   ./scripts/smoke_android_seal_postcheck.sh
 
+Open wallet deep link on device:
+  ./scripts/open_wallet_on_device.sh <session_id>
+
 Physical device tip: USB + adb reverse (auto) avoids WiFi "No route to host".
 Emulator: uses 10.0.2.2 to reach host localhost.
 

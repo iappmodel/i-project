@@ -39,6 +39,8 @@ Open **http://localhost:5173** → Earn → Loop 1 → Wallet → Settle.
 ./scripts/smoke_android_env.sh                   # toolchain check
 ./scripts/run_android_dev_loop.sh                # device loop cheat sheet
 ./scripts/run_android_device_test.sh             # one-shot USB deploy + logcat
+./scripts/open_wallet_on_device.sh sess_…        # open wallet on Android after seal
+./scripts/smoke_production_readiness.sh          # pre-deploy checklist
 ```
 
 | Service | URL |
@@ -133,6 +135,16 @@ See `docs/technical/ANDROID_SEAL_PROOF_RUNBOOK.md`.
 ```
 
 Post-tap verify: `./scripts/smoke_android_seal_postcheck.sh`
+
+Open wallet on device: `./scripts/open_wallet_on_device.sh <session_id>`
+
+---
+
+## Production deploy
+
+See `docs/technical/PRODUCTION_DEPLOY_RUNBOOK.md`.
+
+Pre-deploy smoke: `./scripts/smoke_production_readiness.sh`
 
 ---
 
