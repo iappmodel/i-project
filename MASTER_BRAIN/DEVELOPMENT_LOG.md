@@ -5,6 +5,19 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-27 — Phase 29 Profile vision operator controls complete
+
+### Delivered
+- **Remote settings card** — Profile exposes mirror/invert, gaze reach, dwell, blink timeout, and vision backend; persists via `saveRemoteControlSettings` + `remoteControlSettingsChanged`.
+- **Target preset picker** — apply Quick Actions / Navigation / Minimal / Power User layouts without full `TargetEditor`.
+- **Proof deep link** — already wired (`useDeepLinkProofSession` → wallet + flash); Seal Proof logcat monitor previously captured `PROOF_SEALED` → `WALLET_DEEP_LINK`.
+
+### Deferred Phase 30+
+- Full `BlinkRemoteControl` panel + `UnifiedVisionCalibrationWizard`.
+- Drag-and-drop `TargetEditor`.
+
+---
+
 ## 2026-05-27 — Phase 28 TargetOverlay gaze-dwell UI complete
 
 ### Delivered

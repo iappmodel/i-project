@@ -76,6 +76,14 @@ fi
   echo "FAIL: vision-target-overlay.css missing" >&2
   exit 1
 }
+if ! grep -q "VisionRemoteSettingsCard" "$APP/src/screens/ProfileScreen.tsx"; then
+  echo "FAIL: Profile must expose vision remote settings when flagged" >&2
+  exit 1
+fi
+if ! grep -q "VisionTargetPresetPicker" "$APP/src/screens/ProfileScreen.tsx"; then
+  echo "FAIL: Profile must expose target preset picker when flagged" >&2
+  exit 1
+fi
 
 if ! grep -q "vision-unified/\\*\\*" "$APP/tsconfig.app.json"; then
   echo "FAIL: tsconfig.app.json must exclude src/vision-unified/** until wired" >&2

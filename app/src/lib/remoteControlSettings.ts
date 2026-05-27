@@ -41,6 +41,16 @@ const DEFAULT_SETTINGS: RemoteControlSettings = {
   controlProfile: 'adaptive',
 }
 
+export function saveRemoteControlSettings(settings: RemoteControlSettings): void {
+  const payload: RemoteControlSettings = { ...settings, settingsVersion: 2 }
+  try {
+    localStorage.setItem(REMOTE_CONTROL_SETTINGS_KEY, JSON.stringify(payload))
+    window.dispatchEvent(new CustomEvent('remoteControlSettingsChanged'))
+  } catch {
+    // ignore quota / private mode
+  }
+}
+
 export function loadRemoteControlSettings(): RemoteControlSettings {
   const calibration = loadVisionCalibration()
   const deviceClass = calibration.deviceClass ?? detectVisionDeviceClass()

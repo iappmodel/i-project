@@ -1,1 +1,5 @@
-export { loadRemoteControlSettings } from '../lib/remoteControlSettings'
+export {
+  loadRemoteControlSettings,
+  saveRemoteControlSettings,
+  type RemoteControlSettings,
+} from '../lib/remoteControlSettings'
