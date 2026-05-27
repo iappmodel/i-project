@@ -279,6 +279,17 @@ flowchart LR
 
 ---
 
+## Phase 20 (2026-05-27)
+
+| Item | Status |
+|------|--------|
+| TS/Vite alias bridge | ✅ `@/*` path support added |
+| MediaPipe deps in app | ✅ `@mediapipe/face_mesh` + `@mediapipe/tasks-vision` |
+| Shared vision stubs | ✅ `lib/logger.ts`, `lib/skinToneFallback.ts` |
+| Vision smoke hardening | ✅ asserts bridge prerequisites |
+
+---
+
 ## Knowledge map
 
 | Question | Read |

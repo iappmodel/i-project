@@ -24,6 +24,7 @@
 | 17 | [AUTONOMOUS_QUEUE_PHASE17.md](AUTONOMOUS_QUEUE_PHASE17.md) | Artifact build + CI hardening |
 | 18 | [AUTONOMOUS_QUEUE_PHASE18.md](AUTONOMOUS_QUEUE_PHASE18.md) | Web-vision subset vendoring + guardrails |
 | 19 | [AUTONOMOUS_QUEUE_PHASE19.md](AUTONOMOUS_QUEUE_PHASE19.md) | Compilable vision-core adapter wiring |
+| 20 | [AUTONOMOUS_QUEUE_PHASE20.md](AUTONOMOUS_QUEUE_PHASE20.md) | Vision import-bridge layer (aliases + stubs + deps) |
 
 **One-page status:** [ORGANISM_STATUS.md](ORGANISM_STATUS.md)  
 **Truth page:** [WIRING_STATUS.md](WIRING_STATUS.md)  

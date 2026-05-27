@@ -15,6 +15,14 @@ echo "== Vision prep smoke =="
   echo "FAIL: visionCalibration/profile.ts missing" >&2
   exit 1
 }
+[[ -f "$APP/src/lib/logger.ts" ]] || {
+  echo "FAIL: logger.ts missing for vision adapter imports" >&2
+  exit 1
+}
+[[ -f "$APP/src/lib/skinToneFallback.ts" ]] || {
+  echo "FAIL: skinToneFallback.ts missing for vision adapter imports" >&2
+  exit 1
+}
 
 if ! grep -q "VITE_VISION_ENGINE" "$APP/src/lib/visionEngine.ts"; then
   echo "FAIL: vision feature flag not wired" >&2

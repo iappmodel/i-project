@@ -1,7 +1,7 @@
 # [ i ] Organism status — one page
 
 **Updated:** 2026-05-27  
-**Phases complete:** 1–19 (see [PHASE_QUEUE_INDEX.md](PHASE_QUEUE_INDEX.md))
+**Phases complete:** 1–20 (see [PHASE_QUEUE_INDEX.md](PHASE_QUEUE_INDEX.md))
 
 ---
 
@@ -18,6 +18,7 @@
 | Loop 2 scaffold | ✅ Save/return flow (`saved` screen + localStorage) |
 | Validator packaging | ✅ Dockerfile + `smoke_validator_docker.sh` |
 | Web vision core | ✅ audited subset vendored + compile-safe core adapters behind flag |
+| Vision bridge deps | ✅ alias + mediapipe + shared stubs wired |
 | CI | Validator + app + readiness + vision + artifact upload |
 
 **One command:** `./scripts/dev_stack.sh`

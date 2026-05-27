@@ -5,6 +5,20 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-27 — Phase 20 autonomous bridge pass complete
+
+### Delivered
+- **Import bridge layer** — enabled `@/*` aliases in app TS + Vite config.
+- **Runtime deps** — installed MediaPipe packages needed by unified vision engine.
+- **Shared utilities** — added `logger.ts` and `skinToneFallback.ts` stubs for archive compatibility.
+- **Smoke hardening** — vision prep smoke now verifies dependency bridge files.
+
+### Deferred Phase 21+
+- Convert selected `vision-unified` modules from excluded state into active compile set.
+- Replace stubbed utilities with production-grade scoring/security implementations.
+
+---
+
 ## 2026-05-27 — Phases 18–19 autonomous bundle complete
 
 ### Delivered
