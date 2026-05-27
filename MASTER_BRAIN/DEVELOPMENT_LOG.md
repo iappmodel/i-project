@@ -5,6 +5,20 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-27 — Phase 26 remote gesture dispatch slice complete
+
+### Delivered
+- **Gesture bridge hook** — added `visionGestureBridge.ts` to emit `remoteGestureTrigger` / `remoteBlinkPattern` without shipping blink-remote UI.
+- **Earn + Watch wiring** — hand/command/blink gestures now dispatch on flagged vision paths (`enableHandTracking` on Earn engine).
+- **Profile listener** — passive `useRemoteGestureListener` surfaces latest gesture event for operator debugging.
+- **Smoke hardening** — vision prep smoke now asserts gesture bridge files and Watch wiring.
+
+### Deferred Phase 27+
+- Promote blink-remote target registration (`useScreenTargets`) for actionable UI control.
+- Add manual chunk split for vision bundle size warnings.
+
+---
+
 ## 2026-05-27 — Phase 25 remote-control runtime settings promotion complete
 
 ### Delivered

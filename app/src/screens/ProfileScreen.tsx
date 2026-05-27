@@ -4,6 +4,7 @@ import { TabScreenLayout } from '../components/TabScreenLayout'
 import { ProgressBar } from '../components/ProgressBar'
 import { createSubscriptionCheckout } from '../lib/stripeCheckout'
 import { getStripeReadiness, stripeReadinessLabel } from '../lib/stripeConfig'
+import { isWebVisionEnabled, useRemoteGestureListener } from '../lib/visionEngine'
 import { useDemo } from '../state/useDemo'
 import { useState } from 'react'
 
@@ -51,6 +52,8 @@ export function ProfileScreen() {
   } = useDemo()
 
   const stripeReadiness = getStripeReadiness()
+  const webVisionEnabled = isWebVisionEnabled()
+  const lastRemoteGesture = useRemoteGestureListener(webVisionEnabled)
   const [stripeLoading, setStripeLoading] = useState(false)
   const [stripeError, setStripeError] = useState<string | null>(null)
 
@@ -78,6 +81,12 @@ export function ProfileScreen() {
     >
       <h1 className="screen-title">Profile</h1>
       <p className="screen-sub">Trust · account · vision</p>
+
+      {webVisionEnabled ? (
+        <p className="profile-trust-card__hint mono" style={{ marginBottom: 12 }}>
+          Remote gesture bridge · last event: {lastRemoteGesture ?? 'waiting'}
+        </p>
+      ) : null}
 
       {isNativeShell ? (
         <p className="profile-trust-card__hint mono" style={{ marginBottom: 12 }}>

@@ -2,8 +2,17 @@ import { detectVisionDeviceClass, getVisionRuntimePreset } from './visionCalibra
 import { loadRemoteControlSettings } from './remoteControlSettings'
 import { useVisionEngine } from '../vision-unified/hooks/useVisionEngine'
 import { useEyeTracking } from '../vision-unified/hooks/useEyeTracking'
+import {
+  emitRemoteBlinkPattern,
+  emitRemoteGesture,
+  useWebGestureDispatch,
+  type VisionGestureSlice,
+} from './visionGestureBridge'
 import { useEffect, useState } from 'react'
 import type { RefObject } from 'react'
+
+export { useWebGestureDispatch, useRemoteGestureListener } from './visionGestureBridge'
+export type { VisionGestureSlice } from './visionGestureBridge'
 
 const TRUE_VALUES = new Set(['1', 'true', 'yes', 'on'])
 
@@ -36,7 +45,7 @@ function useRemoteVisionSettings() {
 export function useWebVisionEngine(enabled: boolean, videoRef: RefObject<HTMLVideoElement | null>) {
   const runtime = getWebVisionRuntime()
   const settings = useRemoteVisionSettings()
-  return useVisionEngine({
+  const vision = useVisionEngine({
     enabled,
     videoRef: videoRef as RefObject<HTMLVideoElement>,
     mirrorX: settings.mirrorX,
@@ -45,8 +54,15 @@ export function useWebVisionEngine(enabled: boolean, videoRef: RefObject<HTMLVid
     gazeSmoothing: runtime.preset.gazeSmoothing,
     visionBackend: settings.visionBackend ?? 'face_landmarker',
     patternTimeout: settings.blinkPatternTimeout,
+    enableHandTracking: true,
     useWorker: true,
+    onBlink: () => emitRemoteGesture('bothBlink'),
+    onBlinkPattern: emitRemoteBlinkPattern,
+    onLeftWink: () => emitRemoteGesture('leftWink'),
+    onRightWink: () => emitRemoteGesture('rightWink'),
   })
+  const gestures = useWebGestureDispatch(enabled, vision as VisionGestureSlice)
+  return { ...vision, ...gestures }
 }
 
 export function useWebEyeTracking(enabled: boolean) {

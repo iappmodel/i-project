@@ -6,7 +6,7 @@ import { ProgressBar } from '../components/ProgressBar'
 import { SourceEvidence } from '../components/SourceEvidence'
 import { DEFAULT_SPONSORED_OFFER } from '../data/demoData'
 import { formatCoinLabel } from '../lib/format'
-import { isWebVisionEnabled, useWebEyeTracking } from '../lib/visionEngine'
+import { isWebVisionEnabled, useWebEyeTracking, useWebGestureDispatch } from '../lib/visionEngine'
 import { useDemo } from '../state/useDemo'
 
 function watchTotalTicks(duration?: string): number {
@@ -29,6 +29,7 @@ export function WatchVerifyScreen() {
   const offer = selectedOffer ?? DEFAULT_SPONSORED_OFFER
   const webVisionEnabled = isWebVisionEnabled()
   const eyeTracking = useWebEyeTracking(webVisionEnabled && verificationStatus === 'watching')
+  const { lastGesture } = useWebGestureDispatch(webVisionEnabled && verificationStatus === 'watching')
 
   const totalTicks = useMemo(() => watchTotalTicks(offer.watchDuration), [offer.watchDuration])
   const [elapsed, setElapsed] = useState(0)
@@ -76,7 +77,7 @@ export function WatchVerifyScreen() {
           <div className="tracking-badge-prot tracking-badge-prot-camera">
             <span className="tb-label-prot mono">
               {webVisionEnabled
-                ? `Eye / camera · web vision (${eyeTracking.visionStatus}, face=${eyeTracking.isFaceDetected ? 'yes' : 'no'})`
+                ? `Eye / camera · web vision (${eyeTracking.visionStatus}, face=${eyeTracking.isFaceDetected ? 'yes' : 'no'}${lastGesture ? `, gesture=${lastGesture}` : ''})`
                 : walletBackend === 'live'
                   ? proofEventsConnected
                     ? 'Eye / camera · mock gaze · SSE bridge live'

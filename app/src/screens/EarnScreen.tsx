@@ -11,6 +11,7 @@ export function EarnScreen() {
   const visionRuntime = getWebVisionRuntime()
   const visionVideoRef = useRef<HTMLVideoElement>(null)
   const visionState = useWebVisionEngine(webVisionEnabled, visionVideoRef)
+  const lastGesture = visionState.lastGesture
   const {
     selectOffer,
     appMode,
@@ -40,6 +41,7 @@ export function EarnScreen() {
             <p className="profile-trust-card__hint mono" style={{ marginTop: 4, fontSize: 11 }}>
               {visionState.isRunning ? '●' : '○'} face={visionState.hasFace ? 'yes' : 'no'} liveness=
               {visionState.livenessScore.toFixed(2)}
+              {lastGesture ? ` · gesture=${lastGesture}` : ''}
             </p>
             <video ref={visionVideoRef} playsInline muted autoPlay style={{ display: 'none' }} />
           </>

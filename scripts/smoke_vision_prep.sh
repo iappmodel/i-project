@@ -52,6 +52,14 @@ if ! grep -q "useWebEyeTracking" "$APP/src/screens/WatchVerifyScreen.tsx"; then
   echo "FAIL: Watch screen is not wired to eye-tracking slice" >&2
   exit 1
 fi
+[[ -f "$APP/src/lib/visionGestureBridge.ts" ]] || {
+  echo "FAIL: visionGestureBridge.ts missing" >&2
+  exit 1
+}
+if ! grep -q "useWebGestureDispatch" "$APP/src/screens/WatchVerifyScreen.tsx"; then
+  echo "FAIL: Watch screen is not wired to gesture dispatch slice" >&2
+  exit 1
+fi
 
 if ! grep -q "vision-unified/\\*\\*" "$APP/tsconfig.app.json"; then
   echo "FAIL: tsconfig.app.json must exclude src/vision-unified/** until wired" >&2
