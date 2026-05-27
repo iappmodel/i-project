@@ -19,6 +19,7 @@ export type DemoScreenId =
   | 'verification-result'
   | 'reward-reveal'
   | 'wallet'
+  | 'saved'
   | 'convert'
   | 'withdraw-preview'
   | 'creator-economics'

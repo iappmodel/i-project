@@ -3,6 +3,7 @@ import { BackRow } from '../components/BackRow'
 import { Button } from '../components/Button'
 import { PhoneFrame } from '../components/PhoneFrame'
 import { SourceEvidence } from '../components/SourceEvidence'
+import { formatCoinLabel } from '../lib/format'
 import { getStripeReadiness, stripeReadinessLabel } from '../lib/stripeConfig'
 import { useDemo } from '../state/useDemo'
 
@@ -27,7 +28,7 @@ export function WithdrawPreviewScreen() {
     <PhoneFrame scroll>
       <BackRow label="Wallet" onBack={() => setScreen('wallet')} />
       <h1 className="screen-title">Withdraw</h1>
-      <p className="screen-sub">Move icoins to bank or card · demo preview only.</p>
+      <p className="screen-sub">Move {formatCoinLabel('icoin')} to bank or card · demo preview only.</p>
       <p className="profile-trust-card__hint mono" style={{ marginBottom: 12 }}>
         {stripeReadinessLabel(stripeReadiness)}
       </p>
@@ -67,7 +68,7 @@ export function WithdrawPreviewScreen() {
       <div className="breakdown-withdraw prot">
         <div className="bk-row-withdraw">
           <span>You send</span>
-          <span className="mono">{amt.toLocaleString()} icoins</span>
+          <span className="mono">{amt.toLocaleString()} {formatCoinLabel('icoin')}</span>
         </div>
         <div className="bk-row-withdraw">
           <span>Arrival</span>
@@ -80,7 +81,7 @@ export function WithdrawPreviewScreen() {
         {feeI > 0 && (
           <div className="bk-row-withdraw">
             <span>Fee</span>
-            <span className="mono">−{feeI} i</span>
+            <span className="mono">−{feeI} {formatCoinLabel('icoin')}</span>
           </div>
         )}
       </div>

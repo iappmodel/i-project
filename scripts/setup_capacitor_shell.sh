@@ -30,8 +30,12 @@ if [[ "$ADD_NATIVE" == true ]]; then
     npx cap add android
   fi
   if [[ ! -d ios ]]; then
-    echo "Adding iOS platform..."
-    npx cap add ios
+    if command -v xcodebuild >/dev/null 2>&1; then
+      echo "Adding iOS platform..."
+      npx cap add ios
+    else
+      echo "Skip iOS add — xcodebuild not found"
+    fi
   fi
 fi
 

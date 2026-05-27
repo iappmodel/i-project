@@ -5,6 +5,7 @@ import { PhoneFrame } from '../components/PhoneFrame'
 import { ProgressBar } from '../components/ProgressBar'
 import { SourceEvidence } from '../components/SourceEvidence'
 import { DEFAULT_SPONSORED_OFFER } from '../data/demoData'
+import { formatCoinLabel } from '../lib/format'
 import { useDemo } from '../state/useDemo'
 
 function watchTotalTicks(duration?: string): number {
@@ -99,7 +100,7 @@ export function WatchVerifyScreen() {
           <div className="watch-earn-row-prot">
             <span className="wer-label-prot">Watch progression</span>
             <span className={`wer-val-prot mono ${canFinish ? 'wer-earn-hot' : 'wer-earn-cold'}`}>
-              +{accruedI.toFixed(2)} i
+              +{accruedI.toFixed(2)} {formatCoinLabel('icoin')}
             </span>
           </div>
         </div>

@@ -52,6 +52,11 @@ flowchart LR
 | `./scripts/open_wallet_on_device.sh` | Open wallet deep link on Android device |
 | `./scripts/android_device_urls.sh` | Resolve POP/WALLET URLs for device mode |
 | `./scripts/smoke_production_readiness.sh` | Pre-deploy builds + spine + templates |
+| `./scripts/smoke_stripe_webhook_signed.sh` | Signed Stripe webhook local E2E smoke |
+| `./scripts/smoke_vision_prep.sh` | Feature-flagged web vision prep checks |
+| `./scripts/smoke_capacitor_native_prep.sh` | Native shell sync + manifest checks |
+| `./scripts/smoke_validator_docker.sh` | Validator container build + health |
+| `./scripts/build_production_artifacts.sh` | Build artifact tarball + deploy docs |
 | `./scripts/smoke_organism_spine.sh` | Full spine (local + optional Supabase) |
 | `./scripts/enable_stripe_live_env.sh` | Stripe checkout env when keys in stack |
 
@@ -145,7 +150,7 @@ flowchart LR
 
 | Item | Notes |
 |------|-------|
-| React gaze signals | Mocked — Flutter has real pipeline |
+| React gaze signals | Mocked by default; feature flag scaffold (`VITE_VISION_ENGINE`) added |
 | Capacitor native build | `setup_capacitor_shell.sh --add` |
 | Production Stripe | `STRIPE_PHASE2.md` — keys deferred |
 | Full Elo companion UI | Profile teaser only (ADR-013) |
@@ -185,6 +190,72 @@ flowchart LR
 | Pre-deploy smoke | ✅ `smoke_production_readiness.sh` |
 | Device wallet deep link | ✅ `open_wallet_on_device.sh` |
 | CI consolidation | ✅ production readiness job |
+
+---
+
+## Phase 11 (2026-05-27)
+
+| Item | Status |
+|------|--------|
+| Coin label formatting | ✅ `Icoin` UI naming via shared formatter |
+| Wallet / earn / reward text | ✅ normalized user-facing copy |
+
+---
+
+## Phase 12 (2026-05-27)
+
+| Item | Status |
+|------|--------|
+| Signed Stripe webhook smoke | ✅ `smoke_stripe_webhook_signed.sh` |
+| Webhook smoke integration | ✅ `smoke_stripe_webhook.sh` now executes signed smoke |
+| Edge runtime import stability | ✅ local worker boot fixed (`@supabase/supabase-js@2`) |
+
+---
+
+## Phase 13 (2026-05-27)
+
+| Item | Status |
+|------|--------|
+| Capacitor setup hardening | ✅ iOS add skips when Xcode unavailable |
+| Native prep smoke | ✅ `smoke_capacitor_native_prep.sh` |
+
+---
+
+## Phase 14 (2026-05-27)
+
+| Item | Status |
+|------|--------|
+| Web vision feature flag | ✅ `VITE_VISION_ENGINE` scaffold |
+| Vision prep smoke | ✅ `smoke_vision_prep.sh` |
+| Integration map update | ✅ safe-flag policy documented |
+
+---
+
+## Phase 15 (2026-05-27)
+
+| Item | Status |
+|------|--------|
+| Loop 2 save/return scaffold | ✅ `saved` screen + localStorage model |
+| Feed save action | ✅ teaser card can save + open saved flow |
+
+---
+
+## Phase 16 (2026-05-27)
+
+| Item | Status |
+|------|--------|
+| Validator container packaging | ✅ Dockerfile |
+| Validator container smoke | ✅ `smoke_validator_docker.sh` |
+
+---
+
+## Phase 17 (2026-05-27)
+
+| Item | Status |
+|------|--------|
+| Production artifact builder | ✅ `build_production_artifacts.sh` |
+| CI artifact upload | ✅ workflow uploads `.artifacts/*` |
+| Test runner expansion | ✅ vision + artifact checks in `run_all_tests.sh` |
 
 ---
 

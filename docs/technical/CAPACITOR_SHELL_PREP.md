@@ -13,6 +13,7 @@ npm run cap:sync                    # build + sync web assets
 
 # First time — generates app/android + app/ios (gitignored):
 ../scripts/setup_capacitor_shell.sh --add
+# iOS add auto-skips if xcodebuild is unavailable
 ```
 
 ---
@@ -50,4 +51,5 @@ See `docs/technical/REACT_FLUTTER_BRIDGE.md`.
 
 - `scripts/setup_capacitor_shell.sh`
 - `scripts/smoke_capacitor_prep.sh`
+- `scripts/smoke_capacitor_native_prep.sh`
 - `eye-earn-sparkle-archive/capacitor.config.ts`

@@ -3,6 +3,7 @@ import { Button } from '../components/Button'
 import { PhoneFrame } from '../components/PhoneFrame'
 import { SourceEvidence } from '../components/SourceEvidence'
 import { CREATOR_CAMPAIGN, ECONOMIC_SPLIT } from '../data/demoData'
+import { formatCoinLabel } from '../lib/format'
 import { useDemo } from '../state/useDemo'
 
 export function CreatorEconomicsScreen() {
@@ -21,7 +22,7 @@ export function CreatorEconomicsScreen() {
         </header>
         <p className="eco-body">
           {CREATOR_CAMPAIGN.brand} — {CREATOR_CAMPAIGN.name}. Budget{' '}
-          {CREATOR_CAMPAIGN.budgetICoins.toLocaleString()} i · CPM {CREATOR_CAMPAIGN.cpm}.
+          {CREATOR_CAMPAIGN.budgetICoins.toLocaleString()} {formatCoinLabel('icoin')} · CPM {CREATOR_CAMPAIGN.cpm}.
         </p>
       </article>
 

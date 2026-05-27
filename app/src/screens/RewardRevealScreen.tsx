@@ -3,7 +3,7 @@ import { Button } from '../components/Button'
 import { PhoneFrame } from '../components/PhoneFrame'
 import { SourceEvidence } from '../components/SourceEvidence'
 import { DEFAULT_SPONSORED_OFFER } from '../data/demoData'
-import { formatIcoinsAmount } from '../lib/format'
+import { formatCoinLabel, formatIcoinsAmount } from '../lib/format'
 import { useDemo } from '../state/useDemo'
 
 export function RewardRevealScreen() {
@@ -18,7 +18,7 @@ export function RewardRevealScreen() {
         <div className="unlock-label-prot">new coin unlocked</div>
         <div className="reward-center-prot">
           <div className="reward-amount-prot mono">+{offer.rewardICoins.toFixed(2)}</div>
-          <div className="reward-label-prot">icoins credited to your wallet</div>
+          <div className="reward-label-prot">{formatCoinLabel('icoin')} credited to your wallet</div>
           <div className="reward-breakdown-prot">
             <div className="rb-row-prot">
               <span className="rb-l-prot">Source</span>

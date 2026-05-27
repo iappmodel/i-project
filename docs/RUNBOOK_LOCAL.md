@@ -41,6 +41,9 @@ Open **http://localhost:5173** → Earn → Loop 1 → Wallet → Settle.
 ./scripts/run_android_device_test.sh             # one-shot USB deploy + logcat
 ./scripts/open_wallet_on_device.sh sess_…        # open wallet on Android after seal
 ./scripts/smoke_production_readiness.sh          # pre-deploy checklist
+./scripts/smoke_stripe_webhook.sh                # signed local Stripe webhook smoke
+./scripts/smoke_validator_docker.sh              # validator container smoke
+./scripts/build_production_artifacts.sh          # produce deploy artifacts
 ```
 
 | Service | URL |

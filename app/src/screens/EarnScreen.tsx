@@ -2,9 +2,11 @@ import { Card } from '../components/Card'
 import { TabScreenLayout } from '../components/TabScreenLayout'
 import { DEFAULT_SPONSORED_OFFER } from '../data/demoData'
 import { formatIcoinsAmount } from '../lib/format'
+import { isWebVisionEnabled } from '../lib/visionEngine'
 import { useDemo } from '../state/useDemo'
 
 export function EarnScreen() {
+  const webVisionEnabled = isWebVisionEnabled()
   const {
     selectOffer,
     appMode,
@@ -26,6 +28,11 @@ export function EarnScreen() {
       <header className="earn-tab-header">
         <h1 className="screen-title">Earn</h1>
         <p className="screen-sub">Loop 1 · Watch → Verify → Earn</p>
+        {webVisionEnabled ? (
+          <p className="profile-trust-card__hint mono" style={{ marginTop: 8, fontSize: 11 }}>
+            Experimental web vision enabled (flag: VITE_VISION_ENGINE)
+          </p>
+        ) : null}
         {walletBackend === 'live' ? (
           <p className="profile-trust-card__hint mono" style={{ marginTop: 8, fontSize: 11 }}>
             {proofEventsConnected ? '●' : '○'} proof bridge · {eloStatusLine}

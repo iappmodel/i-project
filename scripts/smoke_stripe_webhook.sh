@@ -4,6 +4,11 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
+# shellcheck disable=SC1090
+if [[ -f "$ROOT/.env.local.stack" ]]; then
+  source "$ROOT/.env.local.stack"
+fi
+
 if [[ -z "${STRIPE_SECRET_KEY:-}" || -z "${STRIPE_WEBHOOK_SECRET:-}" ]]; then
   echo "SKIP: STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET not set."
   echo "Promote functions first: ./scripts/promote_stripe_functions.sh"
@@ -15,5 +20,4 @@ if [[ ! -f "$ROOT/app/supabase/functions/stripe-webhook/index.ts" ]]; then
   exit 1
 fi
 
-echo "PASS: Stripe functions present; webhook smoke deferred until edge deploy wiring."
-echo "Next: deploy stripe-webhook to local Supabase functions and POST signed test event."
+"$ROOT/scripts/smoke_stripe_webhook_signed.sh"

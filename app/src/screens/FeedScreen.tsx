@@ -3,6 +3,7 @@ import { HeaderBar } from '../components/HeaderBar'
 import { TabScreenLayout } from '../components/TabScreenLayout'
 import { DEFAULT_SPONSORED_OFFER } from '../data/demoData'
 import { formatIcoinsAmount } from '../lib/format'
+import { saveLoopItem } from '../lib/savedLoop'
 import { useDemo } from '../state/useDemo'
 
 export function FeedScreen() {
@@ -11,6 +12,7 @@ export function FeedScreen() {
     selectOffer,
     jumpWallet,
     setActiveTab,
+    setScreen,
     walletBackend,
     proofEventsConnected,
     isNativeShell,
@@ -83,6 +85,22 @@ export function FeedScreen() {
           </div>
           <div className="card-body">
             <p className="card-caption">Loop 2 · Browse → Save → Return</p>
+            <button
+              type="button"
+              className="sec-link-wu"
+              onClick={() => {
+                saveLoopItem({
+                  id: 'loop2-demo-item',
+                  title: 'Loop 2 teaser · Browse → Save → Return',
+                  source: 'Feed teaser',
+                  savedAt: Date.now(),
+                })
+                setScreen('saved')
+              }}
+              style={{ marginTop: 8 }}
+            >
+              Save this item
+            </button>
           </div>
         </Card>
 

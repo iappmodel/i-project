@@ -95,6 +95,12 @@ See `.env.local.stack.example`.
    curl -X POST https://validator.example.com/v1/proof-packets/validate ...
    ```
 
+Local container smoke before deploy:
+
+```bash
+./scripts/smoke_validator_docker.sh
+```
+
 ### 3. React web app
 
 1. Set production env vars on host

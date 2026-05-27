@@ -67,4 +67,12 @@ echo "deploy runbook: OK"
 echo "Pre-deploy full check: ./scripts/smoke_production_readiness.sh"
 
 echo ""
+echo "== Vision prep smoke =="
+"$ROOT/scripts/smoke_vision_prep.sh"
+
+echo ""
+echo "== Production artifacts build =="
+"$ROOT/scripts/build_production_artifacts.sh"
+
+echo ""
 echo "PASS: run_all_tests"

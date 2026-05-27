@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Button } from '../components/Button'
 import { EloCompanionCard } from '../components/EloCompanionCard'
 import { TabScreenLayout } from '../components/TabScreenLayout'
+import { formatCoinLabel } from '../lib/format'
 import { useDemo } from '../state/useDemo'
 
 function actDot(kind: string) {
@@ -118,11 +119,11 @@ export function WalletScreen() {
 
       <section className="coin-split">
         <div className="coin-card">
-          <span className="cc-label">acoins</span>
+          <span className="cc-label">{formatCoinLabel('acoin')}</span>
           <span className="cc-val muted-num mono">{aCoins.toLocaleString()}</span>
         </div>
         <div className="coin-card">
-          <span className="cc-label">icoins</span>
+          <span className="cc-label">{formatCoinLabel('icoin')}</span>
           <span className="cc-val ic mono">{iCoins.toLocaleString()}</span>
           {iCoinsPending > 0 ? (
             <span className="cc-sub muted-num mono" style={{ fontSize: 11, marginTop: 4 }}>
@@ -154,7 +155,7 @@ export function WalletScreen() {
                 <p className="act-time-wu">{h.reviewStatus} · {h.releaseStatus}</p>
               </div>
               <span className="act-amount-wu mono pending">
-                +{h.amount} {h.currency === 'vicoin' ? 'v' : 'i'}
+                +{h.amount} {formatCoinLabel(h.currency)}
               </span>
               <button
                 type="button"

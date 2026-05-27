@@ -30,3 +30,15 @@ jobs:
 
       - name: Production readiness smoke
         run: ./scripts/smoke_production_readiness.sh
+
+      - name: Vision prep smoke
+        run: ./scripts/smoke_vision_prep.sh
+
+      - name: Build production artifacts
+        run: ./scripts/build_production_artifacts.sh
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-artifacts
+          path: .artifacts/*

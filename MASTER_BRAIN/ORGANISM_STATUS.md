@@ -1,7 +1,7 @@
 # [ i ] Organism status — one page
 
 **Updated:** 2026-05-27  
-**Phases complete:** 1–10 (see [PHASE_QUEUE_INDEX.md](PHASE_QUEUE_INDEX.md))
+**Phases complete:** 1–17 (see [PHASE_QUEUE_INDEX.md](PHASE_QUEUE_INDEX.md))
 
 ---
 
@@ -15,13 +15,16 @@
 | Flutter bridge | Seal Proof → validator; SSE + deep link to React wallet |
 | Android device E2E | ✅ USB reverse — Seal Proof → validator → pending hold (verified 2026-05-27) |
 | Capacitor | Packages installed; `setup_capacitor_shell.sh --add` for native |
-| CI | Validator + app + smokes on every push |
+| Loop 2 scaffold | ✅ Save/return flow (`saved` screen + localStorage) |
+| Validator packaging | ✅ Dockerfile + `smoke_validator_docker.sh` |
+| CI | Validator + app + readiness + vision + artifact upload |
 
 **One command:** `./scripts/dev_stack.sh`
 
 **Full smoke:** `./scripts/smoke_organism_spine.sh`
 
-**Pre-deploy:** `./scripts/smoke_production_readiness.sh` · runbook: `docs/technical/PRODUCTION_DEPLOY_RUNBOOK.md`
+**Pre-deploy:** `./scripts/smoke_production_readiness.sh` · runbook: `docs/technical/PRODUCTION_DEPLOY_RUNBOOK.md`  
+**Artifacts:** `./scripts/build_production_artifacts.sh`
 
 ---
 
@@ -29,7 +32,7 @@
 
 | Gate | Unblock with |
 |------|----------------|
-| Stripe live checkout | `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET` in `.env.local.stack` → `./scripts/enable_stripe_live_env.sh` |
+| Stripe live checkout | ✅ local test-mode webhook E2E; live deploy still needs owner cloud Stripe wiring |
 | Capacitor store build | Xcode / Android Studio after `--add` |
 
 **Device test:** `./scripts/run_android_device_test.sh` (USB) · postcheck: `./scripts/smoke_android_seal_postcheck.sh` · open wallet: `./scripts/open_wallet_on_device.sh <session>`
@@ -47,11 +50,11 @@ React app (mock gaze) ──POST──►     │
 
 ---
 
-## Next phase candidates (11+)
+## Next phase candidates (18+)
 
-- In-web MediaPipe promote (`22cabd3` cherry-pick)
 - P1 chat extraction pass
-- Stripe live deploy (owner keys)
+- Vercel/Render production cutover (owner credentials/domain)
 - Capacitor store build
+- Optional deeper web vision promotion (`22cabd3` full subset)
 
 See [WIRING_STATUS.md](WIRING_STATUS.md) for file-level truth.

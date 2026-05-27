@@ -37,6 +37,9 @@ function tabForScreen(screen: DemoScreenId): ProductTabId | null {
   if (screen === 'feed' || screen === 'earn' || screen === 'wallet' || screen === 'profile') {
     return screen
   }
+  if (screen === 'saved') {
+    return 'feed'
+  }
   if (screen === 'convert' || screen === 'withdraw-preview' || screen === 'creator-economics') {
     return 'wallet'
   }

@@ -13,6 +13,7 @@ import { OfferDetailScreen } from './screens/OfferDetailScreen'
 import { ProofLayerScreen } from './screens/ProofLayerScreen'
 import { RewardRevealScreen } from './screens/RewardRevealScreen'
 import { RoadmapScreen } from './screens/RoadmapScreen'
+import { SavedScreen } from './screens/SavedScreen'
 import { SplashScreen } from './screens/SplashScreen'
 import { VerificationResultScreen } from './screens/VerificationResultScreen'
 import { WalletScreen } from './screens/WalletScreen'
@@ -33,6 +34,7 @@ function ScreenRouter() {
     'verification-result': <VerificationResultScreen />,
     'reward-reveal': <RewardRevealScreen />,
     wallet: <WalletScreen />,
+    saved: <SavedScreen />,
     convert: <ConvertScreen />,
     'withdraw-preview': <WithdrawPreviewScreen />,
     'creator-economics': <CreatorEconomicsScreen />,

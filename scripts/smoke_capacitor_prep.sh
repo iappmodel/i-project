@@ -18,4 +18,7 @@ cd "$APP"
 npm run typecheck --silent
 npm run build --silent
 
+# If native dirs already exist, run a deterministic sync/manifest check too.
+"$ROOT/scripts/smoke_capacitor_native_prep.sh"
+
 echo "PASS: Capacitor prep smoke"

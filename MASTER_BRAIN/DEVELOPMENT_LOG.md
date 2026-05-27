@@ -5,6 +5,24 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-27 — Phases 11–17 autonomous bundle complete
+
+### Delivered
+- **Economy label hardening** — user-facing coin labels normalized to `Icoin` pattern in app flows.
+- **Stripe local E2E** — signed webhook smoke added (`smoke_stripe_webhook_signed.sh`) and passing.
+- **Capacitor hardening** — native prep smoke + safer iOS add behavior when Xcode is absent.
+- **Web vision prep** — `VITE_VISION_ENGINE` scaffold + `smoke_vision_prep.sh` with default-off behavior.
+- **Loop 2 scaffold** — `saved` screen + localStorage save/return flow from Feed teaser.
+- **Validator packaging** — Dockerfile + `smoke_validator_docker.sh` passing.
+- **CI + artifacts** — build artifact script and CI upload of `.artifacts/*`.
+
+### Deferred Phase 18+
+- Vercel/Render deploy cutover (owner credentials/domain/TLS)
+- Capacitor store signing/upload
+- MP4 investor assets + Tobii policy (deferred by choice)
+
+---
+
 ## 2026-05-27 — Phase 10 autonomous queue complete
 
 ### Delivered

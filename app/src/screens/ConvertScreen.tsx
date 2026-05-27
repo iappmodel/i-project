@@ -3,6 +3,7 @@ import { BackRow } from '../components/BackRow'
 import { Button } from '../components/Button'
 import { PhoneFrame } from '../components/PhoneFrame'
 import { SourceEvidence } from '../components/SourceEvidence'
+import { formatCoinLabel } from '../lib/format'
 import { useDemo } from '../state/useDemo'
 
 type ToType = 'icoins' | 'mcoins' | 'ucoins'
@@ -28,10 +29,10 @@ export function ConvertScreen() {
 
   const clearingGates = useMemo(
     () => [
-      { icon: 'r', name: 'Pool entry', passLine: `${amt.toLocaleString()} acoins → pool` },
-      { icon: '×', name: 'Tier 2 multiplier (1.15×)', passLine: `${pooled.toLocaleString()} rcoins` },
-      { icon: '%', name: 'Pool fee (5%)', passLine: `−${feeAmt} rcoins` },
-      { icon: '→', name: 'icoins output', passLine: `${received} icoins` },
+      { icon: 'r', name: 'Pool entry', passLine: `${amt.toLocaleString()} ${formatCoinLabel('acoin')} → pool` },
+      { icon: '×', name: 'Tier 2 multiplier (1.15×)', passLine: `${pooled.toLocaleString()} ${formatCoinLabel('rcoin')}` },
+      { icon: '%', name: 'Pool fee (5%)', passLine: `−${feeAmt} ${formatCoinLabel('rcoin')}` },
+      { icon: '→', name: `${formatCoinLabel('icoin')} output`, passLine: `${received} ${formatCoinLabel('icoin')}` },
       { icon: '✓', name: 'Ledger write', passLine: `Sealed · ref CK-${Math.floor(8100 + received * 11)}` },
     ],
     [amt, pooled, feeAmt, received],
@@ -116,7 +117,7 @@ export function ConvertScreen() {
             className={`to-btn-prot ${toType === t ? 'on' : ''}`}
             onClick={() => setToType(t)}
           >
-            {t}
+            {formatCoinLabel(t.slice(0, -1))}
           </button>
         ))}
       </div>
@@ -124,7 +125,7 @@ export function ConvertScreen() {
         <div className="bk-row-prot bk-total-prot">
           <span>You receive</span>
           <span className="mono ic">
-            {received.toLocaleString()} {toType}
+            {received.toLocaleString()} {formatCoinLabel(toType.slice(0, -1))}
           </span>
         </div>
       </div>

@@ -119,6 +119,14 @@ These paths describe the **intended production stack** (Flutter + Android native
 
 ---
 
+## 7.1 Phase 14 safe-flag promotion
+
+- `app/src/lib/visionEngine.ts` introduces `VITE_VISION_ENGINE` with **default off** behavior.
+- `app/src/screens/EarnScreen.tsx` now surfaces an explicit banner when web-vision experimental mode is enabled.
+- This is intentionally additive only: no settlement, payout, or POP validator contract changes.
+
+---
+
 ## 8. Risks and unknowns
 
 | Risk | Detail |
