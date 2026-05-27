@@ -5,6 +5,19 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-27 — Phase 22 vision worker signal fusion pass complete
+
+### Delivered
+- **Worker signal math** — upgraded `visionSample.worker.ts` from static placeholder outputs to real face-box, EAR, blink, wink, gaze smoothing, and head pose derivation.
+- **Config parity** — worker now consumes runtime blink/gaze config payloads posted by `useVisionEngine`.
+- **State handling** — added worker-side reset + baseline tracking to keep blink/liveness behavior stable between sessions.
+
+### Deferred Phase 23+
+- Bridge `useEyeTracking` / `useBlinkRemoteControl` archive aliases and missing modules before activating those hooks in app screens.
+- Validate worker outputs against recorded device traces for threshold tuning.
+
+---
+
 ## 2026-05-27 — Phase 21 first active vision slice complete
 
 ### Delivered
