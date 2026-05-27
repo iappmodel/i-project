@@ -8,6 +8,15 @@ export interface VisionRuntimePreset {
   pointerResponse: number
   gazeHoldTime: number
   edgeThreshold: number
+  blinkBaselineSampleCount: number
+  blinkMinEarForBaseline: number
+  blinkCloseRatio: number
+  blinkMaxCloseEAR: number
+  blinkReopenRatio: number
+  blinkMinDurationMs: number
+  blinkMaxDurationMs: number
+  blinkCooldownMs: number
+  blinkMinClosedFrames: number
 }
 
 export interface VisionCalibrationProfile {
@@ -32,9 +41,54 @@ const DEFAULT_CALIBRATION: VisionCalibrationProfile = {
 }
 
 const RUNTIME_PRESETS: Record<VisionDeviceClass, VisionRuntimePreset> = {
-  iphone: { gazeScale: 1.55, gazeSmoothing: 0.2, pointerResponse: 0.35, gazeHoldTime: 720, edgeThreshold: 0.33 },
-  android: { gazeScale: 1.5, gazeSmoothing: 0.28, pointerResponse: 0.3, gazeHoldTime: 820, edgeThreshold: 0.36 },
-  desktop: { gazeScale: 1.7, gazeSmoothing: 0.24, pointerResponse: 0.34, gazeHoldTime: 760, edgeThreshold: 0.34 },
+  iphone: {
+    gazeScale: 1.55,
+    gazeSmoothing: 0.2,
+    pointerResponse: 0.35,
+    gazeHoldTime: 720,
+    edgeThreshold: 0.33,
+    blinkBaselineSampleCount: 7,
+    blinkMinEarForBaseline: 0.14,
+    blinkCloseRatio: 0.62,
+    blinkMaxCloseEAR: 0.2,
+    blinkReopenRatio: 0.76,
+    blinkMinDurationMs: 55,
+    blinkMaxDurationMs: 780,
+    blinkCooldownMs: 130,
+    blinkMinClosedFrames: 1,
+  },
+  android: {
+    gazeScale: 1.5,
+    gazeSmoothing: 0.28,
+    pointerResponse: 0.3,
+    gazeHoldTime: 820,
+    edgeThreshold: 0.36,
+    blinkBaselineSampleCount: 8,
+    blinkMinEarForBaseline: 0.15,
+    blinkCloseRatio: 0.64,
+    blinkMaxCloseEAR: 0.205,
+    blinkReopenRatio: 0.78,
+    blinkMinDurationMs: 60,
+    blinkMaxDurationMs: 820,
+    blinkCooldownMs: 140,
+    blinkMinClosedFrames: 2,
+  },
+  desktop: {
+    gazeScale: 1.7,
+    gazeSmoothing: 0.24,
+    pointerResponse: 0.34,
+    gazeHoldTime: 760,
+    edgeThreshold: 0.34,
+    blinkBaselineSampleCount: 9,
+    blinkMinEarForBaseline: 0.13,
+    blinkCloseRatio: 0.6,
+    blinkMaxCloseEAR: 0.19,
+    blinkReopenRatio: 0.74,
+    blinkMinDurationMs: 50,
+    blinkMaxDurationMs: 760,
+    blinkCooldownMs: 130,
+    blinkMinClosedFrames: 1,
+  },
 }
 
 const clamp01 = (value: number) => Math.max(0, Math.min(1, value))

@@ -8,6 +8,7 @@
  * Both produce the same output format (multiFaceLandmarks) for EAR, gaze, blink.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { RefObject } from 'react';
 import { logger } from '@/lib/logger';
 import { detectVisionDeviceClass, getVisionRuntimePreset } from '@/lib/visionCalibration/profile';
 
@@ -92,7 +93,7 @@ export interface VisionFusionConfig {
 
 interface UseVisionEngineOptions {
   enabled?: boolean;
-  videoRef: React.RefObject<HTMLVideoElement>;
+  videoRef: RefObject<HTMLVideoElement>;
   detectionInterval?: number;
   handDetectionInterval?: number;
   minDetectionConfidence?: number;
@@ -568,7 +569,7 @@ export function useVisionEngine(options: UseVisionEngineOptions) {
   const faceLandmarkerRef = useRef<any>(null);
   const handLandmarkerRef = useRef<any>(null);
   const processingRef = useRef(false);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const instanceIdRef = useRef<number>(++sharedInstanceSeq);
   const enabledRef = useRef(enabled);
   const optionsRef = useRef({
@@ -597,7 +598,7 @@ export function useVisionEngine(options: UseVisionEngineOptions) {
   const noFaceFramesRef = useRef(0); // count consecutive no-face frames
 
   const blinkPatternRef = useRef<{ count: number; timestamp: number }>({ count: 0, timestamp: 0 });
-  const patternTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const patternTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const onBlinkRef = useRef(onBlink);
   const onBlinkPatternRef = useRef(onBlinkPattern);

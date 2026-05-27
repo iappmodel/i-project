@@ -1,13 +1,16 @@
+import { useRef } from 'react'
 import { Card } from '../components/Card'
 import { TabScreenLayout } from '../components/TabScreenLayout'
 import { DEFAULT_SPONSORED_OFFER } from '../data/demoData'
 import { formatIcoinsAmount } from '../lib/format'
-import { getWebVisionRuntime, isWebVisionEnabled } from '../lib/visionEngine'
+import { getWebVisionRuntime, isWebVisionEnabled, useWebVisionEngine } from '../lib/visionEngine'
 import { useDemo } from '../state/useDemo'
 
 export function EarnScreen() {
   const webVisionEnabled = isWebVisionEnabled()
   const visionRuntime = getWebVisionRuntime()
+  const visionVideoRef = useRef<HTMLVideoElement>(null)
+  const visionState = useWebVisionEngine(webVisionEnabled, visionVideoRef)
   const {
     selectOffer,
     appMode,
@@ -30,9 +33,16 @@ export function EarnScreen() {
         <h1 className="screen-title">Earn</h1>
         <p className="screen-sub">Loop 1 · Watch → Verify → Earn</p>
         {webVisionEnabled ? (
-          <p className="profile-trust-card__hint mono" style={{ marginTop: 8, fontSize: 11 }}>
-            Experimental web vision enabled ({visionRuntime.deviceClass}, smoothing {visionRuntime.preset.gazeSmoothing})
-          </p>
+          <>
+            <p className="profile-trust-card__hint mono" style={{ marginTop: 8, fontSize: 11 }}>
+              Experimental web vision enabled ({visionRuntime.deviceClass}, smoothing {visionRuntime.preset.gazeSmoothing})
+            </p>
+            <p className="profile-trust-card__hint mono" style={{ marginTop: 4, fontSize: 11 }}>
+              {visionState.isRunning ? '●' : '○'} face={visionState.hasFace ? 'yes' : 'no'} liveness=
+              {visionState.livenessScore.toFixed(2)}
+            </p>
+            <video ref={visionVideoRef} playsInline muted autoPlay style={{ display: 'none' }} />
+          </>
         ) : null}
         {walletBackend === 'live' ? (
           <p className="profile-trust-card__hint mono" style={{ marginTop: 8, fontSize: 11 }}>

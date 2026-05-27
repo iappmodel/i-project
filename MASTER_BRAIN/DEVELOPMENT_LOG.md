@@ -5,6 +5,20 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-27 — Phase 21 first active vision slice complete
+
+### Delivered
+- **Active non-UI slice** — wired `vision-unified/hooks/useVisionEngine.ts` into `EarnScreen` behind `VITE_VISION_ENGINE`.
+- **Compile bridge expansion** — extended `visionCalibration/profile.ts` runtime preset fields required by the unified hook.
+- **Worker path unblocked** — added `vision-unified/workers/visionSample.worker.ts` so Vite can build the hooked slice.
+- **Smoke hardening** — `smoke_vision_prep.sh` now asserts active hook/worker wiring.
+
+### Deferred Phase 22+
+- Improve worker math from placeholder output to full fused gaze/EAR calculations.
+- Promote additional non-UI slices (`useEyeTracking`, blink remote control) after integration checks.
+
+---
+
 ## 2026-05-27 — Phase 20 autonomous bridge pass complete
 
 ### Delivered

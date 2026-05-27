@@ -150,7 +150,7 @@ flowchart LR
 
 | Item | Notes |
 |------|-------|
-| React gaze signals | Mocked by default; feature flag scaffold (`VITE_VISION_ENGINE`) added |
+| React gaze signals | First active non-UI `vision-unified` slice wired behind `VITE_VISION_ENGINE`; worker logic still scaffolded |
 | Capacitor native build | `setup_capacitor_shell.sh --add` |
 | Production Stripe | `STRIPE_PHASE2.md` — keys deferred |
 | Full Elo companion UI | Profile teaser only (ADR-013) |
