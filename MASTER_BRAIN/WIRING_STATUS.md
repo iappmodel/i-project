@@ -150,7 +150,7 @@ flowchart LR
 
 | Item | Notes |
 |------|-------|
-| React gaze signals | `useVisionEngine` on Earn + `useEyeTracking` on Watch behind `VITE_VISION_ENGINE`; blink-remote UI still deferred |
+| React gaze signals | `VisionProvider` mounted; `useVisionEngine` on Earn + `useEyeTracking` on Watch behind `VITE_VISION_ENGINE`; blink-remote UI still deferred |
 | Capacitor native build | `setup_capacitor_shell.sh --add` |
 | Production Stripe | `STRIPE_PHASE2.md` — keys deferred |
 | Full Elo companion UI | Profile teaser only (ADR-013) |

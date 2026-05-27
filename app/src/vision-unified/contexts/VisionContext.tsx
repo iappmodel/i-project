@@ -264,7 +264,7 @@ export function VisionProvider({ children }: VisionProviderProps) {
 
   const vision = useVisionEngine({
     enabled: !visionStream && isActive && !!videoRef.current,
-    videoRef,
+    videoRef: videoRef as React.RefObject<HTMLVideoElement>,
     patternTimeout: settings.blinkPatternTimeout ?? 600,
     mirrorX: settings.mirrorX ?? true,
     invertY: settings.invertY ?? true,
@@ -351,7 +351,7 @@ export function VisionProvider({ children }: VisionProviderProps) {
           if (!ctx) return;
           ctx.drawImage(video, 0, 0, 320, 240);
           const imageData = ctx.getImageData(80, 40, 160, 160);
-          const result = analyzeSkinToneFrame(imageData, skinTonePrevFrameRef);
+          const result = analyzeSkinToneFrame(imageData, skinTonePrevFrameRef.current);
           setFallbackState({ hasFace: result.facePresent, rawScore: result.rawScore });
         }, 200);
       }, Math.max(0, VISION_FALLBACK_MS - elapsed));
@@ -377,7 +377,7 @@ export function VisionProvider({ children }: VisionProviderProps) {
       if (!ctx) return;
       ctx.drawImage(video, 0, 0, 320, 240);
       const imageData = ctx.getImageData(80, 40, 160, 160);
-      const result = analyzeSkinToneFrame(imageData, skinTonePrevFrameRef);
+      const result = analyzeSkinToneFrame(imageData, skinTonePrevFrameRef.current);
       setFallbackState({ hasFace: result.facePresent, rawScore: result.rawScore });
     }, 200);
     return () => {

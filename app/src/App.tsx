@@ -1,5 +1,7 @@
 import type { ReactElement } from 'react'
 import { AppShell } from './components/AppShell'
+import { VisionProvider } from './contexts/VisionContext'
+import { VisionStreamProvider } from './contexts/VisionStreamContext'
 import { DemoProvider } from './state/demoContext'
 import { useDemo } from './state/useDemo'
 import type { DemoScreenId } from './state/types'
@@ -48,9 +50,13 @@ function ScreenRouter() {
 export default function App() {
   return (
     <DemoProvider>
-      <AppShell>
-        <ScreenRouter />
-      </AppShell>
+      <VisionStreamProvider>
+        <VisionProvider>
+          <AppShell>
+            <ScreenRouter />
+          </AppShell>
+        </VisionProvider>
+      </VisionStreamProvider>
     </DemoProvider>
   )
 }

@@ -5,6 +5,19 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-27 — Phase 24 shared vision context mount complete
+
+### Delivered
+- **Provider mount** — wrapped app shell with `VisionStreamProvider` + `VisionProvider` in `App.tsx`.
+- **Context bridges** — promoted `contexts/VisionContext.tsx` and added `contexts/VisionStreamContext.tsx` as re-exports to the unified context layer.
+- **Type/runtime fixes** — aligned `vision-unified/contexts/VisionContext.tsx` refs for `useVisionEngine` and skin-tone fallback calls.
+
+### Deferred Phase 25+
+- Promote selected `useBlinkRemoteControl` runtime behaviors without importing full calibration UI surface.
+- Tune chunk split for enlarged vision bundle now that shared context is mounted.
+
+---
+
 ## 2026-05-27 — Phase 23 eye-tracking bridge + Watch screen activation complete
 
 ### Delivered
@@ -15,7 +28,6 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ### Deferred Phase 24+
 - Promote `useBlinkRemoteControl` UI shell and calibration wizard into product tabs.
-- Mount `VisionProvider` when shared-camera path is required on mobile Safari.
 
 ---
 
