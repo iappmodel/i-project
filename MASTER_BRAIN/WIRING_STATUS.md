@@ -1,6 +1,6 @@
 # [ i ] Wiring Status
 
-**Updated:** 2026-05-26  
+**Updated:** 2026-05-27  
 **Workspace:** `i_project_migration_archive`
 
 One-page truth for what's wired vs mocked.
@@ -23,7 +23,7 @@ flowchart LR
 | Loop 1 UX (mock gaze) | ✅ | `app/src/screens/*` |
 | CR-01 session gate | ✅ | `app/src/state/attentionSession.ts` |
 | Proof packet submit (web) | ✅ | `app/src/lib/demoProofPacket.ts` |
-| Seal Proof (Flutter) | ✅ local | `flutter-runtime/lib/proof/proof_packet_emitter.dart` |
+| Seal Proof (Flutter) | ✅ device | `flutter-runtime` + USB reverse E2E verified |
 | Validator HTTP | ✅ | `integrations/pop-core/validator/` |
 | Pending holds | ✅ | `app/supabase/migrations/20260525220000_pop_pending_holds.sql` |
 | Ledger settle | ✅ | `settle_pop_pending_hold` → `ledger_append` |
@@ -47,6 +47,9 @@ flowchart LR
 | `./scripts/smoke_capacitor_prep.sh` | Capacitor deps + web build |
 | `./scripts/setup_capacitor_shell.sh` | Cap sync / `--add` native |
 | `./scripts/smoke_android_env.sh` | Flutter + adb toolchain check |
+| `./scripts/run_android_device_test.sh` | One-shot USB deploy + logcat |
+| `./scripts/smoke_android_seal_postcheck.sh` | Verify pending hold after Seal Proof |
+| `./scripts/android_device_urls.sh` | Resolve POP/WALLET URLs for device mode |
 | `./scripts/smoke_organism_spine.sh` | Full spine (local + optional Supabase) |
 | `./scripts/enable_stripe_live_env.sh` | Stripe checkout env when keys in stack |
 
@@ -142,7 +145,6 @@ flowchart LR
 |------|-------|
 | React gaze signals | Mocked — Flutter has real pipeline |
 | Capacitor native build | `setup_capacitor_shell.sh --add` |
-| Android device E2E | Deferred — runbook only |
 | Production Stripe | `STRIPE_PHASE2.md` — keys deferred |
 | Full Elo companion UI | Profile teaser only (ADR-013) |
 
@@ -157,6 +159,19 @@ flowchart LR
 | Stripe live env | ✅ `enable_stripe_live_env.sh` |
 | Wallet Elo card | ✅ Live wallet tab |
 | Device Seal Proof tap | Manual |
+
+---
+
+## Phase 9 (2026-05-27)
+
+| Item | Status |
+|------|--------|
+| Android Seal Proof E2E | ✅ Samsung SM A146U, USB adb reverse |
+| `android_device_urls.sh` | ✅ emulator / USB / LAN resolver |
+| `run_android_device_test.sh` | ✅ one-shot deploy |
+| `smoke_android_seal_postcheck.sh` | ✅ pending hold verify |
+| Vite LAN host | ✅ `host: true` for WiFi fallback |
+| Runbook | ✅ USB reverse primary path |
 
 ---
 

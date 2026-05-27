@@ -5,6 +5,20 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-27 — Phase 9 autonomous queue complete
+
+### Delivered
+- **Android E2E verified** — Seal Proof → validator → pending hold → `WALLET_DEEP_LINK` (USB reverse)
+- **Device scripts** — `android_device_urls.sh`, `run_android_device_test.sh`, `smoke_android_seal_postcheck.sh`
+- **Dev loop** — `run_android_dev_loop.sh` auto-detects emulator vs USB vs LAN
+- **Vite LAN** — `host: true` for physical device WiFi fallback
+- **Runbook** — `ANDROID_SEAL_PROOF_RUNBOOK.md` updated
+
+### Deferred Phase 10
+- Automated tap without human, production deploy, Stripe live keys
+
+---
+
 ## 2026-05-26 — Phase 8 autonomous queue complete
 
 ### Delivered

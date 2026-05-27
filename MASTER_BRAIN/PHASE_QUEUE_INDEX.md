@@ -1,7 +1,7 @@
 # Autonomous phase queue index
 
 **Workspace:** `i_project_migration_archive`  
-**Updated:** 2026-05-26
+**Updated:** 2026-05-27
 
 | Phase | Tracker | Theme |
 |------:|---------|-------|
@@ -13,9 +13,10 @@
 | 6 | [AUTONOMOUS_QUEUE_PHASE6.md](AUTONOMOUS_QUEUE_PHASE6.md) | Capacitor packages + setup |
 | 7 | [AUTONOMOUS_QUEUE_PHASE7.md](AUTONOMOUS_QUEUE_PHASE7.md) | Android env, Elo card, phase index |
 | 8 | [AUTONOMOUS_QUEUE_PHASE8.md](AUTONOMOUS_QUEUE_PHASE8.md) | Organism status, spine smoke, Stripe env |
+| 9 | [AUTONOMOUS_QUEUE_PHASE9.md](AUTONOMOUS_QUEUE_PHASE9.md) | Android device E2E, USB reverse, postcheck |
 
 **One-page status:** [ORGANISM_STATUS.md](ORGANISM_STATUS.md)  
 **Truth page:** [WIRING_STATUS.md](WIRING_STATUS.md)  
 **Local dev:** [../docs/RUNBOOK_LOCAL.md](../docs/RUNBOOK_LOCAL.md)
 
-**Still owner/device deferred:** Android Seal Proof tap on hardware, Stripe live keys in `.env.local.stack`.
+**Still owner/device deferred:** Stripe live keys in `.env.local.stack`, Capacitor store build.

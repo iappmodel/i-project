@@ -20,15 +20,15 @@ else
   echo "Validator: DOWN — run ./scripts/dev_stack.sh"
 fi
 
-cat <<'EOF'
+cat <<EOF
 
 Device run (when ready):
-  cd integrations/eye-tracking/flutter-runtime
-  flutter run \
-    --dart-define=POP_VALIDATOR_URL=http://10.0.2.2:8787 \
-    --dart-define=WALLET_APP_URL=http://10.0.2.2:5173
+  ./scripts/run_android_dev_loop.sh
 
-After Seal Proof, logcat should show WALLET_DEEP_LINK: http://10.0.2.2:5173?proofSession=…
+Or one-shot USB deploy:
+  ./scripts/run_android_device_test.sh
+
+After Seal Proof, logcat should show WALLET_DEEP_LINK with proofSession=…
 EOF
 
 echo ""

@@ -38,6 +38,7 @@ Open **http://localhost:5173** → Earn → Loop 1 → Wallet → Settle.
 ./scripts/setup_capacitor_shell.sh --add          # generate android/ios locally
 ./scripts/smoke_android_env.sh                   # toolchain check
 ./scripts/run_android_dev_loop.sh                # device loop cheat sheet
+./scripts/run_android_device_test.sh             # one-shot USB deploy + logcat
 ```
 
 | Service | URL |
@@ -119,12 +120,19 @@ VITE_AUTO_SETTLE=true   # optional — skip manual Settle tap
 
 See `docs/technical/ANDROID_SEAL_PROOF_RUNBOOK.md`.
 
+**Physical USB (recommended):**
+
 ```bash
-cd integrations/eye-tracking/flutter-runtime
-flutter run --dart-define=POP_VALIDATOR_URL=http://10.0.2.2:8787
+./scripts/run_android_device_test.sh
 ```
 
-Host machine must run validator on `:8787`. Emulator uses `10.0.2.2` to reach host localhost.
+**Emulator:**
+
+```bash
+./scripts/run_android_dev_loop.sh   # prints 10.0.2.2 URLs
+```
+
+Post-tap verify: `./scripts/smoke_android_seal_postcheck.sh`
 
 ---
 
