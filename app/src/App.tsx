@@ -2,7 +2,8 @@ import type { ReactElement } from 'react'
 import { AppShell } from './components/AppShell'
 import { VisionProvider } from './contexts/VisionContext'
 import { VisionStreamProvider } from './contexts/VisionStreamContext'
-import { VisionScreenTargetBridge } from './components/VisionScreenTargetBridge'
+import { VisionTargetOverlay } from './components/VisionTargetOverlay'
+import { AccessibilityProvider } from './contexts/AccessibilityContext'
 import { DemoProvider } from './state/demoContext'
 import { useDemo } from './state/useDemo'
 import type { DemoScreenId } from './state/types'
@@ -51,14 +52,16 @@ function ScreenRouter() {
 export default function App() {
   return (
     <DemoProvider>
-      <VisionStreamProvider>
-        <VisionProvider>
-          <VisionScreenTargetBridge />
-          <AppShell>
-            <ScreenRouter />
-          </AppShell>
-        </VisionProvider>
-      </VisionStreamProvider>
+      <AccessibilityProvider>
+        <VisionStreamProvider>
+          <VisionProvider>
+            <VisionTargetOverlay />
+            <AppShell>
+              <ScreenRouter />
+            </AppShell>
+          </VisionProvider>
+        </VisionStreamProvider>
+      </AccessibilityProvider>
     </DemoProvider>
   )
 }

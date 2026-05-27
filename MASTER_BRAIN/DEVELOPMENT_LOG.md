@@ -5,6 +5,19 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-27 — Phase 28 TargetOverlay gaze-dwell UI complete
+
+### Delivered
+- **TargetOverlay promotion** — wired vendored overlay with Loop 1 CSS (`vision-target-overlay.css`), accessibility/haptic stubs, and `remoteGazePosition` broadcast from `useWebVisionEngine` + `VisionContext`.
+- **VisionTargetOverlay** — global mount in `App.tsx`; gaze cursor + dwell rings; `onTargetAction` runs Loop 1 commands (replaces headless-only bridge from Phase 27).
+- **Stubs** — `lib/utils.ts`, `useHapticFeedback`, `AccessibilityProvider`, `useBlinkRemoteControl` settings loader bridge.
+
+### Deferred Phase 29+
+- Full `BlinkRemoteControl` settings panel + calibration wizard.
+- `TargetEditor` UI for custom target placement.
+
+---
+
 ## 2026-05-27 — Phase 27 screen-target action mapping complete
 
 ### Delivered

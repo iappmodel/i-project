@@ -1,0 +1,111 @@
+.vision-target-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 96;
+}
+
+.vision-target-layer .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.vision-target-node {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.vision-target-node--hovered {
+  transform: translate(-50%, -50%) scale(1.08);
+}
+
+.vision-target-node--success {
+  animation: vision-target-pulse 0.8s ease;
+}
+
+@keyframes vision-target-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.vision-target-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.vision-target-ring--hovered {
+  border-color: var(--accent-cyan);
+  background: rgba(0, 229, 255, 0.15);
+  box-shadow: 0 0 18px rgba(0, 229, 255, 0.35);
+}
+
+.vision-target-ring--success {
+  border-color: var(--accent-lime);
+  background: rgba(180, 255, 71, 0.2);
+}
+
+.vision-target-label {
+  position: relative;
+  z-index: 1;
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  text-align: center;
+}
+
+.vision-target-hint {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 4px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 9px;
+  white-space: nowrap;
+  background: var(--accent-cyan);
+  color: #041018;
+}
+
+.vision-target-gaze-cursor {
+  position: fixed;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  pointer-events: none;
+  z-index: 97;
+  border: 2px solid var(--accent-cyan);
+  background: rgba(0, 229, 255, 0.45);
+  transform: translate(-50%, -50%);
+}
+
+.vision-target-calibration-hint {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 90vw;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  text-align: center;
+  background: rgba(8, 12, 20, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.9);
+}

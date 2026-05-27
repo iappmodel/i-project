@@ -25,6 +25,32 @@ export function emitRemoteGesture(trigger: string) {
   }
 }
 
+export function emitRemoteGazePosition(normalized: { x: number; y: number }) {
+  if (typeof window === 'undefined') return
+  const x = normalized.x * window.innerWidth
+  const y = normalized.y * window.innerHeight
+  try {
+    window.dispatchEvent(
+      new CustomEvent('remoteGazePosition', {
+        detail: { x, y, timestamp: Date.now() },
+      }),
+    )
+  } catch {
+    // ignore
+  }
+}
+
+/** Broadcast normalized gaze (0..1) as pixel `remoteGazePosition` for TargetOverlay. */
+export function useWebGazeBroadcast(
+  enabled: boolean,
+  gazePosition: { x: number; y: number } | null | undefined,
+) {
+  useEffect(() => {
+    if (!enabled || !gazePosition) return
+    emitRemoteGazePosition(gazePosition)
+  }, [enabled, gazePosition?.x, gazePosition?.y])
+}
+
 export function emitRemoteBlinkPattern(count: number) {
   try {
     window.dispatchEvent(

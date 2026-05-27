@@ -5,6 +5,7 @@ import { useEyeTracking } from '../vision-unified/hooks/useEyeTracking'
 import {
   emitRemoteBlinkPattern,
   emitRemoteGesture,
+  useWebGazeBroadcast,
   useWebGestureDispatch,
   type VisionGestureSlice,
 } from './visionGestureBridge'
@@ -61,6 +62,7 @@ export function useWebVisionEngine(enabled: boolean, videoRef: RefObject<HTMLVid
     onLeftWink: () => emitRemoteGesture('leftWink'),
     onRightWink: () => emitRemoteGesture('rightWink'),
   })
+  useWebGazeBroadcast(enabled, vision.gazePosition)
   const gestures = useWebGestureDispatch(enabled, vision as VisionGestureSlice)
   return { ...vision, ...gestures }
 }

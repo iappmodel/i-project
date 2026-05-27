@@ -150,7 +150,7 @@ flowchart LR
 
 | Item | Notes |
 |------|-------|
-| React gaze signals | `VisionProvider` mounted; runtime respects `remoteControlSettings`; gesture dispatch on Earn/Watch; `useScreenTargets` action bridge (no overlay UI) behind `VITE_VISION_ENGINE`; blink-remote panel still deferred |
+| React gaze signals | `VisionProvider` mounted; `TargetOverlay` gaze-dwell UI + `remoteGazePosition` behind `VITE_VISION_ENGINE`; gesture dispatch on Earn/Watch; blink-remote settings panel still deferred |
 | Capacitor native build | `setup_capacitor_shell.sh --add` |
 | Production Stripe | `STRIPE_PHASE2.md` — keys deferred |
 | Full Elo companion UI | Profile teaser only (ADR-013) |

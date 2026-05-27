@@ -68,10 +68,14 @@ fi
   echo "FAIL: visionScreenTargets.ts missing" >&2
   exit 1
 }
-if ! grep -q "VisionScreenTargetBridge" "$APP/src/App.tsx"; then
-  echo "FAIL: App must mount VisionScreenTargetBridge for screen-target actions" >&2
+if ! grep -q "VisionTargetOverlay" "$APP/src/App.tsx"; then
+  echo "FAIL: App must mount VisionTargetOverlay for gaze-dwell target UI" >&2
   exit 1
 fi
+[[ -f "$APP/src/styles/vision-target-overlay.css" ]] || {
+  echo "FAIL: vision-target-overlay.css missing" >&2
+  exit 1
+}
 
 if ! grep -q "vision-unified/\\*\\*" "$APP/tsconfig.app.json"; then
   echo "FAIL: tsconfig.app.json must exclude src/vision-unified/** until wired" >&2

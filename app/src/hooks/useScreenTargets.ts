@@ -11,4 +11,5 @@ export {
   type SimpleGestureTrigger,
   type AppCommand,
   type TargetPreset,
+  type GetTargetAtPositionOptions,
 } from '../vision-unified/hooks/useScreenTargets'

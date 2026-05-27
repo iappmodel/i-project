@@ -1,19 +1,21 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { cn } from '@/lib/utils';
-import { Check } from 'lucide-react';
+import { cn } from '../../lib/utils';
 import {
-  ScreenTarget,
-  GestureTrigger,
-  SimpleGestureTrigger,
   getTargetAtPosition,
   useScreenTargets,
   getTriggerLabel,
-  type GetTargetAtPositionOptions,
-} from '@/hooks/useScreenTargets';
-import { COMBO_ACTION_LABELS, ComboAction } from '@/hooks/useGestureCombos';
-import { useHapticFeedback } from '@/hooks/useHapticFeedback';
-import { useAccessibility } from '@/contexts/AccessibilityContext';
-import { loadRemoteControlSettings } from '@/hooks/useBlinkRemoteControl';
+} from '../../hooks/useScreenTargets';
+import type {
+  ScreenTarget,
+  GestureTrigger,
+  SimpleGestureTrigger,
+  GetTargetAtPositionOptions,
+} from '../../hooks/useScreenTargets';
+import { COMBO_ACTION_LABELS, type ComboAction } from '../../hooks/useGestureCombos';
+import { useHapticFeedback } from '../../hooks/useHapticFeedback';
+import { useAccessibility } from '../../contexts/AccessibilityContext';
+import { loadRemoteControlSettings } from '../../hooks/useBlinkRemoteControl';
+import '../../styles/vision-target-overlay.css';
 
 const GAZE_SMOOTHING_ALPHA = 0.28;
 const DEFAULT_DWELL_MS = 1500;
@@ -117,7 +119,7 @@ export const TargetOverlay: React.FC<TargetOverlayProps> = ({
     return smooth;
   })();
 
-  const isTriggerSupported = (trigger: GestureTrigger) => {
+  const isTriggerSupported = (trigger: GestureTrigger): boolean => {
     if (typeof trigger !== 'string') {
       return trigger.steps.every(step => isTriggerSupported(step));
     }
@@ -346,7 +348,7 @@ export const TargetOverlay: React.FC<TargetOverlayProps> = ({
   const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 1024;
 
   return (
-    <div className={cn('fixed inset-0 pointer-events-none z-[96]', className)} aria-hidden="false">
+    <div className={cn('vision-target-layer', className)} aria-hidden="false">
       {/* Screen reader announcement for target activation */}
       <div
         role="status"
@@ -374,9 +376,9 @@ export const TargetOverlay: React.FC<TargetOverlayProps> = ({
           <div
             key={target.id}
             className={cn(
-              'absolute flex items-center justify-center transition-all duration-200',
-              isHovered && !reducedMotion && 'scale-110',
-              isSuccess && !reducedMotion && 'animate-pulse'
+              'vision-target-node',
+              isHovered && !reducedMotion && 'vision-target-node--hovered',
+              isSuccess && !reducedMotion && 'vision-target-node--success',
             )}
             style={{
               left: `${target.position.x * 100}%`,
@@ -389,25 +391,17 @@ export const TargetOverlay: React.FC<TargetOverlayProps> = ({
             {/* Background circle */}
             <div
               className={cn(
-                'absolute inset-0 rounded-full transition-all duration-200',
-                isSuccess
-                  ? highContrast
-                    ? 'bg-accent/50 border-[3px] border-accent'
-                    : 'bg-accent/30 border-2 border-accent'
-                  : isHovered
-                    ? highContrast
-                      ? 'bg-primary/30 border-[3px] border-primary shadow-[0_0_24px_hsl(var(--primary)/0.5)]'
-                      : 'bg-primary/20 border-2 border-primary shadow-[0_0_20px_hsl(var(--primary)/0.4)]'
-                    : highContrast
-                      ? 'bg-background/20 border-2 border-foreground/30'
-                      : 'bg-background/10 border border-foreground/10'
+                'vision-target-ring',
+                isSuccess && 'vision-target-ring--success',
+                isHovered && !isSuccess && 'vision-target-ring--hovered',
+                highContrast && isHovered && !isSuccess && 'vision-target-ring--hovered',
               )}
             />
 
             {/* Activation progress ring (smooth fill) */}
             {progress > 0 && !isSuccess && (
               <svg
-                className={cn('absolute inset-0 w-full h-full -rotate-90', !reducedMotion && 'transition-all duration-75')}
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', transform: 'rotate(-90deg)' }}
                 viewBox={`0 0 ${sizePx} ${sizePx}`}
                 aria-hidden
               >
@@ -416,25 +410,21 @@ export const TargetOverlay: React.FC<TargetOverlayProps> = ({
                   cy={sizePx / 2}
                   r={sizePx / 2 - 2}
                   fill="none"
-                  stroke="currentColor"
+                  stroke="var(--accent-cyan)"
                   strokeWidth={highContrast ? 4 : 3}
                   strokeDasharray={`${progress * circumference} ${circumference}`}
-                  className="text-primary"
                 />
               </svg>
             )}
 
             {/* Content */}
-            <div className="relative z-10 flex flex-col items-center gap-0.5">
+            <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               {isSuccess ? (
-                <Check className={cn('text-accent', highContrast ? 'w-5 h-5' : 'w-4 h-4')} />
+                <span className="vision-target-label" aria-hidden>
+                  ✓
+                </span>
               ) : (
-                <span
-                  className={cn(
-                    'font-medium text-foreground/70',
-                    highContrast ? 'text-xs' : 'text-[10px]'
-                  )}
-                >
+                <span className="vision-target-label">
                   {COMBO_ACTION_LABELS[target.command]?.split(' ')[0] || target.label}
                 </span>
               )}
@@ -442,14 +432,7 @@ export const TargetOverlay: React.FC<TargetOverlayProps> = ({
 
             {/* Hover label + optional remaining time for gaze dwell */}
             {isHovered && !isSuccess && (
-              <div
-                className={cn(
-                  'absolute left-1/2 -translate-x-1/2 px-2 py-0.5 rounded text-[9px] whitespace-nowrap',
-                  highContrast ? 'bg-primary text-primary-foreground border border-primary-foreground/30' : 'bg-primary text-primary-foreground',
-                  !reducedMotion && 'animate-in fade-in'
-                )}
-                style={{ top: '100%', marginTop: 4 }}
-              >
+              <div className="vision-target-hint" style={{ top: '100%' }}>
                 {getTriggerLabel(target.trigger)}
                 {!isTriggerSupported(target.trigger) && <span className="opacity-80"> (training)</span>}
                 {isGazeDwell && remainingMs > 0 && (
@@ -466,11 +449,10 @@ export const TargetOverlay: React.FC<TargetOverlayProps> = ({
       {/* Optional gaze cursor (smoothed position) */}
       {showGazeCursor && effectiveGaze && (
         <div
-          className="fixed pointer-events-none z-[97] w-3 h-3 rounded-full bg-primary/60 border-2 border-primary transition-transform duration-75"
+          className="vision-target-gaze-cursor"
           style={{
             left: effectiveGaze.x,
             top: effectiveGaze.y,
-            transform: 'translate(-50%, -50%)',
           }}
           aria-hidden
         />
@@ -478,13 +460,7 @@ export const TargetOverlay: React.FC<TargetOverlayProps> = ({
 
       {/* Calibration hint (one-time per session) */}
       {calibrationHintVisible && (
-        <div
-          className={cn(
-            'absolute bottom-6 left-1/2 -translate-x-1/2 px-3 py-2 rounded-lg text-xs text-center max-w-[90vw]',
-            highContrast ? 'bg-primary text-primary-foreground border-2 border-primary-foreground' : 'bg-background/90 text-foreground border border-border backdrop-blur-sm'
-          )}
-          role="status"
-        >
+        <div className="vision-target-calibration-hint" role="status">
           For best accuracy, calibrate gaze in Remote Control settings.
         </div>
       )}
