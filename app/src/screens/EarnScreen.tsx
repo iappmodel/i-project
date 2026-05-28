@@ -1,9 +1,11 @@
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { Card } from '../components/Card'
 import { TabScreenLayout } from '../components/TabScreenLayout'
 import { DEFAULT_SPONSORED_OFFER } from '../data/demoData'
 import { formatIcoinsAmount } from '../lib/format'
 import { getWebVisionRuntime, isWebVisionEnabled, useWebVisionEngine } from '../lib/visionEngine'
+import { publishVisionProofSnapshot } from '../lib/visionProofBridge'
+import { VisionSourceBadge } from '../components/VisionSourceBadge'
 import { useDemo } from '../state/useDemo'
 
 export function EarnScreen() {
@@ -12,6 +14,27 @@ export function EarnScreen() {
   const visionVideoRef = useRef<HTMLVideoElement>(null)
   const visionState = useWebVisionEngine(webVisionEnabled, visionVideoRef)
   const lastGesture = visionState.lastGesture
+
+  useEffect(() => {
+    if (!webVisionEnabled) return
+    publishVisionProofSnapshot({
+      hasFace: visionState.hasFace,
+      livenessScore: visionState.livenessScore,
+      attentionScore: Math.round(visionState.livenessScore * 100),
+      gazeX: visionState.gazePosition?.x ?? null,
+      gazeY: visionState.gazePosition?.y ?? null,
+      visionStatus: visionState.isRunning ? 'active' : 'idle',
+      facePresentRatio: visionState.hasFace ? 0.9 : 0,
+      notes: 'earn-web-vision',
+    })
+  }, [
+    webVisionEnabled,
+    visionState.hasFace,
+    visionState.livenessScore,
+    visionState.gazePosition,
+    visionState.isRunning,
+  ])
+
   const {
     selectOffer,
     appMode,
@@ -43,6 +66,7 @@ export function EarnScreen() {
               {visionState.livenessScore.toFixed(2)}
               {lastGesture ? ` · gesture=${lastGesture}` : ''}
             </p>
+            <VisionSourceBadge />
             <video ref={visionVideoRef} playsInline muted autoPlay style={{ display: 'none' }} />
           </>
         ) : null}

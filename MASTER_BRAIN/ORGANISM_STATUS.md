@@ -1,7 +1,7 @@
 # [ i ] Organism status — one page
 
-**Updated:** 2026-05-27  
-**Phases complete:** 1–20 (see [PHASE_QUEUE_INDEX.md](PHASE_QUEUE_INDEX.md))
+**Updated:** 2026-05-28  
+**Phases complete:** 1–40 (see [PHASE_QUEUE_INDEX.md](PHASE_QUEUE_INDEX.md))
 
 ---
 
@@ -9,7 +9,8 @@
 
 | Loop | Path |
 |------|------|
-| Loop 1 web | Earn → mock gaze → proof → validator → wallet |
+| Loop 1 web | Immersive feed → consent → watch → proof → validator → wallet |
+| Immersive shell (Picture 2) | Default product entry; glass wallet/profile sheets; OUT-PROFILE tap |
 | Ledger | Supabase `pop_pending_holds` → `wallet_ledger` (local Docker) |
 | Auth | Demo user auto sign-in |
 | Flutter bridge | Seal Proof → validator; SSE + deep link to React wallet |
@@ -17,15 +18,16 @@
 | Capacitor | Packages installed; `setup_capacitor_shell.sh --add` for native |
 | Loop 2 scaffold | ✅ Save/return flow (`saved` screen + localStorage) |
 | Validator packaging | ✅ Dockerfile + `smoke_validator_docker.sh` |
-| Web vision core | ✅ audited subset vendored + compile-safe core adapters behind flag |
-| Vision bridge deps | ✅ alias + mediapipe + shared stubs wired |
-| CI | Validator + app + readiness + vision + artifact upload |
+| Web vision (flagged) | ✅ operator panel + proof hints bridge when `VITE_VISION_ENGINE=1` |
+| Blink Remote lite | ✅ debug gaze panel (full archive UI still deferred) |
+| CI | Validator + app + vision proof + immersive shell smokes |
 
 **One command:** `./scripts/dev_stack.sh`
 
 **Full smoke:** `./scripts/smoke_organism_spine.sh`
 
 **Pre-deploy:** `./scripts/smoke_production_readiness.sh` · runbook: `docs/technical/PRODUCTION_DEPLOY_RUNBOOK.md`  
+**Cutover (owner):** `docs/technical/PRODUCTION_CUTOVER_CHECKLIST.md`  
 **Artifacts:** `./scripts/build_production_artifacts.sh`
 
 ---
@@ -34,7 +36,9 @@
 
 | Gate | Unblock with |
 |------|----------------|
-| Stripe live checkout | ✅ local test-mode webhook E2E; live deploy still needs owner cloud Stripe wiring |
+| Stripe live checkout | Owner cloud Stripe + webhook registration |
+| Supabase cloud | Hosted project + migration apply |
+| Validator hosting | TLS domain + env vars |
 | Capacitor store build | Xcode / Android Studio after `--add` |
 
 **Device test:** `./scripts/run_android_device_test.sh` (USB) · postcheck: `./scripts/smoke_android_seal_postcheck.sh` · open wallet: `./scripts/open_wallet_on_device.sh <session>`
@@ -45,18 +49,19 @@
 
 ```
 Flutter Seal Proof ──POST──► POP validator :8787
-React app (mock gaze) ──POST──►     │
+React app (mock or web vision hints) ──POST──►     │
                                     ├── SSE proof-events ──► Wallet refresh
                                     └── Supabase holds ──► ledger settle
+Immersive feed ──► consent ──► watch-verify ──► earn settle
 ```
 
 ---
 
-## Next phase candidates (18+)
+## Deferred (post Phase 40)
 
-- P1 chat extraction pass
-- Vercel/Render production cutover (owner credentials/domain)
-- Capacitor store build
-- Optional deeper web vision promotion (`22cabd3` full subset)
+- Full archive `BlinkRemoteControl` parity (voice/Tobii/tutorial tabs)
+- Promo marketplace tab + live feed API
+- ELO full companion product (MOD-01, iAM entity)
+- Production cloud cutover (owner credentials)
 
 See [WIRING_STATUS.md](WIRING_STATUS.md) for file-level truth.

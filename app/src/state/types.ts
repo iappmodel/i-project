@@ -122,6 +122,7 @@ export interface DemoContextValue extends DemoState {
   jumpWallet: () => void
   jumpProfile: () => void
   selectOffer: (o: Offer) => void
+  beginImmersiveWatch: (o: Offer) => void
   startWatchFlow: () => void
   acceptConsentAndBeginSession: () => void
   completeVerification: () => void

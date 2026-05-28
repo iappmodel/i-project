@@ -2,6 +2,8 @@ import { Button } from '../components/Button'
 import { PhoneFrame } from '../components/PhoneFrame'
 import { SourceEvidence } from '../components/SourceEvidence'
 import { CONSENT_PROOF_STATUS } from '../data/demoData'
+import { DEMO_IMMERSIVE_MEDIA } from '../data/immersiveFeedContext'
+import { isWebVisionEnabled } from '../lib/visionEngine'
 import { useDemo } from '../state/useDemo'
 
 const PERMISSIONS = [
@@ -20,14 +22,18 @@ const PERMISSIONS = [
 ] as const
 
 export function ConsentCameraGateScreen() {
-  const { acceptConsentAndBeginSession, setScreen, walletBackend, proofEventsConnected } = useDemo()
+  const { acceptConsentAndBeginSession, setScreen, walletBackend, proofEventsConnected, selectedOffer } =
+    useDemo()
+  const webVision = isWebVisionEnabled()
+  const fromImmersive = selectedOffer?.id === DEMO_IMMERSIVE_MEDIA.contentId
 
   return (
     <PhoneFrame scroll>
       <h1 className="screen-title">Enable attention verification</h1>
       <p className="screen-sub">
-        Production uses camera-based attention proof before payout. This React investor demo simulates the gaze
-        signal — no camera stream is opened in the browser.
+        {webVision
+          ? 'Web vision is enabled — camera-based gaze runs in-browser when you continue. Metrics attach as proof hints only; validator settlement rules are unchanged.'
+          : 'Production uses camera-based attention proof before payout. This React investor demo simulates the gaze signal — no camera stream is opened in the browser.'}
         {walletBackend === 'live'
           ? proofEventsConnected
             ? ' Flutter Seal Proof can post real packets in parallel (SSE bridge live).'
@@ -73,10 +79,14 @@ export function ConsentCameraGateScreen() {
       </p>
 
       <Button className="prot-cta" style={{ marginTop: 'auto' }} onClick={() => acceptConsentAndBeginSession()}>
-        Allow demo verification
+        {webVision ? 'Allow camera & begin watch' : 'Allow demo verification'}
       </Button>
-      <Button variant="ghost" style={{ marginTop: 8 }} onClick={() => setScreen('offer-detail')}>
-        Back to offer
+      <Button
+        variant="ghost"
+        style={{ marginTop: 8 }}
+        onClick={() => setScreen(fromImmersive ? 'immersive-feed' : 'offer-detail')}
+      >
+        {fromImmersive ? 'Back to feed' : 'Back to offer'}
       </Button>
 
       <SourceEvidence

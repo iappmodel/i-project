@@ -71,6 +71,14 @@ echo "== Vision prep smoke =="
 "$ROOT/scripts/smoke_vision_prep.sh"
 
 echo ""
+echo "== Vision proof bridge smoke =="
+"$ROOT/scripts/smoke_vision_proof_bridge.sh"
+
+echo ""
+echo "== Immersive shell smoke (Phases 35–38) =="
+"$ROOT/scripts/smoke_immersive_shell.sh"
+
+echo ""
 echo "== ELO presence smoke =="
 "$ROOT/scripts/smoke_elo_presence.sh"
 

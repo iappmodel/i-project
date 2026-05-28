@@ -9,8 +9,12 @@ import { MediaActionRail } from '../components/gestureButtons/MediaActionRail'
 import { EloPresenceLayer } from '../components/elo/EloPresenceLayer'
 import { OfferReviewSheet } from '../components/gestureButtons/OfferReviewSheet'
 import { PhoneFrame } from '../components/PhoneFrame'
+import { ImmersiveWalletSheet } from '../components/immersive/ImmersiveWalletSheet'
+import { ImmersiveProfileSheet } from '../components/immersive/ImmersiveProfileSheet'
 import { DEMO_IMMERSIVE_MEDIA } from '../data/immersiveFeedContext'
 import { formatCoinLabel } from '../lib/gestureButtons/offerService'
+import { resolveOutProfileCreator, outProfileTapAction } from '../lib/outProfileEngine'
+import { isWebVisionEnabled } from '../lib/visionEngine'
 import { useContentLike } from '../hooks/useContentLike'
 import { useOfferSession } from '../hooks/useOfferSession'
 import { useDemo } from '../state/useDemo'
@@ -28,13 +32,36 @@ export function ImmersiveFeedScreen() {
     iCoinsPending,
     aCoins,
     walletBackend,
-    selectOffer,
+    beginImmersiveWatch,
   } = useDemo()
   const [toast, setToast] = useState<string | null>(null)
+  const [walletSheetOpen, setWalletSheetOpen] = useState(false)
+  const [profileSheetOpen, setProfileSheetOpen] = useState(false)
   const [timerPct] = useState(38)
   const [bgSrc, setBgSrc] = useState(SUNSET_PHOTO)
 
   const media = DEMO_IMMERSIVE_MEDIA
+  const outCreator = resolveOutProfileCreator({
+    id: media.creatorId,
+    displayName: media.creatorName,
+    location: media.creatorLocation,
+    avatarInitials: media.creatorAvatarInitials,
+    sponsoredOfferId: media.contentId,
+  })
+
+  const sponsoredOffer = {
+    id: media.contentId,
+    brand: media.creatorName,
+    title: 'Sunset · sponsored watch',
+    description: 'Immersive feed → watch & verify',
+    platform: 'In-app · Sponsored',
+    rewardICoins: 12,
+    sponsorLabel: 'Sponsored',
+    platformCode: 'IM',
+    watchDuration: '0:45',
+    thumbnailGradient: 'linear-gradient(160deg,#1a1030,#0a1520,#2d1b4e)',
+    creatorHandle: media.creatorName,
+  } as const
 
   const { liked, likeCount, toggleLike } = useContentLike({
     contentId: media.contentId,
@@ -62,6 +89,19 @@ export function ImmersiveFeedScreen() {
     onSettled: (o) => flash(`Offer sent · ${formatCoinLabel(o.coin, o.amount)}`),
     onError: (msg) => flash(msg),
   })
+
+  const handleWatchSponsored = useCallback(() => {
+    beginImmersiveWatch(sponsoredOffer)
+  }, [beginImmersiveWatch, sponsoredOffer])
+
+  const handleOutProfileTap = useCallback(() => {
+    const action = outProfileTapAction(outCreator)
+    if (action.type === 'open_offer') {
+      beginImmersiveWatch(sponsoredOffer)
+      return
+    }
+    flash('Creator feed (coming soon)')
+  }, [beginImmersiveWatch, flash, outCreator, sponsoredOffer])
 
   const handleLikeToggle = useCallback(
     (next: boolean) => {
@@ -95,23 +135,6 @@ export function ImmersiveFeedScreen() {
       offerSession.setSheetOpen(true)
     }
   }, [offerSession])
-
-  const handleWatchSponsored = useCallback(() => {
-    selectOffer({
-      id: media.contentId,
-      brand: media.creatorName,
-      title: 'Sunset · sponsored watch',
-      description: 'Immersive feed → watch & verify',
-      platform: 'In-app · Sponsored',
-      rewardICoins: 12,
-      sponsorLabel: 'Sponsored',
-      platformCode: 'IM',
-      watchDuration: '0:45',
-      thumbnailGradient: 'linear-gradient(160deg,#1a1030,#0a1520,#2d1b4e)',
-      creatorHandle: media.creatorName,
-    })
-    setScreen('watch-verify')
-  }, [selectOffer, media, setScreen])
 
   return (
     <PhoneFrame>
@@ -149,6 +172,7 @@ export function ImmersiveFeedScreen() {
             name={media.creatorName}
             location={media.creatorLocation}
             avatarInitials={media.creatorAvatarInitials}
+            onPress={handleOutProfileTap}
           />
 
           <button
@@ -187,14 +211,36 @@ export function ImmersiveFeedScreen() {
             }}
             onPromo={() => setActiveTab('earn')}
             onCreate={() => flash('Create · Studio (coming soon)')}
-            onWallet={() => {
+            onWallet={() => setWalletSheetOpen(true)}
+            onProfile={() => setProfileSheetOpen(true)}
+          />
+
+          <ImmersiveWalletSheet
+            open={walletSheetOpen}
+            onClose={() => setWalletSheetOpen(false)}
+            onOpenFull={() => {
+              setWalletSheetOpen(false)
               setActiveTab('wallet')
               setScreen('wallet')
             }}
-            onProfile={() => {
+          />
+          <ImmersiveProfileSheet
+            open={profileSheetOpen}
+            onClose={() => setProfileSheetOpen(false)}
+            onOpenFull={() => {
+              setProfileSheetOpen(false)
               setActiveTab('profile')
               setScreen('profile')
             }}
+            onOpenVision={
+              isWebVisionEnabled()
+                ? () => {
+                    setProfileSheetOpen(false)
+                    setActiveTab('profile')
+                    setScreen('profile')
+                  }
+                : undefined
+            }
           />
 
           <div className="immersive-home-indicator" aria-hidden />

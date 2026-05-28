@@ -21,6 +21,22 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-28 — Phases 34–40: vision proof bridge + immersive shell completion
+
+### Delivered
+- **Phase 34** — `visionProofBridge.ts` attaches web-vision metrics to `demoProofPacket` as hints only; `VisionSourceBadge` on Earn/Watch; ADR + `smoke_vision_proof_bridge.sh`.
+- **Phase 35** — Glass wallet/profile overlays from immersive feed (`ImmersiveGlassSheet`, `ImmersiveWalletSheet`, `ImmersiveProfileSheet`).
+- **Phase 36** — `VisionBlinkRemoteLite` debug gaze panel in `VisionControlPanel` (dependency-safe; no Tobii/voice).
+- **Phase 37** — `OUT_PROFILE_ENGINE.md` + `outProfileEngine.ts`; tappable `OutProfileChip` → sponsored watch flow.
+- **Phase 38** — `beginImmersiveWatch` routes immersive → consent gate → watch-verify; vision-aware consent copy.
+- **Phase 39** — Canon sync: FEATURE_BIBLE, ORGANISM_STATUS, WIRING_STATUS.
+- **Phase 40** — `PRODUCTION_CUTOVER_CHECKLIST.md` (owner-gated deploy prep).
+
+### Verification
+- `npm run typecheck` · `./scripts/smoke_vision_proof_bridge.sh` · `./scripts/smoke_immersive_shell.sh` · wired in `run_all_tests.sh`.
+
+---
+
 ## 2026-05-28 — ELO evoke flow hardening (opt-in voice wake)
 
 ### Delivered

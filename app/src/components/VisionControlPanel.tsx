@@ -4,6 +4,7 @@ import { VisionCalibrationHost } from './VisionCalibrationHost'
 import { VisionRemoteSettingsCard } from './VisionRemoteSettingsCard'
 import { VisionTargetPresetPicker } from './VisionTargetPresetPicker'
 import { VisionTargetEditor } from './VisionTargetEditor'
+import { VisionBlinkRemoteLite } from './VisionBlinkRemoteLite'
 import { loadVisionCalibration } from '../lib/visionCalibration/profile'
 
 type Props = {
@@ -43,6 +44,7 @@ export function VisionControlPanel({ lastRemoteGesture, lastTargetAction }: Prop
           <VisionRemoteSettingsCard className="" />
           <VisionTargetPresetPicker className="" />
           <VisionTargetEditor className="" />
+          <VisionBlinkRemoteLite />
         </div>
       ) : null}
     </section>

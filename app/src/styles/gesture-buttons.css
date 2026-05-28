@@ -140,8 +140,16 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 4px;
-  pointer-events: none;
+  pointer-events: auto;
   max-width: 160px;
+}
+
+.out-profile--button {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
 }
 
 .out-profile__avatar {
@@ -856,4 +864,105 @@
   background: rgba(255, 179, 0, 0.08);
   border-radius: 8px;
   text-align: center;
+}
+
+/* Immersive glass sheets — wallet / profile overlays (Picture 2) */
+.immersive-glass-sheet {
+  position: absolute;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.immersive-glass-sheet__backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+}
+
+.immersive-glass-sheet__panel {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-height: 72%;
+  overflow: auto;
+  border-radius: 16px 16px 0 0;
+  padding: 16px 16px 24px;
+  background: rgba(7, 7, 9, 0.82);
+  border: 0.5px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+}
+
+.immersive-glass-sheet__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.immersive-glass-sheet__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.immersive-glass-sheet__close {
+  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.immersive-glass-sheet__hint {
+  margin: 0 0 8px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.immersive-glass-sheet__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.immersive-glass-sheet__stat {
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 0.5px solid rgba(255, 255, 255, 0.08);
+}
+
+.immersive-glass-sheet__label {
+  display: block;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 4px;
+}
+
+.immersive-glass-sheet__value {
+  display: block;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.immersive-glass-sheet__sub {
+  display: block;
+  margin-top: 4px;
+  font-size: 10px;
+  color: var(--accent-cyan);
+}
+
+.immersive-glass-sheet__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }

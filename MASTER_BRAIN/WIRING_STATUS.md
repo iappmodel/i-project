@@ -1,6 +1,6 @@
 # [ i ] Wiring Status
 
-**Updated:** 2026-05-27  
+**Updated:** 2026-05-28  
 **Workspace:** `i_project_migration_archive`
 
 One-page truth for what's wired vs mocked.
@@ -59,6 +59,8 @@ flowchart LR
 | `./scripts/build_production_artifacts.sh` | Build artifact tarball + deploy docs |
 | `./scripts/smoke_organism_spine.sh` | Full spine (local + optional Supabase) |
 | `./scripts/smoke_elo_presence.sh` | ELO presence module files + app build |
+| `./scripts/smoke_vision_proof_bridge.sh` | Vision → proof packet hints (Phase 34) |
+| `./scripts/smoke_immersive_shell.sh` | Glass wallet/profile, out-profile, loop1 watch path (Phases 35–38) |
 | `./scripts/enable_stripe_live_env.sh` | Stripe checkout env when keys in stack |
 
 ---
@@ -291,6 +293,22 @@ flowchart LR
 | MediaPipe deps in app | ✅ `@mediapipe/face_mesh` + `@mediapipe/tasks-vision` |
 | Shared vision stubs | ✅ `lib/logger.ts`, `lib/skinToneFallback.ts` |
 | Vision smoke hardening | ✅ asserts bridge prerequisites |
+
+---
+
+## Phases 34–40 (2026-05-28)
+
+| Item | Status |
+|------|--------|
+| Vision → proof bridge (hints only) | ✅ `visionProofBridge.ts` + `demoProofPacket` + ADR |
+| Vision source badge (Earn/Watch) | ✅ `VisionSourceBadge` |
+| Immersive wallet/profile glass sheets | ✅ `ImmersiveGlassSheet`, wired on `ImmersiveFeedScreen` |
+| Blink Remote lite (debug gaze) | ✅ `VisionBlinkRemoteLite` in `VisionControlPanel` |
+| OUT-PROFILE engine v1 | ✅ `outProfileEngine.ts` + tap → consent/watch |
+| Loop 1 immersive watch path | ✅ `beginImmersiveWatch` → consent gate → watch-verify |
+| Consent gate vision copy | ✅ when `VITE_VISION_ENGINE=1` |
+| Canon doc sync | ✅ FEATURE_BIBLE, ORGANISM_STATUS, this file |
+| Production cutover checklist | ✅ `docs/technical/PRODUCTION_CUTOVER_CHECKLIST.md` (owner-gated) |
 
 ---
 

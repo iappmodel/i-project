@@ -180,6 +180,17 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     }))
   }, [])
 
+  const beginImmersiveWatch = useCallback((offer: Offer) => {
+    setState((prev) => ({
+      ...prev,
+      selectedOffer: offer,
+      currentScreen: 'consent-camera-gate',
+      activeTab: 'earn',
+      attentionSession: null,
+      verificationStatus: 'idle',
+    }))
+  }, [])
+
   const startWatchFlow = useCallback(() => {
     navigateTo('consent-camera-gate')
   }, [navigateTo])
@@ -382,6 +393,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       jumpWallet: () => setActiveTab('wallet'),
       jumpProfile: () => setActiveTab('profile'),
       selectOffer,
+      beginImmersiveWatch,
       startWatchFlow,
       acceptConsentAndBeginSession,
       completeVerification,
@@ -421,6 +433,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       enterProduct,
       resetDemo,
       selectOffer,
+      beginImmersiveWatch,
       startWatchFlow,
       acceptConsentAndBeginSession,
       completeVerification,

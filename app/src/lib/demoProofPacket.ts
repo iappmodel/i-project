@@ -1,5 +1,11 @@
 import type { AttentionSession } from '../state/attentionSession'
 import type { Offer } from '../state/types'
+import {
+  getVisionProofHints,
+  mergeVisionHintsIntoEyeTracking,
+  type VisionProofHints,
+} from './visionProofBridge'
+import { isWebVisionEnabled } from './visionEngine'
 import { DEMO_LOCAL_USER_REF, resolveValidatorOfferId } from './settlementConfig'
 
 export interface ProofPacketV0Json {
@@ -26,7 +32,11 @@ export interface ProofPacketV0Json {
 export function buildDemoProofPacket(input: {
   session: AttentionSession
   offer: Offer
+  visionHints?: VisionProofHints | null
 }): ProofPacketV0Json {
+  const visionHints = input.visionHints ?? (isWebVisionEnabled() ? getVisionProofHints() : null)
+  const runtimeVersion =
+    visionHints?.source === 'web-vision' ? 'app/web-vision-hints@phase34' : 'app/mock-gaze@adr-014'
   const startedAt = new Date(input.session.createdAt).toISOString()
   const endedAt = new Date(input.session.validatedAt ?? Date.now()).toISOString()
   const durationMs = Math.max(
@@ -47,16 +57,21 @@ export function buildDemoProofPacket(input: {
     endedAt,
     durationMs,
     appVersion: 'web-demo@0.1.0',
-    runtimeVersion: 'app/mock-gaze@adr-014',
+    runtimeVersion,
     signals: {
-      presence: { score: 0.93, confidence: 0.9, notes: 'demo-web-presence' },
+      presence: {
+        score: visionHints?.hasFace ? Math.min(0.98, 0.75 + visionHints.livenessScore * 0.2) : 0.93,
+        confidence: visionHints ? 0.88 : 0.9,
+        notes: visionHints ? 'web-vision-hint' : 'demo-web-presence',
+      },
       participation: { score: 0.92, confidence: 0.9, notes: 'playbackCompleted=true' },
       perception: { score: 0.78, confidence: 1.0, notes: 'centerDwellMet=true' },
       signalIntegrity: { score: 0.96, confidence: 1.0, notes: 'band=STRONG' },
       sessionIntegrity: { score: 1.0, confidence: 0.85, notes: 'foregroundRatio=1.00' },
       rewardEligibility: { score: 0.8, confidence: 0.75, notes: 'offerRulesMet=pending_review' },
     },
-    eyeTracking: {
+    eyeTracking: mergeVisionHintsIntoEyeTracking(
+      {
       facePresentRatio: 0.9,
       stableGazeWindows: [
         { startedAtMs: 120400, endedAtMs: 125800, zone: 'CENTER', confidence: 0.82 },
@@ -86,6 +101,8 @@ export function buildDemoProofPacket(input: {
       invalidFrameRatio: 0.1,
       processedFpsAvg: 7.8,
     },
+      visionHints,
+    ),
     interaction: {
       taps: 2,
       scrolls: 0,

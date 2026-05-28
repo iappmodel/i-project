@@ -11,8 +11,8 @@ Two parallel tracks. Same design system, separate codebases.
 
 | Track | Purpose | Backend | Status |
 |---|---|---|---|
-| **DEMO** | Investor pitch + personal testing | None (mocked) | 🔴 Not started |
-| **PRODUCTION** | Full platform build | Supabase | 🔴 Not started |
+| **DEMO** | Investor pitch + personal testing | Mock + optional live spine | 🟢 Loop 1 + immersive shell shipped locally |
+| **PRODUCTION** | Full platform build | Supabase cloud (owner) | 🟡 Local spine complete; cloud cutover checklist ready |
 
 ---
 
@@ -33,16 +33,16 @@ Two parallel tracks. Same design system, separate codebases.
 - [ ] Type scale implemented as utility classes
 
 ### Components — Primitives
-- [ ] Neumorphic button (default, hover, active states)
-- [ ] Neumorphic circular button (toolbar style)
-- [ ] Card (surface, elevated variants)
-- [ ] Glass overlay / bottom sheet
-- [ ] Currency chip (iCoins variant)
-- [ ] Currency chip (vCoins variant)
-- [ ] Earn progress bar
-- [ ] Attention score ring (SVG animated)
-- [ ] Badge / pill
-- [ ] Avatar (with gradient ring for unseen story)
+- [~] Neumorphic button (legacy presenter paths; immersive uses glass)
+- [~] Neumorphic circular button (toolbar style)
+- [~] Card (surface, elevated variants)
+- [x] Glass overlay / bottom sheet — `ImmersiveGlassSheet` on immersive feed
+- [x] Currency chip (iCoins variant) — wallet sheet + reward badge
+- [x] Currency chip (vCoins variant) — wallet sheet
+- [x] Earn progress bar
+- [x] Attention score ring (SVG animated) — watch-verify
+- [x] Badge / pill — vision source badge, reward states
+- [~] Avatar (with gradient ring for unseen story)
 
 ### Motion
 - [ ] Spring easing constants
@@ -69,12 +69,12 @@ Two parallel tracks. Same design system, separate codebases.
 - [ ] Remote control triggers (eye/voice/gesture)
 
 ### Bottom Tab Bar
-- [ ] Feed tab
-- [ ] Earn tab
-- [ ] Wallet tab
-- [ ] Profile tab
-- [ ] Safe area clearance (iOS home indicator)
-- [ ] Active state with indicator
+- [x] Feed tab — immersive default (`ImmersiveBottomNav`)
+- [x] Earn tab — promo slot + earn flow
+- [x] Wallet tab — glass sheet + full wallet escape hatch
+- [x] Profile tab — glass sheet + full profile escape hatch
+- [~] Safe area clearance (iOS home indicator)
+- [x] Active state with indicator
 - [ ] Badge for unread notifications
 
 ### Full-Screen Content Mode

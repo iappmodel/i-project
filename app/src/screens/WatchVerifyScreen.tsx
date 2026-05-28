@@ -8,6 +8,8 @@ import { EloPresenceLayer } from '../components/elo/EloPresenceLayer'
 import { DEFAULT_SPONSORED_OFFER } from '../data/demoData'
 import { formatCoinLabel } from '../lib/format'
 import { isWebVisionEnabled, useWebEyeTracking, useWebGestureDispatch } from '../lib/visionEngine'
+import { publishVisionProofSnapshot } from '../lib/visionProofBridge'
+import { VisionSourceBadge } from '../components/VisionSourceBadge'
 import { useDemo } from '../state/useDemo'
 
 function watchTotalTicks(duration?: string): number {
@@ -69,6 +71,30 @@ export function WatchVerifyScreen() {
   const accruedI = Number(((pct / 100) * offer.rewardICoins).toFixed(2))
   const canFinish = pct >= 99.5
 
+  useEffect(() => {
+    if (!webVisionEnabled || verificationStatus !== 'watching') return
+    publishVisionProofSnapshot({
+      hasFace: eyeTracking.isFaceDetected,
+      livenessScore: ringScore / 100,
+      attentionScore: ringScore,
+      gazeX:
+        eyeTracking.lastCalibratedGazePosition?.x ?? eyeTracking.lastGazePosition?.x ?? null,
+      gazeY:
+        eyeTracking.lastCalibratedGazePosition?.y ?? eyeTracking.lastGazePosition?.y ?? null,
+      visionStatus: eyeTracking.visionStatus,
+      facePresentRatio: eyeTracking.isFaceDetected ? Math.min(1, ringScore / 100) : 0,
+      notes: 'watch-verify-web-vision',
+    })
+  }, [
+    webVisionEnabled,
+    verificationStatus,
+    eyeTracking.isFaceDetected,
+    eyeTracking.lastGazePosition,
+    eyeTracking.lastCalibratedGazePosition,
+    eyeTracking.visionStatus,
+    ringScore,
+  ])
+
   return (
     <PhoneFrame>
       <BackRow label="Consent" onBack={() => setScreen('consent-camera-gate')} />
@@ -87,6 +113,7 @@ export function WatchVerifyScreen() {
                   : 'Eye / camera · demo harness'}
             </span>
           </div>
+          <VisionSourceBadge className="tb-label-prot mono" />
           <div className="timer-badge-prot mono">{timerLabel}</div>
         </div>
         <svg className="attention-score-ring-prot" width="80" height="80" viewBox="0 0 80 80" aria-hidden>
