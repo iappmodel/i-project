@@ -84,6 +84,10 @@ if ! grep -q "VisionTargetPresetPicker" "$APP/src/screens/ProfileScreen.tsx"; th
   echo "FAIL: Profile must expose target preset picker when flagged" >&2
   exit 1
 fi
+if ! grep -q "VisionTargetEditor" "$APP/src/screens/ProfileScreen.tsx"; then
+  echo "FAIL: Profile must expose target editor when flagged" >&2
+  exit 1
+fi
 if ! grep -q "VisionCalibrationHost" "$APP/src/screens/ProfileScreen.tsx"; then
   echo "FAIL: Profile must expose gaze calibration wizard when flagged" >&2
   exit 1

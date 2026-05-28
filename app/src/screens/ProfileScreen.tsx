@@ -6,6 +6,7 @@ import { createSubscriptionCheckout } from '../lib/stripeCheckout'
 import { getStripeReadiness, stripeReadinessLabel } from '../lib/stripeConfig'
 import { VisionCalibrationHost } from '../components/VisionCalibrationHost'
 import { VisionRemoteSettingsCard } from '../components/VisionRemoteSettingsCard'
+import { VisionTargetEditor } from '../components/VisionTargetEditor'
 import { VisionTargetPresetPicker } from '../components/VisionTargetPresetPicker'
 import { isWebVisionEnabled, useRemoteGestureListener } from '../lib/visionEngine'
 import { useScreenTargetActionListener } from '../lib/visionScreenTargets'
@@ -160,6 +161,7 @@ export function ProfileScreen() {
           <VisionCalibrationHost />
           <VisionRemoteSettingsCard />
           <VisionTargetPresetPicker />
+          <VisionTargetEditor />
         </>
       ) : null}
 

@@ -5,6 +5,18 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-27 — Phase 32 target editor controls complete
+
+### Delivered
+- **VisionTargetEditor** — added in Profile behind `VITE_VISION_ENGINE` with per-target editing for label, command, trigger, enable/disable, position (x/y), and size.
+- **Runtime integration** — editor writes through `useScreenTargets` so `TargetOverlay` updates instantly with no separate sync path.
+- **Smoke hardening** — `smoke_vision_prep.sh` now asserts `VisionTargetEditor` mount.
+
+### Deferred Phase 33+
+- Full archive `BlinkRemoteControl` panel (advanced calibration + builder UX).
+
+---
+
 ## 2026-05-27 — Phase 31 vision bundle chunk split complete
 
 ### Delivered
