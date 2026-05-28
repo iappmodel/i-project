@@ -21,9 +21,9 @@ export function SplashScreen() {
           <span className="splash-i">i</span>
           <span>]</span>
         </div>
-        <p className="splash-tag">Attention wallet</p>
+        <p className="splash-tag">Media · attention · rewards</p>
         <p className="splash-hint">
-          {appMode === 'presenter' ? 'Tap to start presenter walkthrough' : 'Tap to open · 4-tab product shell'}
+          {appMode === 'presenter' ? 'Tap to start presenter walkthrough' : 'Tap to open immersive feed'}
         </p>
       </button>
       {appMode === 'product' ? (
@@ -31,13 +31,15 @@ export function SplashScreen() {
           Investor presenter walkthrough
         </button>
       ) : null}
-      <SourceEvidence
-        paths={[
-          '02_clickable_prototypes/index4.html',
-          'MASTER_BRAIN/DECISIONS/DEMO_IA_ADR.md',
-          'integrations/eye-tracking/demos/investor-demo/src/screens/SplashScreen.tsx',
-        ]}
-      />
+      {appMode === 'presenter' ? (
+        <SourceEvidence
+          paths={[
+            '02_clickable_prototypes/index4.html',
+            'MASTER_BRAIN/DECISIONS/DEMO_IA_ADR.md',
+            'integrations/eye-tracking/demos/investor-demo/src/screens/SplashScreen.tsx',
+          ]}
+        />
+      ) : null}
     </PhoneFrame>
   )
 }

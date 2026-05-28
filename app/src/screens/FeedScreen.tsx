@@ -67,6 +67,14 @@ export function FeedScreen() {
             </button>
           ))}
         </div>
+        <button
+          type="button"
+          className="pill active"
+          style={{ margin: '0 16px 10px', display: 'block', width: 'calc(100% - 32px)' }}
+          onClick={() => setScreen('immersive-feed')}
+        >
+          Immersive feed · gesture buttons
+        </button>
         <div className="filter-row">
           {['For you', 'Friends', 'Earn', 'Trending'].map((p, i) => (
             <button

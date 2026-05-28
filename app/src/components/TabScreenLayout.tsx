@@ -12,11 +12,15 @@ type Props = {
 }
 
 export function TabScreenLayout({ activeTab, children, evidence }: Props) {
-  const { setActiveTab } = useDemo()
+  const { setActiveTab, appMode } = useDemo()
+  const showEvidence = appMode === 'presenter' && evidence?.length
 
   return (
     <PhoneFrame scroll>
-      <div className="product-tab-layout">
+      <div className="product-tab-layout product-tab-layout--legacy">
+        <p className="product-tab-layout__legacy-banner">
+          Legacy shell — open immersive feed for canonical UI
+        </p>
         <div className="product-tab-layout__body">{children}</div>
         <BottomNav
           active={activeTab}
@@ -26,7 +30,7 @@ export function TabScreenLayout({ activeTab, children, evidence }: Props) {
           onProfile={() => setActiveTab('profile')}
         />
       </div>
-      {evidence?.length ? <SourceEvidence paths={evidence} /> : null}
+      {showEvidence ? <SourceEvidence paths={evidence} /> : null}
     </PhoneFrame>
   )
 }

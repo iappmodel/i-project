@@ -1,0 +1,859 @@
+/* Immersive feed — Picture 2 wireframe (glass over full-bleed media) */
+
+.phone-screen--immersive {
+  padding: 0;
+  min-height: 680px;
+  height: 680px;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+  position: relative;
+}
+
+.immersive-feed {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 680px;
+  overflow: hidden;
+  background: #000;
+}
+
+.immersive-feed__media {
+  position: absolute;
+  inset: 0;
+  background-color: #0a1520;
+  background-size: cover;
+  background-position: center;
+}
+
+.immersive-feed__scrim-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 140px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.immersive-feed__scrim-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 280px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.35) 55%, transparent);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* TIMER — full width under notch */
+.immersive-feed__timer {
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  right: 12px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 1px;
+  z-index: 5;
+  overflow: hidden;
+}
+
+.immersive-feed__timer-fill {
+  height: 100%;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 1px;
+  transition: width 0.3s ease;
+}
+
+/* REWARD pill — top right */
+.immersive-reward-badge {
+  position: absolute;
+  top: 32px;
+  right: 16px;
+  z-index: 6;
+  padding: 5px 11px;
+  border-radius: 18px;
+  border: 0.5px solid rgba(255, 255, 255, 0.14);
+  background: rgba(7, 7, 9, 0.42);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.immersive-reward-badge__val {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(240, 237, 232, 0.92);
+  letter-spacing: 0.02em;
+}
+
+.reward-offer-pill {
+  position: absolute;
+  top: 32px;
+  right: 16px;
+  z-index: 6;
+  min-width: 72px;
+  padding: 6px 12px;
+  border-radius: 18px;
+  border: 0.5px solid rgba(255, 255, 255, 0.14);
+  background: rgba(7, 7, 9, 0.48);
+  backdrop-filter: blur(10px);
+  text-align: center;
+  cursor: pointer;
+}
+
+.reward-offer-pill--review {
+  border-color: rgba(74, 222, 128, 0.35);
+  box-shadow: 0 0 16px rgba(74, 222, 128, 0.2);
+}
+
+.reward-offer-pill--settled {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.reward-offer-pill__amount {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(240, 237, 232, 0.95);
+}
+
+.reward-offer-pill__hint {
+  font-size: 9px;
+  color: rgba(240, 237, 232, 0.5);
+  margin-top: 2px;
+}
+
+/* OUT-PROFILE — bottom left, stacked */
+.out-profile {
+  position: absolute;
+  left: 16px;
+  bottom: 108px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  pointer-events: none;
+  max-width: 160px;
+}
+
+.out-profile__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  background: rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(240, 237, 232, 0.9);
+}
+
+.out-profile__avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.out-profile__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+}
+
+.out-profile__loc {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 400;
+  color: rgba(240, 237, 232, 0.55);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
+}
+
+/* Right rail — LIKE top, CONTROLS bottom */
+.media-action-rail {
+  position: absolute;
+  right: 14px;
+  bottom: 118px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  pointer-events: none;
+  touch-action: none;
+}
+
+.media-action-rail > * {
+  pointer-events: auto;
+}
+
+.gesture-button-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.gesture-button__label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(240, 237, 232, 0.55);
+  min-height: 12px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.gesture-button__label--offer {
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 600;
+  font-size: 11px;
+}
+
+/* Glass circle buttons — 40px wireframe */
+.gesture-button {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 0.5px solid rgba(255, 255, 255, 0.12);
+  background: rgba(7, 7, 9, 0.42);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  transition: transform 0.1s, background 0.15s, box-shadow 0.2s;
+  z-index: 2;
+}
+
+.gesture-button:active {
+  transform: scale(0.9);
+}
+
+.gesture-button--liked {
+  background: rgba(255, 77, 109, 0.28);
+  border-color: rgba(255, 77, 109, 0.38);
+}
+
+.gesture-button--armed {
+  box-shadow: 0 0 22px rgba(255, 180, 80, 0.45);
+}
+
+.gesture-button--deep {
+  box-shadow: 0 0 26px rgba(180, 120, 255, 0.35);
+}
+
+.gesture-button__ring {
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 190, 100, 0.55);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.gesture-button--armed .gesture-button__ring {
+  opacity: 1;
+  animation: gesture-ring-pulse 1.2s ease-in-out infinite;
+}
+
+.gesture-button--deep .gesture-button__ring-outer {
+  position: absolute;
+  inset: -9px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(160, 100, 255, 0.4);
+  animation: gesture-ring-pulse 0.8s ease-in-out infinite;
+}
+
+.gesture-button__icon {
+  width: 18px;
+  height: 18px;
+  color: rgba(240, 237, 232, 0.88);
+}
+
+.gesture-button--liked .gesture-button__icon {
+  color: #ff6b8a;
+  fill: #ff6b8a;
+}
+
+@keyframes gesture-ring-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+/* Cross mode while holding Like */
+.gesture-button-cross {
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.gesture-button-cross--visible {
+  opacity: 1;
+}
+
+.gesture-cross-arm {
+  position: absolute;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(4px);
+}
+
+.gesture-cross-arm--up {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 26px;
+  height: 32px;
+  border: 0.5px solid rgba(255, 255, 255, 0.15);
+}
+
+.gesture-cross-arm--down {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 26px;
+  height: 32px;
+  border: 0.5px solid rgba(255, 255, 255, 0.15);
+}
+
+.gesture-cross-arm--left,
+.gesture-cross-arm--right {
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 26px;
+  border: 0.5px solid rgba(255, 255, 255, 0.12);
+}
+
+.gesture-cross-arm--left {
+  left: 0;
+}
+
+.gesture-cross-arm--right {
+  right: 0;
+}
+
+.gesture-cross-arm--active {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+/* Heart waterfall */
+.heart-waterfall {
+  position: absolute;
+  inset: -16px -36px -72px -36px;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 1;
+}
+
+.heart-waterfall__particle {
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
+  font-size: 11px;
+  opacity: 0;
+  color: rgba(255, 200, 210, 0.65);
+  transform: translateX(-50%);
+  animation: heart-float-up 1.8s ease-out forwards;
+}
+
+.heart-waterfall__particle--down {
+  animation-name: heart-float-down;
+}
+
+@keyframes heart-float-up {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 0) scale(0.5);
+  }
+  12% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--drift-x, 0px)), -110px) scale(1);
+  }
+}
+
+@keyframes heart-float-down {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 0) scale(0.5);
+  }
+  12% {
+    opacity: 0.45;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--drift-x, 0px)), 72px) scale(0.85);
+  }
+}
+
+/* Soft UI bottom nav — light bar, inset icons */
+.immersive-bottom-nav {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  z-index: 7;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 12px 14px 16px;
+  border-radius: 26px;
+  background: rgba(248, 248, 252, 0.96);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    0 4px 24px rgba(0, 0, 0, 0.28);
+  pointer-events: auto;
+}
+
+.immersive-bottom-nav__tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 14px;
+  background: transparent;
+  color: rgba(30, 30, 36, 0.42);
+  cursor: pointer;
+  box-shadow:
+    inset 2px 2px 5px rgba(0, 0, 0, 0.06),
+    inset -2px -2px 5px rgba(255, 255, 255, 0.85);
+  transition: color 0.15s;
+}
+
+.immersive-bottom-nav__tab--active {
+  color: rgba(20, 20, 26, 0.88);
+}
+
+.immersive-bottom-nav__create {
+  width: 50px;
+  height: 50px;
+  margin-top: -20px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.98);
+  color: rgba(24, 24, 30, 0.88);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+.immersive-home-indicator {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.22);
+  z-index: 8;
+  pointer-events: none;
+}
+
+.immersive-toast {
+  position: absolute;
+  top: 52px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 8;
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 11px;
+  color: rgba(240, 237, 232, 0.9);
+  background: rgba(7, 7, 9, 0.55);
+  backdrop-filter: blur(8px);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Settings sheet */
+.gesture-settings-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.gesture-settings-sheet {
+  width: 100%;
+  max-height: 72%;
+  overflow-y: auto;
+  border-radius: 20px 20px 0 0;
+  background: var(--bg-panel);
+  border: 0.5px solid var(--border-mid);
+  padding: 16px 16px 24px;
+}
+
+.gesture-settings-sheet h2 {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 16px;
+}
+
+.gesture-settings-sheet__sub {
+  margin: 0 0 14px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.gesture-settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 0.5px solid var(--border-subtle);
+}
+
+.gesture-settings-row label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.gesture-settings-row select {
+  font-size: 11px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: var(--bg-raised);
+  color: var(--text-primary);
+  border: 0.5px solid var(--border-mid);
+}
+
+.gesture-settings-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.app-shell--immersive {
+  padding-bottom: 16px;
+  background: #e8e8ec;
+}
+
+.app-shell--immersive .app-shell__host {
+  padding: 8px 12px 0;
+}
+
+.app-shell--immersive .phone {
+  background: #fff;
+}
+
+.gesture-button__label--offer {
+  color: #4ade80;
+  text-shadow: 0 0 12px rgba(74, 222, 128, 0.45);
+}
+
+.immersive-feed__watch-cta {
+  position: absolute;
+  left: 16px;
+  bottom: 128px;
+  z-index: 5;
+  padding: 8px 14px;
+  border-radius: 18px;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(240, 237, 232, 0.92);
+  background: rgba(7, 7, 9, 0.42);
+  border: 0.5px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.offer-review-backdrop,
+.gesture-builder-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.offer-review-sheet,
+.gesture-builder-sheet {
+  width: 100%;
+  max-height: 78%;
+  overflow-y: auto;
+  border-radius: 20px 20px 0 0;
+  padding: 18px 16px 28px;
+  background: rgba(12, 12, 16, 0.72);
+  border: 0.5px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: rgba(240, 237, 232, 0.92);
+}
+
+.offer-review-sheet__eyebrow {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: rgba(240, 237, 232, 0.5);
+}
+
+.offer-review-sheet__title {
+  margin: 6px 0 4px;
+  font-size: 28px;
+  color: #4ade80;
+}
+
+.offer-review-sheet__sub {
+  margin: 0 0 16px;
+  font-size: 11px;
+  color: rgba(240, 237, 232, 0.55);
+}
+
+.offer-review-presets {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.offer-review-preset {
+  flex: 1;
+  padding: 10px 8px;
+  border-radius: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  color: rgba(240, 237, 232, 0.85);
+}
+
+.offer-review-preset--active {
+  border-color: rgba(74, 222, 128, 0.45);
+  box-shadow: 0 0 12px rgba(74, 222, 128, 0.2);
+}
+
+.offer-review-manual {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+  font-size: 11px;
+}
+
+.offer-review-manual input {
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 0.5px solid rgba(255, 255, 255, 0.12);
+  color: inherit;
+  font-family: var(--font-mono);
+}
+
+.offer-review-slider {
+  width: 100%;
+  margin: 8px 0 16px;
+}
+
+.offer-review-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.offer-review-send {
+  flex: 1;
+}
+
+.gesture-builder-sheet__head h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 18px;
+}
+
+.gesture-builder-sheet__head p {
+  margin: 4px 0 12px;
+  font-size: 11px;
+  color: rgba(240, 237, 232, 0.55);
+}
+
+.gesture-builder-rail-pick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.gesture-builder-rail-btn {
+  padding: 6px 10px;
+  border-radius: 12px;
+  font-size: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  color: rgba(240, 237, 232, 0.8);
+}
+
+.gesture-builder-rail-btn--active {
+  border-color: rgba(74, 222, 128, 0.4);
+}
+
+.gesture-builder-cross {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 8px auto 16px;
+}
+
+.gesture-builder-cross__hub {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.gesture-builder-cross__arm {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.gesture-builder-cross__arm--up {
+  left: 50%;
+  top: 0;
+  width: 2px;
+  height: 44px;
+  margin-left: -1px;
+}
+
+.gesture-builder-cross__arm--down {
+  left: 50%;
+  bottom: 0;
+  width: 2px;
+  height: 44px;
+  margin-left: -1px;
+}
+
+.gesture-builder-cross__arm--left {
+  left: 0;
+  top: 50%;
+  height: 2px;
+  width: 44px;
+  margin-top: -1px;
+}
+
+.gesture-builder-cross__arm--right {
+  right: 0;
+  top: 50%;
+  height: 2px;
+  width: 44px;
+  margin-top: -1px;
+}
+
+.gesture-builder-sheet__gallery-title {
+  margin: 16px 0 8px;
+  font-size: 12px;
+  color: rgba(240, 237, 232, 0.6);
+}
+
+.button-preset-gallery {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.button-preset-card {
+  text-align: left;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  color: inherit;
+}
+
+.button-preset-card__label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.button-preset-card__desc {
+  display: block;
+  margin-top: 4px;
+  font-size: 10px;
+  color: rgba(240, 237, 232, 0.5);
+}
+
+.gesture-settings-backdrop {
+  backdrop-filter: blur(4px);
+}
+
+.gesture-settings-sheet {
+  background: rgba(12, 12, 16, 0.78);
+  border: 0.5px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px);
+  color: rgba(240, 237, 232, 0.92);
+}
+
+.gesture-settings-sheet__sub {
+  color: rgba(240, 237, 232, 0.5);
+}
+
+.gesture-settings-row label {
+  color: rgba(240, 237, 232, 0.7);
+}
+
+.gesture-settings-row select {
+  background: rgba(255, 255, 255, 0.06);
+  color: inherit;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.product-tab-layout--legacy .product-tab-layout__legacy-banner {
+  margin: 0 0 8px;
+  padding: 8px 12px;
+  font-size: 10px;
+  color: var(--accent-amber);
+  background: rgba(255, 179, 0, 0.08);
+  border-radius: 8px;
+  text-align: center;
+}

@@ -2,7 +2,7 @@
 
 **Classification:** **Accepted** — owner confirmed 2026-05-25 (ADR-013)  
 **Status:** Canonical entity — ELO UI mock is implementation surface, not separate product  
-**Updated:** 2026-05-25 (ENTITIES map pass)
+**Updated:** 2026-05-27 (presence layer wired)
 
 ---
 
@@ -50,6 +50,23 @@ See [`../RELATIONSHIPS/Elo_POP.md`](../RELATIONSHIPS/Elo_POP.md)
 | Safety rails | Permissions, emotional boundaries, no manipulation |
 
 **Mythic framing** (rank 144 — Elo as Personal Myth): narrative/brand layer — separate from technical spec.
+
+---
+
+## Presence layer (2026-05-27)
+
+ELO on immersive surfaces is a **transparent face membrane** — not the legacy orb mock.
+
+| Concept | Implementation |
+|---------|----------------|
+| Visual | Center contour lines, emergence animation — `EloFaceMembrane` |
+| Mirroring | POP vision landmarks + head pose when camera active |
+| Personality stack | Primary/secondary presets, relationship + operating modes |
+| Rooms | Philosophy, Focus, Creator, Sleep, Grief, Writing, Study |
+| Onboarding | “Who do you want beside you?” |
+| Panel | Glass sheet: chat, insights, stack, rooms, marketplace scaffold |
+
+See [`../UX/ELO_PRESENCE_LAYER.md`](../UX/ELO_PRESENCE_LAYER.md).
 
 ---
 

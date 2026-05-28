@@ -5,6 +5,22 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-27 — Gesture button system production complete
+
+### Delivered
+- **Engine** — `useGestureButton` hardened: deep-hold ramp ref, wallet balance clamp, pointer cancel, builder vs 500ms arm split on CONTROLS.
+- **Offers** — `offerService`, `useOfferSession`, glass `OfferReviewSheet`; immersive feed no longer uses `window.prompt`.
+- **Tips** — `tip-creator` edge function in `app/supabase/functions/` + `tipCreator.ts` (idempotency key; demo fallback).
+- **Likes** — `useContentLike` → `content_likes` when live backend + auth.
+- **Builder** — `GestureButtonBuilderSheet`, `ButtonPresetGallery`, `layoutStore`, extended presets (`enabled`, `builderHoldMs`).
+- **Polish** — Picture 2 CSS pass, photo background fallback, vision `like`/`comment`/`share` events, `watch-verify` in immersive shell list.
+- **Verification** — `npm run build` + `typecheck`; `scripts/smoke_gesture_buttons.sh`.
+
+### Canon
+- `MASTER_BRAIN/UX/USER_GESTURE_BUTTONS.md` — gesture matrix + REWARD states + smoke checklist.
+
+---
+
 ## 2026-05-27 — Phase 32 target editor controls complete
 
 ### Delivered

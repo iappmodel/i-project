@@ -37,7 +37,7 @@ function tabForScreen(screen: DemoScreenId): ProductTabId | null {
   if (screen === 'feed' || screen === 'earn' || screen === 'wallet' || screen === 'profile') {
     return screen
   }
-  if (screen === 'saved') {
+  if (screen === 'saved' || screen === 'immersive-feed') {
     return 'feed'
   }
   if (screen === 'convert' || screen === 'withdraw-preview' || screen === 'creator-economics') {
@@ -160,7 +160,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       ...prev,
       appMode: 'product',
       activeTab: 'feed',
-      currentScreen: 'feed',
+      currentScreen: 'immersive-feed',
     }))
   }, [])
 

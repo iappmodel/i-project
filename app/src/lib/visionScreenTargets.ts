@@ -160,11 +160,21 @@ export function executeLoop1Command(
       nav.saveLoopItem()
       nav.setScreen('saved')
       break
-    case 'nextVideo':
-    case 'prevVideo':
     case 'like':
     case 'comment':
     case 'share':
+      try {
+        window.dispatchEvent(
+          new CustomEvent('screenTargetAction', {
+            detail: { command, gesture: command },
+          }),
+        )
+      } catch {
+        /* non-browser */
+      }
+      break
+    case 'nextVideo':
+    case 'prevVideo':
     default:
       break
   }

@@ -1,0 +1,410 @@
+/* ELO presence membrane — Picture 2 glass overlay */
+
+.elo-presence-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  overflow: hidden;
+}
+
+.elo-presence-layer--global {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  pointer-events: none;
+}
+
+.elo-presence-layer--global .elo-membrane-hit {
+  pointer-events: auto;
+}
+
+.elo-membrane {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: min(72vw, 280px);
+  height: min(88vw, 340px);
+  transform-origin: center center;
+  --elo-line-color: rgba(220, 235, 255, 0.5);
+  --elo-pulse-speed: 0.5;
+  --elo-opacity: 0.22;
+  opacity: var(--elo-opacity);
+  transition: opacity 0.4s ease;
+}
+
+.elo-membrane__svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 0 12px rgba(120, 180, 255, 0.15));
+}
+
+.elo-membrane__path {
+  fill: none;
+  stroke: var(--elo-line-color);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.elo-membrane__path--emerge {
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  animation: elo-emerge-draw 1.2s ease-out forwards;
+}
+
+.elo-membrane__path--idle {
+  animation: elo-breathe calc(4s / var(--elo-pulse-speed, 0.5)) ease-in-out infinite;
+}
+
+@keyframes elo-emerge-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes elo-breathe {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.elo-membrane-hit {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: 120px;
+  height: 160px;
+  transform: translate(-50%, -50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: 5;
+}
+
+.elo-membrane-glow {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: 200px;
+  height: 240px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(100, 180, 255, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.elo-membrane-glow--insight {
+  background: radial-gradient(circle, rgba(100, 200, 255, 0.14) 0%, transparent 70%);
+}
+
+.elo-membrane-glow--celebrating {
+  background: radial-gradient(circle, rgba(80, 220, 160, 0.12) 0%, transparent 70%);
+}
+
+.elo-membrane-glow--warning {
+  background: radial-gradient(circle, rgba(230, 180, 80, 0.1) 0%, transparent 70%);
+}
+
+/* Panel — glass slide-up */
+.elo-panel-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 80;
+  backdrop-filter: blur(4px);
+}
+
+.elo-panel-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 88vh;
+  overflow-y: auto;
+  z-index: 81;
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  background: rgba(7, 7, 9, 0.92);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px);
+  border-radius: 20px 20px 0 0;
+  animation: elo-panel-rise 0.32s ease-out;
+}
+
+@keyframes elo-panel-rise {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.elo-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.elo-panel-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  letter-spacing: 0.06em;
+}
+
+.elo-panel-header p {
+  margin: 4px 0 0;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.85rem;
+}
+
+.elo-panel-close {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  border-radius: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.elo-card {
+  background: rgba(7, 7, 9, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+
+.elo-card h3,
+.elo-card h4 {
+  margin: 0 0 6px;
+  font-size: 0.95rem;
+}
+
+.elo-card p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.72);
+  line-height: 1.45;
+}
+
+.elo-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.elo-meta {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 6px;
+}
+
+.elo-chat-list {
+  max-height: 160px;
+  overflow-y: auto;
+  display: grid;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.elo-bubble {
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.elo-bubble.assistant {
+  background: rgba(100, 180, 255, 0.12);
+  border: 1px solid rgba(100, 180, 255, 0.2);
+}
+
+.elo-bubble.user {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  margin-left: 24px;
+}
+
+.elo-chat-input {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+}
+
+.elo-section-title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 16px 0 8px;
+}
+
+.elo-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.elo-chip {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.85);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.elo-chip--active {
+  border-color: rgba(100, 200, 255, 0.5);
+  background: rgba(100, 200, 255, 0.15);
+  color: #fff;
+}
+
+.elo-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.elo-onboarding-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px;
+}
+
+.elo-onboarding-sheet {
+  width: min(480px, 100%);
+  max-height: 85vh;
+  overflow-y: auto;
+  background: rgba(7, 7, 9, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 20px;
+  animation: elo-panel-rise 0.35s ease-out;
+}
+
+.elo-onboarding-sheet h2 {
+  margin: 0 0 8px;
+  font-size: 1.35rem;
+}
+
+.elo-onboarding-sheet > p {
+  margin: 0 0 16px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+}
+
+.elo-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.elo-preset-card {
+  text-align: left;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 14px;
+  padding: 12px;
+  cursor: pointer;
+  color: inherit;
+}
+
+.elo-preset-card--selected {
+  border-color: rgba(100, 200, 255, 0.45);
+  background: rgba(100, 200, 255, 0.1);
+}
+
+.elo-preset-card strong {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+
+.elo-preset-card span {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.elo-primary-btn {
+  width: 100%;
+  border: none;
+  background: rgba(255, 255, 255, 0.92);
+  color: #070709;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.elo-secondary-btn {
+  width: 100%;
+  margin-top: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: #fff;
+  border-radius: 12px;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+.elo-marketplace-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.elo-marketplace-card button {
+  align-self: flex-start;
+  margin-top: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.elo-shared-thread {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.elo-shared-thread li {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.65);
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.elo-tone-green { border-left: 3px solid rgba(80, 220, 160, 0.6); }
+.elo-tone-amber { border-left: 3px solid rgba(230, 180, 80, 0.6); }
+.elo-tone-cyan { border-left: 3px solid rgba(100, 200, 255, 0.6); }
+.elo-tone-red { border-left: 3px solid rgba(255, 100, 110, 0.6); }

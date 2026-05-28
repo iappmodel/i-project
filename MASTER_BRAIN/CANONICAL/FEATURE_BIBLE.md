@@ -125,7 +125,7 @@ Two parallel tracks. Same design system, separate codebases.
 - [ ] Scroll-snap between videos
 
 ### Organic Video Interactions
-- [ ] Double-tap to like (heart pop animation)
+- [x] Configurable gesture buttons (tap/multi-tap/hold/swipe) — see `MASTER_BRAIN/UX/USER_GESTURE_BUTTONS.md`
 - [ ] Reactions bar (🔥 😂 😮 👏) with live counts
 - [ ] Bookmark button
 - [ ] Comments bottom sheet (slide up)

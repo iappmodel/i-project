@@ -11,6 +11,7 @@ You are working on **[ i ]** — an Attention Wallet and Media Marketplace.
 
 Read before product or economy decisions:
 - `MASTER_BRAIN/CANONICAL/i_SOURCE_OF_TRUTH.md`
+- `MASTER_BRAIN/CANONICAL/IMMERSIVE_UI_DESIGN_LAW.md` (**visual shell — Picture 2 glass immersive; NOT wallet dashboard**)
 - `MASTER_BRAIN/ECONOMY/i-app-economy-rules.md` (26+ω taxonomy; immutable for implementation)
 - `MASTER_BRAIN/CANONICAL/FEATURE_BIBLE.md` (build checklist)
 
@@ -50,7 +51,8 @@ If documents conflict, Source of Truth wins — then flag blockers in `MASTER_BR
 - Minimize scope; match existing conventions in `app/` and `integrations/`
 - Loop 1 core loop: Watch → Verify → Reward → Wallet → Spend/Convert/Withdraw
 - Currency mutations via Edge Functions — never client-side direct DB writes (per economy rules)
-- Dual-demo strategy: `app/` = Loop 1 spine; sparkle-archive = fintech demo — do not merge architectures without owner decision
+- **Product UI = immersive glass feed** (`ImmersiveFeedScreen`, `IMMERSIVE_UI_DESIGN_LAW.md`). Legacy card feed + wallet dashboard = presenter/dev only.
+- sparkle-archive = pattern mine only; do not copy neumorphic shell into `app/`
 - Blocked until owner resolves: CR-01 (session bypass), CR-02–CR-06 (currency naming)
 
 ## When user references other chats or Desktop folders

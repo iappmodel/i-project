@@ -1,0 +1,39 @@
+---
+description: Canonical immersive glass UI (Picture 2) — supersedes wallet dashboard shell for product UI
+globs:
+  - app/**
+  - MASTER_BRAIN/**
+  - 06_feed_earning_loops/**
+  - 02_clickable_prototypes/**
+alwaysApply: true
+---
+
+# Immersive UI — mandatory for [ i ] product surfaces
+
+Read **`MASTER_BRAIN/CANONICAL/IMMERSIVE_UI_DESIGN_LAW.md`** before any UI/UX work.
+
+## Visual target (Picture 2)
+
+- Full-bleed media, glass floating buttons, 5-tab white bottom dock
+- Timer line + coin pill top; Out-Profile bottom-left
+- **NOT** the fintech dashboard shell (grey cards, “Attention Wallet” page header, ACOIN/ICOIN grid, SourceEvidence footers)
+
+## Do not add
+
+- `AppShell` titlebar on immersive routes
+- `SourceEvidence` on default product screens
+- Card-list feed as home without immersive path
+- Neumorphic heavy shadows as default button style
+
+## Do use
+
+- `ImmersiveFeedScreen`, `gesture-buttons.css`, `iapp_immersive_feed.html` patterns
+- Glass: `rgba(7,7,9,0.45)`, `backdrop-filter: blur(10px)`, thin white borders
+
+## Default route
+
+Product entry → **`immersive-feed`**, not card `feed` or wallet dashboard.
+
+## Presenter exception
+
+`appMode === 'presenter'` may use legacy linear demo screens; still prefer glass when touching feed/watch.

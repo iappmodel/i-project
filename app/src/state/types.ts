@@ -11,6 +11,7 @@ export type AppMode = 'product' | 'presenter'
 export type DemoScreenId =
   | 'splash'
   | 'feed'
+  | 'immersive-feed'
   | 'earn'
   | 'profile'
   | 'offer-detail'

@@ -1,5 +1,7 @@
 # ADR-014: Investor Demo Lineage & Product IA
 
+> **Visual supersession (2026-05-27):** Tab *names* below remain; **default product shell** is immersive glass (Picture 2) per `MASTER_BRAIN/CANONICAL/IMMERSIVE_UI_DESIGN_LAW.md`. Card feed + fintech wallet dashboard is **not** the consumer home.
+
 **Status:** Accepted (agent recommendation + owner delegation 2026-05-25)  
 **Deciders:** Project owner (delegated HI-01/02 to archaeology recommendation)  
 **Blockers addressed:** HI-01, HI-02  

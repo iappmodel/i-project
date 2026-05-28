@@ -1,16 +1,19 @@
 import type { ReactElement } from 'react'
 import { AppShell } from './components/AppShell'
+import { EloPresenceLayer } from './components/elo/EloPresenceLayer'
 import { VisionProvider } from './contexts/VisionContext'
 import { VisionStreamProvider } from './contexts/VisionStreamContext'
 import { VisionTargetOverlay } from './components/VisionTargetOverlay'
 import { AccessibilityProvider } from './contexts/AccessibilityContext'
 import { DemoProvider } from './state/demoContext'
+import { EloProvider } from './state/eloContext'
 import { useDemo } from './state/useDemo'
 import type { DemoScreenId } from './state/types'
 import { ConvertScreen } from './screens/ConvertScreen'
 import { CreatorEconomicsScreen } from './screens/CreatorEconomicsScreen'
 import { EarnScreen } from './screens/EarnScreen'
 import { FeedScreen } from './screens/FeedScreen'
+import { ImmersiveFeedScreen } from './screens/ImmersiveFeedScreen'
 import { ProfileScreen } from './screens/ProfileScreen'
 import { ConsentCameraGateScreen } from './screens/ConsentCameraGateScreen'
 import { OfferDetailScreen } from './screens/OfferDetailScreen'
@@ -30,6 +33,7 @@ function ScreenRouter() {
   const table: Record<DemoScreenId, ReactElement> = {
     splash: <SplashScreen />,
     feed: <FeedScreen />,
+    'immersive-feed': <ImmersiveFeedScreen />,
     earn: <EarnScreen />,
     profile: <ProfileScreen />,
     'offer-detail': <OfferDetailScreen />,
@@ -52,16 +56,19 @@ function ScreenRouter() {
 export default function App() {
   return (
     <DemoProvider>
-      <AccessibilityProvider>
-        <VisionStreamProvider>
-          <VisionProvider>
-            <VisionTargetOverlay />
-            <AppShell>
-              <ScreenRouter />
-            </AppShell>
-          </VisionProvider>
-        </VisionStreamProvider>
-      </AccessibilityProvider>
+      <EloProvider>
+        <AccessibilityProvider>
+          <VisionStreamProvider>
+            <VisionProvider>
+              <VisionTargetOverlay />
+              <EloPresenceLayer />
+              <AppShell>
+                <ScreenRouter />
+              </AppShell>
+            </VisionProvider>
+          </VisionStreamProvider>
+        </AccessibilityProvider>
+      </EloProvider>
     </DemoProvider>
   )
 }

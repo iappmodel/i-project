@@ -58,6 +58,7 @@ flowchart LR
 | `./scripts/smoke_validator_docker.sh` | Validator container build + health |
 | `./scripts/build_production_artifacts.sh` | Build artifact tarball + deploy docs |
 | `./scripts/smoke_organism_spine.sh` | Full spine (local + optional Supabase) |
+| `./scripts/smoke_elo_presence.sh` | ELO presence module files + app build |
 | `./scripts/enable_stripe_live_env.sh` | Stripe checkout env when keys in stack |
 
 ---
@@ -75,6 +76,8 @@ flowchart LR
 | P0 chat extraction | **104/104** complete |
 | Supabase Auth in app | ✅ Auto demo sign-in |
 | Elo Profile teaser | ✅ Companion card |
+| ELO presence membrane | ✅ `EloPresenceLayer` on immersive + watch-verify |
+| ELO personality stack / rooms | ✅ Local config + onboarding + panel |
 | React↔Flutter bridge | Design only — Phase 3 |
 | Stripe checkout | Prep doc — owner keys needed |
 

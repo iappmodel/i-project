@@ -1,7 +1,7 @@
 # DUPLICATES_AND_CONFLICTS
 
 **Generated:** 2026-05-21  
-**Updated:** 2026-05-25 (owner decisions ENT-01, ENT-05, CR-02–06, HI-01/02)  
+**Updated:** 2026-05-27 (immersive UI law — Picture 2 canonical)  
 **Purpose:** Explicit registry of repeated concepts, competing implementations, and contradictions vs [ i ] Source of Truth
 
 **Chat synthesis:** [`CHAT_RECOVERY/EXTRACTED/P0_BATCHES_01_04_SYNTHESIS.md`](CHAT_RECOVERY/EXTRACTED/P0_BATCHES_01_04_SYNTHESIS.md) — 40 P0 conversations; **no conflicts resolved silently.**
@@ -19,7 +19,8 @@
 | **CR-05** | **uCoin fork** | **Critical** | **Resolved** — ADR-001 (Unlock, post-MVP) |
 | **CR-06** | **Currency naming** | **Critical** | **Resolved** — ADR-001 Tier 1 a/i/v/e/o; Tier 2 deferred |
 | **HI-01** | **Demo lineage** | **High** | **Resolved** — ADR-014: `app/` canonical pitch; archive v2 reference only |
-| **HI-02** | **Product IA vs demo IA** | **High** | **Resolved** — ADR-014: 4-tab product law; linear presenter in `app/` |
+| **HI-02** | **Product IA vs demo IA** | **High** | **Resolved** — ADR-014 tab names; **visual** = `IMMERSIVE_UI_DESIGN_LAW.md` (5-tab glass dock) |
+| **UI-01** | **Wallet dashboard vs immersive feed** | **High** | **Resolved** — Picture 2 product default; Picture 1 legacy/presenter |
 | **ENT-01** | **Elo entity vs ELO mock** | **High** | **Resolved** — ADR-013: same product |
 | **ENT-05** | **Elo vs iAM** | **High** | **Resolved** — ADR-013: separate |
 | **MOD-01** | **Roadmap module list** | **Medium** | **Deferred** — owner not defined yet |
