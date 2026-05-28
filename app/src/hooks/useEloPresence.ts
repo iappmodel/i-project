@@ -9,7 +9,7 @@ const ELO_SCREENS = new Set(['immersive-feed', 'watch-verify'])
 export function useEloPresence(attentionScoreProp?: number) {
   const { appMode, currentScreen, proofEventsConnected, eloStatusLine, verificationStatus } =
     useDemo()
-  const { config, setOrbState } = useElo()
+  const { config, setOrbState, onboardingOpen } = useElo()
   const vision = useVision()
 
   const visible =
@@ -46,7 +46,7 @@ export function useEloPresence(attentionScoreProp?: number) {
     setOrbState(orbState)
   }, [orbState, setOrbState])
 
-  const needsOnboarding = visible && !config.onboardingComplete
+  const needsOnboarding = visible && !config.onboardingComplete && !onboardingOpen
 
   return {
     visible,

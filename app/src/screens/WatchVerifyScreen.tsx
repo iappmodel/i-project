@@ -4,6 +4,7 @@ import { Button } from '../components/Button'
 import { PhoneFrame } from '../components/PhoneFrame'
 import { ProgressBar } from '../components/ProgressBar'
 import { SourceEvidence } from '../components/SourceEvidence'
+import { EloPresenceLayer } from '../components/elo/EloPresenceLayer'
 import { DEFAULT_SPONSORED_OFFER } from '../data/demoData'
 import { formatCoinLabel } from '../lib/format'
 import { isWebVisionEnabled, useWebEyeTracking, useWebGestureDispatch } from '../lib/visionEngine'
@@ -72,6 +73,7 @@ export function WatchVerifyScreen() {
     <PhoneFrame>
       <BackRow label="Consent" onBack={() => setScreen('consent-camera-gate')} />
       <div className="watch-screen-prot">
+        <EloPresenceLayer attentionScore={ringScore / 100} />
         <div className="watch-scrim-prot" aria-hidden />
         <div className="watch-hud-top-prot watch-hud-top-prot-ext">
           <div className="tracking-badge-prot tracking-badge-prot-camera">

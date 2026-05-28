@@ -67,7 +67,16 @@ export function EloProvider({ children }: { children: ReactNode }) {
     setConfig(next)
   }, [])
 
+  const evoke = useCallback(() => {
+    setEvoked(true)
+    if (!config.activated) {
+      const next = persistActivated(true)
+      setConfig(next)
+    }
+  }, [config.activated])
+
   const activate = useCallback(() => {
+    setEvoked(true)
     const next = persistActivated(true)
     setConfig(next)
   }, [])
@@ -87,15 +96,19 @@ export function EloProvider({ children }: { children: ReactNode }) {
       const next = persistStack(stack)
       persist({ ...next, onboardingComplete: true, activated: true })
       setConfig({ ...next, onboardingComplete: true, activated: true })
+      setEvoked(true)
+      setOnboardingOpen(false)
     },
     [persist],
   )
 
   const openPanel = useCallback(() => setPanelOpen(true), [])
   const closePanel = useCallback(() => setPanelOpen(false), [])
+  const openOnboarding = useCallback(() => setOnboardingOpen(true), [])
+  const closeOnboarding = useCallback(() => setOnboardingOpen(false), [])
 
   useEffect(() => {
-    if (!config.activated) return
+    if (!evoked && !config.activated) return
     let frame = 0
     const start = performance.now()
     const tick = () => {
@@ -106,7 +119,7 @@ export function EloProvider({ children }: { children: ReactNode }) {
     }
     frame = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(frame)
-  }, [config.activated])
+  }, [evoked, config.activated])
 
   const value = useMemo<EloContextValue>(
     () => ({
@@ -114,11 +127,16 @@ export function EloProvider({ children }: { children: ReactNode }) {
       room,
       orbState,
       emergence,
+      evoked,
       panelOpen,
+      onboardingOpen,
       setOrbState,
+      evoke,
       activate,
       openPanel,
       closePanel,
+      openOnboarding,
+      closeOnboarding,
       setStack,
       setRoom,
       completeOnboarding,
@@ -129,10 +147,15 @@ export function EloProvider({ children }: { children: ReactNode }) {
       room,
       orbState,
       emergence,
+      evoked,
       panelOpen,
+      onboardingOpen,
+      evoke,
       activate,
       openPanel,
       closePanel,
+      openOnboarding,
+      closeOnboarding,
       setStack,
       setRoom,
       completeOnboarding,

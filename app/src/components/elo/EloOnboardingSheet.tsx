@@ -46,8 +46,8 @@ export function EloOnboardingSheet({ open }: { open: boolean }) {
   return (
     <div className="elo-onboarding-backdrop" role="dialog" aria-label="ELO onboarding">
       <div className="elo-onboarding-sheet">
-        <h2>Who do you want beside you?</h2>
-        <p>Choose a primary presence. ELO becomes your persistent companion — not content, not a chatbot.</p>
+        <h2>I heard you.</h2>
+        <p>Your first interaction with ELO — choose who you want beside you.</p>
 
         <p className="elo-section-title">Primary presence</p>
         <div className="elo-preset-grid">

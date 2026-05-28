@@ -18,6 +18,7 @@ export interface ExpressionInput {
   room: PresenceRoom
   stack: EloPersonalityStack
   activated: boolean
+  evoked: boolean
   emergence: number
   attentionScore?: number
   idlePhase: number
@@ -75,18 +76,21 @@ export function computeExpression(input: ExpressionInput): EloExpressionState {
   }
 
   const speechBoost = (input.speechEnergy ?? 0) * 0.03 * micro
-  const emergence = input.activated ? input.emergence : 0
+  const isPresent = input.activated || input.evoked
+  const emergenceProgress = isPresent ? Math.max(input.emergence, input.evoked ? 0.15 : 0) : 0
   const baseOpacity = BASE_OPACITY * roomScale + glow.boost + faceBoost + speechBoost
 
   return {
-    opacity: Math.max(0.08, Math.min(0.38, baseOpacity * emergence)),
+    opacity: isPresent
+      ? Math.max(0.14, Math.min(0.42, baseOpacity * Math.max(emergenceProgress, 0.35)))
+      : 0,
     tiltY: tiltY + nodPhase * 20,
     tiltX: tiltX + nodPhase * 10,
     blinkScale,
     pulseSpeed: input.room.pulseSpeed,
     lineColor: input.orbState === 'idle' ? input.room.lineColor : glow.color,
     nodPhase,
-    emergence,
+    emergence: emergenceProgress,
     microExpressionScale: micro,
   }
 }
@@ -98,11 +102,12 @@ export function deriveOrbState(input: {
   verificationWatching: boolean
   attentionScore?: number
 }): EloOrbState {
-  if (!input.proofConnected) return 'muted'
   const line = input.eloStatusLine.toLowerCase()
-  if (line.includes('sealed') || line.includes('complete')) return 'celebrating'
-  if (line.includes('warn') || line.includes('fail')) return 'warning'
-  if (line.includes('block')) return 'blocked'
+  if (input.proofConnected) {
+    if (line.includes('sealed') || line.includes('complete')) return 'celebrating'
+    if (line.includes('warn') || line.includes('fail')) return 'warning'
+    if (line.includes('block')) return 'blocked'
+  }
   if (input.verificationWatching) {
     if (input.attentionScore !== undefined && input.attentionScore > 0.7) return 'hasInsight'
     return 'thinking'

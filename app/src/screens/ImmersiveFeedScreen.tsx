@@ -6,6 +6,7 @@ import {
 import { ImmersiveRewardBadge } from '../components/immersive/ImmersiveRewardBadge'
 import { OutProfileChip } from '../components/immersive/OutProfileChip'
 import { MediaActionRail } from '../components/gestureButtons/MediaActionRail'
+import { EloPresenceLayer } from '../components/elo/EloPresenceLayer'
 import { OfferReviewSheet } from '../components/gestureButtons/OfferReviewSheet'
 import { PhoneFrame } from '../components/PhoneFrame'
 import { DEMO_IMMERSIVE_MEDIA } from '../data/immersiveFeedContext'
@@ -123,6 +124,8 @@ export function ImmersiveFeedScreen() {
           />
           <div className="immersive-feed__scrim-top" />
           <div className="immersive-feed__scrim-bottom" />
+
+          <EloPresenceLayer />
 
           <div className="immersive-feed__timer" aria-label="Media progress">
             <div className="immersive-feed__timer-fill" style={{ width: `${timerPct}%` }} />

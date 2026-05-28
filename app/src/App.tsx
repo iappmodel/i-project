@@ -1,6 +1,5 @@
 import type { ReactElement } from 'react'
 import { AppShell } from './components/AppShell'
-import { EloPresenceLayer } from './components/elo/EloPresenceLayer'
 import { VisionProvider } from './contexts/VisionContext'
 import { VisionStreamProvider } from './contexts/VisionStreamContext'
 import { VisionTargetOverlay } from './components/VisionTargetOverlay'
@@ -61,7 +60,6 @@ export default function App() {
           <VisionStreamProvider>
             <VisionProvider>
               <VisionTargetOverlay />
-              <EloPresenceLayer />
               <AppShell>
                 <ScreenRouter />
               </AppShell>

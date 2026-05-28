@@ -16,10 +16,11 @@ export function EloFaceMembrane({
   emerged,
   orbGlowClass,
 }: EloFaceMembraneProps) {
-  if (!emerged && expression.emergence <= 0) return null
+  if (!emerged) return null
 
   const transform = `translate(-50%, -50%) perspective(600px) rotateY(${expression.tiltY}deg) rotateX(${expression.tiltX}deg)`
-  const emergeClass = expression.emergence >= 1 ? 'elo-membrane__path--idle' : 'elo-membrane__path--emerge'
+  const emergeClass =
+    expression.emergence >= 0.95 ? 'elo-membrane__path--idle' : 'elo-membrane__path--emerge'
 
   return (
     <div

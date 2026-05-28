@@ -4,18 +4,11 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 4;
+  z-index: 3;
   overflow: hidden;
 }
 
-.elo-presence-layer--global {
-  position: fixed;
-  inset: 0;
-  z-index: 45;
-  pointer-events: none;
-}
-
-.elo-presence-layer--global .elo-membrane-hit {
+.elo-presence-layer .elo-membrane-hit {
   pointer-events: auto;
 }
 
@@ -23,8 +16,10 @@
   position: absolute;
   left: 50%;
   top: 42%;
-  width: min(72vw, 280px);
-  height: min(88vw, 340px);
+  width: 68%;
+  height: 52%;
+  max-width: 260px;
+  max-height: 320px;
   transform-origin: center center;
   --elo-line-color: rgba(220, 235, 255, 0.5);
   --elo-pulse-speed: 0.5;
@@ -43,7 +38,7 @@
 .elo-membrane__path {
   fill: none;
   stroke: var(--elo-line-color);
-  stroke-width: 1.2;
+  stroke-width: 1.4;
   stroke-linecap: round;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
@@ -408,3 +403,78 @@
 .elo-tone-amber { border-left: 3px solid rgba(230, 180, 80, 0.6); }
 .elo-tone-cyan { border-left: 3px solid rgba(100, 200, 255, 0.6); }
 .elo-tone-red { border-left: 3px solid rgba(255, 100, 110, 0.6); }
+
+/* Voice evoke prompt */
+.elo-evoke-prompt {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  background: radial-gradient(circle at center, rgba(0, 0, 0, 0.35) 0%, transparent 65%);
+}
+
+.elo-evoke-prompt__inner {
+  pointer-events: auto;
+  text-align: center;
+  padding: 20px 24px;
+  border-radius: 20px;
+  background: rgba(7, 7, 9, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(10px);
+  max-width: 280px;
+}
+
+.elo-evoke-prompt__pulse {
+  display: block;
+  width: 12px;
+  height: 12px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  background: rgba(100, 200, 255, 0.8);
+  animation: elo-evoke-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes elo-evoke-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.35);
+    opacity: 1;
+  }
+}
+
+.elo-evoke-prompt__title {
+  margin: 0 0 6px;
+  font-size: 1.35rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.elo-evoke-prompt__hint {
+  margin: 0 0 14px;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.4;
+}
+
+.elo-evoke-prompt__btn {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.elo-evoke-prompt__heard {
+  margin: 10px 0 0;
+  font-size: 0.72rem;
+  color: rgba(100, 200, 255, 0.75);
+}

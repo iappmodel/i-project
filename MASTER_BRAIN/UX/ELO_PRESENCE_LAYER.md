@@ -45,10 +45,11 @@ ELO must **not** replace OUT-PROFILE.
 
 ## Activation
 
-1. First product entry → onboarding: “Who do you want beside you?”  
-2. On adopt → emergence animation (1.2s line draw)  
-3. Returning users → auto-activate from local config  
-4. Presenter mode → ELO hidden (product mode only)
+1. Enter immersive feed → **Say “ELO”** (voice wake) or tap **Evoke ELO**
+2. Face membrane emerges (1.2s line draw)
+3. First visit → onboarding sheet: “I heard you” — choose personality stack
+4. Returning session → say ELO again to evoke (session-scoped)
+5. Presenter mode → ELO hidden
 
 ---
 
