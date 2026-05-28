@@ -76,22 +76,14 @@ fi
   echo "FAIL: vision-target-overlay.css missing" >&2
   exit 1
 }
-if ! grep -q "VisionRemoteSettingsCard" "$APP/src/screens/ProfileScreen.tsx"; then
-  echo "FAIL: Profile must expose vision remote settings when flagged" >&2
+if ! grep -q "VisionControlPanel" "$APP/src/screens/ProfileScreen.tsx"; then
+  echo "FAIL: Profile must expose unified vision control panel when flagged" >&2
   exit 1
 fi
-if ! grep -q "VisionTargetPresetPicker" "$APP/src/screens/ProfileScreen.tsx"; then
-  echo "FAIL: Profile must expose target preset picker when flagged" >&2
+[[ -f "$APP/src/components/VisionControlPanel.tsx" ]] || {
+  echo "FAIL: VisionControlPanel.tsx missing" >&2
   exit 1
-fi
-if ! grep -q "VisionTargetEditor" "$APP/src/screens/ProfileScreen.tsx"; then
-  echo "FAIL: Profile must expose target editor when flagged" >&2
-  exit 1
-fi
-if ! grep -q "VisionCalibrationHost" "$APP/src/screens/ProfileScreen.tsx"; then
-  echo "FAIL: Profile must expose gaze calibration wizard when flagged" >&2
-  exit 1
-fi
+}
 [[ -f "$APP/src/lib/visionCalibration/calibrationFit.ts" ]] || {
   echo "FAIL: calibrationFit.ts missing" >&2
   exit 1

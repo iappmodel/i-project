@@ -21,6 +21,18 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-28 — Phase 33 unified vision control panel complete
+
+### Delivered
+- **VisionControlPanel** — consolidated calibration, runtime settings, preset picker, and target editor into one expandable operator surface on Profile behind `VITE_VISION_ENGINE`.
+- **Profile simplification** — replaced scattered vision cards with a single entry point while preserving all existing capabilities.
+- **Smoke alignment** — vision smoke now asserts unified panel wiring (`VisionControlPanel.tsx`) rather than fragmented component checks.
+
+### Deferred Phase 34+
+- Full archive-level `BlinkRemoteControl` feature parity (voice/tobii/tutorial overlays) after dependency-safe adaptation.
+
+---
+
 ## 2026-05-27 — Phase 32 target editor controls complete
 
 ### Delivered

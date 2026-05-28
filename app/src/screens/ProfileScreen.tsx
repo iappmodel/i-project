@@ -4,10 +4,7 @@ import { TabScreenLayout } from '../components/TabScreenLayout'
 import { ProgressBar } from '../components/ProgressBar'
 import { createSubscriptionCheckout } from '../lib/stripeCheckout'
 import { getStripeReadiness, stripeReadinessLabel } from '../lib/stripeConfig'
-import { VisionCalibrationHost } from '../components/VisionCalibrationHost'
-import { VisionRemoteSettingsCard } from '../components/VisionRemoteSettingsCard'
-import { VisionTargetEditor } from '../components/VisionTargetEditor'
-import { VisionTargetPresetPicker } from '../components/VisionTargetPresetPicker'
+import { VisionControlPanel } from '../components/VisionControlPanel'
 import { isWebVisionEnabled, useRemoteGestureListener } from '../lib/visionEngine'
 import { useScreenTargetActionListener } from '../lib/visionScreenTargets'
 import { useDemo } from '../state/useDemo'
@@ -158,10 +155,7 @@ export function ProfileScreen() {
 
       {webVisionEnabled ? (
         <>
-          <VisionCalibrationHost />
-          <VisionRemoteSettingsCard />
-          <VisionTargetPresetPicker />
-          <VisionTargetEditor />
+          <VisionControlPanel lastRemoteGesture={lastRemoteGesture} lastTargetAction={lastTargetAction} />
         </>
       ) : null}
 

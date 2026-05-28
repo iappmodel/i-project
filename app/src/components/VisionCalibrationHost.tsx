@@ -4,7 +4,11 @@ import { Button } from './Button'
 import { isWebVisionEnabled, useWebVisionEngine } from '../lib/visionEngine'
 import { loadVisionCalibration } from '../lib/visionCalibration/profile'
 
-export function VisionCalibrationHost() {
+type Props = {
+  className?: string
+}
+
+export function VisionCalibrationHost({ className }: Props) {
   const enabled = isWebVisionEnabled()
   const [open, setOpen] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -14,7 +18,7 @@ export function VisionCalibrationHost() {
   if (!enabled) return null
 
   return (
-    <section className="profile-section">
+    <section className={className ?? 'profile-section'}>
       <h2 className="profile-section__title">Gaze calibration</h2>
       <p className="profile-trust-card__hint" style={{ marginBottom: 12 }}>
         {calibration.isCalibrated
