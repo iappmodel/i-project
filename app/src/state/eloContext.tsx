@@ -29,10 +29,12 @@ export interface EloContextValue {
   orbState: EloOrbState
   emergence: number
   evoked: boolean
+  sessionActive: boolean
   panelOpen: boolean
   onboardingOpen: boolean
   setOrbState: (state: EloOrbState) => void
   evoke: () => void
+  startSession: () => void
   activate: () => void
   openPanel: () => void
   closePanel: () => void
@@ -57,6 +59,7 @@ export function EloProvider({ children }: { children: ReactNode }) {
   const [orbState, setOrbState] = useState<EloOrbState>('idle')
   const [emergence, setEmergence] = useState(0)
   const [evoked, setEvoked] = useState(false)
+  const [sessionActive, setSessionActive] = useState(false)
   const [panelOpen, setPanelOpen] = useState(false)
   const [onboardingOpen, setOnboardingOpen] = useState(false)
 
@@ -75,6 +78,10 @@ export function EloProvider({ children }: { children: ReactNode }) {
       setConfig(next)
     }
   }, [config.activated])
+
+  const startSession = useCallback(() => {
+    setSessionActive(true)
+  }, [])
 
   const activate = useCallback(() => {
     setEvoked(true)
@@ -98,6 +105,7 @@ export function EloProvider({ children }: { children: ReactNode }) {
       persist({ ...next, onboardingComplete: true, activated: true })
       setConfig({ ...next, onboardingComplete: true, activated: true })
       setEvoked(true)
+      setSessionActive(true)
       setOnboardingOpen(false)
     },
     [persist],
@@ -120,10 +128,12 @@ export function EloProvider({ children }: { children: ReactNode }) {
       orbState,
       emergence,
       evoked,
+      sessionActive,
       panelOpen,
       onboardingOpen,
       setOrbState,
       evoke,
+      startSession,
       activate,
       openPanel,
       closePanel,
@@ -140,9 +150,11 @@ export function EloProvider({ children }: { children: ReactNode }) {
       orbState,
       emergence,
       evoked,
+      sessionActive,
       panelOpen,
       onboardingOpen,
       evoke,
+      startSession,
       activate,
       openPanel,
       closePanel,

@@ -7,13 +7,14 @@
 
 ## What ELO is on screen
 
-ELO is a **living presence membrane** — not an orb, not a chatbot chrome, not a dashboard card.
+ELO is a **large translucent 3D glass face mask** — not wireframe lines, not an orb, not a chatbot card.
 
-- Almost-transparent **face contour lines** (profile entering water)
-- Center-weighted over full-bleed media
-- Adaptive mirroring when POP vision is active (head tilt, blink)
-- Procedural idle animation when camera is off
-- Tap center hit zone → glass presence panel
+- Sculptural frosted-glass surface with hollow eye sockets
+- Soft nose ridge, subtle mouth depression, forehead highlight
+- Centered over full-bleed media (~90% width); background visible through mask
+- Emerges when user says **ELO** or taps **Evoke ELO**
+- Head tilt / blink mirroring when POP vision is active
+- Tap mask → glass presence panel
 
 **Human → Presence → Relationship** — feed is secondary.
 
@@ -45,13 +46,14 @@ ELO must **not** replace OUT-PROFILE.
 
 ## Activation
 
-1. Enter immersive feed → tap **Evoke ELO** (arms voice + evokes) or **Enable voice** then say “ELO”
-2. Face membrane emerges on evoke (line draw)
-3. First visit → onboarding sheet: “I heard you” — choose personality stack
-4. Returning session → evoke again in-session (membrane hidden until evoked)
-5. Presenter mode → ELO hidden
+1. Enter immersive feed — feed stays full-bleed; small **Say “ELO”** pill (non-blocking)
+2. Tap pill → mic arms → user says **“ELO”**
+3. Mask **manifests from the right rail to center** (~1.5s simple emergence)
+4. First visit → onboarding sheet after manifestation: “I heard you”
+5. Returning visit → **“I'm here. Tap to talk.”** greeting; tap face or greeting → presence panel
+6. Presenter mode → ELO hidden
 
-Voice wake is **opt-in** (`armed` state) — mic does not start until user enables voice or taps Evoke.
+Voice wake is **opt-in** — mic does not start until user taps the hint pill.
 
 ---
 

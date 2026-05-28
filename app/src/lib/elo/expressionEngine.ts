@@ -25,7 +25,7 @@ export interface ExpressionInput {
   speechEnergy?: number
 }
 
-const BASE_OPACITY = 0.38
+const BASE_OPACITY = 0.72
 const BASE_LINE = 'rgba(220, 240, 255, 0.85)'
 
 function orbGlow(state: EloOrbState): { color: string; boost: number } {
@@ -82,7 +82,7 @@ export function computeExpression(input: ExpressionInput): EloExpressionState {
 
   return {
     opacity: isPresent
-      ? Math.max(0.32, Math.min(0.72, baseOpacity))
+      ? Math.max(0.48, Math.min(0.88, baseOpacity))
       : 0,
     tiltY: tiltY + nodPhase * 20,
     tiltX: tiltX + nodPhase * 10,

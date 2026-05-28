@@ -4,22 +4,123 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 3;
-  overflow: hidden;
+  z-index: 4;
+  overflow: visible;
 }
 
 .elo-presence-layer .elo-membrane-hit {
   pointer-events: auto;
 }
 
+.elo-membrane-wrap {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  height: 58%;
+  width: auto;
+  aspect-ratio: 596 / 872;
+  max-width: 72%;
+  transform: translate(-50%, -50%);
+  transform-origin: center center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.elo-membrane-wrap--entering {
+  animation: elo-manifest-enter 1.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes elo-manifest-enter {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -42%) scale(0.78);
+    filter: blur(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    filter: blur(0);
+  }
+}
+
+.elo-glass-mask {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.elo-glass-mask__photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  filter: drop-shadow(0 10px 32px rgba(0, 0, 0, 0.28)) drop-shadow(0 0 32px rgba(190, 220, 255, 0.28));
+}
+
+.elo-glass-mask__sheen {
+  position: absolute;
+  inset: 8% 12% 20%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.35) 0%, transparent 55%);
+  pointer-events: none;
+  animation: elo-breathe calc(4s / var(--elo-pulse-speed, 0.5)) ease-in-out infinite;
+}
+
+.elo-glass-mask__eyes {
+  position: absolute;
+  left: 50%;
+  top: 43%;
+  width: 46%;
+  height: 8%;
+  transform: translate(-50%, -50%);
+  transform-origin: center center;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 22% 80% at 28% 50%,
+    rgba(0, 0, 0, 0.35) 0%,
+    transparent 70%
+  ),
+  radial-gradient(
+    ellipse 22% 80% at 72% 50%,
+    rgba(0, 0, 0, 0.35) 0%,
+    transparent 70%
+  );
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+}
+
+.elo-glass-mask--live {
+  /* emergence handled by .elo-membrane-wrap--entering */
+}
+
+.elo-membrane-hit {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  height: 58%;
+  width: auto;
+  aspect-ratio: 596 / 872;
+  max-width: 72%;
+  transform: translate(-50%, -50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: 5;
+}
+
 .elo-membrane {
   position: absolute;
   left: 50%;
-  top: 42%;
-  width: 68%;
-  height: 52%;
-  max-width: 260px;
-  max-height: 320px;
+  top: 46%;
+  width: 88%;
+  height: 62%;
+  max-width: 340px;
+  max-height: 460px;
   transform-origin: center center;
   --elo-line-color: rgba(220, 235, 255, 0.5);
   --elo-pulse-speed: 0.5;
@@ -89,26 +190,14 @@
   }
 }
 
-.elo-membrane-hit {
-  position: absolute;
-  left: 50%;
-  top: 42%;
-  width: 120px;
-  height: 160px;
-  transform: translate(-50%, -50%);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  pointer-events: auto;
-  z-index: 5;
-}
-
 .elo-membrane-glow {
   position: absolute;
   left: 50%;
-  top: 42%;
-  width: 200px;
-  height: 240px;
+  top: 46%;
+  width: 72%;
+  height: 58%;
+  max-width: 300px;
+  max-height: 400px;
   transform: translate(-50%, -50%);
   border-radius: 50%;
   background: radial-gradient(circle, rgba(100, 180, 255, 0.08) 0%, transparent 70%);
@@ -423,37 +512,111 @@
 .elo-tone-cyan { border-left: 3px solid rgba(100, 200, 255, 0.6); }
 .elo-tone-red { border-left: 3px solid rgba(255, 100, 110, 0.6); }
 
-/* Voice evoke prompt */
-.elo-evoke-prompt {
+/* Voice hint — non-blocking, feed stays visible */
+.elo-voice-hint {
   position: absolute;
-  inset: 0;
-  z-index: 30;
+  left: 50%;
+  top: 66%;
+  transform: translateX(-50%);
+  z-index: 6;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  pointer-events: auto;
-  background: radial-gradient(circle at center, rgba(0, 0, 0, 0.45) 0%, transparent 70%);
+  gap: 6px;
+  pointer-events: none;
 }
 
-.elo-evoke-prompt__inner {
+.elo-voice-hint__pill {
   pointer-events: auto;
-  text-align: center;
-  padding: 20px 24px;
-  border-radius: 20px;
-  background: rgba(7, 7, 9, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(10px);
-  max-width: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 16px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(7, 7, 9, 0.42);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
 }
 
-.elo-evoke-prompt__pulse {
-  display: block;
-  width: 12px;
-  height: 12px;
-  margin: 0 auto 12px;
+.elo-voice-hint__pill--listening {
+  border-color: rgba(100, 200, 255, 0.45);
+  box-shadow: 0 0 18px rgba(100, 200, 255, 0.2);
+}
+
+.elo-voice-hint__dot {
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: rgba(100, 200, 255, 0.8);
+  background: rgba(100, 190, 255, 0.95);
+  box-shadow: 0 0 10px rgba(100, 190, 255, 0.55);
   animation: elo-evoke-pulse 1.6s ease-in-out infinite;
+}
+
+.elo-voice-hint__title {
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.elo-voice-hint__sub {
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.elo-voice-hint__heard {
+  margin: 0;
+  font-size: 0.68rem;
+  color: rgba(100, 200, 255, 0.75);
+}
+
+.elo-session-greeting {
+  position: absolute;
+  left: 50%;
+  top: 66%;
+  transform: translateX(-50%);
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(7, 7, 9, 0.48);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #fff;
+  cursor: pointer;
+  pointer-events: auto;
+  animation: elo-session-greeting-in 0.5s ease-out both;
+}
+
+.elo-session-greeting__label {
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(100, 200, 255, 0.85);
+}
+
+.elo-session-greeting__text {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+@keyframes elo-session-greeting-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 @keyframes elo-evoke-pulse {
@@ -466,79 +629,4 @@
     transform: scale(1.35);
     opacity: 1;
   }
-}
-
-.elo-evoke-prompt__title {
-  margin: 0 0 6px;
-  font-size: 1.35rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.elo-evoke-prompt__hint {
-  margin: 0 0 14px;
-  font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.6);
-  line-height: 1.4;
-}
-
-.elo-evoke-prompt__btn {
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  border-radius: 999px;
-  padding: 10px 18px;
-  font-size: 0.85rem;
-  cursor: pointer;
-}
-
-.elo-evoke-prompt__actions {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.elo-evoke-prompt__btn--ghost {
-  background: transparent;
-}
-
-.elo-evoke-flash {
-  position: absolute;
-  top: 28%;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 31;
-  padding: 10px 18px;
-  border-radius: 999px;
-  background: rgba(100, 200, 255, 0.2);
-  border: 1px solid rgba(100, 200, 255, 0.45);
-  color: #fff;
-  font-size: 0.9rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  pointer-events: none;
-  animation: elo-evoke-flash 2.4s ease-out forwards;
-}
-
-@keyframes elo-evoke-flash {
-  0% {
-    opacity: 0;
-    transform: translateX(-50%) translateY(8px);
-  }
-  15% {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-  80% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
-.elo-evoke-prompt__heard {
-  margin: 10px 0 0;
-  font-size: 0.72rem;
-  color: rgba(100, 200, 255, 0.75);
 }

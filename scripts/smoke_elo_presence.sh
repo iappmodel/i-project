@@ -11,6 +11,8 @@ required=(
   "$APP/src/components/elo/EloPresenceLayer.tsx"
   "$APP/src/components/elo/EloFaceMembrane.tsx"
   "$APP/src/components/elo/EloEvokePrompt.tsx"
+  "$APP/src/components/elo/EloSessionGreeting.tsx"
+  "$APP/public/media/elo-glass-mask.png"
   "$APP/src/hooks/useEloWakeWord.ts"
   "$APP/src/lib/elo/types.ts"
   "$APP/src/lib/elo/expressionEngine.ts"
@@ -19,8 +21,12 @@ required=(
   "$ROOT/MASTER_BRAIN/UX/ELO_PRESENCE_LAYER.md"
 )
 
-if ! grep -q "EloEvokePrompt" "$APP/src/screens/ImmersiveFeedScreen.tsx"; then
+if ! grep -q "EloPresenceLayer" "$APP/src/screens/ImmersiveFeedScreen.tsx"; then
   echo "FAIL: ImmersiveFeedScreen must mount EloPresenceLayer" >&2
+  exit 1
+fi
+if ! grep -q "EloEvokePrompt" "$APP/src/components/elo/EloPresenceLayer.tsx"; then
+  echo "FAIL: EloPresenceLayer must mount EloEvokePrompt" >&2
   exit 1
 fi
 if ! grep -q "armVoice" "$APP/src/hooks/useEloWakeWord.ts"; then

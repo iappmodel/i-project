@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useEloFaceMirror } from '../../hooks/useEloFaceMirror'
 import { useEloPresence } from '../../hooks/useEloPresence'
 import { useEloWakeWord } from '../../hooks/useEloWakeWord'
@@ -7,13 +7,9 @@ import { EloEvokePrompt } from './EloEvokePrompt'
 import { EloFaceMembrane } from './EloFaceMembrane'
 import { EloOnboardingSheet } from './EloOnboardingSheet'
 import { EloPresencePanel } from './EloPresencePanel'
+import { EloSessionGreeting } from './EloSessionGreeting'
 
-function glowClass(orbState: string): string | undefined {
-  if (orbState === 'hasInsight' || orbState === 'thinking') return 'elo-membrane-glow--insight'
-  if (orbState === 'celebrating') return 'elo-membrane-glow--celebrating'
-  if (orbState === 'warning') return 'elo-membrane-glow--warning'
-  return 'elo-membrane-glow--insight'
-}
+const MANIFEST_MS = 1350
 
 export interface EloPresenceLayerProps {
   attentionScore?: number
@@ -21,31 +17,50 @@ export interface EloPresenceLayerProps {
 
 export function EloPresenceLayer({ attentionScore: attentionScoreProp }: EloPresenceLayerProps) {
   const { visible, orbState, attentionScore } = useEloPresence(attentionScoreProp)
-  const { config, evoked, evoke, openPanel, openOnboarding, onboardingOpen } = useElo()
-  const { expression, paths, eyeScaleY } = useEloFaceMirror({ orbState, attentionScore })
-  const [evokeFlash, setEvokeFlash] = useState<string | null>(null)
+  const {
+    config,
+    evoked,
+    sessionActive,
+    evoke,
+    startSession,
+    openPanel,
+    openOnboarding,
+    onboardingOpen,
+  } = useElo()
+  const { expression, eyeScaleY } = useEloFaceMirror({ orbState, attentionScore })
+  const [entering, setEntering] = useState(false)
+  const manifestTimer = useRef<number | null>(null)
 
-  const handleEvoke = useCallback(() => {
-    evoke()
+  const finishManifest = useCallback(() => {
+    setEntering(false)
+    startSession()
     if (!config.onboardingComplete) {
       openOnboarding()
-    } else {
-      setEvokeFlash('ELO is here')
-      window.setTimeout(() => setEvokeFlash(null), 2400)
     }
-  }, [evoke, config.onboardingComplete, openOnboarding])
+  }, [config.onboardingComplete, openOnboarding, startSession])
 
-  const wake = useEloWakeWord(handleEvoke, visible && !evoked)
+  const handleEvoke = useCallback(() => {
+    if (evoked || entering) return
+    setEntering(true)
+    evoke()
+    if (manifestTimer.current) window.clearTimeout(manifestTimer.current)
+    manifestTimer.current = window.setTimeout(finishManifest, MANIFEST_MS)
+  }, [entering, evoked, evoke, finishManifest])
 
-  const handleEvokeTap = useCallback(() => {
-    wake.armVoice()
-    handleEvoke()
-  }, [wake.armVoice, handleEvoke])
+  const wake = useEloWakeWord(handleEvoke, visible && !evoked && !entering)
+
+  useEffect(
+    () => () => {
+      if (manifestTimer.current) window.clearTimeout(manifestTimer.current)
+    },
+    [],
+  )
 
   if (!visible) return null
 
-  const showMembrane = evoked
-  const showEvokePrompt = !evoked
+  const showMembrane = evoked || entering
+  const showVoiceHint = !evoked && !entering
+  const showSessionGreeting = sessionActive && config.onboardingComplete && !onboardingOpen
 
   return (
     <>
@@ -54,29 +69,30 @@ export function EloPresenceLayer({ attentionScore: attentionScoreProp }: EloPres
           <>
             <EloFaceMembrane
               expression={expression}
-              paths={paths}
               eyeScaleY={eyeScaleY}
               emerged={showMembrane}
-              orbGlowClass={glowClass(orbState)}
+              entering={entering}
             />
-            <button
-              type="button"
-              className="elo-membrane-hit"
-              aria-label="Open ELO presence"
-              onClick={openPanel}
-            />
+            {sessionActive ? (
+              <button
+                type="button"
+                className="elo-membrane-hit"
+                aria-label="Open ELO presence"
+                onClick={openPanel}
+              />
+            ) : null}
           </>
         ) : null}
+
+        <EloEvokePrompt
+          visible={showVoiceHint}
+          onArmVoice={wake.armVoice}
+          onFallbackEvoke={handleEvoke}
+          wake={wake}
+        />
+
+        <EloSessionGreeting visible={showSessionGreeting} onOpenPanel={openPanel} />
       </div>
-
-      <EloEvokePrompt
-        visible={showEvokePrompt}
-        onEvoke={handleEvokeTap}
-        onArmVoice={wake.armVoice}
-        wake={wake}
-      />
-
-      {evokeFlash ? <div className="elo-evoke-flash">{evokeFlash}</div> : null}
 
       <EloOnboardingSheet open={onboardingOpen && !config.onboardingComplete} />
       <EloPresencePanel />
