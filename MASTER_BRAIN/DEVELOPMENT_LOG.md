@@ -5,6 +5,17 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-27 — Phase 31 vision bundle chunk split complete
+
+### Delivered
+- **Vite manual chunks** — split `@mediapipe`, `@supabase`, React vendor, and generic vendor bundles in `app/vite.config.ts`.
+- **Build outcome** — removed the `>500 kB` main chunk warning in `smoke_vision_prep.sh`; largest chunks now ship as separate ~178–204 kB assets.
+
+### Deferred Phase 32+
+- Full archive `BlinkRemoteControl` panel + drag-and-drop `TargetEditor`.
+
+---
+
 ## 2026-05-27 — Phase 30 quick gaze calibration wizard complete
 
 ### Delivered

@@ -151,6 +151,7 @@ flowchart LR
 | Item | Notes |
 |------|-------|
 | React gaze signals | `VisionProvider` + `TargetOverlay` + Profile quick calibration wizard; remote settings + target presets behind `VITE_VISION_ENGINE`; full blink-remote panel still deferred |
+| Vision bundle chunking | `vite.config.ts` manualChunks split (`mediapipe`, `supabase`, `react-vendor`, `vendor`) to avoid >500 kB main chunk |
 | Capacitor native build | `setup_capacitor_shell.sh --add` |
 | Production Stripe | `STRIPE_PHASE2.md` — keys deferred |
 | Full Elo companion UI | Profile teaser only (ADR-013) |
