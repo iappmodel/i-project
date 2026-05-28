@@ -19,12 +19,10 @@ export function EloFaceMembrane({
   if (!emerged) return null
 
   const transform = `translate(-50%, -50%) perspective(600px) rotateY(${expression.tiltY}deg) rotateX(${expression.tiltX}deg)`
-  const emergeClass =
-    expression.emergence >= 0.95 ? 'elo-membrane__path--idle' : 'elo-membrane__path--emerge'
 
   return (
     <div
-      className="elo-membrane"
+      className="elo-membrane elo-membrane--live"
       style={{
         opacity: expression.opacity,
         transform,
@@ -40,13 +38,13 @@ export function EloFaceMembrane({
         aria-hidden
       >
         <g style={{ transform: `scaleY(${eyeScaleY})`, transformOrigin: '50% 45%' }}>
-          <path className={`elo-membrane__path ${emergeClass}`} d={paths.jaw} />
-          <path className={`elo-membrane__path ${emergeClass}`} d={paths.leftBrow} />
-          <path className={`elo-membrane__path ${emergeClass}`} d={paths.rightBrow} />
-          <path className={`elo-membrane__path ${emergeClass}`} d={paths.nose} />
-          <path className={`elo-membrane__path ${emergeClass}`} d={paths.leftEye} />
-          <path className={`elo-membrane__path ${emergeClass}`} d={paths.rightEye} />
-          <path className={`elo-membrane__path ${emergeClass}`} d={paths.lips} />
+          <path className="elo-membrane__path elo-membrane__path--visible" d={paths.jaw} />
+          <path className="elo-membrane__path elo-membrane__path--visible" d={paths.leftBrow} />
+          <path className="elo-membrane__path elo-membrane__path--visible" d={paths.rightBrow} />
+          <path className="elo-membrane__path elo-membrane__path--visible" d={paths.nose} />
+          <path className="elo-membrane__path elo-membrane__path--visible" d={paths.leftEye} />
+          <path className="elo-membrane__path elo-membrane__path--visible" d={paths.rightEye} />
+          <path className="elo-membrane__path elo-membrane__path--visible" d={paths.lips} />
         </g>
       </svg>
     </div>

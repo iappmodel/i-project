@@ -71,6 +71,10 @@ echo "== Vision prep smoke =="
 "$ROOT/scripts/smoke_vision_prep.sh"
 
 echo ""
+echo "== ELO presence smoke =="
+"$ROOT/scripts/smoke_elo_presence.sh"
+
+echo ""
 echo "== Production artifacts build =="
 "$ROOT/scripts/build_production_artifacts.sh"
 

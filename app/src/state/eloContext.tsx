@@ -69,6 +69,7 @@ export function EloProvider({ children }: { children: ReactNode }) {
 
   const evoke = useCallback(() => {
     setEvoked(true)
+    setEmergence(1)
     if (!config.activated) {
       const next = persistActivated(true)
       setConfig(next)
@@ -108,18 +109,9 @@ export function EloProvider({ children }: { children: ReactNode }) {
   const closeOnboarding = useCallback(() => setOnboardingOpen(false), [])
 
   useEffect(() => {
-    if (!evoked && !config.activated) return
-    let frame = 0
-    const start = performance.now()
-    const tick = () => {
-      const elapsed = (performance.now() - start) / 1200
-      const value = Math.min(1, elapsed)
-      setEmergence(value)
-      if (value < 1) frame = requestAnimationFrame(tick)
-    }
-    frame = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(frame)
-  }, [evoked, config.activated])
+    if (!evoked) return
+    setEmergence(1)
+  }, [evoked])
 
   const value = useMemo<EloContextValue>(
     () => ({

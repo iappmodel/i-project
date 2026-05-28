@@ -45,11 +45,13 @@ ELO must **not** replace OUT-PROFILE.
 
 ## Activation
 
-1. Enter immersive feed → **Say “ELO”** (voice wake) or tap **Evoke ELO**
-2. Face membrane emerges (1.2s line draw)
+1. Enter immersive feed → tap **Evoke ELO** (arms voice + evokes) or **Enable voice** then say “ELO”
+2. Face membrane emerges on evoke (line draw)
 3. First visit → onboarding sheet: “I heard you” — choose personality stack
-4. Returning session → say ELO again to evoke (session-scoped)
+4. Returning session → evoke again in-session (membrane hidden until evoked)
 5. Presenter mode → ELO hidden
+
+Voice wake is **opt-in** (`armed` state) — mic does not start until user enables voice or taps Evoke.
 
 ---
 

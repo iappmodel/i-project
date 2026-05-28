@@ -21,6 +21,15 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-28 — ELO evoke flow hardening (opt-in voice wake)
+
+### Delivered
+- **Opt-in voice wake** — `useEloWakeWord` only listens after `armVoice()` (Enable voice / Evoke ELO tap).
+- **Evoke UX** — flash confirmation, membrane only when `evoked`, improved prompt hints and CSS.
+- **Smokes** — `smoke_elo_presence.sh` asserts evoke prompt + armed wake; wired into `run_all_tests.sh`.
+
+---
+
 ## 2026-05-28 — Phase 33 unified vision control panel complete
 
 ### Delivered

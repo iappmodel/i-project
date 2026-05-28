@@ -8,12 +8,15 @@ import {
 export interface EloWakeWordState {
   listening: boolean
   supported: boolean
+  armed: boolean
   lastHeard: string | null
   error: string | null
+  armVoice: () => void
 }
 
 export function useEloWakeWord(onWake: () => void, enabled: boolean): EloWakeWordState {
   const [listening, setListening] = useState(false)
+  const [armed, setArmed] = useState(false)
   const [lastHeard, setLastHeard] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const recognitionRef = useRef<EloSpeechRecognition | null>(null)
@@ -22,13 +25,17 @@ export function useEloWakeWord(onWake: () => void, enabled: boolean): EloWakeWor
 
   onWakeRef.current = onWake
 
+  const armVoice = useCallback(() => {
+    setArmed(true)
+  }, [])
+
   const handleWake = useCallback((transcript: string) => {
     setLastHeard(transcript)
     onWakeRef.current()
   }, [])
 
   useEffect(() => {
-    if (!enabled || !supported) {
+    if (!enabled || !supported || !armed) {
       setListening(false)
       recognitionRef.current?.abort()
       recognitionRef.current = null
@@ -62,12 +69,12 @@ export function useEloWakeWord(onWake: () => void, enabled: boolean): EloWakeWor
 
     recognition.onend = () => {
       setListening(false)
-      if (enabled && recognitionRef.current) {
+      if (enabled && armed && recognitionRef.current) {
         try {
           recognition.start()
           setListening(true)
         } catch {
-          /* browser restarted recognition */
+          setError('mic restart failed')
         }
       }
     }
@@ -88,7 +95,7 @@ export function useEloWakeWord(onWake: () => void, enabled: boolean): EloWakeWor
       recognitionRef.current = null
       setListening(false)
     }
-  }, [enabled, supported, handleWake])
+  }, [enabled, supported, armed, handleWake])
 
-  return { listening, supported, lastHeard, error }
+  return { listening, supported, armed, lastHeard, error, armVoice }
 }
