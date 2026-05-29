@@ -72,6 +72,9 @@ class GazePipeline {
   static const double _interEyeScaleY = 1.0;
   static const double _outputClampAbs = 1.0;
 
+  /// Native [VisionProcessor] already applies EMA + dead zone — skip Dart temporal stack.
+  static const bool kNativePreSmoothed = true;
+
   static bool _headPoseOk(double? yaw, double? pitch) {
     if (yaw == null || pitch == null || !yaw.isFinite || !pitch.isFinite) {
       return true;
@@ -134,19 +137,27 @@ class GazePipeline {
     }
 
     final ema = filter.update(stagedX, stagedY, alpha: filterAlpha);
-    final temporal = _temporalSmooth(ema.$1, ema.$2, now);
-    final clamped = _clampOutput(temporal.$1, temporal.$2);
-    final sx = clamped.$1;
-    final sy = clamped.$2;
+    late double outX;
+    late double outY;
+    if (kNativePreSmoothed) {
+      final clamped = _clampOutput(ema.$1, ema.$2);
+      outX = clamped.$1;
+      outY = clamped.$2;
+    } else {
+      final temporal = _temporalSmooth(ema.$1, ema.$2, now);
+      final clamped = _clampOutput(temporal.$1, temporal.$2);
+      outX = clamped.$1;
+      outY = clamped.$2;
+    }
 
-    buffer.add(sx, sy, now);
+    buffer.add(outX, outY, now);
 
     final varX = filter.varianceX();
     final varY = filter.varianceY();
 
     return GazePipelineOutput.valid(
-      x: sx,
-      y: sy,
+      x: outX,
+      y: outY,
       quality: quality.ratio,
       varX: varX,
       varY: varY,

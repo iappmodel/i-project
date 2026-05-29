@@ -92,6 +92,19 @@ function mapContentProgressPct(packet: ProofPacketV0): number {
   return clamp01(signalLayerScore(packet, "participation") ?? 0);
 }
 
+function mapDeviceIntegrityScore(packet: ProofPacketV0): number {
+  let base = clamp01(signalLayerScore(packet, "signalIntegrity") ?? 0.88);
+  const et = packet.eyeTracking as Record<string, unknown>;
+  if (et.likelyFake === true) {
+    base *= 0.25;
+  }
+  const hint = et.attentionScoreHint;
+  if (typeof hint === "number" && Number.isFinite(hint) && hint < 50) {
+    base *= 0.6;
+  }
+  return clamp01(base);
+}
+
 function mapContentPositionMs(packet: ProofPacketV0): number {
   const lastInteractionMs = packet.interaction.interactionTiming.lastInteractionMs;
   if (typeof lastInteractionMs === "number" && Number.isFinite(lastInteractionMs)) {
@@ -119,7 +132,7 @@ export function proofPacketV0ToPopsSignalBatch(packet: ProofPacketV0): PopsSigna
       motionStabilityScore: mapMotionStabilityScore(packet),
       visualPresenceScore: clamp01(packet.eyeTracking.facePresentRatio),
       audioDistractionScore: PROOF_PACKET_V0_ADAPTER_DEFAULTS.audioDistractionScore,
-      deviceIntegrityScore: clamp01(signalLayerScore(packet, "signalIntegrity") ?? 0),
+      deviceIntegrityScore: mapDeviceIntegrityScore(packet),
       accountContinuityScore: PROOF_PACKET_V0_ADAPTER_DEFAULTS.accountContinuityScore,
       locationClassConfidence: PROOF_PACKET_V0_ADAPTER_DEFAULTS.locationClassConfidence
     },

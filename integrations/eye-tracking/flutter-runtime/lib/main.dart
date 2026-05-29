@@ -38,6 +38,7 @@ import 'core/system_state.dart';
 import 'core/ui_sandbox.dart';
 import 'engine/gaze_pipeline.dart';
 import 'gaze_zone.dart';
+import 'gaze_coordinate_space.dart';
 import 'gaze_zone_buttons.dart';
 import 'intent_influence_ui.dart';
 import 'trajectory_buffer.dart';
@@ -52,6 +53,10 @@ import 'core/intent_os/intent_event.dart';
 import 'core/intent_os/intent_influence_pipeline.dart';
 import 'core/intent_os/intent_predictor.dart';
 import 'core/intent_os/kernel_evaluation_input.dart';
+import 'core/intent_os/pop_action_executor.dart';
+import 'core/pop/frame_coordinator.dart';
+import 'core/pop/pop_runtime_config.dart';
+import 'core/signal_stale_policy.dart';
 import 'core/intent_os/intent_type.dart';
 import 'core/intent_os/learning/collective_stats.dart';
 import 'core/intent_os/learning/digital_twin_engine.dart';
@@ -232,7 +237,19 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
   late final GazeCollectiveIntentPredictor _intentPredictor;
   final AutonomousAgent _autonomousAgent = const AutonomousAgent();
   /// Single autonomous execution boundary (prefilter + governance + safety + optional kill switch).
-  final AutonomousExecutionKernel _autonomousExecution = AutonomousExecutionKernel();
+  final AutonomousExecutionKernel _autonomousExecution = AutonomousExecutionKernel(
+    emergencyKillSwitch: kDefaultEmergencyKillSwitch,
+  );
+
+  /// Unified zone/action executor — manual dwell+blink commits pass same gates as autonomous path.
+  final PopActionExecutor _popActionExecutor = PopActionExecutor();
+
+  final PopFrameCoordinator _frameCoordinator = PopFrameCoordinator();
+
+  double? _lastNativeTotalMs;
+
+  /// UI: tracking lost — show recalibration prompt overlay.
+  bool _lostFacePaused = false;
 
   /// Last successful autonomous commit (ms since epoch) for [ActionContext.timeSinceLastActionMs].
   int? _lastAutonomousCommitMs;
@@ -286,6 +303,12 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
   int get _dwellProgressMs => dwellProgressMs(
         dwellProgress: _dwellProgress,
         zoneDwellMs: _zoneDwellMs,
+      );
+
+  String _zoneFromGaze(double gazeX) => resolveZoneFromGaze(
+        rawGazeX: gazeX,
+        measuredLeft: _gazeMeasuredLeft,
+        measuredRight: _gazeMeasuredRight,
       );
 
   /// Kernel [KernelEvaluationInput.autonomyLevel]: \([0,1]\) from [BehaviorProfile.userTrustScore].
@@ -733,9 +756,8 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
     }
   }
 
-  /// Applies a zone label from intent resolution only (today: [_intentEngine] results).
-  /// Legacy fixation checks elsewhere remain until refactor; do not route new features here directly.
-  bool _selectZone(String zone) {
+  /// Applies zone label side effects only — callers must pass safety gates first.
+  bool _applyZoneSelectSideEffects(String zone) {
     if (!_isTrackingState) return false;
     _selectedAnnouncedForStint = true;
     _displaySelectedZone = zone;
@@ -760,6 +782,39 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
     }
     debugPrint('SELECTED: $zone');
     return true;
+  }
+
+  /// Zone select through [PopActionExecutor] safety chain (Stage 3 keystone).
+  bool _requestZoneSelect(
+    String zone, {
+    required double confidence,
+    required bool likelyFake,
+    required int nowMs,
+  }) {
+    var applied = false;
+    final gate = _popActionExecutor.tryZoneSelect(
+      zone: zone,
+      confidence: confidence,
+      fixationState: _fixationState,
+      dwellProgress: _dwellProgress,
+      dwellMs: _dwellProgressMs,
+      nowMs: nowMs,
+      isTracking: _isTrackingState,
+      calibrationBusy: _isCalibrationBusy,
+      visionError: _visionChannelError,
+      userIsDistracted: _userEngagementState == UserEngagementState.zoningOut,
+      autonomyLevel: _autonomyLevel,
+      stabilityVariance: _pipeline.varianceX(),
+      riskScore: 0.0,
+      likelyFake: likelyFake,
+      onAllowed: () {
+        applied = _applyZoneSelectSideEffects(zone);
+      },
+    );
+    if (gate != AutonomousActionGateResult.allowed) {
+      debugPrint('ZONE_SELECT_BLOCKED: $zone gate=${gate.name}');
+    }
+    return applied;
   }
 
   void _onCameraImage(CameraImage image) {
@@ -797,6 +852,13 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
       if (defaultTargetPlatform != TargetPlatform.android) return;
 
       _visionChannelError = false;
+      if (_frameCoordinator.shouldAdaptiveSkip(
+        nativeTotalMs: _lastNativeTotalMs,
+        budgetMs: kNativeProcessBudgetMs,
+      )) {
+        _frameCoordinator.droppedAdaptiveSkip++;
+        return;
+      }
       final fresh = await _processFace(image);
       final postprocessSw = Stopwatch()..start();
       final now = DateTime.now().millisecondsSinceEpoch;
@@ -813,6 +875,16 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
         _faceLocked = true;
         _lastHeldFace = face;
       }
+
+      _lastNativeTotalMs = face?.nativeTotalMs ?? fresh?.nativeTotalMs;
+      if (face != null) {
+        _lostFacePaused = false;
+        if (_frameCoordinator.isStale(now)) {
+          _clearZoneTracking();
+          _popActionExecutor.reset();
+        }
+      }
+      _frameCoordinator.markProcessed(now);
 
       final isValidFrame = face != null;
       final faceDetected = face != null;
@@ -837,6 +909,10 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
         _pipelinePerf.reset();
         _pipelinePerfSnapshot = PipelinePerformanceSnapshot.empty;
         _gazeSessionSamples = 0;
+        _popActionExecutor.reset();
+        _frameCoordinator.reset();
+        _lostFacePaused = true;
+        _lastNativeTotalMs = null;
         smoothGazeX = 0;
         smoothGazeY = 0;
         final d = _debugNotifier.value;
@@ -981,7 +1057,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
             state: _fixationState,
             timestamp: now,
             confidence: result.quality ?? 1.0,
-            gazeBand: getZone(px),
+            gazeBand: _zoneFromGaze(px),
           ),
         );
         if (_kVerbosePerFrameLogs && now % 500 < 50) {
@@ -1037,7 +1113,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
         _proofBridge.onStableGazeTick(
           nowMs: now,
           stable: stableFixation,
-          zone: getZone(smoothGazeX),
+          zone: _zoneFromGaze(smoothGazeX),
           confidence: (result.quality ?? 1.0).clamp(0.0, 1.0),
         );
         if (stableFixation) {
@@ -1050,7 +1126,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
           }
         }
 
-        final gb = getZone(smoothGazeX);
+        final gb = _zoneFromGaze(smoothGazeX);
         final likely = _intentEngine.learningStore.collectiveZones
             .predictLikelyZone(gb);
         uiPreloader.preload(
@@ -1114,6 +1190,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
         hasFace: face.landmarks.isNotEmpty,
         now: now,
         faceConfidence: face.faceConfidence,
+        likelyFake: face.likelyFake,
       );
       final nextBlinking = blink['isBlinking']! as bool;
       final nextBlinkDom = blink['isRightDominant'] as bool?;
@@ -1181,7 +1258,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
 
       zoneOverlayDirty |= _feedVerificationStability(
         nowMs: now,
-        zone: isValid ? (_currentZone ?? getZone(smoothGazeX)) : null,
+        zone: isValid ? (_currentZone ?? _zoneFromGaze(smoothGazeX)) : null,
         gazeX: isValid ? smoothGazeX : driftGaze.rawX,
         normalizedGazeX: norm.normalizedGazeX,
         meanEar: ear,
@@ -1261,7 +1338,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
       ),
     );
     _pipelinePerfSnapshot = snap;
-    if (mounted) setState(() {});
+    if (mounted && kShowPerfHud) setState(() {});
   }
 
   Future<VisionFrame?> _processFace(CameraImage image) async {
@@ -1403,13 +1480,9 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
     );
   }
 
-  /// Raw [gazeX] → [getZone], then runs dwell lock:
-  /// zone change resets timer; after [_zoneDwellMs], zone is locked.
-  ///
-  /// **Calibration tuning:** [getZone] deadband (±0.10 in [gaze_zone.dart]) and optional
-  /// switch to [getGazeZone] on normalized X — measure on device before changing.
+  /// Calibrated gaze → zone band, then dwell lock via [resolveZoneDwellAdvance].
   bool updateZone(double gazeX) {
-    final zone = getZone(gazeX);
+    final zone = _zoneFromGaze(gazeX);
     return _advanceZoneDwell(zone);
   }
 
@@ -1504,54 +1577,48 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
     if (_debugNotifier.value.zone != zone) {
       _debugNotifier.value = _debugNotifier.value.copyWith(zone: zone);
     }
-    if (zone != _currentZone) {
-      final nowMs = DateTime.now().millisecondsSinceEpoch;
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    final result = resolveZoneDwellAdvance(
+      zone: zone,
+      currentZone: _currentZone,
+      zoneStartMs: _zoneStart?.millisecondsSinceEpoch,
+      nowMs: nowMs,
+      zoneDwellMs: _zoneDwellMs,
+      dwellReleaseMs: _dwellReleaseMs,
+      dwellSatisfiedForStint: _dwellSatisfiedForStint,
+      dwellProgress: _dwellProgress,
+      selectedAnnouncedForStint: _selectedAnnouncedForStint,
+      displaySelectedZone: _displaySelectedZone,
+    );
+    if (result.zoneBandChanged) {
       _proofBridge.recordZoneTransition(
         fromZone: _currentZone,
         fromZoneStartMs: _zoneStart?.millisecondsSinceEpoch,
         nowMs: nowMs,
         wasSatisfied: _dwellSatisfiedForStint,
       );
-      _currentZone = zone;
-      _zoneStart = DateTime.now();
-      _dwellSatisfiedForStint = false;
+    }
+    if (result.callSyncDwellReadyFalse) {
       _intentEngine.syncDwellReady(false);
-      _dwellProgress = 0;
-      _selectedAnnouncedForStint = false;
-      _displaySelectedZone = '';
+    }
+    if (result.shouldMarkDwellSatisfied) {
+      _markDwellSatisfied(zone);
+      return true;
+    }
+    if (result.zoneBandChanged) {
+      _currentZone = result.nextCurrentZone;
+      _zoneStart = DateTime.fromMillisecondsSinceEpoch(result.nextZoneStartMs!);
+      _dwellSatisfiedForStint = result.nextDwellSatisfiedForStint;
+      _dwellProgress = result.nextDwellProgress;
+      _selectedAnnouncedForStint = result.nextSelectedAnnouncedForStint;
+      _displaySelectedZone = result.nextDisplaySelectedZone;
+      if (result.resetWasBlinking) _wasBlinking = false;
       _debugNotifier.value = _debugNotifier.value.copyWith(selected: '');
-      _wasBlinking = false;
       zoneOverlayDirty = true;
-    } else {
-      final start = _zoneStart;
-      if (start != null) {
-        final elapsed = DateTime.now().difference(start).inMilliseconds;
-        if (_dwellSatisfiedForStint) {
-          // Dwell hysteresis applies only at activation boundary.
-          if (elapsed < _dwellReleaseMs) {
-            _dwellSatisfiedForStint = false;
-            _intentEngine.syncDwellReady(false);
-            _dwellProgress = zoneDwellProgressRatio(
-              elapsedMs: elapsed.toDouble(),
-              zoneDwellMs: _zoneDwellMs,
-            );
-            zoneOverlayDirty = true;
-          }
-        } else if (elapsed > _zoneDwellMs) {
-          _markDwellSatisfied(zone);
-          zoneOverlayDirty = true;
-        } else {
-          final nextProgress = zoneDwellProgressRatio(
-            elapsedMs: elapsed.toDouble(),
-            zoneDwellMs: _zoneDwellMs,
-          );
-          if ((nextProgress - _dwellProgress).abs() >= 0.02 ||
-              nextProgress == 0) {
-            _dwellProgress = nextProgress;
-            zoneOverlayDirty = true;
-          }
-        }
-      }
+    } else if (result.zoneOverlayDirty) {
+      _dwellSatisfiedForStint = result.nextDwellSatisfiedForStint;
+      _dwellProgress = result.nextDwellProgress;
+      zoneOverlayDirty = true;
     }
     return zoneOverlayDirty;
   }
@@ -1630,6 +1697,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
     required bool hasFace,
     required int now,
     required double faceConfidence,
+    required bool likelyFake,
   }) {
     final confidence = faceConfidence.clamp(0.0, 1.0).toDouble();
     if (confidence < 0.65) return false;
@@ -1671,7 +1739,12 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
         return false;
       }
       HapticFeedback.heavyImpact();
-      if (_selectZone(zone)) {
+      if (_requestZoneSelect(
+        zone,
+        confidence: confidence,
+        likelyFake: likelyFake,
+        nowMs: now,
+      )) {
         dirty = true;
         debugPrint('BLINK_EDGE_SELECT: $zone');
       }
@@ -1989,7 +2062,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
           break;
 
         case IntentActionType.openZone:
-          _selectZone(target);
+          _applyZoneSelectSideEffects(target);
           break;
 
         default:
@@ -2031,7 +2104,12 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
           ),
         );
         if (lockedZone != null) {
-          if (_selectZone(lockedZone)) {
+          if (_requestZoneSelect(
+            lockedZone,
+            confidence: kMinGovernanceConfidence,
+            likelyFake: false,
+            nowMs: DateTime.now().millisecondsSinceEpoch,
+          )) {
             HapticFeedback.lightImpact();
             zoneOverlayDirty = true;
             debugPrint('BLINK_SELECT: $lockedZone');
@@ -2432,6 +2510,48 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
                         ),
                       ),
                     ],
+                  ),
+                ),
+              ),
+            ),
+          if (_lostFacePaused)
+            Positioned(
+              top: _overlaySafeTop + 48,
+              left: 16,
+              right: 16,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.55),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.orangeAccent.withValues(alpha: 0.6)),
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  child: Text(
+                    'Tracking paused — face not detected. Recalibrate or look at the camera.',
+                    style: TextStyle(color: Colors.white70, fontSize: 13),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ),
+          if (_displaySelectedZone.isNotEmpty)
+            Positioned(
+              left: 16,
+              bottom: 160,
+              child: SafeArea(
+                child: TextButton(
+                  onPressed: () {
+                    setState(() {
+                      _displaySelectedZone = '';
+                      _selectedAnnouncedForStint = false;
+                      _debugNotifier.value =
+                          _debugNotifier.value.copyWith(selected: '');
+                    });
+                  },
+                  child: const Text(
+                    'Undo zone select',
+                    style: TextStyle(color: Colors.white70, fontSize: 13),
                   ),
                 ),
               ),

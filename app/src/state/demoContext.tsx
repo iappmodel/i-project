@@ -11,8 +11,11 @@ import { submitProofPacket } from '../lib/popValidator'
 import {
   canIssueAttentionReward,
   canValidateSession,
+  computeSessionAttentionScore,
   createAttentionSession,
+  recordAttentionSample,
 } from './attentionSession'
+import { getPopFeatureFlags, emitPopTelemetry } from '../lib/popFeatureFlags'
 import { useDeepLinkProofSession } from './useDeepLinkProofSession'
 import { useLiveWalletSync } from './useLiveWalletSync'
 import { useProofEvents, type ProofSealedEvent } from './useProofEvents'
@@ -219,6 +222,12 @@ export function DemoProvider({ children }: { children: ReactNode }) {
           attentionSession: { ...prev.attentionSession, status: 'failed' },
         }
       }
+      const acsScore = computeSessionAttentionScore(prev.attentionSession)
+      emitPopTelemetry('watch_verified', {
+        sessionId: prev.attentionSession.id,
+        acsScore,
+        sampleCount: prev.attentionSession.attentionSamples?.length ?? 0,
+      })
       return {
         ...prev,
         verificationStatus: 'verifying',
@@ -228,8 +237,20 @@ export function DemoProvider({ children }: { children: ReactNode }) {
           ...prev.attentionSession,
           status: 'validated',
           validatedAt: Date.now(),
-          acsScore: 80,
+          acsScore,
         },
+      }
+    })
+  }, [])
+
+  const recordWatchAttention = useCallback((score: number) => {
+    setState((prev) => {
+      if (prev.verificationStatus !== 'watching' || !prev.attentionSession) {
+        return prev
+      }
+      return {
+        ...prev,
+        attentionSession: recordAttentionSample(prev.attentionSession, score),
       }
     })
   }, [])
@@ -310,6 +331,14 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const finishRewardToWallet = useCallback(() => {
+    const flags = getPopFeatureFlags()
+    if (flags.popKillSwitch) {
+      setState((prev) => ({
+        ...prev,
+        walletSyncError: 'POP kill switch active — reward submission blocked',
+      }))
+      return
+    }
     if (liveWallet.walletBackend !== 'live') {
       finishRewardMock()
       return
@@ -326,6 +355,11 @@ export function DemoProvider({ children }: { children: ReactNode }) {
         setState((inner) => ({ ...inner, proofSubmitting: true }))
         try {
           const packet = buildDemoProofPacket({ session, offer })
+          emitPopTelemetry('proof_submitted', {
+            sessionId: session.id,
+            acsScore: session.acsScore,
+            reviewPending: true,
+          })
           const result = await submitProofPacket(packet, `WEB-${session.id.slice(0, 8)}`)
           await liveWallet.refreshPendingHolds()
           if (isAutoSettleEnabled() && result.sessionId) {
@@ -397,6 +431,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       startWatchFlow,
       acceptConsentAndBeginSession,
       completeVerification,
+      recordWatchAttention,
       claimReward,
       finishRewardToWallet,
       refreshPendingHolds: liveWallet.refreshPendingHolds,
@@ -437,6 +472,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       startWatchFlow,
       acceptConsentAndBeginSession,
       completeVerification,
+      recordWatchAttention,
       claimReward,
       finishRewardToWallet,
       canCollectReward,
