@@ -5,6 +5,19 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-30 — Investor presenter deck (14-slide auto tour)
+
+### Delivered
+- **Presenter deck** — `investor_presenter_deck.html` embeds all 14 walkthroughs in story order with Prev/Next, auto-advance (~11–14s/slide), keyboard nav, fullscreen.
+- **Index launch** — `investor_explainer_index.html` → “Launch presenter deck” button.
+- **Open script** — `./scripts/open_investor_presenter.sh` for one-command local demo.
+- **Smoke** — deck file presence + index href + all walkthrough filenames referenced in deck JS.
+
+### Verification
+- `./scripts/smoke_investor_explainers.sh` · `./scripts/open_investor_presenter.sh`
+
+---
+
 ## 2026-05-30 — Picture 2 explainer suite complete + ELO foundation slot
 
 ### Delivered

@@ -64,7 +64,8 @@ flowchart LR
 | `./scripts/smoke_organism_spine.sh` | Full spine (local + optional Supabase) |
 | `./scripts/smoke_elo_presence.sh` | ELO presence module files + app build |
 | `./scripts/smoke_pop_finish.sh` | POP finish keystone files + Flutter regression tests |
-| `./scripts/smoke_investor_explainers.sh` | Investor explainer index + 14 HTML walkthroughs |
+| `./scripts/smoke_investor_explainers.sh` | Investor explainer index + presenter deck + 14 HTML walkthroughs |
+| `./scripts/open_investor_presenter.sh` | Open consolidated 14-slide presenter deck in browser |
 | `./scripts/smoke_vision_proof_bridge.sh` | Vision → proof packet hints (Phase 34) |
 | `./scripts/smoke_immersive_shell.sh` | Glass wallet/profile, out-profile, loop1 watch path (Phases 35–38) |
 | `./scripts/smoke_immersive_promo.sh` | Promo marketplace tab + watch flow (Phase 41) |
