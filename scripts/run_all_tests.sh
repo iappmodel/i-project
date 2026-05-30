@@ -87,6 +87,14 @@ echo "== Immersive promo smoke (Phase 41) =="
 "$ROOT/scripts/smoke_immersive_promo.sh"
 
 echo ""
+echo "== Blink remote lite smoke (Phase 42) =="
+"$ROOT/scripts/smoke_blink_remote_lite.sh"
+
+echo ""
+echo "== Blink remote lite smoke (Phase 42) =="
+"$ROOT/scripts/smoke_blink_remote_lite.sh"
+
+echo ""
 echo "== Investor explainer smoke =="
 "$ROOT/scripts/smoke_investor_explainers.sh"
 

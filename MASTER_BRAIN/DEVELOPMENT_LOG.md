@@ -5,6 +5,22 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+---
+
+## 2026-05-30 — Phase 42 gesture combo matcher + Blink Remote lite panel
+
+### Delivered
+- **Combo store** — `gestureComboStore.ts` with default presets (double blink → like, triple → wallet, turn right → promo).
+- **Global matcher** — `useGestureComboMatcher` + `GestureComboMatcherHost` on `remoteGestureTrigger` / `remoteBlinkPattern`.
+- **Blink Remote lite** — tabbed panel in `VisionControlPanel`: combos CRUD, debug gaze log, runtime profile settings.
+- **Navigation** — `promoFeed` combo routes to `immersive-promo`; typed `ProductTabId` / `DemoScreenId` in `executeLoop1Command`.
+- **Smoke** — `smoke_blink_remote_lite.sh` in production readiness + `run_all_tests`.
+
+### Verification
+- `./scripts/smoke_blink_remote_lite.sh` · `./scripts/smoke_vision_prep.sh`
+
+---
+
 ## 2026-05-30 — Like tap explainer (heart preset tap path)
 
 ### Delivered
@@ -39,6 +55,18 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ### Verification
 - `./scripts/smoke_investor_explainers.sh` · `./scripts/smoke_elo_presence.sh` · `./scripts/smoke_pop_finish.sh`
+
+---
+
+## 2026-05-30 — Phase 42 Blink Remote panel (combos + matcher)
+
+### Delivered
+- **Gesture combos** — `gestureComboStore.ts` with localStorage presets; tabbed `VisionBlinkRemoteLite` (combos · debug · settings).
+- **Runtime matcher** — `useGestureComboMatcher` + `GestureComboMatcherHost` listens for blink/gesture sequences and fires Loop 1 commands.
+- **Routing fix** — `promoFeed` vision command opens `immersive-promo`.
+
+### Verification
+- `./scripts/smoke_blink_remote_lite.sh`
 
 ---
 

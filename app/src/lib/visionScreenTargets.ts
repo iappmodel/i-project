@@ -7,6 +7,7 @@ import {
   type ScreenTarget,
 } from '../hooks/useScreenTargets'
 import type { ComboAction } from '../hooks/useGestureCombos'
+import type { DemoScreenId, ProductTabId } from '../state/types'
 
 export type Loop1CommandHandlers = {
   onCommand: (command: ComboAction, target: ScreenTarget) => void
@@ -138,8 +139,8 @@ export function executeLoop1Command(
   command: ComboAction,
   nav: {
     jumpWallet: () => void
-    setActiveTab: (tab: 'feed' | 'earn' | 'profile') => void
-    setScreen: (screen: 'saved') => void
+    setActiveTab: (tab: ProductTabId) => void
+    setScreen: (screen: DemoScreenId) => void
     saveLoopItem: () => void
   },
 ) {
@@ -149,6 +150,7 @@ export function executeLoop1Command(
       break
     case 'promoFeed':
       nav.setActiveTab('earn')
+      nav.setScreen('immersive-promo')
       break
     case 'friendsFeed':
       nav.setActiveTab('feed')

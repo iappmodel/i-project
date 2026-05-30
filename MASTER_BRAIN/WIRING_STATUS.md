@@ -69,7 +69,8 @@ flowchart LR
 | `./scripts/smoke_open_investor_presenter.sh` | Presenter open script + deck file check (CI-safe) |
 | `./scripts/smoke_vision_proof_bridge.sh` | Vision → proof packet hints (Phase 34) |
 | `./scripts/smoke_immersive_shell.sh` | Glass wallet/profile, out-profile, loop1 watch path (Phases 35–38) |
-| `./scripts/smoke_immersive_promo.sh` | Promo marketplace tab + watch flow (Phase 41) |
+| `./scripts/smoke_blink_remote_lite.sh` | Gesture combo store + matcher + Blink Remote lite panel (Phase 42) |
+| `./scripts/smoke_blink_remote_lite.sh` | Blink remote combos + matcher (Phase 42) |
 | `./scripts/enable_stripe_live_env.sh` | Stripe checkout env when keys in stack |
 
 ---
@@ -167,7 +168,7 @@ flowchart LR
 
 | Item | Notes |
 |------|-------|
-| React gaze signals | `VisionProvider` + `TargetOverlay`; Profile `VisionControlPanel` unifies calibration/settings/presets/editor behind `VITE_VISION_ENGINE`; full blink-remote panel still deferred |
+| React gaze signals | `VisionProvider` + `TargetOverlay`; Profile `VisionControlPanel` + tabbed `VisionBlinkRemoteLite` (combos/debug/settings); full archive `BlinkRemoteControl` still deferred |
 | Vision bundle chunking | `vite.config.ts` manualChunks split (`mediapipe`, `supabase`, `react-vendor`, `vendor`) to avoid >500 kB main chunk |
 | Capacitor native build | `setup_capacitor_shell.sh --add` |
 | Production Stripe | `STRIPE_PHASE2.md` — keys deferred |
@@ -349,6 +350,18 @@ flowchart LR
 | ELO visual form live edit | ✅ `EloStackEditor` visualForm picker |
 | Promo canon | ✅ `PROMO_MARKETPLACE.md` |
 | Smoke | ✅ `smoke_immersive_promo.sh` in production readiness |
+
+---
+
+## Phase 42 (2026-05-30)
+
+| Item | Status |
+|------|--------|
+| Gesture combo store | ✅ `gestureComboStore.ts` + localStorage presets |
+| Combo matcher host | ✅ `GestureComboMatcherHost` in `App.tsx` |
+| Blink Remote lite panel | ✅ Combos / debug / settings tabs in `VisionBlinkRemoteLite` |
+| Promo combo routing | ✅ `promoFeed` → `immersive-promo` |
+| Smoke | ✅ `smoke_blink_remote_lite.sh` in production readiness |
 
 ---
 

@@ -3,6 +3,7 @@ import { AppShell } from './components/AppShell'
 import { VisionProvider } from './contexts/VisionContext'
 import { VisionStreamProvider } from './contexts/VisionStreamContext'
 import { VisionTargetOverlay } from './components/VisionTargetOverlay'
+import { GestureComboMatcherHost } from './components/GestureComboMatcherHost'
 import { AccessibilityProvider } from './contexts/AccessibilityContext'
 import { DemoProvider } from './state/demoContext'
 import { EloSessionScope } from './components/elo/EloSessionScope'
@@ -64,6 +65,7 @@ export default function App() {
           <VisionStreamProvider>
             <VisionProvider>
               <VisionTargetOverlay />
+              <GestureComboMatcherHost />
               <AppShell>
                 <ScreenRouter />
               </AppShell>
