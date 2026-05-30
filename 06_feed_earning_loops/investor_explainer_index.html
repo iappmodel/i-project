@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] — Investor Feature Explainer Index</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --page-bg: #fff; --heading: #333; --text: #555; --text-secondary: #777; --text-light: #999;
+  --border: #e5e5e5; --card-bg: #fafafa; --shadow: rgba(0,0,0,0.08);
+  --accent: #378ADD; --icoin: #4ade80;
+}
+html, body { min-height: 100vh; background: var(--page-bg); font-family: Arial, Helvetica, sans-serif; color: var(--text); }
+.page { max-width: 960px; margin: 0 auto; padding: 48px 36px 64px; }
+.page-header { margin-bottom: 40px; }
+.page-header h1 { font-size: 13px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-secondary); font-weight: 400; margin-bottom: 8px; }
+.page-header .title { font-size: 28px; font-weight: 400; color: var(--heading); margin-bottom: 10px; }
+.page-header .thesis { font-size: 15px; line-height: 1.55; max-width: 680px; }
+.meta { margin-top: 16px; font-size: 12px; color: var(--text-light); }
+.meta span { margin-right: 16px; }
+
+.layout-map {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 44px;
+}
+.map-card {
+  padding: 20px 22px; border: 1px solid var(--border); border-radius: 10px; background: var(--card-bg);
+}
+.map-card h2 { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-light); font-weight: 400; margin-bottom: 12px; }
+.phone-diagram {
+  position: relative; width: 140px; height: 260px; margin: 0 auto 12px;
+  border-radius: 22px; background: #111; border: 2px solid #ccc;
+}
+.zone {
+  position: absolute; font-size: 7px; letter-spacing: 0.04em; text-transform: uppercase;
+  padding: 3px 5px; border-radius: 4px; background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7);
+  border: 0.5px solid rgba(255,255,255,0.15); white-space: nowrap;
+}
+.zone--timer { top: 18px; left: 8px; right: 8px; text-align: center; background: rgba(74,222,128,0.15); border-color: rgba(74,222,128,0.3); }
+.zone--reward { top: 32px; right: 10px; }
+.zone--rail { top: 80px; right: 10px; display: flex; flex-direction: column; gap: 4px; background: none; border: none; padding: 0; }
+.zone--rail span { display: block; padding: 2px 5px; border-radius: 4px; background: rgba(255,255,255,0.08); border: 0.5px solid rgba(255,255,255,0.12); font-size: 6px; }
+.zone--elo { top: 50%; left: 50%; transform: translate(-50%,-50%); }
+.zone--out { bottom: 52px; left: 10px; }
+.zone--dock { bottom: 8px; left: 8px; right: 8px; text-align: center; font-size: 6px; letter-spacing: 0.02em; }
+.map-note { font-size: 12px; color: var(--text-secondary); line-height: 1.5; text-align: center; }
+
+.section { margin-bottom: 36px; }
+.section-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+.section-head h2 { font-size: 17px; font-weight: 400; color: var(--heading); }
+.section-head .count { font-size: 11px; color: var(--text-light); letter-spacing: 0.06em; }
+
+.card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 720px) { .card-grid, .layout-map { grid-template-columns: 1fr; } }
+
+.link-card {
+  display: block; padding: 16px 18px; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--page-bg); text-decoration: none; color: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+.link-card:hover { border-color: #bbb; box-shadow: 0 4px 16px var(--shadow); transform: translateY(-1px); }
+.link-card .label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-light); margin-bottom: 4px; }
+.link-card .name { font-size: 16px; color: var(--heading); margin-bottom: 6px; }
+.link-card .desc { font-size: 12px; line-height: 1.5; color: var(--text-secondary); }
+.link-card .file { font-size: 10px; color: var(--text-light); margin-top: 8px; font-family: 'SF Mono', Menlo, Consolas, monospace; }
+.link-card.recommended { border-left: 3px solid var(--accent); }
+
+.order-block {
+  padding: 20px 22px; border: 1px solid var(--border); border-radius: 10px; background: var(--card-bg); margin-bottom: 36px;
+}
+.order-block h2 { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-light); font-weight: 400; margin-bottom: 12px; }
+.order-flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.order-node {
+  font-size: 11px; padding: 6px 10px; border-radius: 8px; background: var(--page-bg);
+  border: 1px solid var(--border); color: var(--text);
+}
+.order-arrow { font-size: 10px; color: var(--text-light); }
+.order-note { font-size: 12px; color: var(--text-secondary); margin-top: 12px; line-height: 1.5; }
+
+.framing { border-left: 3px solid #ccc; padding-left: 20px; margin-top: 8px; }
+.framing p { font-size: 14px; color: var(--heading); line-height: 1.55; }
+.coming { opacity: 0.55; pointer-events: none; }
+.coming .tag { display: inline-block; font-size: 9px; padding: 2px 6px; border-radius: 6px; background: #eee; color: var(--text-light); margin-left: 6px; vertical-align: middle; }
+.footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-light); line-height: 1.6; }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="page-header">
+    <h1>[ i ] Platform</h1>
+    <p class="title">Investor Feature Explainer Series</p>
+    <p class="thesis">Standalone animated HTML pages — one control or tab per file. White deck typography, loyal immersive phone UI, 7-scene auto-loops. Double-click any file to open; no build step.</p>
+    <div class="meta">
+      <span>11 explainers shipped</span>
+      <span>Folder: 06_feed_earning_loops/</span>
+      <span>Canon: IMMERSIVE_UI_DESIGN_LAW.md</span>
+    </div>
+  </header>
+
+  <div class="layout-map">
+    <div class="map-card">
+      <h2>Picture 2 shell</h2>
+      <div class="phone-diagram" aria-hidden="true">
+        <div class="zone zone--timer">Timer</div>
+        <div class="zone zone--reward">Reward</div>
+        <div class="zone zone--rail"><span>Like</span><span>Message</span><span>Share</span><span>Controls</span></div>
+        <div class="zone zone--elo">Elo</div>
+        <div class="zone zone--out">Out-Profile</div>
+        <div class="zone zone--dock">Feed · Promo · + · Wallet · Profile</div>
+      </div>
+      <p class="map-note">Each explainer animates only the feature it describes — the rest of the phone stays static.</p>
+    </div>
+    <div class="map-card">
+      <h2>Loop 1 spine</h2>
+      <p class="map-note" style="text-align:left;margin-bottom:12px">Watch → Verify → Reward → Wallet. Start with <strong>REWARD</strong> and <strong>Promo</strong>, then rail buttons, then dock tabs for the full marketplace story.</p>
+      <p class="map-note" style="text-align:left;font-size:11px;color:var(--text-light)">Copy is roadmap-honest where MVP differs from vision (e.g. MESSAGE preset, local map layer).</p>
+    </div>
+  </div>
+
+  <div class="order-block">
+    <h2>Suggested presenter order</h2>
+    <div class="order-flow">
+      <span class="order-node">REWARD</span><span class="order-arrow">→</span>
+      <span class="order-node">Promo</span><span class="order-arrow">→</span>
+      <span class="order-node">Hold Love</span><span class="order-arrow">→</span>
+      <span class="order-node">Wallet</span><span class="order-arrow">→</span>
+      <span class="order-node">Elo</span><span class="order-arrow">→</span>
+      <span class="order-node">Create</span><span class="order-arrow">→</span>
+      <span class="order-node">Profile</span>
+    </div>
+    <p class="order-note">Rail buttons (Message, Share, Controls) fit after REWARD or before Wallet. Each file has Play/Pause, Restart, and scene dots.</p>
+  </div>
+
+  <section class="section">
+    <div class="section-head"><h2>Earn &amp; reward</h2><span class="count">2 files</span></div>
+    <div class="card-grid">
+      <a class="link-card recommended" href="reward_feature_explainer.html">
+        <div class="label">Top-right · Loop 1 core</div>
+        <div class="name">REWARD pill</div>
+        <div class="desc">Offer arc → review → wallet credit. The primary earn affordance on sponsored media.</div>
+        <div class="file">reward_feature_explainer.html</div>
+      </a>
+      <a class="link-card" href="love_hold_creator_offer_explainer.html">
+        <div class="label">Action rail · gesture</div>
+        <div class="name">Hold Love → Creator offer</div>
+        <div class="desc">Long-press Like opens creator tip/offer flow with pending wallet settlement.</div>
+        <div class="file">love_hold_creator_offer_explainer.html</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><h2>Action rail</h2><span class="count">3 files</span></div>
+    <div class="card-grid">
+      <a class="link-card" href="message_button_explainer.html">
+        <div class="label">Rail · compose</div>
+        <div class="name">MESSAGE</div>
+        <div class="desc">Tap → compose sheet → context chip → inbox thread. Direct creator relationship layer.</div>
+        <div class="file">message_button_explainer.html</div>
+      </a>
+      <a class="link-card" href="share_button_explainer.html">
+        <div class="label">Rail · distribution</div>
+        <div class="name">SHARE</div>
+        <div class="desc">Destinations, attribution tracking, referral earn path — attention as distribution.</div>
+        <div class="file">share_button_explainer.html</div>
+      </a>
+      <a class="link-card" href="controls_button_explainer.html">
+        <div class="label">Rail · personalization</div>
+        <div class="name">CONTROLS</div>
+        <div class="desc">Hold 1s → gesture builder → rebind actions → persist locally. Shipped in MVP.</div>
+        <div class="file">controls_button_explainer.html</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><h2>Center membrane</h2><span class="count">1 file</span></div>
+    <div class="card-grid">
+      <a class="link-card" href="elo_presence_explainer.html">
+        <div class="label">Center · companion</div>
+        <div class="name">ELO presence</div>
+        <div class="desc">Voice evoke → manifest → panel → POP boundary. User companion, not creator chip.</div>
+        <div class="file">elo_presence_explainer.html</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><h2>5-tab dock</h2><span class="count">4 files</span></div>
+    <div class="card-grid">
+      <a class="link-card" href="promo_dock_explainer.html">
+        <div class="label">Tab 2 · demand side</div>
+        <div class="name">Promo</div>
+        <div class="desc">Sponsor briefs marketplace — watch, check-in, campaign tasks with verification gates.</div>
+        <div class="file">promo_dock_explainer.html</div>
+      </a>
+      <a class="link-card" href="create_studio_explainer.html">
+        <div class="label">Tab 3 · supply side</div>
+        <div class="name">Create (+)</div>
+        <div class="desc">Studio entry — produce proof-ready media, export into feed supply loop.</div>
+        <div class="file">create_studio_explainer.html</div>
+      </a>
+      <a class="link-card" href="wallet_dock_explainer.html">
+        <div class="label">Tab 4 · economic center</div>
+        <div class="name">Wallet</div>
+        <div class="desc">Attention Wallet sheet — dual ledger, pending → available, convert/withdraw.</div>
+        <div class="file">wallet_dock_explainer.html</div>
+      </a>
+      <a class="link-card" href="profile_dock_explainer.html">
+        <div class="label">Tab 5 · identity</div>
+        <div class="name">In-Profile</div>
+        <div class="desc">Trust score, verification badges, settings — distinct from OUT-PROFILE creator chip.</div>
+        <div class="file">profile_dock_explainer.html</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><h2>Coming next</h2><span class="count">planned</span></div>
+    <div class="card-grid">
+      <div class="link-card coming">
+        <div class="label">System layer</div>
+        <div class="name">POP attention control <span class="tag">planned</span></div>
+        <div class="desc">Full proof-of-presence system — attention → action control layer, architecture strip, 6-scene investor walkthrough.</div>
+        <div class="file">pop_feature_investor_explainer.html</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="framing">
+    <p>[ i ] is an Attention Wallet and Media Marketplace. These explainers map every investor-visible control on the immersive shell to a concrete economic or trust outcome — without requiring the React app or a live backend.</p>
+  </div>
+
+  <footer class="footer">
+    Reference prototypes: iapp_immersive_feed.html · IMMERSIVE_UI_DESIGN_LAW.md · USER_GESTURE_BUTTONS.md · ELO_PRESENCE_LAYER.md<br>
+    Local dev app: ./scripts/dev_stack.sh — product entry route immersive-feed
+  </footer>
+</div>
+</body>
+</html>
