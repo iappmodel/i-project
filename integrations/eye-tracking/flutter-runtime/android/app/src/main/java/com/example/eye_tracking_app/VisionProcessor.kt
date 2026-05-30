@@ -29,6 +29,16 @@ object VisionProcessor {
 
     private const val MODEL_ASSET = "face_landmarker.task"
 
+    /** When false, omit full landmark meshes from channel payload (privacy + perf). */
+    private val includeFullLandmarks: Boolean
+        get() = try {
+            Class.forName("com.example.eye_tracking_app.BuildConfig")
+                .getField("DEBUG")
+                .getBoolean(null)
+        } catch (_: Exception) {
+            false
+        }
+
     /** MediaPipe Tasks image segmenter (selfie); asset from `float16/latest` on GCS. */
     private const val SEGMENTER_MODEL_ASSET = "selfie_segmenter.tflite"
 
@@ -746,9 +756,9 @@ object VisionProcessor {
             )
 
             mapOf(
-                "landmarks" to all,
-                "leftEye" to leftEye,
-                "rightEye" to rightEye,
+                "landmarks" to if (includeFullLandmarks) all else emptyList<Map<String, Float>>(),
+                "leftEye" to if (includeFullLandmarks) leftEye else emptyList<Map<String, Float>>(),
+                "rightEye" to if (includeFullLandmarks) rightEye else emptyList<Map<String, Float>>(),
                 "leftEAR" to leftEAR,
                 "rightEAR" to rightEAR,
                 "gazeX" to smoothGazeXOut,

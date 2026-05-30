@@ -59,7 +59,7 @@ ELO on immersive surfaces is a **transparent face membrane** — not the legacy 
 
 | Concept | Implementation |
 |---------|----------------|
-| Visual | Center contour lines, emergence animation — `EloFaceMembrane` |
+| Visual | Procedural glass contour membrane — `EloFaceMembrane` SVG + `useEloFaceMirror` |
 | Mirroring | POP vision landmarks + head pose when camera active |
 | Personality stack | Primary/secondary presets, relationship + operating modes |
 | Rooms | Philosophy, Focus, Creator, Sleep, Grief, Writing, Study |
@@ -74,7 +74,7 @@ See [`../UX/ELO_PRESENCE_LAYER.md`](../UX/ELO_PRESENCE_LAYER.md).
 
 | Source | Rank | Path |
 |--------|------|------|
-| ELO Personal Intelligence Companion | 143 | Desktop `chatGPT/0143_*` |
+| ELO Personal Intelligence Companion | 143 | [`CHAT_RECOVERY/EXTRACTED/conversations/143_elo_personal_intelligence_companion.md`](../CHAT_RECOVERY/EXTRACTED/conversations/143_elo_personal_intelligence_companion.md) |
 | Elo as Personal Myth | 144 | Desktop `chatGPT/0144_*` |
 | Cross-chat Elo↔POP thread | — | User pasted ChatGPT history |
 | ELO Stage 1 shell | — | `PROTOTYPES/INDEX.md`, i-initial-structures |
@@ -88,7 +88,7 @@ See [`../UX/ELO_PRESENCE_LAYER.md`](../UX/ELO_PRESENCE_LAYER.md).
 | System/Entity | Relationship |
 |---------------|--------------|
 | POP | Senses / validation input |
-| iAM | Overlap on identity/memory — **merge or separate?** |
+| iAM | Separate entity (ENT-05) — identity OS; may share memory APIs later |
 | Wallet | Economic state Elo may explain to user |
 | Studio | Creation assistant persona |
 | Remote Control | Device extension of Elo presence |

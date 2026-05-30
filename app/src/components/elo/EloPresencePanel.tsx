@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   mockContentPreference,
   mockCreatorInsight,
@@ -10,6 +10,7 @@ import {
   mockWalletState,
   DEMO_PUBLISHED_PERSONALITIES,
 } from '../../lib/elo/mockData'
+import { getSessionOpening } from '../../lib/elo/sessionOpenings'
 import { getEloMemories } from '../../lib/elo/services/eloMemoryService'
 import { setEloPermission } from '../../lib/elo/services/eloPermissionService'
 import { getEloRecommendations } from '../../lib/elo/services/eloRecommendationService'
@@ -66,13 +67,30 @@ function EloChat({
 }
 
 export function EloPresencePanel() {
-  const { panelOpen, closePanel, setStack } = useElo()
+  const { panelOpen, closePanel, setStack, sessionActive, config } = useElo()
   const { displayName, relationship, operating } = useEloPersonality()
   const { setScreen, setActiveTab, eloStatusLine, proofEventsConnected } = useDemo()
   const [messages, setMessages] = useState<EloMessage[]>(mockMessages)
   const [permissions, setPermissions] = useState<EloPermission[]>(mockPermissions)
   const memories = useMemo(() => getEloMemories(), [])
   const recommendations = useMemo(() => getEloRecommendations(), [])
+
+  useEffect(() => {
+    if (!sessionActive) return
+    const opening = getSessionOpening(config.stack)
+    setMessages((prev) => {
+      if (prev.some((m) => m.id === 'elo-session-open')) return prev
+      return [
+        {
+          id: 'elo-session-open',
+          role: 'assistant',
+          content: opening,
+          createdAt: new Date().toISOString(),
+        },
+        ...prev,
+      ]
+    })
+  }, [sessionActive, config.stack])
 
   if (!panelOpen) return null
 

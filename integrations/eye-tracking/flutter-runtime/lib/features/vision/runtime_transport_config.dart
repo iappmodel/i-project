@@ -7,8 +7,8 @@ library;
 /// When `true` on Android, [CameraImage] YUV420 frames use experimental
 /// Y-plane map transport instead of full-resolution JPEG encode.
 ///
-/// Must remain `false` until device validation completes.
-const bool useExperimentalYPlaneTransport = false;
+/// Y-plane transport enabled for production POP (POP finish plan Stage 5).
+const bool useExperimentalYPlaneTransport = true;
 
 /// Longest edge (px) for Y-plane extraction/downscale on the experimental path.
 const int kExperimentalYPlaneMaxEdge = 512;

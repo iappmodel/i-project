@@ -146,6 +146,14 @@ export function WalletScreen() {
       </div>
 
       {walletBackend === 'live' && pendingHolds.length > 0 ? (
+        <p className="profile-trust-card__hint" style={{ marginBottom: 10, fontSize: 12 }}>
+          Rewards earned locally are validating on the POP server. Pending holds move to available
+          {formatCoinLabel('icoin')} after review (approved or partial). Tap Settle when your session
+          shows approved — fraud or weak attention may reduce or delay payout.
+        </p>
+      ) : null}
+
+      {walletBackend === 'live' && pendingHolds.length > 0 ? (
         <div className="activity-stack-wu" style={{ marginBottom: 12 }}>
           {pendingHolds.slice(0, 3).map((h) => (
             <div key={h.sessionId} className="activity-card-wu pending" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

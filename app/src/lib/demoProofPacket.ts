@@ -1,4 +1,5 @@
 import type { AttentionSession } from '../state/attentionSession'
+import { computeSessionAttentionScore } from '../state/attentionSession'
 import type { Offer } from '../state/types'
 import {
   getVisionProofHints,
@@ -28,21 +29,49 @@ export interface ProofPacketV0Json {
   review: { status: 'pending'; reviewedAt: null; reasons: string[] }
 }
 
-/** Golden-path fixture shape — enough for POP validator approval. */
+function scoreFromAttention(acsScore: number): {
+  presence: number
+  participation: number
+  perception: number
+  signalIntegrity: number
+  sessionIntegrity: number
+  rewardEligibility: number
+} {
+  const norm = Math.max(0, Math.min(1, acsScore / 100))
+  const weak = norm < 0.55
+  return {
+    presence: Math.min(0.98, 0.6 + norm * 0.35),
+    participation: weak ? 0.65 : Math.min(0.95, 0.7 + norm * 0.25),
+    perception: Math.min(0.92, 0.45 + norm * 0.5),
+    signalIntegrity: weak ? 0.55 : Math.min(0.98, 0.75 + norm * 0.2),
+    sessionIntegrity: Math.min(1, 0.75 + norm * 0.25),
+    rewardEligibility: weak ? 0.45 : Math.min(0.9, 0.5 + norm * 0.4),
+  }
+}
+
+/** Build proof packet from session attention evidence (not a static golden fixture). */
 export function buildDemoProofPacket(input: {
   session: AttentionSession
   offer: Offer
   visionHints?: VisionProofHints | null
 }): ProofPacketV0Json {
   const visionHints = input.visionHints ?? (isWebVisionEnabled() ? getVisionProofHints() : null)
+  const acsScore = computeSessionAttentionScore(input.session)
+  const layerScores = scoreFromAttention(acsScore)
   const runtimeVersion =
-    visionHints?.source === 'web-vision' ? 'app/web-vision-hints@phase34' : 'app/mock-gaze@adr-014'
+    visionHints?.source === 'web-vision'
+      ? 'app/web-vision-session@pop-finish'
+      : 'app/session-evidence@pop-finish'
   const startedAt = new Date(input.session.createdAt).toISOString()
   const endedAt = new Date(input.session.validatedAt ?? Date.now()).toISOString()
   const durationMs = Math.max(
     1000,
     (input.session.validatedAt ?? Date.now()) - input.session.createdAt,
   )
+  const sampleCount = input.session.attentionSamples?.length ?? 0
+  const likelyFake =
+    visionHints != null &&
+    (!visionHints.hasFace || visionHints.livenessScore < 0.35)
 
   return {
     packetVersion: '0',
@@ -60,47 +89,76 @@ export function buildDemoProofPacket(input: {
     runtimeVersion,
     signals: {
       presence: {
-        score: visionHints?.hasFace ? Math.min(0.98, 0.75 + visionHints.livenessScore * 0.2) : 0.93,
-        confidence: visionHints ? 0.88 : 0.9,
-        notes: visionHints ? 'web-vision-hint' : 'demo-web-presence',
+        score: layerScores.presence,
+        confidence: sampleCount >= 3 ? 0.88 : 0.65,
+        notes: `sessionSamples=${sampleCount}`,
       },
-      participation: { score: 0.92, confidence: 0.9, notes: 'playbackCompleted=true' },
-      perception: { score: 0.78, confidence: 1.0, notes: 'centerDwellMet=true' },
-      signalIntegrity: { score: 0.96, confidence: 1.0, notes: 'band=STRONG' },
-      sessionIntegrity: { score: 1.0, confidence: 0.85, notes: 'foregroundRatio=1.00' },
-      rewardEligibility: { score: 0.8, confidence: 0.75, notes: 'offerRulesMet=pending_review' },
+      participation: {
+        score: layerScores.participation,
+        confidence: 0.85,
+        notes: 'playbackCompleted=true',
+      },
+      perception: {
+        score: layerScores.perception,
+        confidence: Math.min(1, sampleCount / 10),
+        notes: `acsScore=${acsScore}`,
+      },
+      signalIntegrity: {
+        score: likelyFake ? 0.35 : layerScores.signalIntegrity,
+        confidence: 0.9,
+        notes: likelyFake ? 'fraud_hint=likelyFake' : 'session_evidence',
+      },
+      sessionIntegrity: {
+        score: layerScores.sessionIntegrity,
+        confidence: 0.85,
+        notes: `watchDurationMs=${input.session.watchDurationMs ?? durationMs}`,
+      },
+      rewardEligibility: {
+        score: likelyFake ? 0.2 : layerScores.rewardEligibility,
+        confidence: 0.75,
+        notes: likelyFake ? 'held_for_review' : 'offerRulesMet=pending_review',
+      },
     },
     eyeTracking: mergeVisionHintsIntoEyeTracking(
       {
-      facePresentRatio: 0.9,
-      stableGazeWindows: [
-        { startedAtMs: 120400, endedAtMs: 125800, zone: 'CENTER', confidence: 0.82 },
-      ],
-      dwellEvents: [
-        {
-          zone: 'CENTER',
-          startedAtMs: 118000,
-          endedAtMs: 126500,
-          satisfied: true,
+        facePresentRatio: layerScores.presence,
+        likelyFake,
+        attentionScoreHint: acsScore,
+        peakAttentionScore: input.session.peakAttentionScore ?? acsScore,
+        sampleCount,
+        stableGazeWindows: [
+          {
+            startedAtMs: input.session.createdAt,
+            endedAtMs: input.session.validatedAt ?? Date.now(),
+            zone: 'CENTER',
+            confidence: layerScores.perception,
+          },
+        ],
+        dwellEvents: [
+          {
+            zone: 'CENTER',
+            startedAtMs: input.session.createdAt,
+            endedAtMs: input.session.validatedAt ?? Date.now(),
+            satisfied: acsScore >= 55,
+          },
+        ],
+        blinkEvents: [{ timestampMs: Date.now(), detected: true }],
+        verificationStabilitySnapshot: {
+          stableZone: 'CENTER',
+          confidenceBand: acsScore >= 70 ? 'STRONG' : acsScore >= 50 ? 'MODERATE' : 'WEAK',
+          validFrameRatio: layerScores.signalIntegrity,
+          zoneConsistency: layerScores.perception,
+          dwellReadiness: layerScores.participation,
+          blinkConfidence: 0.59,
+          fpsConfidence: 0.84,
+          reason: runtimeVersion,
+          sampleCount,
+          windowMs: durationMs,
         },
-      ],
-      blinkEvents: [{ timestampMs: Date.now(), detected: true }],
-      verificationStabilitySnapshot: {
-        stableZone: 'CENTER',
-        confidenceBand: 'STRONG',
-        validFrameRatio: 1.0,
-        zoneConsistency: 1.0,
-        dwellReadiness: 0.5625,
-        blinkConfidence: 0.59,
-        fpsConfidence: 0.84,
-        reason: 'demo-web-shell',
-        sampleCount: 48,
-        windowMs: 1880,
+        calibrationConfidence: 0.71,
+        invalidFrameRatio: likelyFake ? 0.45 : Math.max(0, 1 - layerScores.presence),
+        processedFpsAvg: 7.8,
       },
-      calibrationConfidence: 0.71,
-      invalidFrameRatio: 0.1,
-      processedFpsAvg: 7.8,
-    },
       visionHints,
     ),
     interaction: {
@@ -112,7 +170,7 @@ export function buildDemoProofPacket(input: {
       interactionTiming: {
         firstInteractionMs: 4500,
         lastInteractionMs: Math.max(4500, durationMs - 2000),
-        cadenceScore: 0.85,
+        cadenceScore: layerScores.participation,
       },
     },
     review: { status: 'pending', reviewedAt: null, reasons: [] },

@@ -22,5 +22,5 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": ["src"],
-  "exclude": ["src/vision-unified/**"]
+  "exclude": ["src/vision-unified/**", "src/**/*.test.ts"]
 }

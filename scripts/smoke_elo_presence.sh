@@ -12,14 +12,23 @@ required=(
   "$APP/src/components/elo/EloFaceMembrane.tsx"
   "$APP/src/components/elo/EloEvokePrompt.tsx"
   "$APP/src/components/elo/EloSessionGreeting.tsx"
-  "$APP/public/media/elo-glass-mask.png"
   "$APP/src/hooks/useEloWakeWord.ts"
   "$APP/src/lib/elo/types.ts"
   "$APP/src/lib/elo/expressionEngine.ts"
   "$APP/src/state/eloContext.tsx"
   "$APP/src/styles/elo-presence.css"
+  "$ROOT/MASTER_BRAIN/CHAT_RECOVERY/EXTRACTED/conversations/143_elo_personal_intelligence_companion.md"
   "$ROOT/MASTER_BRAIN/UX/ELO_PRESENCE_LAYER.md"
 )
+
+if ! grep -q "elo-membrane__svg" "$APP/src/components/elo/EloFaceMembrane.tsx"; then
+  echo "FAIL: EloFaceMembrane must render procedural SVG membrane" >&2
+  exit 1
+fi
+if ! grep -q "paths" "$APP/src/components/elo/EloPresenceLayer.tsx"; then
+  echo "FAIL: EloPresenceLayer must wire face contour paths" >&2
+  exit 1
+fi
 
 if ! grep -q "EloPresenceLayer" "$APP/src/screens/ImmersiveFeedScreen.tsx"; then
   echo "FAIL: ImmersiveFeedScreen must mount EloPresenceLayer" >&2

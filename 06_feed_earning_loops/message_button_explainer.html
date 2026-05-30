@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] — Message · Creator Contact Explainer</title>
+<style>
+/* ═══════════════════════════════════════════════════════════
+   Base styles
+   ═══════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --page-bg: #ffffff;
+  --heading: #333333;
+  --text: #555555;
+  --text-secondary: #777777;
+  --text-light: #999999;
+  --border: #e5e5e5;
+  --card-bg: #fafafa;
+  --shadow: rgba(0, 0, 0, 0.08);
+
+  /* Phone — official [ i ] dark palette */
+  --bg-void: #070709;
+  --bg-deep: #0a0a0f;
+  --bg-surface: #111118;
+  --bg-panel: #16161f;
+  --text-primary: #f0ede8;
+  --text-muted: #9997a0;
+  --icoin: #4ade80;
+  --cyan: #00e5ff;
+  --glass: rgba(7, 7, 9, 0.42);
+  --glass-border: rgba(255, 255, 255, 0.14);
+  --mono: 'SF Mono', Menlo, Consolas, monospace;
+}
+
+html, body {
+  min-height: 100vh;
+  background: var(--page-bg);
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Layout
+   ═══════════════════════════════════════════════════════════ */
+.page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 48px 36px 56px;
+}
+
+.page-header {
+  margin-bottom: 44px;
+}
+
+.page-header h1 {
+  font-size: 13px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  font-weight: 400;
+  margin-bottom: 8px;
+}
+
+.page-header .thesis {
+  font-size: 15px;
+  color: var(--text);
+  line-height: 1.5;
+  max-width: 640px;
+}
+
+.stage {
+  display: grid;
+  grid-template-columns: 42% 1fr;
+  gap: 56px;
+  align-items: start;
+}
+
+.phone-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.panel-column {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding-top: 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Controls
+   ═══════════════════════════════════════════════════════════ */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ctrl-btn {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--page-bg);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.ctrl-btn:hover {
+  border-color: #ccc;
+  color: var(--heading);
+}
+
+.scene-dots {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.scene-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: none;
+  background: #ddd;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.25s, transform 0.25s;
+}
+
+.scene-dot.active {
+  background: var(--heading);
+  transform: scale(1.3);
+}
+
+.scene-dot:hover { background: #aaa; }
+
+/* ═══════════════════════════════════════════════════════════
+   Side content — investor panel
+   ═══════════════════════════════════════════════════════════ */
+.block {
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--page-bg);
+  opacity: 0.42;
+  transition: opacity 0.45s ease, border-color 0.45s ease, box-shadow 0.45s ease;
+}
+
+.block.active {
+  opacity: 1;
+  border-color: #ccc;
+  box-shadow: 0 2px 12px var(--shadow);
+}
+
+.block-title {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-light);
+  margin-bottom: 6px;
+  font-weight: 400;
+}
+
+.block h2 {
+  font-size: 17px;
+  font-weight: 400;
+  color: var(--heading);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.block p {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+.block.subtitle h2 {
+  font-size: 22px;
+  letter-spacing: -0.01em;
+}
+
+.block.subtitle p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.pros-card {
+  background: var(--card-bg);
+  border-color: #ddd;
+}
+
+.pros-card ul {
+  list-style: none;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pros-card li {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text);
+  padding-left: 14px;
+  position: relative;
+}
+
+.pros-card li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--text-light);
+}
+
+.framing {
+  border-left: 3px solid #ccc;
+  border-radius: 0 8px 8px 0;
+  padding-left: 20px;
+}
+
+.framing p {
+  font-size: 14px;
+  color: var(--heading);
+  line-height: 1.55;
+}
+
+.roadmap-note {
+  font-size: 11px;
+  color: var(--text-light);
+  font-style: italic;
+  margin-top: 6px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Phone mockup — shell
+   ═══════════════════════════════════════════════════════════ */
+.phone {
+  width: 360px;
+  height: 720px;
+  border-radius: 44px;
+  background: #ececec;
+  padding: 10px;
+  box-shadow:
+    0 24px 48px var(--shadow),
+    0 8px 16px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  flex-shrink: 0;
+}
+
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  border-radius: 36px;
+  overflow: hidden;
+  position: relative;
+  background: var(--bg-void);
+}
+
+.notch {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 108px;
+  height: 28px;
+  background: #000;
+  border-radius: 0 0 18px 18px;
+  z-index: 30;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Phone UI — static chrome
+   ═══════════════════════════════════════════════════════════ */
+.media {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(165deg, #1a1035 0%, #c45c26 38%, #2d1b4e 72%, #0a1520 100%);
+}
+
+.scrim-top {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 120px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.45), transparent);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.scrim-bottom {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 260px;
+  background: linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.35) 55%, transparent);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.timer-line {
+  position: absolute;
+  top: 36px;
+  left: 14px;
+  right: 14px;
+  height: 2px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 1px;
+  z-index: 8;
+}
+
+.timer-fill {
+  width: 42%;
+  height: 100%;
+  background: rgba(255,255,255,0.6);
+  border-radius: 1px;
+}
+
+.wallet-chip {
+  position: absolute;
+  top: 48px;
+  left: 16px;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 16px;
+  background: var(--glass);
+  border: 0.5px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.wallet-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--icoin);
+}
+
+.wallet-val {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-primary);
+}
+
+.reward-badge {
+  position: absolute;
+  top: 48px;
+  right: 16px;
+  z-index: 8;
+  padding: 5px 11px;
+  border-radius: 18px;
+  background: var(--glass);
+  border: 0.5px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-primary);
+}
+
+.creator-strip {
+  position: absolute;
+  left: 16px;
+  bottom: 96px;
+  z-index: 8;
+  max-width: 200px;
+}
+
+.creator-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.creator-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.creator-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.04em;
+}
+
+.creator-loc {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.caption {
+  font-size: 11px;
+  line-height: 1.45;
+  color: rgba(240,237,232,0.75);
+}
+
+.action-rail {
+  position: absolute;
+  right: 14px;
+  bottom: 108px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.rail-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--glass);
+  border: 0.5px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.45;
+  transition: opacity 0.35s ease, transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.rail-btn svg { opacity: 0.85; }
+
+.rail-btn--message {
+  opacity: 1;
+}
+
+.bottom-nav {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 68px;
+  background: rgba(245,245,245,0.96);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding-bottom: 6px;
+  z-index: 12;
+  border-top: 0.5px solid rgba(0,0,0,0.06);
+}
+
+.nav-icon {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.4;
+}
+
+.nav-create {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Phone UI — animated feature layers
+   ═══════════════════════════════════════════════════════════ */
+.feature-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+}
+
+.message-zone {
+  position: absolute;
+  right: 14px;
+  bottom: 162px;
+  width: 40px;
+  height: 40px;
+  z-index: 16;
+}
+
+.message-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--glass);
+  border: 0.5px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.message-ring {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  opacity: 0;
+  transition: opacity 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gesture-label {
+  position: absolute;
+  right: 58px;
+  bottom: 172px;
+  z-index: 17;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: rgba(240,237,232,0.7);
+  white-space: nowrap;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(7,7,9,0.55);
+  border: 0.5px solid rgba(255,255,255,0.1);
+  transition: opacity 0.3s ease;
+}
+
+.thumb {
+  position: absolute;
+  right: 6px;
+  bottom: 154px;
+  width: 36px;
+  height: 48px;
+  z-index: 20;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.thumb-shape {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(145deg, rgba(255,220,200,0.92) 0%, rgba(230,180,160,0.88) 100%);
+  border-radius: 18px 18px 14px 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+  border: 0.5px solid rgba(255,255,255,0.3);
+}
+
+/* Compose sheet */
+.compose-sheet {
+  position: absolute;
+  left: 0; right: 0; bottom: 68px;
+  z-index: 25;
+  background: rgba(22,22,31,0.96);
+  border-top: 0.5px solid rgba(255,255,255,0.1);
+  border-radius: 20px 20px 0 0;
+  padding: 16px 18px 20px;
+  transform: translateY(110%);
+  transition: transform 0.45s cubic-bezier(0.32, 0.72, 0, 1);
+  backdrop-filter: blur(16px);
+}
+
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 2px;
+  margin: 0 auto 14px;
+}
+
+.compose-header {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.compose-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.06);
+  border: 0.5px solid rgba(255,255,255,0.1);
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.quick-replies {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.chip {
+  padding: 6px 10px;
+  border-radius: 14px;
+  font-size: 10px;
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.06);
+  border: 0.5px solid rgba(255,255,255,0.1);
+  transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.context-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 10px;
+  color: var(--cyan);
+  background: rgba(0,229,255,0.08);
+  border: 0.5px solid rgba(0,229,255,0.25);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.context-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--cyan);
+}
+
+.send-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.send-btn {
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 500;
+  background: var(--text-primary);
+  color: var(--bg-void);
+  opacity: 0.4;
+  transition: opacity 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Message bubble (sent) */
+.sent-bubble {
+  position: absolute;
+  right: 60px;
+  bottom: 200px;
+  z-index: 22;
+  max-width: 180px;
+  padding: 10px 14px;
+  border-radius: 14px 14px 4px 14px;
+  background: rgba(240,237,232,0.12);
+  border: 0.5px solid rgba(255,255,255,0.12);
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--text-primary);
+  opacity: 0;
+  transform: translateY(16px) scale(0.92);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.delivered-tag {
+  position: absolute;
+  right: 60px;
+  bottom: 188px;
+  z-index: 22;
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--text-muted);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+/* Creator inbox card */
+.inbox-card {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 88px;
+  z-index: 26;
+  background: var(--bg-panel);
+  border: 0.5px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  padding: 14px 16px;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.inbox-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.inbox-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.inbox-meta { flex: 1; min-width: 0; }
+
+.inbox-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.inbox-preview {
+  font-size: 10px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.inbox-tag {
+  display: inline-block;
+  font-size: 9px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: rgba(0,229,255,0.1);
+  border: 0.5px solid rgba(0,229,255,0.22);
+  color: var(--cyan);
+  margin-top: 6px;
+}
+
+.inbox-badge {
+  font-size: 9px;
+  color: var(--icoin);
+  margin-top: 6px;
+}
+
+/* Relationship value overlay */
+.relationship-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 28;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  pointer-events: none;
+}
+
+.relationship-card {
+  background: rgba(7,7,9,0.75);
+  border: 0.5px solid rgba(255,255,255,0.12);
+  border-radius: 16px;
+  padding: 20px 24px;
+  text-align: center;
+  backdrop-filter: blur(12px);
+  max-width: 260px;
+}
+
+.rel-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.rel-node {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: var(--text-primary);
+  background: rgba(255,255,255,0.06);
+}
+
+.rel-arrow {
+  width: 48px;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(0,229,255,0.3), rgba(74,222,128,0.5), rgba(0,229,255,0.3));
+  position: relative;
+}
+
+.rel-arrow::after {
+  content: '';
+  position: absolute;
+  right: -2px;
+  top: -3px;
+  border: 4px solid transparent;
+  border-left-color: rgba(74,222,128,0.6);
+}
+
+.rel-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* Hide duplicate message in rail */
+.action-rail .message-slot { visibility: hidden; }
+
+/* ═══════════════════════════════════════════════════════════
+   Animation states — scene classes on #phoneScene
+   ═══════════════════════════════════════════════════════════ */
+
+#phoneScene[data-scene="idle"] .gesture-label::after { content: 'tap = message'; }
+#phoneScene[data-scene="idle"] .rail-btn--message { opacity: 1; }
+
+#phoneScene[data-scene="tap"] .thumb {
+  opacity: 1;
+  transform: translateY(0);
+}
+#phoneScene[data-scene="tap"] .message-btn {
+  transform: scale(0.92);
+  border-color: rgba(0,229,255,0.35);
+  box-shadow: 0 0 16px rgba(0,229,255,0.2);
+}
+#phoneScene[data-scene="tap"] .message-ring {
+  opacity: 1;
+  border-color: rgba(0,229,255,0.4);
+  box-shadow: 0 0 12px rgba(0,229,255,0.15);
+}
+#phoneScene[data-scene="tap"] .gesture-label::after { content: 'tap = open contact'; }
+
+#phoneScene[data-scene="compose"] .compose-sheet { transform: translateY(0); }
+#phoneScene[data-scene="compose"] .gesture-label { opacity: 0; }
+#phoneScene[data-scene="compose"] .chip:first-child {
+  background: rgba(0,229,255,0.12);
+  border-color: rgba(0,229,255,0.3);
+  color: var(--text-primary);
+}
+
+#phoneScene[data-scene="context"] .compose-sheet { transform: translateY(0); }
+#phoneScene[data-scene="context"] .context-chip {
+  opacity: 1;
+  transform: translateY(0);
+}
+#phoneScene[data-scene="context"] .gesture-label { opacity: 0; }
+
+#phoneScene[data-scene="send"] .compose-sheet { transform: translateY(0); }
+#phoneScene[data-scene="send"] .context-chip { opacity: 1; transform: translateY(0); }
+#phoneScene[data-scene="send"] .send-btn { opacity: 1; box-shadow: 0 0 14px rgba(240,237,232,0.25); }
+#phoneScene[data-scene="send"] .sent-bubble {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+#phoneScene[data-scene="send"] .delivered-tag { opacity: 1; }
+#phoneScene[data-scene="send"] .gesture-label { opacity: 0; }
+
+#phoneScene[data-scene="inbox"] .compose-sheet { transform: translateY(110%); }
+#phoneScene[data-scene="inbox"] .sent-bubble { opacity: 0; }
+#phoneScene[data-scene="inbox"] .delivered-tag { opacity: 0; }
+#phoneScene[data-scene="inbox"] .inbox-card {
+  opacity: 1;
+  transform: translateY(0);
+}
+#phoneScene[data-scene="inbox"] .gesture-label { opacity: 0; }
+
+#phoneScene[data-scene="relationship"] .inbox-card { opacity: 0; }
+#phoneScene[data-scene="relationship"] .relationship-overlay { opacity: 1; }
+#phoneScene[data-scene="relationship"] .gesture-label { opacity: 0; }
+
+/* ═══════════════════════════════════════════════════════════
+   Reduced motion
+   ═══════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 960px) {
+  .stage {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .phone-column { order: 1; }
+  .panel-column { order: 2; }
+  .page { padding: 32px 20px 48px; }
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+  <header class="page-header">
+    <h1>[ i ] Platform · Gesture Feature</h1>
+    <p class="thesis">Message opens a context-aware creator contact layer — direct, opt-in, and anchored to the media moment.</p>
+  </header>
+
+  <div class="stage">
+    <!-- LEFT: Phone -->
+    <div class="phone-column">
+      <div class="phone">
+        <div class="phone-screen" id="phoneScene" data-scene="idle">
+          <div class="notch"></div>
+          <div class="media"></div>
+          <div class="scrim-top"></div>
+          <div class="scrim-bottom"></div>
+
+          <div class="timer-line"><div class="timer-fill"></div></div>
+
+          <div class="wallet-chip">
+            <div class="wallet-dot"></div>
+            <span class="wallet-val">847</span>
+          </div>
+
+          <div class="reward-badge">50ic</div>
+
+          <div class="creator-strip">
+            <div class="creator-row">
+              <div class="creator-avatar">R</div>
+              <div>
+                <div class="creator-name">RAFAELO</div>
+                <div class="creator-loc">Cape Town</div>
+              </div>
+            </div>
+            <div class="caption">Sunset session — tap Message to reach the creator without leaving the feed.</div>
+          </div>
+
+          <!-- Static action rail -->
+          <div class="action-rail">
+            <div class="rail-btn">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 15s-6-4.5-6-8.5a4 4 0 018 0 4 4 0 018 0c0 4-6 8.5-6 8.5z" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" fill="none"/></svg>
+            </div>
+            <div class="rail-btn message-slot rail-btn--message">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h12v9H5L2 14V2z" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" fill="none"/></svg>
+            </div>
+            <div class="rail-btn">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="rail-btn">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="3" r="1.2" fill="rgba(255,255,255,0.85)"/><circle cx="7" cy="7" r="1.2" fill="rgba(255,255,255,0.85)"/><circle cx="7" cy="11" r="1.2" fill="rgba(255,255,255,0.85)"/></svg>
+            </div>
+          </div>
+
+          <nav class="bottom-nav" aria-hidden="true">
+            <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 8l7-5 7 5v9H3V8z" stroke="#888" stroke-width="1.3" fill="none"/></svg></div>
+            <div class="nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C6 6 3 8 3 12a6 6 0 0012 0c0-4-3-6-6-10z" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+            <div class="nav-icon nav-create"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 5v12M5 11h12" stroke="#666" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="2" stroke="#888" stroke-width="1.2" fill="none"/><path d="M2 9h16" stroke="#888" stroke-width="1.2"/></svg></div>
+            <div class="nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="#888" stroke-width="1.2" fill="none"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+          </nav>
+
+          <!-- Animated feature layers -->
+          <div class="feature-stage">
+            <div class="gesture-label" aria-live="polite"></div>
+
+            <div class="message-zone">
+              <div class="message-ring"></div>
+              <div class="message-btn">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h12v9H5L2 14V2z" stroke="rgba(0,229,255,0.85)" stroke-width="1.2" fill="none"/></svg>
+              </div>
+            </div>
+
+            <div class="thumb" aria-hidden="true"><div class="thumb-shape"></div></div>
+
+            <div class="compose-sheet" id="composeSheet">
+              <div class="sheet-handle"></div>
+              <div class="compose-header">Message @rafaelo</div>
+              <div class="compose-input">Loved this sunset session…</div>
+              <div class="quick-replies">
+                <span class="chip">Loved this</span>
+                <span class="chip">Collab?</span>
+                <span class="chip">Where was this?</span>
+              </div>
+              <div class="context-chip" id="contextChip">
+                <span class="context-dot"></span>
+                <span>Sunset session · 0:42</span>
+              </div>
+              <div class="send-row">
+                <div class="send-btn">Send</div>
+              </div>
+            </div>
+
+            <div class="sent-bubble" id="sentBubble">Loved this sunset session — would love to collab.</div>
+            <div class="delivered-tag" id="deliveredTag">Delivered</div>
+
+            <div class="inbox-card" id="inboxCard">
+              <div class="inbox-row">
+                <div class="inbox-avatar">R</div>
+                <div class="inbox-meta">
+                  <div class="inbox-name">@rafaelo</div>
+                  <div class="inbox-preview">Loved this sunset session — would love to collab.</div>
+                </div>
+              </div>
+              <span class="inbox-tag">Sunset session · 0:42</span>
+              <div class="inbox-badge">Opt-in · verified viewer</div>
+            </div>
+
+            <div class="relationship-overlay" id="relationshipOverlay">
+              <div class="relationship-card">
+                <div class="rel-line">
+                  <div class="rel-node">You</div>
+                  <div class="rel-arrow"></div>
+                  <div class="rel-node">R</div>
+                </div>
+                <div class="rel-text">Direct · opt-in · spam-resistant<br/>Context travels with every message</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button type="button" class="ctrl-btn" id="btnPlayPause" aria-label="Pause animation">Pause</button>
+        <button type="button" class="ctrl-btn" id="btnRestart" aria-label="Restart animation">Restart</button>
+        <div class="scene-dots" id="sceneDots" role="tablist" aria-label="Animation scenes"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Investor panel -->
+    <div class="panel-column" id="panel">
+      <div class="block subtitle active" data-scene="idle" data-block="title">
+        <h2>Message</h2>
+        <p>A like is a signal. A message is a relationship.</p>
+      </div>
+
+      <div class="block" data-scene="idle" data-block="concept">
+        <div class="block-title">Concept</div>
+        <p>Message is the platform's creator-contact layer — designed to open direct communication from inside the immersive feed, without breaking the watch experience.</p>
+        <p class="roadmap-note">Production inbox and threaded DM are roadmap; this animation visualizes the design-law target.</p>
+      </div>
+
+      <div class="block" data-scene="tap" data-block="interaction">
+        <div class="block-title">Interaction</div>
+        <p>Tap = open contact. One gesture from full-bleed media to a compose surface — no navigation away from the content.</p>
+      </div>
+
+      <div class="block" data-scene="context" data-block="context">
+        <div class="block-title">Context-aware</div>
+        <p>Every message carries the media moment: creator, timestamp, and content reference. The production layer routes context automatically — investors see why this beats generic DMs.</p>
+      </div>
+
+      <div class="block" data-scene="inbox" data-block="trust">
+        <div class="block-title">Trust layer</div>
+        <p>Messages are opt-in and viewer-verified. Creators receive higher-signal inbound than public comments — designed to reduce spam and low-quality outreach.</p>
+      </div>
+
+      <div class="block" data-scene="inbox" data-block="creator">
+        <div class="block-title">Creator impact</div>
+        <p>Creators get structured contact with amount, intent, timing, and content context — stronger monetization and collaboration signals than likes alone.</p>
+      </div>
+
+      <div class="block" data-scene="compose" data-block="user">
+        <div class="block-title">User impact</div>
+        <p>Users reach creators without leaving the feed. Quick-reply chips and context attachment make outreach feel native, not like switching apps.</p>
+      </div>
+
+      <div class="block" data-scene="relationship" data-block="platform">
+        <div class="block-title">Platform impact</div>
+        <p>The platform owns the creator–audience relationship graph. Message is the on-ramp to direct commerce, collab, and campaign follow-up — inside [ i ], not on external socials.</p>
+      </div>
+
+      <div class="block pros-card" data-block="pros">
+        <div class="block-title">Pros</div>
+        <ul>
+          <li>Context-rich contact — every message knows what the user was watching.</li>
+          <li>Native to the feed — no app-switch friction.</li>
+          <li>Opt-in, verified viewer model reduces spam vs open DMs.</li>
+          <li>Higher-signal inbound for creators than public comments.</li>
+          <li>Foundation for collab, sponsorship, and direct support flows.</li>
+          <li>Platform retains relationship data — defensible social-commerce layer.</li>
+          <li>Glass compose UI preserves immersive design language.</li>
+        </ul>
+      </div>
+
+      <div class="block framing" data-block="framing">
+        <p>Message is the relationship layer: social signal becomes direct, context-aware contact — designed to route through verification before creator inbox settlement.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   JS scene controller
+   ═══════════════════════════════════════════════════════════ */
+(function () {
+  var SCENES = [
+    { id: 'idle',         duration: 1400, panel: ['title', 'concept'] },
+    { id: 'tap',          duration: 1100, panel: ['interaction'] },
+    { id: 'compose',      duration: 1600, panel: ['user'] },
+    { id: 'context',      duration: 1400, panel: ['context'] },
+    { id: 'send',         duration: 1500, panel: ['interaction'] },
+    { id: 'inbox',        duration: 1800, panel: ['trust', 'creator'] },
+    { id: 'relationship', duration: 1600, panel: ['platform'] }
+  ];
+
+  var phoneScene = document.getElementById('phoneScene');
+  var btnPlayPause = document.getElementById('btnPlayPause');
+  var btnRestart = document.getElementById('btnRestart');
+  var sceneDots = document.getElementById('sceneDots');
+  var blocks = document.querySelectorAll('.block[data-block]');
+
+  var sceneIndex = 0;
+  var playing = true;
+  var pausedByHover = false;
+  var timeoutId = null;
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  SCENES.forEach(function (scene, i) {
+    var dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'scene-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('role', 'tab');
+    dot.setAttribute('aria-label', 'Scene: ' + scene.id);
+    dot.addEventListener('click', function () { goToScene(i, true); });
+    sceneDots.appendChild(dot);
+  });
+
+  function clearTimers() {
+    if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
+  }
+
+  function setPanelActive(keys) {
+    blocks.forEach(function (block) {
+      var key = block.getAttribute('data-block');
+      block.classList.toggle('active', keys.indexOf(key) !== -1);
+    });
+  }
+
+  function setDots(index) {
+    var dots = sceneDots.querySelectorAll('.scene-dot');
+    dots.forEach(function (d, i) { d.classList.toggle('active', i === index); });
+  }
+
+  function applyScene(index) {
+    var scene = SCENES[index];
+    phoneScene.setAttribute('data-scene', scene.id);
+    setPanelActive(scene.panel || []);
+    setDots(index);
+  }
+
+  function goToScene(index, manual) {
+    clearTimers();
+    sceneIndex = ((index % SCENES.length) + SCENES.length) % SCENES.length;
+    applyScene(sceneIndex);
+
+    if (manual && !playing) return;
+    if (!playing || pausedByHover) return;
+
+    var dur = reducedMotion ? 800 : SCENES[sceneIndex].duration;
+    timeoutId = setTimeout(function () {
+      if (playing && !pausedByHover) goToScene(sceneIndex + 1);
+    }, dur);
+  }
+
+  btnPlayPause.addEventListener('click', function () {
+    playing = !playing;
+    btnPlayPause.textContent = playing ? 'Pause' : 'Play';
+    btnPlayPause.setAttribute('aria-label', playing ? 'Pause animation' : 'Play animation');
+    if (playing && !pausedByHover) goToScene(sceneIndex, false);
+    else clearTimers();
+  });
+
+  btnRestart.addEventListener('click', function () {
+    playing = true;
+    pausedByHover = false;
+    btnPlayPause.textContent = 'Pause';
+    btnPlayPause.setAttribute('aria-label', 'Pause animation');
+    goToScene(0, false);
+  });
+
+  blocks.forEach(function (block) {
+    block.addEventListener('mouseenter', function () {
+      var sceneAttr = block.getAttribute('data-scene');
+      if (!sceneAttr) return;
+      pausedByHover = true;
+      clearTimers();
+      var idx = SCENES.findIndex(function (s) { return s.id === sceneAttr; });
+      if (idx >= 0) {
+        applyScene(idx);
+        setPanelActive([block.getAttribute('data-block')]);
+      }
+    });
+    block.addEventListener('mouseleave', function () {
+      if (!playing) return;
+      pausedByHover = false;
+      goToScene(sceneIndex, false);
+    });
+  });
+
+  goToScene(0, false);
+})();
+</script>
+</body>
+</html>

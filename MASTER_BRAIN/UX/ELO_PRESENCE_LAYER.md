@@ -7,14 +7,14 @@
 
 ## What ELO is on screen
 
-ELO is a **large translucent 3D glass face mask** — not wireframe lines, not an orb, not a chatbot card.
+ELO is a **living presence membrane** — procedural glass face contours over full-bleed media, not a static image, not an orb, not a chatbot card.
 
-- Sculptural frosted-glass surface with hollow eye sockets
-- Soft nose ridge, subtle mouth depression, forehead highlight
-- Centered over full-bleed media (~90% width); background visible through mask
-- Emerges when user says **ELO** or taps **Evoke ELO**
-- Head tilt / blink mirroring when POP vision is active
-- Tap mask → glass presence panel
+- Semi-transparent frosted contour lines (jaw, brows, eyes, nose, lips)
+- Soft radial glass fill — background visible through the membrane
+- Centered over full-bleed media (~62% width); adapts to POP vision landmarks when camera active
+- Idle breathe + head tilt when camera off
+- Emerges when user says **ELO** (voice evoke)
+- Tap membrane → glass presence panel
 
 **Human → Presence → Relationship** — feed is secondary.
 
@@ -48,7 +48,7 @@ ELO must **not** replace OUT-PROFILE.
 
 1. Enter immersive feed — feed stays full-bleed; small **Say “ELO”** pill (non-blocking)
 2. Tap pill → mic arms → user says **“ELO”**
-3. Mask **manifests from the right rail to center** (~1.5s simple emergence)
+3. Mask **manifests at center** (~1.35s emergence draw + fade)
 4. First visit → onboarding sheet after manifestation: “I heard you”
 5. Returning visit → **“I'm here. Tap to talk.”** greeting; tap face or greeting → presence panel
 6. Presenter mode → ELO hidden
@@ -65,6 +65,8 @@ Voice wake is **opt-in** — mic does not start until user taps the hint pill.
 - **Presence room** — ambient line color, pulse, micro-expression scale  
 
 Persisted in `localStorage` key `i-elo-presence-config-v1`.
+
+**Companion law:** rank 143 extract — `MASTER_BRAIN/CHAT_RECOVERY/EXTRACTED/conversations/143_elo_personal_intelligence_companion.md`
 
 ---
 

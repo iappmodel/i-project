@@ -126,6 +126,7 @@ export interface DemoContextValue extends DemoState {
   startWatchFlow: () => void
   acceptConsentAndBeginSession: () => void
   completeVerification: () => void
+  recordWatchAttention: (score: number) => void
   claimReward: () => void
   finishRewardToWallet: () => void
   refreshPendingHolds: () => Promise<void>

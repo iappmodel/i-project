@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] — Hold Love · Creator Offer Explainer</title>
+<style>
+/* ═══════════════════════════════════════════════════════════
+   Base styles
+   ═══════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --page-bg: #ffffff;
+  --heading: #333333;
+  --text: #555555;
+  --text-secondary: #777777;
+  --text-light: #999999;
+  --border: #e5e5e5;
+  --card-bg: #fafafa;
+  --shadow: rgba(0, 0, 0, 0.08);
+
+  /* Phone — official [ i ] dark palette */
+  --bg-void: #070709;
+  --bg-deep: #0a0a0f;
+  --bg-surface: #111118;
+  --bg-panel: #16161f;
+  --text-primary: #f0ede8;
+  --text-muted: #9997a0;
+  --icoin: #4ade80;
+  --pending: #f59e0b;
+  --glass: rgba(7, 7, 9, 0.42);
+  --glass-border: rgba(255, 255, 255, 0.14);
+  --mono: 'SF Mono', Menlo, Consolas, monospace;
+}
+
+html, body {
+  min-height: 100vh;
+  background: var(--page-bg);
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Layout
+   ═══════════════════════════════════════════════════════════ */
+.page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 48px 36px 56px;
+}
+
+.page-header {
+  margin-bottom: 44px;
+}
+
+.page-header h1 {
+  font-size: 13px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  font-weight: 400;
+  margin-bottom: 8px;
+}
+
+.page-header .thesis {
+  font-size: 15px;
+  color: var(--text);
+  line-height: 1.5;
+  max-width: 640px;
+}
+
+.stage {
+  display: grid;
+  grid-template-columns: 42% 1fr;
+  gap: 56px;
+  align-items: start;
+}
+
+.phone-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.panel-column {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding-top: 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Controls
+   ═══════════════════════════════════════════════════════════ */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ctrl-btn {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--page-bg);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.ctrl-btn:hover {
+  border-color: #ccc;
+  color: var(--heading);
+}
+
+.scene-dots {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.scene-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: none;
+  background: #ddd;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.25s, transform 0.25s;
+}
+
+.scene-dot.active {
+  background: var(--heading);
+  transform: scale(1.3);
+}
+
+.scene-dot:hover { background: #aaa; }
+
+/* ═══════════════════════════════════════════════════════════
+   Side content — investor panel
+   ═══════════════════════════════════════════════════════════ */
+.block {
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--page-bg);
+  opacity: 0.42;
+  transition: opacity 0.45s ease, border-color 0.45s ease, box-shadow 0.45s ease;
+}
+
+.block.active {
+  opacity: 1;
+  border-color: #ccc;
+  box-shadow: 0 2px 12px var(--shadow);
+}
+
+.block-title {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-light);
+  margin-bottom: 6px;
+  font-weight: 400;
+}
+
+.block h2 {
+  font-size: 17px;
+  font-weight: 400;
+  color: var(--heading);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.block p {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+.block.subtitle h2 {
+  font-size: 22px;
+  letter-spacing: -0.01em;
+}
+
+.block.subtitle p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.pros-card {
+  background: var(--card-bg);
+  border-color: #ddd;
+}
+
+.pros-card ul {
+  list-style: none;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pros-card li {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text);
+  padding-left: 14px;
+  position: relative;
+}
+
+.pros-card li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--text-light);
+}
+
+.framing {
+  border-left: 3px solid #ccc;
+  border-radius: 0 8px 8px 0;
+  padding-left: 20px;
+}
+
+.framing p {
+  font-size: 14px;
+  color: var(--heading);
+  line-height: 1.55;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Phone mockup — shell
+   ═══════════════════════════════════════════════════════════ */
+.phone {
+  width: 360px;
+  height: 720px;
+  border-radius: 44px;
+  background: #ececec;
+  padding: 10px;
+  box-shadow:
+    0 24px 48px var(--shadow),
+    0 8px 16px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  flex-shrink: 0;
+}
+
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  border-radius: 36px;
+  overflow: hidden;
+  position: relative;
+  background: var(--bg-void);
+}
+
+.notch {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 108px;
+  height: 28px;
+  background: #000;
+  border-radius: 0 0 18px 18px;
+  z-index: 30;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Phone UI — static chrome
+   ═══════════════════════════════════════════════════════════ */
+.media {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(165deg, #1a1035 0%, #c45c26 38%, #2d1b4e 72%, #0a1520 100%);
+  background-size: cover;
+}
+
+.scrim-top {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 120px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.45), transparent);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.scrim-bottom {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 260px;
+  background: linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.35) 55%, transparent);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.timer-line {
+  position: absolute;
+  top: 36px;
+  left: 14px;
+  right: 14px;
+  height: 2px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 1px;
+  z-index: 8;
+}
+
+.timer-fill {
+  width: 42%;
+  height: 100%;
+  background: rgba(255,255,255,0.6);
+  border-radius: 1px;
+}
+
+.wallet-chip {
+  position: absolute;
+  top: 48px;
+  left: 16px;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 16px;
+  background: var(--glass);
+  border: 0.5px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.wallet-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--icoin);
+}
+
+.wallet-val {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-primary);
+}
+
+.reward-badge {
+  position: absolute;
+  top: 48px;
+  right: 16px;
+  z-index: 8;
+  padding: 5px 11px;
+  border-radius: 18px;
+  background: var(--glass);
+  border: 0.5px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-primary);
+}
+
+.creator-strip {
+  position: absolute;
+  left: 16px;
+  bottom: 96px;
+  z-index: 8;
+  max-width: 200px;
+}
+
+.creator-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.creator-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.creator-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.04em;
+}
+
+.creator-loc {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.caption {
+  font-size: 11px;
+  line-height: 1.45;
+  color: rgba(240,237,232,0.75);
+}
+
+.action-rail {
+  position: absolute;
+  right: 14px;
+  bottom: 108px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.action-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--glass);
+  border: 0.5px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.action-btn svg { opacity: 0.85; }
+
+.action-count {
+  font-size: 9px;
+  color: rgba(255,255,255,0.6);
+  text-align: center;
+  margin-top: -10px;
+}
+
+.bottom-nav {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 68px;
+  background: rgba(245,245,245,0.96);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding-bottom: 6px;
+  z-index: 12;
+  border-top: 0.5px solid rgba(0,0,0,0.06);
+}
+
+.nav-icon {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.4;
+}
+
+.nav-create {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Phone UI — animated feature layers
+   ═══════════════════════════════════════════════════════════ */
+.feature-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+}
+
+/* Heart button — focal control */
+.heart-zone {
+  position: absolute;
+  right: 14px;
+  bottom: 108px;
+  width: 40px;
+  height: 40px;
+  z-index: 16;
+}
+
+.heart-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--glass);
+  border: 0.5px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.heart-ring {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  opacity: 0;
+  transition: opacity 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gesture-label {
+  position: absolute;
+  right: 58px;
+  bottom: 118px;
+  z-index: 17;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: rgba(240,237,232,0.7);
+  white-space: nowrap;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(7,7,9,0.55);
+  border: 0.5px solid rgba(255,255,255,0.1);
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+/* Value counter above heart */
+.value-counter {
+  position: absolute;
+  right: 4px;
+  bottom: 158px;
+  z-index: 18;
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  padding: 6px 12px;
+  border-radius: 10px;
+  background: rgba(7,7,9,0.65);
+  border: 0.5px solid rgba(255,255,255,0.12);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Blooming hearts */
+.hearts-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 14;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.heart-particle {
+  position: absolute;
+  right: 28px;
+  bottom: 140px;
+  font-size: 14px;
+  color: rgba(255,120,140,0.45);
+  opacity: 0;
+  transform: translateY(0) scale(0.6);
+}
+
+/* Thumb */
+.thumb {
+  position: absolute;
+  right: 6px;
+  bottom: 100px;
+  width: 36px;
+  height: 48px;
+  z-index: 20;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.thumb-shape {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(145deg, rgba(255,220,200,0.92) 0%, rgba(230,180,160,0.88) 100%);
+  border-radius: 18px 18px 14px 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+  border: 0.5px solid rgba(255,255,255,0.3);
+}
+
+/* Bottom sheet */
+.offer-sheet {
+  position: absolute;
+  left: 0; right: 0; bottom: 68px;
+  z-index: 25;
+  background: rgba(22,22,31,0.96);
+  border-top: 0.5px solid rgba(255,255,255,0.1);
+  border-radius: 20px 20px 0 0;
+  padding: 16px 18px 20px;
+  transform: translateY(110%);
+  transition: transform 0.45s cubic-bezier(0.32, 0.72, 0, 1);
+  backdrop-filter: blur(16px);
+}
+
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 2px;
+  margin: 0 auto 14px;
+}
+
+.sheet-status {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 12px;
+  min-height: 16px;
+}
+
+.sheet-body { display: none; }
+
+.sheet-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 0.5px solid rgba(255,255,255,0.06);
+  font-size: 12px;
+}
+
+.sheet-row:last-of-type { border-bottom: none; }
+
+.sheet-label { color: var(--text-muted); }
+
+.sheet-value {
+  font-family: var(--mono);
+  color: var(--text-primary);
+}
+
+.sheet-value.pending { color: var(--pending); }
+
+.sheet-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.sheet-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 500;
+  text-align: center;
+  border: 0.5px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  color: var(--text-muted);
+}
+
+.sheet-btn.confirm {
+  background: var(--text-primary);
+  color: var(--bg-void);
+  border-color: var(--text-primary);
+  box-shadow: 0 0 0 0 rgba(240,237,232,0);
+  transition: box-shadow 0.3s ease;
+}
+
+/* Pending wallet card overlay */
+.pending-card {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 88px;
+  z-index: 26;
+  background: var(--bg-panel);
+  border: 0.5px solid rgba(245,158,11,0.28);
+  border-radius: 14px;
+  padding: 14px 16px;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.pending-amt {
+  font-family: var(--mono);
+  font-size: 20px;
+  color: var(--pending);
+  margin-bottom: 4px;
+}
+
+.pending-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.pending-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Animation states — scene classes on #phoneScene
+   ═══════════════════════════════════════════════════════════ */
+
+/* Scene 1: Idle */
+#phoneScene[data-scene="idle"] .gesture-label::after { content: 'tap = like'; }
+#phoneScene[data-scene="idle"] .heart-btn { transform: scale(1); }
+
+/* Scene 2: Hold */
+#phoneScene[data-scene="hold"] .thumb {
+  opacity: 1;
+  transform: translateY(0);
+}
+#phoneScene[data-scene="hold"] .heart-btn {
+  transform: scale(0.92);
+  border-color: rgba(255,120,140,0.35);
+  box-shadow: 0 0 16px rgba(255,100,130,0.25);
+}
+#phoneScene[data-scene="hold"] .heart-ring {
+  opacity: 1;
+  border-color: rgba(255,120,140,0.4);
+  box-shadow: 0 0 12px rgba(255,100,130,0.2);
+}
+#phoneScene[data-scene="hold"] .gesture-label::after { content: 'hold = offer mode'; }
+
+/* Scene 3: Roll Up */
+#phoneScene[data-scene="rollup"] .thumb {
+  opacity: 1;
+  transform: translateY(-52px);
+  transition: transform 1.8s ease-out, opacity 0.35s ease;
+}
+#phoneScene[data-scene="rollup"] .heart-btn {
+  transform: scale(0.9);
+  border-color: rgba(255,120,140,0.45);
+  box-shadow: 0 0 20px rgba(255,100,130,0.3);
+}
+#phoneScene[data-scene="rollup"] .heart-ring {
+  opacity: 1;
+  border-color: rgba(74,222,128,0.5);
+  box-shadow: 0 0 16px rgba(74,222,128,0.25);
+}
+#phoneScene[data-scene="rollup"] .value-counter {
+  opacity: 1;
+  transform: translateY(0);
+}
+#phoneScene[data-scene="rollup"] .gesture-label::after { content: 'roll up = increase'; }
+#phoneScene[data-scene="rollup"] .heart-particle { animation: bloom 1.6s ease-out infinite; }
+#phoneScene[data-scene="rollup"] .heart-particle:nth-child(1) { animation-delay: 0s; }
+#phoneScene[data-scene="rollup"] .heart-particle:nth-child(2) { animation-delay: 0.35s; }
+#phoneScene[data-scene="rollup"] .heart-particle:nth-child(3) { animation-delay: 0.7s; }
+#phoneScene[data-scene="rollup"] .heart-particle:nth-child(4) { animation-delay: 1.05s; }
+#phoneScene[data-scene="rollup"] .heart-particle:nth-child(5) { animation-delay: 0.2s; }
+
+@keyframes bloom {
+  0% { opacity: 0; transform: translateY(0) scale(0.5); }
+  15% { opacity: 0.55; }
+  100% { opacity: 0; transform: translateY(-120px) scale(1.1); }
+}
+
+/* Scene 4: Release */
+#phoneScene[data-scene="release"] .thumb {
+  opacity: 0;
+  transform: translateY(-70px);
+}
+#phoneScene[data-scene="release"] .heart-btn { transform: scale(1); }
+#phoneScene[data-scene="release"] .heart-ring { opacity: 0; }
+#phoneScene[data-scene="release"] .value-counter {
+  opacity: 1;
+  transform: translateY(0);
+}
+#phoneScene[data-scene="release"] .gesture-label::after { content: 'release to propose'; }
+#phoneScene[data-scene="release"] .heart-particle { animation: none; opacity: 0; }
+
+/* Scene 5: Compute */
+#phoneScene[data-scene="compute"] .value-counter { opacity: 1; transform: translateY(0); }
+#phoneScene[data-scene="compute"] .offer-sheet { transform: translateY(0); }
+#phoneScene[data-scene="compute"] .sheet-body { display: none; }
+#phoneScene[data-scene="compute"] .gesture-label { opacity: 0; }
+
+/* Scene 6: Review */
+#phoneScene[data-scene="review"] .value-counter { opacity: 0; }
+#phoneScene[data-scene="review"] .offer-sheet { transform: translateY(0); }
+#phoneScene[data-scene="review"] .sheet-body { display: block; }
+#phoneScene[data-scene="review"] .sheet-btn.confirm {
+  box-shadow: 0 0 18px rgba(240,237,232,0.35);
+}
+#phoneScene[data-scene="review"] .gesture-label { opacity: 0; }
+
+/* Scene 7: Wallet Pending */
+#phoneScene[data-scene="pending"] .offer-sheet { transform: translateY(110%); }
+#phoneScene[data-scene="pending"] .pending-card {
+  opacity: 1;
+  transform: translateY(0);
+}
+#phoneScene[data-scene="pending"] .gesture-label { opacity: 0; }
+
+/* Hide duplicate heart in rail — use feature heart-zone only */
+.action-rail .heart-slot { visibility: hidden; }
+
+/* ═══════════════════════════════════════════════════════════
+   Reduced motion
+   ═══════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .heart-particle { animation: none !important; }
+}
+
+@media (max-width: 960px) {
+  .stage {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .phone-column { order: 1; }
+  .panel-column { order: 2; }
+  .page { padding: 32px 20px 48px; }
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+  <header class="page-header">
+    <h1>[ i ] Platform · Gesture Feature</h1>
+    <p class="thesis">Hold Love converts creator appreciation into a deliberate, reversible offer — validated before settlement.</p>
+  </header>
+
+  <div class="stage">
+    <!-- LEFT: Phone -->
+    <div class="phone-column">
+      <div class="phone">
+        <div class="phone-screen" id="phoneScene" data-scene="idle">
+          <div class="notch"></div>
+          <div class="media"></div>
+          <div class="scrim-top"></div>
+          <div class="scrim-bottom"></div>
+
+          <div class="timer-line"><div class="timer-fill"></div></div>
+
+          <div class="wallet-chip">
+            <div class="wallet-dot"></div>
+            <span class="wallet-val" id="walletVal">847</span>
+          </div>
+
+          <div class="reward-badge">50ic</div>
+
+          <div class="creator-strip">
+            <div class="creator-row">
+              <div class="creator-avatar">R</div>
+              <div>
+                <div class="creator-name">RAFAELO</div>
+                <div class="creator-loc">Cape Town</div>
+              </div>
+            </div>
+            <div class="caption">Sunset session — hold to support the creator directly from the feed.</div>
+          </div>
+
+          <!-- Static action rail (heart hidden — animated in feature-stage) -->
+          <div class="action-rail">
+            <div class="heart-slot">
+              <div class="action-btn">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 15s-6-4.5-6-8.5a4 4 0 018 0 4 4 0 018 0c0 4-6 8.5-6 8.5z" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" fill="none"/></svg>
+              </div>
+              <div class="action-count">2.4k</div>
+            </div>
+            <div class="action-btn">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h12v9H5L2 14V2z" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" fill="none"/></svg>
+            </div>
+            <div class="action-btn">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="action-btn">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="3" r="1.2" fill="rgba(255,255,255,0.85)"/><circle cx="7" cy="7" r="1.2" fill="rgba(255,255,255,0.85)"/><circle cx="7" cy="11" r="1.2" fill="rgba(255,255,255,0.85)"/></svg>
+            </div>
+          </div>
+
+          <nav class="bottom-nav" aria-hidden="true">
+            <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 8l7-5 7 5v9H3V8z" stroke="#888" stroke-width="1.3" fill="none"/></svg></div>
+            <div class="nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C6 6 3 8 3 12a6 6 0 0012 0c0-4-3-6-6-10z" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+            <div class="nav-icon nav-create"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 5v12M5 11h12" stroke="#666" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="2" stroke="#888" stroke-width="1.2" fill="none"/><path d="M2 9h16" stroke="#888" stroke-width="1.2"/></svg></div>
+            <div class="nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="#888" stroke-width="1.2" fill="none"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+          </nav>
+
+          <!-- Animated feature layers -->
+          <div class="feature-stage">
+            <div class="hearts-layer" aria-hidden="true">
+              <span class="heart-particle">♥</span>
+              <span class="heart-particle">♥</span>
+              <span class="heart-particle">♥</span>
+              <span class="heart-particle">♥</span>
+              <span class="heart-particle">♥</span>
+            </div>
+
+            <div class="gesture-label" aria-live="polite"></div>
+
+            <div class="value-counter" id="valueCounter">$0.10</div>
+
+            <div class="heart-zone">
+              <div class="heart-ring"></div>
+              <div class="heart-btn">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 15s-6-4.5-6-8.5a4 4 0 018 0 4 4 0 018 0c0 4-6 8.5-6 8.5z" stroke="rgba(255,140,160,0.9)" stroke-width="1.3" fill="rgba(255,100,130,0.15)"/></svg>
+              </div>
+            </div>
+
+            <div class="thumb" aria-hidden="true"><div class="thumb-shape"></div></div>
+
+            <div class="offer-sheet" id="offerSheet">
+              <div class="sheet-handle"></div>
+              <div class="sheet-status" id="sheetStatus">Computing offer…</div>
+              <div class="sheet-body" id="sheetBody">
+                <div class="sheet-row">
+                  <span class="sheet-label">Offer</span>
+                  <span class="sheet-value" id="sheetAmount">$2.00</span>
+                </div>
+                <div class="sheet-row">
+                  <span class="sheet-label">Creator</span>
+                  <span class="sheet-value">@rafaelo</span>
+                </div>
+                <div class="sheet-row">
+                  <span class="sheet-label">Status</span>
+                  <span class="sheet-value pending">Pending review</span>
+                </div>
+                <div class="sheet-actions">
+                  <div class="sheet-btn">Edit</div>
+                  <div class="sheet-btn">Cancel</div>
+                  <div class="sheet-btn confirm">Confirm</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pending-card" id="pendingCard">
+              <div class="pending-amt">$2.00</div>
+              <div class="pending-title">Pending creator wallet</div>
+              <div class="pending-sub">User can still edit or cancel before settlement.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button type="button" class="ctrl-btn" id="btnPlayPause" aria-label="Pause animation">Pause</button>
+        <button type="button" class="ctrl-btn" id="btnRestart" aria-label="Restart animation">Restart</button>
+        <div class="scene-dots" id="sceneDots" role="tablist" aria-label="Animation scenes"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Investor panel -->
+    <div class="panel-column" id="panel">
+      <div class="block subtitle active" data-scene="idle" data-block="title">
+        <h2>Hold Love</h2>
+        <p>A like is emotion. A hold is economic intent.</p>
+      </div>
+
+      <div class="block" data-scene="idle" data-block="concept">
+        <div class="block-title">Concept</div>
+        <p>Hold Love converts creator appreciation into a deliberate, reversible offer.</p>
+      </div>
+
+      <div class="block" data-scene="hold" data-block="interaction">
+        <div class="block-title">Interaction</div>
+        <p>Tap = social signal. Hold + roll = priced support.</p>
+      </div>
+
+      <div class="block" data-scene="rollup" data-block="why">
+        <div class="block-title">Why it matters</div>
+        <p>It separates engagement from payment. The platform only treats extended intentional pressure as value transfer intent.</p>
+      </div>
+
+      <div class="block" data-scene="compute" data-block="trust">
+        <div class="block-title">Trust layer</div>
+        <p>Release does not instantly charge. The offer enters review, validation, and user-edit time before creator wallet settlement.</p>
+      </div>
+
+      <div class="block" data-scene="review" data-block="creator">
+        <div class="block-title">Creator impact</div>
+        <p>Creators receive stronger monetization signals than likes: amount, intent, timing, and content context.</p>
+      </div>
+
+      <div class="block" data-scene="release" data-block="user">
+        <div class="block-title">User impact</div>
+        <p>Users can express support without leaving the feed, while retaining control before settlement.</p>
+      </div>
+
+      <div class="block" data-scene="pending" data-block="platform">
+        <div class="block-title">Platform impact</div>
+        <p>The platform monetizes verified intent, not passive attention. This creates a cleaner transaction layer between content, emotion, and money.</p>
+      </div>
+
+      <div class="block pros-card" data-block="pros">
+        <div class="block-title">Pros</div>
+        <ul>
+          <li>No accidental payments from simple likes.</li>
+          <li>Higher-value creator support without breaking immersion.</li>
+          <li>Native monetization gesture inside the feed.</li>
+          <li>Built-in review window reduces disputes.</li>
+          <li>Creates a measurable signal stronger than engagement.</li>
+          <li>Turns emotional intensity into optional economic action.</li>
+          <li>Keeps user agency: edit, cancel, confirm.</li>
+        </ul>
+      </div>
+
+      <div class="block framing" data-block="framing">
+        <p>Hold Love is a monetized gesture layer: emotional engagement becomes priced intent, validated before settlement.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   JS scene controller
+   ═══════════════════════════════════════════════════════════ */
+(function () {
+  var SCENES = [
+    { id: 'idle',     duration: 1400, panel: ['title', 'concept'] },
+    { id: 'hold',     duration: 1200, panel: ['interaction'] },
+    { id: 'rollup',   duration: 2800, panel: ['why'], counterSteps: ['$0.10', '$0.25', '$0.50', '$1.00', '$2.00'] },
+    { id: 'release',  duration: 1000, panel: ['user'], counter: '$2.00' },
+    { id: 'compute',  duration: 2200, panel: ['trust'], sheetMessages: ['Computing offer…', 'Validating intent…', 'Creator offer prepared'] },
+    { id: 'review',   duration: 1800, panel: ['creator'] },
+    { id: 'pending',  duration: 1600, panel: ['platform'] }
+  ];
+
+  var TOTAL_MS = SCENES.reduce(function (a, s) { return a + s.duration; }, 0);
+
+  var phoneScene = document.getElementById('phoneScene');
+  var valueCounter = document.getElementById('valueCounter');
+  var sheetStatus = document.getElementById('sheetStatus');
+  var sheetBody = document.getElementById('sheetBody');
+  var sheetAmount = document.getElementById('sheetAmount');
+  var btnPlayPause = document.getElementById('btnPlayPause');
+  var btnRestart = document.getElementById('btnRestart');
+  var sceneDots = document.getElementById('sceneDots');
+  var blocks = document.querySelectorAll('.block[data-block]');
+
+  var sceneIndex = 0;
+  var playing = true;
+  var pausedByHover = false;
+  var timeoutId = null;
+  var counterIntervalId = null;
+  var sheetIntervalId = null;
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  SCENES.forEach(function (scene, i) {
+    var dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'scene-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('role', 'tab');
+    dot.setAttribute('aria-label', 'Scene: ' + scene.id);
+    dot.addEventListener('click', function () { goToScene(i, true); });
+    sceneDots.appendChild(dot);
+  });
+
+  function clearTimers() {
+    if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
+    if (counterIntervalId) { clearInterval(counterIntervalId); counterIntervalId = null; }
+    if (sheetIntervalId) { clearInterval(sheetIntervalId); sheetIntervalId = null; }
+  }
+
+  function setPanelActive(keys) {
+    blocks.forEach(function (block) {
+      var key = block.getAttribute('data-block');
+      var match = keys.indexOf(key) !== -1;
+      block.classList.toggle('active', match);
+    });
+  }
+
+  function setDots(index) {
+    var dots = sceneDots.querySelectorAll('.scene-dot');
+    dots.forEach(function (d, i) { d.classList.toggle('active', i === index); });
+  }
+
+  function runCounterSteps(steps, duration) {
+    if (!steps || !steps.length) return;
+    var stepMs = duration / steps.length;
+    var idx = 0;
+    valueCounter.textContent = steps[0];
+    counterIntervalId = setInterval(function () {
+      idx++;
+      if (idx < steps.length) {
+        valueCounter.textContent = steps[idx];
+      } else {
+        clearInterval(counterIntervalId);
+        counterIntervalId = null;
+      }
+    }, stepMs);
+  }
+
+  function runSheetMessages(messages, duration) {
+    if (!messages || !messages.length) return;
+    sheetBody.style.display = 'none';
+    var stepMs = duration / messages.length;
+    var idx = 0;
+    sheetStatus.textContent = messages[0];
+    sheetIntervalId = setInterval(function () {
+      idx++;
+      if (idx < messages.length) {
+        sheetStatus.textContent = messages[idx];
+      } else {
+        clearInterval(sheetIntervalId);
+        sheetIntervalId = null;
+      }
+    }, stepMs);
+  }
+
+  function applyScene(index) {
+    var scene = SCENES[index];
+    phoneScene.setAttribute('data-scene', scene.id);
+    setPanelActive(scene.panel || []);
+    setDots(index);
+
+    valueCounter.style.opacity = '';
+    if (scene.id === 'idle' || scene.id === 'hold') {
+      valueCounter.style.opacity = '0';
+    }
+
+    if (scene.counterSteps) {
+      runCounterSteps(scene.counterSteps, scene.duration);
+    } else if (scene.counter) {
+      valueCounter.textContent = scene.counter;
+      valueCounter.style.opacity = '1';
+    }
+
+    if (scene.sheetMessages) {
+      runSheetMessages(scene.sheetMessages, scene.duration);
+    } else if (scene.id === 'review') {
+      sheetStatus.textContent = '';
+      sheetBody.style.display = 'block';
+      sheetAmount.textContent = '$2.00';
+    } else if (scene.id === 'pending') {
+      sheetStatus.textContent = '';
+    }
+  }
+
+  function goToScene(index, manual) {
+    clearTimers();
+    sceneIndex = ((index % SCENES.length) + SCENES.length) % SCENES.length;
+    applyScene(sceneIndex);
+
+    if (manual && !playing) return;
+    if (!playing || pausedByHover) return;
+
+    var dur = reducedMotion ? 800 : SCENES[sceneIndex].duration;
+    timeoutId = setTimeout(function () {
+      if (playing && !pausedByHover) {
+        goToScene(sceneIndex + 1);
+      }
+    }, dur);
+  }
+
+  btnPlayPause.addEventListener('click', function () {
+    playing = !playing;
+    btnPlayPause.textContent = playing ? 'Pause' : 'Play';
+    btnPlayPause.setAttribute('aria-label', playing ? 'Pause animation' : 'Play animation');
+    if (playing && !pausedByHover) {
+      goToScene(sceneIndex, false);
+    } else {
+      clearTimers();
+    }
+  });
+
+  btnRestart.addEventListener('click', function () {
+    playing = true;
+    pausedByHover = false;
+    btnPlayPause.textContent = 'Pause';
+    btnPlayPause.setAttribute('aria-label', 'Pause animation');
+    goToScene(0, false);
+  });
+
+  blocks.forEach(function (block) {
+    block.addEventListener('mouseenter', function () {
+      var sceneAttr = block.getAttribute('data-scene');
+      if (!sceneAttr) return;
+      pausedByHover = true;
+      clearTimers();
+      var idx = SCENES.findIndex(function (s) { return s.id === sceneAttr; });
+      if (idx >= 0) {
+        applyScene(idx);
+        setPanelActive([block.getAttribute('data-block')]);
+      }
+    });
+    block.addEventListener('mouseleave', function () {
+      if (!playing) return;
+      pausedByHover = false;
+      goToScene(sceneIndex, false);
+    });
+  });
+
+  goToScene(0, false);
+})();
+</script>
+</body>
+</html>

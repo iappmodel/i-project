@@ -25,6 +25,7 @@ export function WatchVerifyScreen() {
     selectedOffer,
     setScreen,
     completeVerification,
+    recordWatchAttention,
     verificationStatus,
     walletBackend,
     proofEventsConnected,
@@ -72,6 +73,11 @@ export function WatchVerifyScreen() {
   const canFinish = pct >= 99.5
 
   useEffect(() => {
+    if (verificationStatus !== 'watching') return
+    recordWatchAttention(ringScore)
+  }, [verificationStatus, ringScore, recordWatchAttention])
+
+  useEffect(() => {
     if (!webVisionEnabled || verificationStatus !== 'watching') return
     publishVisionProofSnapshot({
       hasFace: eyeTracking.isFaceDetected,
@@ -101,6 +107,28 @@ export function WatchVerifyScreen() {
       <div className="watch-screen-prot">
         <EloPresenceLayer attentionScore={ringScore / 100} />
         <div className="watch-scrim-prot" aria-hidden />
+        {!webVisionEnabled || eyeTracking.isFaceDetected ? null : (
+          <div
+            className="watch-lost-face-banner"
+            role="status"
+            style={{
+              position: 'absolute',
+              top: 88,
+              left: 16,
+              right: 16,
+              padding: '10px 14px',
+              borderRadius: 12,
+              background: 'rgba(0,0,0,0.55)',
+              border: '1px solid rgba(255,165,0,0.5)',
+              color: 'rgba(255,255,255,0.85)',
+              fontSize: 13,
+              textAlign: 'center',
+              zIndex: 4,
+            }}
+          >
+            Face not detected — tracking paused. Use touch controls or recalibrate in Profile.
+          </div>
+        )}
         <div className="watch-hud-top-prot watch-hud-top-prot-ext">
           <div className="tracking-badge-prot tracking-badge-prot-camera">
             <span className="tb-label-prot mono">
