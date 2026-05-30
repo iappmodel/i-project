@@ -1,6 +1,6 @@
 # [ i ] Wiring Status
 
-**Updated:** 2026-05-28  
+**Updated:** 2026-05-30  
 **Workspace:** `i_project_migration_archive`
 
 One-page truth for what's wired vs mocked.
@@ -22,10 +22,14 @@ flowchart LR
 |------|--------|------|
 | Loop 1 UX (mock gaze) | ✅ | `app/src/screens/*` |
 | CR-01 session gate | ✅ | `app/src/state/attentionSession.ts` |
-| Proof packet submit (web) | ✅ | `app/src/lib/demoProofPacket.ts` |
+| Session attention samples | ✅ | `attentionSession.recordAttentionSample` → real `acsScore` |
+| Proof packet submit (web) | ✅ | `app/src/lib/demoProofPacket.ts` (session-derived) |
+| POP zone safety gates | ✅ | `PopActionExecutor` → Governance → Safety |
+| Flutter gaze zones | ✅ | `resolveZoneFromGaze` + calibration bounds |
 | Seal Proof (Flutter) | ✅ device | `flutter-runtime` + USB reverse E2E verified |
 | Validator HTTP | ✅ | `integrations/pop-core/validator/` |
 | Pending holds | ✅ | `app/supabase/migrations/20260525220000_pop_pending_holds.sql` |
+| POP sessions schema | ✅ | `app/supabase/migrations/20260529120000_pops_sessions.sql` |
 | Ledger settle | ✅ | `settle_pop_pending_hold` → `ledger_append` |
 | App live wallet sync | ✅ | `app/src/state/useLiveWalletSync.ts` |
 | Auto-settle (optional) | ✅ | `VITE_AUTO_SETTLE=true` |
@@ -293,6 +297,21 @@ flowchart LR
 | MediaPipe deps in app | ✅ `@mediapipe/face_mesh` + `@mediapipe/tasks-vision` |
 | Shared vision stubs | ✅ `lib/logger.ts`, `lib/skinToneFallback.ts` |
 | Vision smoke hardening | ✅ asserts bridge prerequisites |
+
+---
+
+## POP finish plan (2026-05-30, PR #2)
+
+| Item | Status |
+|------|--------|
+| Dead/duplicate Flutter cleanup | ✅ Stage 1 manifest |
+| Unified zone commit path | ✅ `PopActionExecutor` |
+| Calibrated gaze + stale frames | ✅ `gaze_coordinate_space`, `signal_stale_policy` |
+| Y-plane transport + release landmarks | ✅ `runtime_transport_config`, `VisionProcessor.kt` |
+| Session evidence → proof packet | ✅ `demoContext`, `demoProofPacket` |
+| POP feature flags + kill switch | ✅ `popFeatureFlags.ts` |
+| Flutter POP tests | ✅ `pop_finish_plan_test`, `pop_action_executor_test` |
+| CI Supabase smoke gate | ✅ requires `supabase` CLI + Docker |
 
 ---
 

@@ -1,7 +1,7 @@
 # [ i ] Organism status — one page
 
-**Updated:** 2026-05-28  
-**Phases complete:** 1–40 (see [PHASE_QUEUE_INDEX.md](PHASE_QUEUE_INDEX.md))
+**Updated:** 2026-05-30  
+**Phases complete:** 1–40 + POP finish plan (see [PHASE_QUEUE_INDEX.md](PHASE_QUEUE_INDEX.md))
 
 ---
 
@@ -9,7 +9,8 @@
 
 | Loop | Path |
 |------|------|
-| Loop 1 web | Immersive feed → consent → watch → proof → validator → wallet |
+| Loop 1 web | Immersive feed → consent → watch → session attention evidence → proof → validator → wallet |
+| POP Flutter runtime | Zone commits gated via `PopActionExecutor`; calibrated gaze; Y-plane transport |
 | Immersive shell (Picture 2) | Default product entry; glass wallet/profile sheets; OUT-PROFILE tap |
 | Ledger | Supabase `pop_pending_holds` → `wallet_ledger` (local Docker) |
 | Auth | Demo user auto sign-in |
@@ -49,7 +50,7 @@
 
 ```
 Flutter Seal Proof ──POST──► POP validator :8787
-React app (mock or web vision hints) ──POST──►     │
+React app (session evidence + web vision hints) ──POST──►     │
                                     ├── SSE proof-events ──► Wallet refresh
                                     └── Supabase holds ──► ledger settle
 Immersive feed ──► consent ──► watch-verify ──► earn settle

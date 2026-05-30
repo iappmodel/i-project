@@ -5,6 +5,27 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-30 — POP finish plan merged (PR #2)
+
+### Delivered
+- **Flutter runtime (stages 0–5)** — `PopActionExecutor` routes all zone commits through Governance → Safety; calibrated `resolveZoneFromGaze`; stale-frame cancellation; Y-plane transport; release-only full landmarks; unified blink FSM path.
+- **Watch/Earn (stage 6)** — `attentionSession` samples → real `acsScore` in proof packets; `pops_sessions` migration; session-derived `demoProofPacket`.
+- **UX (stage 7)** — lost-face banners (Flutter + web), wallet pending-holds copy.
+- **Tests (stage 8)** — `pop_finish_plan_test`, `pop_action_executor_test`, updated `bypass_paths_test` (9+ Flutter tests pass).
+- **Production flags (stage 9)** — `popFeatureFlags.ts`, `POP_PRIVACY_BOUNDARIES.md`.
+- **CI** — Supabase ledger smoke gated on Docker **and** `supabase` CLI (fixes false CI failure on GitHub Actions).
+
+### Canon
+- Merge commit `0cf219f` on `main` · branch `pop/finish-plan-implementation` · [PR #2](https://github.com/iappmodel/i-project/pull/2)
+- Deletion manifest: `integrations/eye-tracking/flutter-runtime/POP_FINISH_DELETION_MANIFEST.md`
+
+### Owner decisions still open
+- Partial vs full reward policy (POPS vs economy rules)
+- iOS native backend: inlined Kotlin vs `attention_mediapipe` plugin
+- Scoring location: Edge Function vs standalone validator
+
+---
+
 ## 2026-05-27 — Gesture button system production complete
 
 ### Delivered
