@@ -5,11 +5,24 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-30 — Picture 2 explainer suite complete + ELO foundation slot
+
+### Delivered
+- **POP investor explainer** — `pop_feature_investor_explainer.html` (6-scene loop + pipeline strip; attention → pending → wallet).
+- **Shell zone explainers** — `out_profile_explainer.html` (creator chip), `timer_line_explainer.html` (session progress line).
+- **ELO foundation slot** — `elo-reply` Supabase edge function + `eloReply.ts` client; `useEloPanelVoice` mic input; panel uses `resolveEloReplyAsync` with local runtime fallback.
+- **Smoke** — `smoke_investor_explainers.sh` tracks index + **14** walkthroughs with href integrity; `smoke_elo_presence.sh` asserts edge function + panel voice.
+
+### Verification
+- `./scripts/smoke_investor_explainers.sh` · `./scripts/smoke_elo_presence.sh` · `./scripts/smoke_pop_finish.sh`
+
+---
+
 ## 2026-05-30 — ELO runtime engine + explainer index
 
 ### Delivered
 - **ELO runtime** — `eloRuntimeEngine` + `eloDoctrine` POP safety rails + `eloPersonalization`; sculptural glass eye sockets in `EloFaceMembrane`; `visualForms` picker in onboarding.
-- **Explainer index** — `investor_explainer_index.html` maps Picture 2 shell zones and links all 11 walkthroughs; smoke asserts index link integrity.
+- **Explainer index** — `investor_explainer_index.html` maps Picture 2 shell zones and links all walkthroughs; smoke asserts index link integrity.
 
 ### Verification
 - `./scripts/smoke_elo_presence.sh` · `./scripts/smoke_investor_explainers.sh`

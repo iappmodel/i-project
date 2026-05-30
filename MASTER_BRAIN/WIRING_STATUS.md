@@ -64,7 +64,7 @@ flowchart LR
 | `./scripts/smoke_organism_spine.sh` | Full spine (local + optional Supabase) |
 | `./scripts/smoke_elo_presence.sh` | ELO presence module files + app build |
 | `./scripts/smoke_pop_finish.sh` | POP finish keystone files + Flutter regression tests |
-| `./scripts/smoke_investor_explainers.sh` | Investor explainer index + 11 HTML walkthroughs |
+| `./scripts/smoke_investor_explainers.sh` | Investor explainer index + 14 HTML walkthroughs |
 | `./scripts/smoke_vision_proof_bridge.sh` | Vision → proof packet hints (Phase 34) |
 | `./scripts/smoke_immersive_shell.sh` | Glass wallet/profile, out-profile, loop1 watch path (Phases 35–38) |
 | `./scripts/enable_stripe_live_env.sh` | Stripe checkout env when keys in stack |
@@ -85,6 +85,8 @@ flowchart LR
 | Supabase Auth in app | ✅ Auto demo sign-in |
 | Elo Profile teaser | ✅ Companion card |
 | ELO presence membrane | ✅ Procedural SVG contours + POP mirror; voice evoke → session panel |
+| ELO panel replies | ✅ Local runtime + optional `elo-reply` edge (OpenAI when configured) |
+| ELO panel voice | ✅ `useEloPanelVoice` opt-in mic in presence session |
 | ELO personality stack / rooms | ✅ Local config + onboarding + panel |
 | React↔Flutter bridge | Design only — Phase 3 |
 | Stripe checkout | Prep doc — owner keys needed |

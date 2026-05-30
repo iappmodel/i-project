@@ -21,7 +21,9 @@
 | Validator packaging | ✅ Dockerfile + `smoke_validator_docker.sh` |
 | Web vision (flagged) | ✅ operator panel + proof hints bridge when `VITE_VISION_ENGINE=1` |
 | Blink Remote lite | ✅ debug gaze panel (full archive UI still deferred) |
-| CI | Validator + app + vision proof + immersive shell smokes |
+| ELO presence | ✅ Membrane + session panel; optional `elo-reply` edge + panel voice |
+| Investor explainers | ✅ 14 HTML walkthroughs + index (`06_feed_earning_loops/investor_explainer_index.html`) |
+| CI | Validator + app + POP finish Flutter + investor explainers + vision smokes |
 
 **One command:** `./scripts/dev_stack.sh`
 
