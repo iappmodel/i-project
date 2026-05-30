@@ -41,15 +41,17 @@ function pathFromIndices(
 
 function defaultContourPaths(idlePhase: number): FaceContourPaths {
   const cx = 50
-  const cy = 50 + Math.sin(idlePhase) * 1.5
+  const cy = 50 + Math.sin(idlePhase * 0.85) * 1.4
+  const breath = 1 + Math.sin(idlePhase * 1.15) * 0.012
+  const w = 26 * breath
   return {
-    jaw: `M ${cx - 22} ${cy + 8} Q ${cx - 28} ${cy + 28} ${cx} ${cy + 32} Q ${cx + 28} ${cy + 28} ${cx + 22} ${cy + 8}`,
-    leftBrow: `M ${cx - 18} ${cy - 12} Q ${cx - 10} ${cy - 16} ${cx - 2} ${cy - 13}`,
-    rightBrow: `M ${cx + 2} ${cy - 13} Q ${cx + 10} ${cy - 16} ${cx + 18} ${cy - 12}`,
-    nose: `M ${cx} ${cy - 8} L ${cx} ${cy + 6}`,
-    leftEye: `M ${cx - 14} ${cy - 4} Q ${cx - 10} ${cy - 6} ${cx - 6} ${cy - 4}`,
-    rightEye: `M ${cx + 6} ${cy - 4} Q ${cx + 10} ${cy - 6} ${cx + 14} ${cy - 4}`,
-    lips: `M ${cx - 8} ${cy + 14} Q ${cx} ${cy + 18} ${cx + 8} ${cy + 14}`,
+    jaw: `M ${cx - w} ${cy - 16} Q ${cx - w - 4} ${cy + 4} ${cx - w + 2} ${cy + 24} Q ${cx - 12} ${cy + 34} ${cx} ${cy + 36} Q ${cx + 12} ${cy + 34} ${cx + w - 2} ${cy + 24} Q ${cx + w + 4} ${cy + 4} ${cx + w} ${cy - 16} Q ${cx} ${cy - 28} ${cx - w} ${cy - 16}`,
+    leftBrow: `M ${cx - 20} ${cy - 14} Q ${cx - 11} ${cy - 19} ${cx - 2} ${cy - 15}`,
+    rightBrow: `M ${cx + 2} ${cy - 15} Q ${cx + 11} ${cy - 19} ${cx + 20} ${cy - 14}`,
+    nose: `M ${cx} ${cy - 10} Q ${cx - 1.5} ${cy - 2} ${cx} ${cy + 8} M ${cx - 3} ${cy + 10} Q ${cx} ${cy + 12} ${cx + 3} ${cy + 10}`,
+    leftEye: `M ${cx - 16} ${cy - 3} Q ${cx - 11} ${cy - 7} ${cx - 5} ${cy - 3} Q ${cx - 11} ${cy - 1} ${cx - 16} ${cy - 3}`,
+    rightEye: `M ${cx + 5} ${cy - 3} Q ${cx + 11} ${cy - 7} ${cx + 16} ${cy - 3} Q ${cx + 11} ${cy - 1} ${cx + 5} ${cy - 3}`,
+    lips: `M ${cx - 9} ${cy + 16} Q ${cx - 4} ${cy + 20} ${cx} ${cy + 19} Q ${cx + 4} ${cy + 20} ${cx + 9} ${cy + 16}`,
   }
 }
 
@@ -91,6 +93,7 @@ export function useEloFaceMirror(options: {
   const headPitch = vs?.headPitch ?? 0
   const eyeOpenness = vs?.eyeOpenness ?? 0.85
   const landmarks = vs?.landmarks
+  const smoothedRef = useRef<{ x: number; y: number }[] | null>(null)
 
   const expression = useMemo<EloExpressionState>(
     () =>
@@ -127,8 +130,20 @@ export function useEloFaceMirror(options: {
 
   const paths = useMemo(() => {
     if (landmarks && landmarks.length >= 468) {
-      return landmarksToPaths(landmarks)
+      const prev = smoothedRef.current
+      const smooth = 0.38
+      const next = landmarks.map((lm, i) => {
+        const p = prev?.[i]
+        if (!p) return { x: lm.x, y: lm.y }
+        return {
+          x: p.x + (lm.x - p.x) * smooth,
+          y: p.y + (lm.y - p.y) * smooth,
+        }
+      })
+      smoothedRef.current = next
+      return landmarksToPaths(next)
     }
+    smoothedRef.current = null
     return defaultContourPaths(idlePhase)
   }, [landmarks, idlePhase])
 

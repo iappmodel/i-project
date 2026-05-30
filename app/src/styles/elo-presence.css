@@ -70,6 +70,13 @@
   stroke: rgba(235, 245, 255, 0.82);
 }
 
+.elo-membrane-wrap .elo-membrane__path--ghost {
+  stroke: rgba(180, 215, 255, 0.22);
+  stroke-width: 3.2;
+  opacity: 0.55;
+  filter: blur(0.4px);
+}
+
 .elo-membrane-wrap--entering {
   animation: elo-manifest-enter 1.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }

@@ -2,6 +2,16 @@ import { useId } from 'react'
 import type { FaceContourPaths } from '../../hooks/useEloFaceMirror'
 import type { EloExpressionState } from '../../lib/elo/types'
 
+const CONTOUR_KEYS: (keyof FaceContourPaths)[] = [
+  'jaw',
+  'leftBrow',
+  'rightBrow',
+  'nose',
+  'leftEye',
+  'rightEye',
+  'lips',
+]
+
 export interface EloFaceMembraneProps {
   expression: EloExpressionState
   paths: FaceContourPaths
@@ -62,13 +72,17 @@ export function EloFaceMembrane({
             </filter>
           </defs>
           <ellipse cx="50" cy="48" rx="27" ry="33" fill={`url(#${fillId})`} />
+          {CONTOUR_KEYS.map((key) => (
+            <path
+              key={`ghost-${key}`}
+              className="elo-membrane__path elo-membrane__path--ghost"
+              d={paths[key]}
+            />
+          ))}
           <path className={`${pathClass} elo-membrane__path--jaw`} d={paths.jaw} filter={`url(#${glowId})`} />
-          <path className={pathClass} d={paths.leftBrow} />
-          <path className={pathClass} d={paths.rightBrow} />
-          <path className={pathClass} d={paths.nose} />
-          <path className={pathClass} d={paths.leftEye} />
-          <path className={pathClass} d={paths.rightEye} />
-          <path className={pathClass} d={paths.lips} />
+          {CONTOUR_KEYS.filter((key) => key !== 'jaw').map((key) => (
+            <path key={key} className={pathClass} d={paths[key]} />
+          ))}
         </svg>
       </div>
     </div>

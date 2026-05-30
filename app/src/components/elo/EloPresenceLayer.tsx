@@ -10,6 +10,7 @@ import { EloPresencePanel } from './EloPresencePanel'
 import { EloSessionGreeting } from './EloSessionGreeting'
 
 const MANIFEST_MS = 1350
+const SESSION_PANEL_DELAY_MS = 700
 
 export interface EloPresenceLayerProps {
   attentionScore?: number
@@ -26,18 +27,23 @@ export function EloPresenceLayer({ attentionScore: attentionScoreProp }: EloPres
     openPanel,
     openOnboarding,
     onboardingOpen,
+    panelOpen,
   } = useElo()
   const { expression, paths, eyeScaleY } = useEloFaceMirror({ orbState, attentionScore })
   const [entering, setEntering] = useState(false)
   const manifestTimer = useRef<number | null>(null)
+  const sessionTimer = useRef<number | null>(null)
 
   const finishManifest = useCallback(() => {
     setEntering(false)
     startSession()
     if (!config.onboardingComplete) {
       openOnboarding()
+      return
     }
-  }, [config.onboardingComplete, openOnboarding, startSession])
+    if (sessionTimer.current) window.clearTimeout(sessionTimer.current)
+    sessionTimer.current = window.setTimeout(() => openPanel(), SESSION_PANEL_DELAY_MS)
+  }, [config.onboardingComplete, openOnboarding, openPanel, startSession])
 
   const handleEvoke = useCallback(() => {
     if (evoked || entering) return
@@ -52,6 +58,7 @@ export function EloPresenceLayer({ attentionScore: attentionScoreProp }: EloPres
   useEffect(
     () => () => {
       if (manifestTimer.current) window.clearTimeout(manifestTimer.current)
+      if (sessionTimer.current) window.clearTimeout(sessionTimer.current)
     },
     [],
   )
@@ -60,7 +67,8 @@ export function EloPresenceLayer({ attentionScore: attentionScoreProp }: EloPres
 
   const showMembrane = evoked || entering
   const showVoiceHint = !evoked && !entering
-  const showSessionGreeting = sessionActive && config.onboardingComplete && !onboardingOpen
+  const showSessionGreeting =
+    sessionActive && config.onboardingComplete && !onboardingOpen && !panelOpen
 
   return (
     <>

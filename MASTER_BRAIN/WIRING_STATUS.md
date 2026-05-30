@@ -83,7 +83,7 @@ flowchart LR
 | P0 chat extraction | **104/104** complete |
 | Supabase Auth in app | ✅ Auto demo sign-in |
 | Elo Profile teaser | ✅ Companion card |
-| ELO presence membrane | ✅ `EloPresenceLayer` on immersive + watch-verify |
+| ELO presence membrane | ✅ Procedural SVG contours + POP mirror; voice evoke → session panel |
 | ELO personality stack / rooms | ✅ Local config + onboarding + panel |
 | React↔Flutter bridge | Design only — Phase 3 |
 | Stripe checkout | Prep doc — owner keys needed |

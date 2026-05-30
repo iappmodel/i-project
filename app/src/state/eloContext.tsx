@@ -107,6 +107,7 @@ export function EloProvider({ children }: { children: ReactNode }) {
       setEvoked(true)
       setSessionActive(true)
       setOnboardingOpen(false)
+      window.setTimeout(() => setPanelOpen(true), 700)
     },
     [persist],
   )

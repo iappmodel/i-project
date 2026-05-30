@@ -10,5 +10,9 @@ export function getSessionOpening(stack: EloPersonalityStack): string {
 
   const tone = preset?.tagline ?? 'Present with you.'
   return `${tone} I'm here — as your ${relationship.label.toLowerCase()}. What are you watching?`
+}
 
+/** Compact copy for the on-feed greeting pill */
+export function getSessionGreetingShort(): string {
+  return "I'm here. Tap to talk."
 }

@@ -50,7 +50,7 @@ ELO must **not** replace OUT-PROFILE.
 2. Tap pill → mic arms → user says **“ELO”**
 3. Mask **manifests at center** (~1.35s emergence draw + fade)
 4. First visit → onboarding sheet after manifestation: “I heard you”
-5. Returning visit → **“I'm here. Tap to talk.”** greeting; tap face or greeting → presence panel
+5. Returning visit → membrane stays; **presence panel opens** for interactive session (~0.7s after manifest)
 6. Presenter mode → ELO hidden
 
 Voice wake is **opt-in** — mic does not start until user taps the hint pill.
