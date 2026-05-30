@@ -47,6 +47,75 @@
   animation: elo-breathe calc(4s / var(--elo-pulse-speed, 0.5)) ease-in-out infinite;
 }
 
+.elo-membrane-glass-base {
+  position: absolute;
+  inset: 2% 6% 8%;
+  border-radius: 48% 48% 44% 44%;
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(180, 210, 255, 0.04) 40%,
+    rgba(0, 0, 0, 0.06) 100%
+  );
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+.elo-membrane-wrap--lightForm .elo-membrane-halo {
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 42%,
+    rgba(200, 230, 255, 0.28) 0%,
+    rgba(140, 190, 255, 0.1) 50%,
+    transparent 78%
+  );
+}
+
+.elo-membrane-wrap--lightForm .elo-membrane__path,
+.elo-membrane-wrap--lightForm .elo-membrane__socket {
+  opacity: 0.35;
+}
+
+.elo-membrane-light-veil {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.14), transparent 65%);
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.elo-membrane-wrap--abstract .elo-membrane__path:not(.elo-membrane__path--jaw) {
+  opacity: 0.55;
+}
+
+.elo-membrane-wrap--symbol {
+  width: min(48%, 220px);
+}
+
+.elo-membrane__highlight {
+  fill: rgba(255, 255, 255, 0.1);
+  filter: blur(1px);
+}
+
+.elo-membrane__socket {
+  fill: rgba(4, 8, 16, 0.42);
+  stroke: rgba(180, 210, 255, 0.12);
+  stroke-width: 0.4;
+  filter: blur(0.6px);
+}
+
+.elo-membrane__symbol-ring {
+  fill: rgba(200, 230, 255, 0.06);
+  stroke: var(--elo-line-color, rgba(220, 240, 255, 0.72));
+  stroke-width: 1.2;
+}
+
+.elo-membrane__symbol-eye {
+  fill: rgba(220, 240, 255, 0.85);
+  filter: drop-shadow(0 0 6px rgba(160, 210, 255, 0.5));
+}
+
 .elo-membrane-wrap .elo-membrane__svg {
   position: relative;
   z-index: 1;

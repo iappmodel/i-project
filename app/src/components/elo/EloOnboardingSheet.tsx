@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import { PERSONALITY_PRESETS } from '../../lib/elo/presets'
 import { RELATIONSHIP_MODES } from '../../lib/elo/relationshipModes'
-import type { EloPersonalityStack, PersonalityPreset } from '../../lib/elo/types'
+import { VISUAL_FORMS } from '../../lib/elo/visualForms'
+import type { EloPersonalityStack, EloVisualForm, PersonalityPreset } from '../../lib/elo/types'
 import { useElo } from '../../state/eloContext'
 
 export function EloOnboardingSheet({ open }: { open: boolean }) {
@@ -9,6 +10,7 @@ export function EloOnboardingSheet({ open }: { open: boolean }) {
   const [primaryId, setPrimaryId] = useState<string>('calm_guide')
   const [secondaryId, setSecondaryId] = useState<string | null>(null)
   const [relationshipMode, setRelationshipMode] = useState<EloPersonalityStack['relationshipMode']>('companion')
+  const [visualForm, setVisualForm] = useState<EloVisualForm>('lineFace')
 
   const selectable = useMemo(
     () => PERSONALITY_PRESETS.filter((p) => p.id !== 'custom' && p.id !== 'hybrid'),
@@ -39,7 +41,7 @@ export function EloOnboardingSheet({ open }: { open: boolean }) {
       layers,
       relationshipMode,
       operatingMode: null,
-      visualForm: 'lineFace',
+      visualForm,
     })
   }
 
@@ -98,6 +100,21 @@ export function EloOnboardingSheet({ open }: { open: boolean }) {
               onClick={() => setRelationshipMode(mode.id)}
             >
               {mode.label}
+            </button>
+          ))}
+        </div>
+
+        <p className="elo-section-title">Presence form</p>
+        <div className="elo-preset-grid">
+          {VISUAL_FORMS.map((form) => (
+            <button
+              key={form.id}
+              type="button"
+              className={`elo-preset-card ${visualForm === form.id ? 'elo-preset-card--selected' : ''}`}
+              onClick={() => setVisualForm(form.id)}
+            >
+              <strong>{form.label}</strong>
+              <span>{form.description}</span>
             </button>
           ))}
         </div>

@@ -9,7 +9,7 @@ import {
   mockWalletState,
   DEMO_PUBLISHED_PERSONALITIES,
 } from '../../lib/elo/mockData'
-import { composeEloReply } from '../../lib/elo/eloReplyService'
+import { resolveEloReply } from '../../lib/elo/eloRuntimeEngine'
 import { getSessionOpening } from '../../lib/elo/sessionOpenings'
 import { getEloMemories } from '../../lib/elo/services/eloMemoryService'
 import { setEloPermission } from '../../lib/elo/services/eloPermissionService'
@@ -67,7 +67,7 @@ function EloChat({
 }
 
 export function EloPresencePanel() {
-  const { panelOpen, closePanel, setStack, sessionActive, config, room } = useElo()
+  const { panelOpen, closePanel, setStack, sessionActive, config, room, setOrbState } = useElo()
   const { displayName, relationship, operating } = useEloPersonality()
   const { setScreen, setActiveTab, eloStatusLine, proofEventsConnected } = useDemo()
   const [messages, setMessages] = useState<EloMessage[]>(mockMessages)
@@ -134,15 +134,18 @@ export function EloPresencePanel() {
               content: text,
               createdAt: new Date().toISOString(),
             }
+            setOrbState('thinking')
+            const result = resolveEloReply({
+              userText: text,
+              stack: config.stack,
+              room,
+              proofConnected: proofEventsConnected,
+            })
+            setOrbState(result.orbState)
             const assistantMessage: EloMessage = {
               id: `a-${Date.now() + 1}`,
               role: 'assistant',
-              content: composeEloReply({
-                userText: text,
-                stack: config.stack,
-                room,
-                proofConnected: proofEventsConnected,
-              }),
+              content: result.reply,
               createdAt: new Date().toISOString(),
             }
             setMessages((prev) => [...prev, userMessage, assistantMessage])

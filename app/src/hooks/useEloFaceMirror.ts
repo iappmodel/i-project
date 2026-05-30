@@ -23,6 +23,37 @@ export interface FaceContourPaths {
   lips: string
 }
 
+export interface FaceEyeCenters {
+  left: { x: number; y: number }
+  right: { x: number; y: number }
+}
+
+function eyeCenterFromLandmarks(
+  landmarks: { x: number; y: number }[],
+  indices: number[],
+): { x: number; y: number } {
+  let sx = 0
+  let sy = 0
+  let n = 0
+  for (const i of indices) {
+    const lm = landmarks[i]
+    if (!lm) continue
+    sx += 1 - lm.x
+    sy += lm.y
+    n++
+  }
+  if (!n) return { x: 39, y: 46 }
+  return { x: (sx / n) * 100, y: (sy / n) * 100 }
+}
+
+function defaultEyeCenters(idlePhase: number): FaceEyeCenters {
+  const cy = 50 + Math.sin(idlePhase * 0.85) * 1.4
+  return {
+    left: { x: 39, y: cy - 4 },
+    right: { x: 61, y: cy - 4 },
+  }
+}
+
 function pathFromIndices(
   points: { x: number; y: number }[],
   indices: number[],
@@ -147,7 +178,20 @@ export function useEloFaceMirror(options: {
     return defaultContourPaths(idlePhase)
   }, [landmarks, idlePhase])
 
+  const eyeCenters = useMemo<FaceEyeCenters>(() => {
+    if (landmarks && landmarks.length >= 468) {
+      const prev = smoothedRef.current
+      if (prev) {
+        return {
+          left: eyeCenterFromLandmarks(prev, LEFT_EYE),
+          right: eyeCenterFromLandmarks(prev, RIGHT_EYE),
+        }
+      }
+    }
+    return defaultEyeCenters(idlePhase)
+  }, [landmarks, idlePhase])
+
   const eyeScaleY = expression.blinkScale
 
-  return { expression, paths, eyeScaleY, hasFace }
+  return { expression, paths, eyeCenters, eyeScaleY, hasFace }
 }

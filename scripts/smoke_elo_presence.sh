@@ -18,6 +18,9 @@ required=(
   "$APP/src/lib/elo/expressionEngine.ts"
   "$APP/src/lib/elo/sessionOpenings.ts"
   "$APP/src/lib/elo/eloReplyService.ts"
+  "$APP/src/lib/elo/eloRuntimeEngine.ts"
+  "$APP/src/lib/elo/eloDoctrine.ts"
+  "$APP/src/lib/elo/visualForms.ts"
   "$APP/src/components/elo/EloSessionScope.tsx"
   "$APP/src/state/eloContext.tsx"
   "$APP/src/styles/elo-presence.css"
@@ -62,8 +65,24 @@ if ! grep -q "dismissSession" "$APP/src/state/eloContext.tsx"; then
   echo "FAIL: eloContext must expose dismissSession for session scope" >&2
   exit 1
 fi
-if ! grep -q "composeEloReply" "$APP/src/components/elo/EloPresencePanel.tsx"; then
-  echo "FAIL: EloPresencePanel must use contextual eloReplyService" >&2
+if ! grep -q "resolveEloReply" "$APP/src/components/elo/EloPresencePanel.tsx"; then
+  echo "FAIL: EloPresencePanel must use eloRuntimeEngine" >&2
+  exit 1
+fi
+if ! grep -q "evaluateDoctrineInput" "$APP/src/lib/elo/eloDoctrine.ts"; then
+  echo "FAIL: eloDoctrine must enforce POP safety rails" >&2
+  exit 1
+fi
+if ! grep -q "visualForm" "$APP/src/components/elo/EloOnboardingSheet.tsx"; then
+  echo "FAIL: onboarding must let user pick visualForm" >&2
+  exit 1
+fi
+if ! grep -q "elo-membrane__socket" "$APP/src/components/elo/EloFaceMembrane.tsx"; then
+  echo "FAIL: EloFaceMembrane must render sculptural glass eye sockets" >&2
+  exit 1
+fi
+if ! grep -q "eyeCenters" "$APP/src/hooks/useEloFaceMirror.ts"; then
+  echo "FAIL: useEloFaceMirror must export POP-aligned eye centers" >&2
   exit 1
 fi
 if ! grep -q "EloSessionScope" "$APP/src/App.tsx"; then

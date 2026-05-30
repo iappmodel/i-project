@@ -9,7 +9,8 @@
 
 ELO is a **living presence membrane** — procedural glass face contours over full-bleed media, not a static image, not an orb, not a chatbot card.
 
-- Semi-transparent frosted contour lines (jaw, brows, eyes, nose, lips)
+- Semi-transparent frosted contour lines (jaw, brows, eyes, nose, lips) + **sculptural glass** (eye sockets, cheek depth, forehead highlight)
+- **Visual form** chosen at onboarding: `lineFace` (default), `lightForm`, `abstract`, `symbol`
 - Soft radial glass fill — background visible through the membrane
 - Centered over full-bleed media (~62% width); adapts to POP vision landmarks when camera active
 - Idle breathe + head tilt when camera off
@@ -86,7 +87,9 @@ Persisted in `localStorage` key `i-elo-presence-config-v1`.
 | Layer | `app/src/components/elo/EloPresenceLayer.tsx` |
 | Session scope | `app/src/components/elo/EloSessionScope.tsx` — dismiss on leave immersive surfaces |
 | Membrane | `app/src/components/elo/EloFaceMembrane.tsx` |
-| Panel replies | `app/src/lib/elo/eloReplyService.ts` — contextual mock session (wallet/watch/trust) |
+| Panel replies | `eloRuntimeEngine.ts` — doctrine → personalization → reply (Stage 1 mock; LLM slot later) |
+| Doctrine | `eloDoctrine.ts` — never bypass POP, no attention certainty |
+| Visual forms | `visualForms.ts` + onboarding picker |
 | State | `app/src/state/eloContext.tsx` |
 | Types / stack | `app/src/lib/elo/` |
 | Styles | `app/src/styles/elo-presence.css` |
