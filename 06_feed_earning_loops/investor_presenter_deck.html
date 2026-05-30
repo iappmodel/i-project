@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] — Investor Presenter Deck</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --page-bg: #fff; --heading: #333; --text: #555; --text-secondary: #777; --text-light: #999;
+  --border: #e5e5e5; --accent: #378ADD;
+  --bar-h: 52px;
+}
+html, body { height: 100%; background: var(--page-bg); font-family: Arial, Helvetica, sans-serif; color: var(--text); overflow: hidden; }
+
+.presenter { display: flex; flex-direction: column; height: 100vh; }
+.top-bar {
+  flex-shrink: 0; height: var(--bar-h); display: flex; align-items: center; gap: 12px;
+  padding: 0 20px; border-bottom: 1px solid var(--border); background: var(--page-bg);
+}
+.brand { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-secondary); white-space: nowrap; }
+.slide-info { flex: 1; min-width: 0; }
+.slide-title { font-size: 15px; color: var(--heading); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.slide-sub { font-size: 10px; color: var(--text-light); margin-top: 1px; }
+.progress { font-family: 'SF Mono', Menlo, Consolas, monospace; font-size: 11px; color: var(--text-secondary); white-space: nowrap; }
+
+.controls { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.ctrl {
+  font-family: Arial, Helvetica, sans-serif; font-size: 10px; letter-spacing: 0.06em;
+  text-transform: uppercase; padding: 7px 14px; border: 1px solid var(--border);
+  border-radius: 6px; background: var(--page-bg); color: var(--text-secondary); cursor: pointer;
+}
+.ctrl:hover { border-color: #bbb; color: var(--heading); }
+.ctrl.primary { background: var(--heading); color: #fff; border-color: var(--heading); }
+.ctrl.primary:hover { background: #444; }
+.ctrl.active { border-color: var(--accent); color: var(--accent); }
+
+.frame-wrap { flex: 1; position: relative; background: #f5f5f5; overflow: hidden; }
+.frame-wrap iframe {
+  position: absolute; inset: 0; width: 100%; height: 100%; border: none;
+  background: #fff; opacity: 0; transition: opacity 0.35s ease;
+}
+.frame-wrap iframe.active { opacity: 1; z-index: 1; }
+
+.bottom-bar {
+  flex-shrink: 0; height: 40px; display: flex; align-items: center; justify-content: center;
+  gap: 6px; padding: 0 16px; border-top: 1px solid var(--border); background: var(--page-bg);
+}
+.dot {
+  width: 6px; height: 6px; border-radius: 50%; border: none; background: #ddd; cursor: pointer; padding: 0;
+  transition: transform 0.2s, background 0.2s;
+}
+.dot.active { background: var(--heading); transform: scale(1.35); }
+.dot:hover { background: #aaa; }
+
+.hint {
+  position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); z-index: 5;
+  font-size: 10px; color: var(--text-light); padding: 4px 12px; border-radius: 8px;
+  background: rgba(255,255,255,0.92); border: 1px solid var(--border);
+  opacity: 0; transition: opacity 0.4s; pointer-events: none;
+}
+.hint.visible { opacity: 1; }
+
+@media (max-width: 720px) {
+  .brand { display: none; }
+  .top-bar { padding: 0 12px; gap: 8px; }
+  .ctrl { padding: 6px 10px; font-size: 9px; }
+}
+</style>
+</head>
+<body>
+<div class="presenter">
+  <header class="top-bar">
+    <div class="brand">[ i ] Presenter</div>
+    <div class="slide-info">
+      <div class="slide-title" id="slideTitle">—</div>
+      <div class="slide-sub" id="slideSub">—</div>
+    </div>
+    <div class="progress" id="progress" aria-live="polite">1 / 14</div>
+    <div class="controls">
+      <button type="button" class="ctrl" id="btnPrev" aria-label="Previous slide">Prev</button>
+      <button type="button" class="ctrl primary" id="btnNext" aria-label="Next slide">Next</button>
+      <button type="button" class="ctrl" id="btnAuto" aria-label="Toggle auto-advance">Auto: off</button>
+      <button type="button" class="ctrl" id="btnFullscreen" aria-label="Fullscreen">Fullscreen</button>
+      <a class="ctrl" href="investor_explainer_index.html" id="btnIndex">Index</a>
+    </div>
+  </header>
+
+  <div class="frame-wrap" id="frameWrap">
+    <div class="hint visible" id="hint">← → arrow keys · Space = next · F = fullscreen</div>
+  </div>
+
+  <nav class="bottom-bar" id="dotNav" aria-label="Slide navigation"></nav>
+</div>
+
+<script>
+(function(){
+  var SLIDES=[
+    {file:'feed_dock_explainer.html',title:'Feed',sub:'Immersive media home · default product entry',duration:12000},
+    {file:'timer_line_explainer.html',title:'TIMER',sub:'Session progress · earn window · skip pauses',duration:11000},
+    {file:'reward_feature_explainer.html',title:'REWARD',sub:'Loop 1 core · offer → review → wallet',duration:12000},
+    {file:'promo_dock_explainer.html',title:'Promo',sub:'Sponsor marketplace · watch-to-earn',duration:11000},
+    {file:'love_hold_creator_offer_explainer.html',title:'Hold Love',sub:'Creator offer · pending settlement',duration:11000},
+    {file:'out_profile_explainer.html',title:'OUT-PROFILE',sub:'Creator on media · sponsored routing',duration:11000},
+    {file:'message_button_explainer.html',title:'MESSAGE',sub:'Compose · context · inbox thread',duration:11000},
+    {file:'share_button_explainer.html',title:'SHARE',sub:'Distribution · attribution · referral',duration:11000},
+    {file:'controls_button_explainer.html',title:'CONTROLS',sub:'Gesture builder · rebind · persist',duration:11000},
+    {file:'wallet_dock_explainer.html',title:'Wallet',sub:'Attention Wallet · pending → available',duration:11000},
+    {file:'elo_presence_explainer.html',title:'ELO',sub:'Companion membrane · voice evoke',duration:11000},
+    {file:'create_studio_explainer.html',title:'Create (+)',sub:'Studio entry · proof-ready supply',duration:11000},
+    {file:'profile_dock_explainer.html',title:'In-Profile',sub:'Trust · verification · settings',duration:11000},
+    {file:'pop_feature_investor_explainer.html',title:'POP',sub:'Attention control layer · full pipeline',duration:14000}
+  ];
+
+  var index=0,autoOn=false,autoTimer=null;
+  var frameWrap=document.getElementById('frameWrap'),dotNav=document.getElementById('dotNav');
+  var slideTitle=document.getElementById('slideTitle'),slideSub=document.getElementById('slideSub');
+  var progress=document.getElementById('progress'),btnAuto=document.getElementById('btnAuto'),hint=document.getElementById('hint');
+  var iframes=[];
+
+  SLIDES.forEach(function(s,i){
+    var f=document.createElement('iframe');
+    f.title=s.title+' explainer';
+    f.loading='lazy';
+    f.setAttribute('data-index',String(i));
+    frameWrap.appendChild(f);
+    iframes.push(f);
+    var d=document.createElement('button');
+    d.type='button';d.className='dot'+(i===0?' active':'');d.setAttribute('aria-label','Slide '+(i+1)+': '+s.title);
+    d.addEventListener('click',function(){goTo(i);});
+    dotNav.appendChild(d);
+  });
+
+  function clearAuto(){if(autoTimer){clearTimeout(autoTimer);autoTimer=null;}}
+  function scheduleAuto(){
+    clearAuto();
+    if(!autoOn)return;
+    autoTimer=setTimeout(function(){goTo(index+1);},SLIDES[index].duration);
+  }
+  function loadFrame(i){
+    var f=iframes[i],src=SLIDES[i].file;
+    if(f.getAttribute('data-loaded')!=='1'){f.src=src;f.setAttribute('data-loaded','1');}
+  }
+  function goTo(i){
+    index=((i%SLIDES.length)+SLIDES.length)%SLIDES.length;
+    iframes.forEach(function(f,j){f.classList.toggle('active',j===index);});
+    dotNav.querySelectorAll('.dot').forEach(function(d,j){d.classList.toggle('active',j===index);});
+    slideTitle.textContent=SLIDES[index].title;
+    slideSub.textContent=SLIDES[index].sub;
+    progress.textContent=(index+1)+' / '+SLIDES.length;
+    loadFrame(index);
+    if(index+1<SLIDES.length)loadFrame(index+1);
+    scheduleAuto();
+  }
+  function toggleAuto(){
+    autoOn=!autoOn;
+    btnAuto.textContent='Auto: '+(autoOn?'on':'off');
+    btnAuto.classList.toggle('active',autoOn);
+    scheduleAuto();
+  }
+
+  document.getElementById('btnPrev').addEventListener('click',function(){goTo(index-1);});
+  document.getElementById('btnNext').addEventListener('click',function(){goTo(index+1);});
+  btnAuto.addEventListener('click',toggleAuto);
+  document.getElementById('btnFullscreen').addEventListener('click',function(){
+    var el=document.documentElement;
+    if(!document.fullscreenElement){el.requestFullscreen&&el.requestFullscreen();}
+    else{document.exitFullscreen&&document.exitFullscreen();}
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();goTo(index+1);}
+    if(e.key==='ArrowLeft'){e.preventDefault();goTo(index-1);}
+    if(e.key==='f'||e.key==='F'){document.getElementById('btnFullscreen').click();}
+    if(e.key==='a'||e.key==='A'){toggleAuto();}
+  });
+  setTimeout(function(){hint.classList.remove('visible');},5000);
+  goTo(0);
+})();
+</script>
+</body>
+</html>

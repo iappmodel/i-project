@@ -9,6 +9,7 @@ echo "== Investor explainer smoke =="
 
 required=(
   "investor_explainer_index.html"
+  "investor_presenter_deck.html"
   "reward_feature_explainer.html"
   "controls_button_explainer.html"
   "share_button_explainer.html"
@@ -44,6 +45,18 @@ for name in "${required[@]}"; do
   fi
 done
 echo "OK index links (14 walkthroughs)"
+
+deck="$DIR/investor_presenter_deck.html"
+grep -q 'href="investor_presenter_deck.html"' "$index" || { echo "FAIL: index must link to presenter deck" >&2; exit 1; }
+for name in "${required[@]}"; do
+  [[ "$name" == "investor_explainer_index.html" ]] && continue
+  [[ "$name" == "investor_presenter_deck.html" ]] && continue
+  if ! grep -q "$name" "$deck"; then
+    echo "FAIL: presenter deck must reference $name" >&2
+    exit 1
+  fi
+done
+echo "OK presenter deck references all walkthroughs"
 
 echo ""
 echo "PASS: investor explainer smoke"
