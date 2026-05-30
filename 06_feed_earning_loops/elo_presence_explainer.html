@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] — ELO · Presence Layer Explainer</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --page-bg: #fff; --heading: #333; --text: #555; --text-secondary: #777; --text-light: #999;
+  --border: #e5e5e5; --card-bg: #fafafa; --shadow: rgba(0,0,0,0.08);
+  --bg-void: #070709; --bg-panel: #16161f; --text-primary: #f0ede8; --text-muted: #9997a0;
+  --icoin: #4ade80; --cyan: #00e5ff; --glass: rgba(7,7,9,0.42); --glass-border: rgba(255,255,255,0.14);
+  --mono: 'SF Mono', Menlo, Consolas, monospace;
+}
+html, body { min-height: 100vh; background: var(--page-bg); font-family: Arial, Helvetica, sans-serif; color: var(--text); }
+.page { max-width: 1180px; margin: 0 auto; padding: 48px 36px 56px; }
+.page-header { margin-bottom: 44px; }
+.page-header h1 { font-size: 13px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-secondary); font-weight: 400; margin-bottom: 8px; }
+.page-header .thesis { font-size: 15px; line-height: 1.5; max-width: 640px; }
+.stage { display: grid; grid-template-columns: 42% 1fr; gap: 56px; align-items: start; }
+.phone-column { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.panel-column { display: flex; flex-direction: column; gap: 18px; padding-top: 8px; }
+.controls-bar { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.ctrl-btn { font-family: Arial, Helvetica, sans-serif; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; padding: 8px 16px; border: 1px solid var(--border); border-radius: 6px; background: var(--page-bg); color: var(--text-secondary); cursor: pointer; }
+.scene-dots { display: flex; gap: 6px; }
+.scene-dot { width: 7px; height: 7px; border-radius: 50%; border: none; background: #ddd; cursor: pointer; padding: 0; }
+.scene-dot.active { background: var(--heading); transform: scale(1.3); }
+.block { padding: 16px 18px; border: 1px solid var(--border); border-radius: 8px; background: var(--page-bg); opacity: 0.42; transition: opacity 0.45s, border-color 0.45s, box-shadow 0.45s; }
+.block.active { opacity: 1; border-color: #ccc; box-shadow: 0 2px 12px var(--shadow); }
+.block-title { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-light); margin-bottom: 6px; }
+.block h2 { font-size: 17px; font-weight: 400; color: var(--heading); margin-bottom: 6px; }
+.block p { font-size: 13px; line-height: 1.55; }
+.block.subtitle h2 { font-size: 22px; }
+.block.subtitle p { font-size: 14px; color: var(--text-secondary); font-style: italic; }
+.pros-card { background: var(--card-bg); }
+.pros-card ul { list-style: none; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.pros-card li { font-size: 12px; padding-left: 14px; position: relative; }
+.pros-card li::before { content: '—'; position: absolute; left: 0; color: var(--text-light); }
+.framing { border-left: 3px solid #ccc; padding-left: 20px; }
+.framing p { font-size: 14px; color: var(--heading); }
+.status-note { font-size: 11px; color: var(--text-light); font-style: italic; margin-top: 6px; }
+
+.phone { width: 360px; height: 720px; border-radius: 44px; background: #ececec; padding: 10px; box-shadow: 0 24px 48px var(--shadow); }
+.phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; position: relative; background: var(--bg-void); }
+.notch { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 108px; height: 28px; background: #000; border-radius: 0 0 18px 18px; z-index: 30; }
+.media { position: absolute; inset: 0; background: linear-gradient(165deg, #1a1035 0%, #c45c26 38%, #2d1b4e 72%, #0a1520 100%); }
+.scrim-top { position: absolute; top: 0; left: 0; right: 0; height: 120px; background: linear-gradient(to bottom, rgba(0,0,0,0.45), transparent); z-index: 2; }
+.scrim-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 260px; background: linear-gradient(to top, rgba(0,0,0,0.82), transparent); z-index: 2; }
+.timer-line { position: absolute; top: 36px; left: 14px; right: 14px; height: 2px; background: rgba(255,255,255,0.15); z-index: 8; }
+.timer-fill { width: 42%; height: 100%; background: rgba(255,255,255,0.6); }
+.wallet-chip { position: absolute; top: 48px; left: 16px; z-index: 8; display: flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 16px; background: var(--glass); border: 0.5px solid var(--glass-border); backdrop-filter: blur(10px); }
+.wallet-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--icoin); }
+.wallet-val { font-family: var(--mono); font-size: 11px; color: var(--text-primary); }
+.reward-badge { position: absolute; top: 48px; right: 16px; z-index: 8; padding: 5px 11px; border-radius: 18px; background: var(--glass); border: 0.5px solid var(--glass-border); font-family: var(--mono); font-size: 11px; color: var(--text-primary); }
+.creator-strip { position: absolute; left: 16px; bottom: 96px; z-index: 8; max-width: 200px; }
+.creator-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.creator-avatar { width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.22); background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--text-primary); }
+.creator-name { font-size: 13px; font-weight: 600; color: var(--text-primary); letter-spacing: 0.04em; }
+.creator-loc { font-size: 10px; color: var(--text-muted); }
+.action-rail { position: absolute; right: 14px; bottom: 108px; z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 14px; opacity: 0.45; }
+.rail-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--glass); border: 0.5px solid var(--glass-border); display: flex; align-items: center; justify-content: center; }
+.bottom-nav { position: absolute; bottom: 0; left: 0; right: 0; height: 68px; background: rgba(245,245,245,0.96); display: flex; align-items: center; justify-content: space-around; z-index: 12; }
+
+/* ELO animated layers */
+.feature-stage { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+.elo-hint {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, 40px); z-index: 6;
+  padding: 6px 14px; border-radius: 20px; font-family: var(--mono); font-size: 10px;
+  color: rgba(240,237,232,0.85); background: rgba(7,7,9,0.55); border: 0.5px solid rgba(255,255,255,0.14);
+  backdrop-filter: blur(10px); opacity: 1; transition: opacity 0.4s, transform 0.4s;
+}
+.elo-mic {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -20px); z-index: 6;
+  width: 48px; height: 48px; border-radius: 50%; background: rgba(0,229,255,0.12);
+  border: 0.5px solid rgba(0,229,255,0.35); display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.4s, box-shadow 0.4s;
+}
+.elo-mic-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--cyan); animation: micPulse 1.2s ease-in-out infinite; }
+@keyframes micPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.85); } }
+
+.elo-membrane-wrap {
+  position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%);
+  width: 62%; max-width: 220px; aspect-ratio: 0.78; z-index: 5;
+  opacity: 0; transition: opacity 0.6s ease;
+}
+.elo-membrane-wrap svg { width: 100%; height: 100%; }
+.elo-fill {
+  position: absolute; inset: 8%; border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 55%, transparent 72%);
+  opacity: 0; transition: opacity 0.8s ease;
+}
+.face-contour {
+  fill: none; stroke: rgba(255,255,255,0.35); stroke-width: 1.2;
+  stroke-dasharray: 400; stroke-dashoffset: 400;
+}
+.elo-greeting {
+  position: absolute; left: 50%; top: 62%; transform: translateX(-50%);
+  font-size: 11px; color: rgba(240,237,232,0.8); text-align: center; white-space: nowrap;
+  opacity: 0; transition: opacity 0.45s;
+}
+.elo-panel {
+  position: absolute; left: 12px; right: 12px; bottom: 80px; z-index: 20;
+  background: rgba(22,22,31,0.96); border-radius: 16px; padding: 14px 16px;
+  border: 0.5px solid rgba(255,255,255,0.1); backdrop-filter: blur(16px);
+  opacity: 0; transform: translateY(16px); transition: opacity 0.45s, transform 0.45s;
+}
+.panel-title { font-size: 12px; font-weight: 500; color: var(--text-primary); margin-bottom: 8px; }
+.panel-line { font-size: 10px; color: var(--text-muted); line-height: 1.5; margin-bottom: 6px; }
+.panel-chip {
+  display: inline-block; font-size: 9px; padding: 3px 8px; border-radius: 10px; margin-top: 4px;
+  background: rgba(0,229,255,0.1); border: 0.5px solid rgba(0,229,255,0.25); color: var(--cyan);
+}
+.pop-glow {
+  position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  background: radial-gradient(circle at 50% 46%, rgba(74,222,128,0.12) 0%, transparent 55%);
+  opacity: 0; transition: opacity 0.5s;
+}
+.relationship-overlay {
+  position: absolute; inset: 0; z-index: 25; display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.45s;
+}
+.rel-card {
+  background: rgba(7,7,9,0.78); border: 0.5px solid rgba(255,255,255,0.12);
+  border-radius: 16px; padding: 20px 24px; text-align: center; max-width: 260px;
+}
+.rel-chain { font-size: 11px; color: var(--text-primary); letter-spacing: 0.04em; margin-bottom: 8px; }
+.rel-sub { font-size: 10px; color: var(--text-muted); line-height: 1.5; }
+
+#phoneScene[data-scene="idle"] .elo-hint::after { content: 'Say “ELO”'; }
+#phoneScene[data-scene="evoke"] .elo-hint { opacity: 0; }
+#phoneScene[data-scene="evoke"] .elo-mic { opacity: 1; box-shadow: 0 0 24px rgba(0,229,255,0.2); }
+#phoneScene[data-scene="manifest"] .elo-hint, #phoneScene[data-scene="manifest"] .elo-mic { opacity: 0; }
+#phoneScene[data-scene="manifest"] .elo-membrane-wrap { opacity: 1; }
+#phoneScene[data-scene="manifest"] .elo-fill { opacity: 1; }
+#phoneScene[data-scene="manifest"] .face-contour { animation: drawFace 1.35s ease forwards; }
+@keyframes drawFace { to { stroke-dashoffset: 0; } }
+#phoneScene[data-scene="greeting"] .elo-membrane-wrap, #phoneScene[data-scene="greeting"] .elo-fill { opacity: 1; }
+#phoneScene[data-scene="greeting"] .face-contour { stroke-dashoffset: 0; animation: breathe 3s ease-in-out infinite; }
+@keyframes breathe { 0%, 100% { opacity: 0.85; } 50% { opacity: 1; } }
+#phoneScene[data-scene="greeting"] .elo-greeting { opacity: 1; }
+#phoneScene[data-scene="greeting"] .elo-greeting::after { content: 'I\'m here. Tap to talk.'; }
+#phoneScene[data-scene="panel"] .elo-membrane-wrap, #phoneScene[data-scene="panel"] .elo-fill { opacity: 1; }
+#phoneScene[data-scene="panel"] .face-contour { stroke-dashoffset: 0; }
+#phoneScene[data-scene="panel"] .elo-panel { opacity: 1; transform: translateY(0); }
+#phoneScene[data-scene="pop"] .elo-membrane-wrap, #phoneScene[data-scene="pop"] .elo-fill { opacity: 1; }
+#phoneScene[data-scene="pop"] .face-contour { stroke-dashoffset: 0; stroke: rgba(74,222,128,0.5); }
+#phoneScene[data-scene="pop"] .pop-glow { opacity: 1; }
+#phoneScene[data-scene="relationship"] .elo-membrane-wrap { opacity: 0.6; }
+#phoneScene[data-scene="relationship"] .relationship-overlay { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  .face-contour { stroke-dashoffset: 0 !important; }
+}
+@media (max-width: 960px) { .stage { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="page-header">
+    <h1>[ i ] Platform · Presence Layer</h1>
+    <p class="thesis">ELO is a living glass membrane at the center of the feed — voice-evoked, relationship-first, POP-aware.</p>
+  </header>
+  <div class="stage">
+    <div class="phone-column">
+      <div class="phone">
+        <div class="phone-screen" id="phoneScene" data-scene="idle">
+          <div class="notch"></div><div class="media"></div><div class="scrim-top"></div><div class="scrim-bottom"></div>
+          <div class="pop-glow"></div>
+          <div class="timer-line"><div class="timer-fill"></div></div>
+          <div class="wallet-chip"><div class="wallet-dot"></div><span class="wallet-val">847</span></div>
+          <div class="reward-badge">50ic</div>
+          <div class="creator-strip">
+            <div class="creator-row"><div class="creator-avatar">R</div><div><div class="creator-name">RAFAELO</div><div class="creator-loc">Cape Town</div></div></div>
+          </div>
+          <div class="action-rail">
+            <div class="rail-btn"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 15s-6-4.5-6-8.5a4 4 0 018 0 4 4 0 018 0c0 4-6 8.5-6 8.5z" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" fill="none"/></svg></div>
+            <div class="rail-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h12v9H5L2 14V2z" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" fill="none"/></svg></div>
+            <div class="rail-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+            <div class="rail-btn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="3" r="1.2" fill="rgba(255,255,255,0.85)"/><circle cx="7" cy="7" r="1.2" fill="rgba(255,255,255,0.85)"/><circle cx="7" cy="11" r="1.2" fill="rgba(255,255,255,0.85)"/></svg></div>
+          </div>
+          <nav class="bottom-nav" aria-hidden="true">
+            <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 8l7-5 7 5v9H3V8z" stroke="#888" stroke-width="1.3" fill="none"/></svg></div>
+            <div class="nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C6 6 3 8 3 12a6 6 0 0012 0c0-4-3-6-6-10z" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+            <div class="nav-icon" style="width:42px;height:42px;border-radius:13px;background:#fff;opacity:1"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 5v12M5 11h12" stroke="#666" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="2" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+            <div class="nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="#888" stroke-width="1.2" fill="none"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+          </nav>
+
+          <div class="feature-stage">
+            <div class="elo-hint" aria-live="polite"></div>
+            <div class="elo-mic" aria-hidden="true"><div class="elo-mic-dot"></div></div>
+            <div class="elo-membrane-wrap">
+              <div class="elo-fill"></div>
+              <svg viewBox="0 0 200 260" aria-hidden="true">
+                <ellipse class="face-contour" cx="100" cy="130" rx="72" ry="95"/>
+                <path class="face-contour" d="M55 118 Q100 95 145 118"/>
+                <path class="face-contour" d="M68 108 Q85 98 102 108"/>
+                <path class="face-contour" d="M98 108 Q115 98 132 108"/>
+                <path class="face-contour" d="M100 118 L100 148"/>
+                <path class="face-contour" d="M78 168 Q100 182 122 168"/>
+              </svg>
+            </div>
+            <div class="elo-greeting"></div>
+            <div class="elo-panel">
+              <div class="panel-title">ELO · Presence</div>
+              <div class="panel-line">Companion mode · Mentor relationship</div>
+              <div class="panel-line">Recommendations · memories · guided actions</div>
+              <span class="panel-chip">Tap membrane anytime</span>
+            </div>
+            <div class="relationship-overlay">
+              <div class="rel-card">
+                <div class="rel-chain">Human → Presence → Relationship</div>
+                <div class="rel-sub">Feed is secondary. ELO does not replace OUT-PROFILE — it owns the center companion zone.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="controls-bar">
+        <button type="button" class="ctrl-btn" id="btnPlayPause" aria-label="Pause animation">Pause</button>
+        <button type="button" class="ctrl-btn" id="btnRestart" aria-label="Restart animation">Restart</button>
+        <div class="scene-dots" id="sceneDots" role="tablist" aria-label="Animation scenes"></div>
+      </div>
+    </div>
+
+    <div class="panel-column">
+      <div class="block subtitle active" data-scene="idle" data-block="title">
+        <h2>ELO</h2>
+        <p>The feed shows content. ELO holds the relationship.</p>
+      </div>
+      <div class="block" data-scene="idle" data-block="concept">
+        <div class="block-title">Concept</div>
+        <p>ELO is a living presence membrane — procedural glass face contours over full-bleed media. Not a static avatar, not an orb, not a chatbot card.</p>
+        <p class="status-note">Implemented: EloPresenceLayer, voice wake, presence panel, personality stack (MVP).</p>
+      </div>
+      <div class="block" data-scene="evoke" data-block="evoke">
+        <div class="block-title">Voice evoke</div>
+        <p>Opt-in activation: a non-blocking “Say ELO” hint appears. User taps to arm mic — no always-listening. Saying “ELO” manifests the membrane at center (~1.35s emergence).</p>
+      </div>
+      <div class="block" data-scene="manifest" data-block="membrane">
+        <div class="block-title">Glass membrane</div>
+        <p>Semi-transparent frosted contour lines (jaw, brows, eyes, nose, lips) with soft radial fill — background visible through the membrane. ~62% width, centered over media.</p>
+      </div>
+      <div class="block" data-scene="greeting" data-block="greeting">
+        <div class="block-title">Relationship</div>
+        <p>Returning users see “I'm here. Tap to talk.” First visit opens onboarding: “I heard you.” Tap membrane → glass presence panel with chat, recommendations, and personality settings.</p>
+      </div>
+      <div class="block" data-scene="panel" data-block="panel">
+        <div class="block-title">Presence panel</div>
+        <p>Panel surfaces memories, permissions, recommendations, and stack editor — companion, mentor, muse modes. Config persists locally (`i-elo-presence-config-v1`).</p>
+      </div>
+      <div class="block" data-scene="pop" data-block="pop">
+        <div class="block-title">POP boundary</div>
+        <p>ELO reacts to POP vision landmarks and proof status — glow states, status line — but does not bypass proof gates. Companion layer, not a reward shortcut.</p>
+      </div>
+      <div class="block" data-scene="relationship" data-block="platform">
+        <div class="block-title">Platform impact</div>
+        <p>ELO owns the center zone; OUT-PROFILE stays bottom-left for creators. This inverts typical social feeds: Human → Presence → Relationship, with economy and gestures on the periphery.</p>
+      </div>
+      <div class="block pros-card" data-block="pros">
+        <div class="block-title">Pros</div>
+        <ul>
+          <li>Relationship-first UX — not content-only scrolling.</li>
+          <li>Voice evoke is opt-in — privacy-respecting activation.</li>
+          <li>Glass membrane preserves immersive full-bleed media.</li>
+          <li>Personality stack — mentor, companion, operating modes.</li>
+          <li>POP-aware without bypassing verification gates.</li>
+          <li>Does not replace creator OUT-PROFILE — clear zone ownership.</li>
+          <li>Defensible companion layer competitors lack.</li>
+        </ul>
+      </div>
+      <div class="block framing" data-block="framing">
+        <p>ELO is the user's presence companion at the center of [ i ] — voice-evoked, glass-rendered, and wired to POP without replacing the attention economy around it.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var SCENES=[
+    {id:'idle',duration:1400,panel:['title','concept']},
+    {id:'evoke',duration:1200,panel:['evoke']},
+    {id:'manifest',duration:1800,panel:['membrane']},
+    {id:'greeting',duration:1400,panel:['greeting']},
+    {id:'panel',duration:1500,panel:['panel']},
+    {id:'pop',duration:1400,panel:['pop']},
+    {id:'relationship',duration:1600,panel:['platform']}
+  ];
+  var phoneScene=document.getElementById('phoneScene'),btnPlayPause=document.getElementById('btnPlayPause'),btnRestart=document.getElementById('btnRestart'),sceneDots=document.getElementById('sceneDots'),blocks=document.querySelectorAll('.block[data-block]');
+  var sceneIndex=0,playing=true,pausedByHover=false,timeoutId=null,reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  SCENES.forEach(function(s,i){var d=document.createElement('button');d.type='button';d.className='scene-dot'+(i===0?' active':'');d.setAttribute('role','tab');d.setAttribute('aria-label','Scene: '+s.id);d.addEventListener('click',function(){goToScene(i,true);});sceneDots.appendChild(d);});
+  function clearTimers(){if(timeoutId){clearTimeout(timeoutId);timeoutId=null;}}
+  function setPanelActive(keys){blocks.forEach(function(b){b.classList.toggle('active',keys.indexOf(b.getAttribute('data-block'))!==-1);});}
+  function setDots(i){sceneDots.querySelectorAll('.scene-dot').forEach(function(d,j){d.classList.toggle('active',j===i);});}
+  function applyScene(i){phoneScene.setAttribute('data-scene',SCENES[i].id);setPanelActive(SCENES[i].panel||[]);setDots(i);}
+  function goToScene(index,manual){clearTimers();sceneIndex=((index%SCENES.length)+SCENES.length)%SCENES.length;applyScene(sceneIndex);if(manual&&!playing)return;if(!playing||pausedByHover)return;timeoutId=setTimeout(function(){if(playing&&!pausedByHover)goToScene(sceneIndex+1);},reducedMotion?800:SCENES[sceneIndex].duration);}
+  btnPlayPause.addEventListener('click',function(){playing=!playing;btnPlayPause.textContent=playing?'Pause':'Play';if(playing&&!pausedByHover)goToScene(sceneIndex,false);else clearTimers();});
+  btnRestart.addEventListener('click',function(){playing=true;pausedByHover=false;btnPlayPause.textContent='Pause';goToScene(0,false);});
+  blocks.forEach(function(b){b.addEventListener('mouseenter',function(){var s=b.getAttribute('data-scene');if(!s)return;pausedByHover=true;clearTimers();var idx=SCENES.findIndex(function(x){return x.id===s;});if(idx>=0){applyScene(idx);setPanelActive([b.getAttribute('data-block')]);}});b.addEventListener('mouseleave',function(){if(!playing)return;pausedByHover=false;goToScene(sceneIndex,false);});});
+  goToScene(0,false);
+})();
+</script>
+</body>
+</html>

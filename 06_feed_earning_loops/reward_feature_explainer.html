@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] — REWARD Feature Explainer</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --page-bg: #ffffff;
+    --text: #757575;
+    --text-light: #9a9a9a;
+    --text-dark: #5a5a5a;
+    --phone-shell: #ececec;
+    --phone-shadow: rgba(0, 0, 0, 0.12);
+    --glass: rgba(7, 7, 9, 0.42);
+    --glass-border: rgba(255, 255, 255, 0.14);
+    --mint: #4ade80;
+    --mint-glow: rgba(74, 222, 128, 0.35);
+    --mono: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  }
+
+  html, body {
+    min-height: 100vh;
+    background: var(--page-bg);
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 48px 40px 64px;
+  }
+
+  /* ── Header ── */
+  .title {
+    text-align: center;
+    font-size: 42px;
+    font-weight: 400;
+    letter-spacing: 0.28em;
+    color: var(--text);
+    margin-bottom: 52px;
+    text-indent: 0.28em;
+  }
+
+  /* ── Three-column layout (matches investor slide) ── */
+  .stage {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) 320px minmax(200px, 1fr);
+    gap: 36px;
+    align-items: center;
+  }
+
+  /* ── Left copy column ── */
+  .copy-left {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding-right: 12px;
+  }
+
+  .topic {
+    opacity: 0.35;
+    transition: opacity 0.55s ease, transform 0.55s ease;
+    transform: translateX(-6px);
+  }
+
+  .topic.active {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .topic-label {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 6px;
+  }
+
+  .topic p {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--text);
+  }
+
+  .pros-block {
+    margin-top: 12px;
+    padding-top: 24px;
+    border-top: 1px solid #e8e8e8;
+  }
+
+  .pros-block h3 {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 14px;
+    font-weight: 400;
+  }
+
+  .pros-block ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .pros-block li {
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--text-dark);
+    padding-left: 14px;
+    position: relative;
+  }
+
+  .pros-block li::before {
+    content: '+';
+    position: absolute;
+    left: 0;
+    color: var(--text-light);
+    font-weight: 700;
+  }
+
+  /* ── Phone ── */
+  .phone-wrap {
+    display: flex;
+    justify-content: center;
+    position: relative;
+  }
+
+  .phone {
+    width: 300px;
+    height: 620px;
+    border-radius: 44px;
+    background: var(--phone-shell);
+    padding: 10px;
+    box-shadow:
+      0 24px 48px var(--phone-shadow),
+      0 8px 16px rgba(0, 0, 0, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    position: relative;
+  }
+
+  .phone-screen {
+    width: 100%;
+    height: 100%;
+    border-radius: 36px;
+    overflow: hidden;
+    position: relative;
+    background: #000;
+  }
+
+  .notch {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 108px;
+    height: 28px;
+    background: #000;
+    border-radius: 0 0 18px 18px;
+    z-index: 20;
+  }
+
+  .media {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, transparent 30%, transparent 60%, rgba(0,0,0,0.75) 100%),
+      url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=800&q=80') center/cover no-repeat;
+  }
+
+  /* Static chrome — not animated */
+  .timer-line {
+    position: absolute;
+    top: 36px;
+    left: 14px;
+    right: 14px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 1px;
+    z-index: 8;
+  }
+
+  .timer-line-fill {
+    height: 100%;
+    width: 38%;
+    background: rgba(255, 255, 255, 0.55);
+    border-radius: 1px;
+  }
+
+  .out-profile {
+    position: absolute;
+    left: 16px;
+    bottom: 96px;
+    z-index: 8;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .out-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 2px;
+  }
+
+  .out-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.95);
+    letter-spacing: -0.01em;
+  }
+
+  .out-loc {
+    font-size: 11px;
+    color: rgba(255,255,255,0.55);
+  }
+
+  .action-rail {
+    position: absolute;
+    right: 12px;
+    bottom: 108px;
+    z-index: 8;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: center;
+  }
+
+  .action-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(7, 7, 9, 0.42);
+    border: 0.5px solid rgba(255,255,255,0.12);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .action-btn svg { opacity: 0.85; }
+
+  .action-count {
+    font-size: 9px;
+    color: rgba(255,255,255,0.65);
+    text-align: center;
+    margin-top: -8px;
+  }
+
+  .bottom-nav {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 72px;
+    background: rgba(245, 245, 245, 0.96);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 8px 8px;
+    z-index: 10;
+    border-top: 0.5px solid rgba(0,0,0,0.06);
+  }
+
+  .nav-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.45;
+  }
+
+  .nav-icon--create {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    opacity: 1;
+  }
+
+  /* ── REWARD pill — the only animated element ── */
+  .reward-anchor {
+    position: absolute;
+    top: 52px;
+    right: 14px;
+    z-index: 12;
+    width: 72px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .reward-ring {
+    position: absolute;
+    inset: 0;
+    transform: rotate(-90deg);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .reward-ring.visible { opacity: 1; }
+
+  .reward-ring circle {
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  .reward-ring .track {
+    stroke: rgba(255, 255, 255, 0.12);
+  }
+
+  .reward-ring .progress {
+    stroke: var(--mint);
+    stroke-dasharray: 201;
+    stroke-dashoffset: 201;
+    filter: drop-shadow(0 0 4px rgba(74, 222, 128, 0.5));
+    transition: stroke-dashoffset 0.08s linear;
+  }
+
+  .reward-pill {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border-radius: 18px;
+    border: 0.5px solid var(--glass-border);
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition:
+      border-color 0.45s ease,
+      box-shadow 0.45s ease,
+      transform 0.45s ease,
+      opacity 0.6s ease,
+      background 0.45s ease;
+  }
+
+  .reward-pill__amount {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(240, 237, 232, 0.95);
+    letter-spacing: 0.02em;
+    transition: color 0.4s ease, text-shadow 0.4s ease;
+  }
+
+  .reward-pill__coin {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6ee7a0 0%, #22c55e 100%);
+    box-shadow: 0 0 6px rgba(74, 222, 128, 0.4);
+    flex-shrink: 0;
+  }
+
+  .reward-pill__hint {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-size: 8px;
+    color: rgba(240, 237, 232, 0.55);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+
+  /* Phase: accumulating */
+  .reward-pill[data-phase="accumulating"] {
+    border-color: rgba(74, 222, 128, 0.25);
+  }
+
+  /* Phase: complete — highlight pulse */
+  .reward-pill[data-phase="complete"] {
+    border-color: var(--mint-glow);
+    box-shadow: 0 0 22px rgba(74, 222, 128, 0.45), 0 0 40px rgba(74, 222, 128, 0.15);
+    transform: scale(1.06);
+    animation: rewardPulse 0.7s ease-in-out 2;
+  }
+
+  .reward-pill[data-phase="complete"] .reward-pill__amount {
+    color: #fff;
+    text-shadow: 0 0 12px rgba(74, 222, 128, 0.8);
+  }
+
+  @keyframes rewardPulse {
+    0%, 100% { transform: scale(1.06); }
+    50% { transform: scale(1.1); }
+  }
+
+  /* Phase: review */
+  .reward-pill[data-phase="review"] {
+    border-color: var(--mint-glow);
+    box-shadow: 0 0 16px rgba(74, 222, 128, 0.22);
+    padding-bottom: 8px;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .reward-pill[data-phase="review"] .reward-pill__hint {
+    opacity: 1;
+    position: static;
+    transform: none;
+  }
+
+  /* Phase: validating */
+  .reward-pill[data-phase="validating"] .reward-pill__hint {
+    opacity: 1;
+    position: static;
+    transform: none;
+  }
+
+  .reward-pill[data-phase="validating"] .reward-pill__hint::after {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-left: 4px;
+    border: 1.5px solid rgba(240,237,232,0.4);
+    border-top-color: var(--mint);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Phase: settled — fade out */
+  .reward-pill[data-phase="settled"] {
+    opacity: 0;
+    transform: scale(0.92) translateY(-4px);
+    pointer-events: none;
+  }
+
+  /* ── Right callout column ── */
+  .copy-right {
+    position: relative;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+  }
+
+  .callout-line {
+    position: absolute;
+    left: -48px;
+    top: 50%;
+    width: 48px;
+    height: 1px;
+    background: #c8c8c8;
+    transform-origin: left center;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .callout-line.visible { opacity: 1; }
+
+  .callout-line::after {
+    content: '';
+    position: absolute;
+    right: -3px;
+    top: -3px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #c8c8c8;
+  }
+
+  .callout-bubble {
+    background: #f3f3f3;
+    border: 1px solid #e0e0e0;
+    border-radius: 28px;
+    padding: 18px 28px;
+    min-width: 140px;
+    text-align: center;
+    opacity: 0.35;
+    transition: opacity 0.55s ease, transform 0.55s ease, box-shadow 0.55s ease;
+    transform: translateX(6px);
+  }
+
+  .callout-bubble.active {
+    opacity: 1;
+    transform: translateX(0);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  }
+
+  .callout-bubble .phase-name {
+    font-size: 22px;
+    letter-spacing: 0.06em;
+    color: var(--text);
+    font-weight: 400;
+  }
+
+  .callout-bubble .phase-detail {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+
+  /* ── Phase indicator strip ── */
+  .phase-strip {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+  }
+
+  .phase-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ddd;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease;
+    padding: 0;
+  }
+
+  .phase-dot.active {
+    background: var(--text);
+    transform: scale(1.25);
+  }
+
+  .phase-dot:hover { background: #aaa; }
+
+  .footer-note {
+    text-align: center;
+    margin-top: 28px;
+    font-size: 11px;
+    color: var(--text-light);
+    letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 1100px) {
+    .stage {
+      grid-template-columns: 1fr;
+      gap: 32px;
+      justify-items: center;
+    }
+    .copy-left, .copy-right { max-width: 420px; }
+    .callout-line { display: none; }
+    .title { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1 class="title">REWARD</h1>
+
+  <div class="stage">
+    <!-- LEFT: investor narrative -->
+    <div class="copy-left">
+      <div class="topic active" data-topic="offer">
+        <div class="topic-label">01 · Transparent offer</div>
+        <p>When a user engages with sponsored or reward-bearing media, the REWARD pill surfaces the exact coin amount on offer — before commitment. No hidden thresholds. The viewer always knows what verified attention is worth on this piece of content.</p>
+      </div>
+
+      <div class="topic" data-topic="display">
+        <div class="topic-label">02 · Dual-ledger clarity</div>
+        <p>The amount displayed uses the platform's mono coin notation (<strong>50ic</strong> = iCoins, attention-native currency). Sponsored campaigns may also surface vCoin offers. Separate ledgers, one glass pill — the user sees offered coins and projected earnings in real time.</p>
+      </div>
+
+      <div class="topic" data-topic="accumulating">
+        <div class="topic-label">03 · Engagement arc</div>
+        <p>As the user watches and interacts, an engagement ring rolls toward the offered amount. Depth beats skimming: the arc only completes when dwell, attention score, and completion criteria align with the campaign brief — not on passive scroll-past.</p>
+      </div>
+
+      <div class="topic" data-topic="complete">
+        <div class="topic-label">04 · Completion moment</div>
+        <p>When the arc closes, the pill highlights — a single unmistakable beat that the viewer met the interaction contract. The amount glows, then transitions. This is the "earned it" signal investors can see without reading a dashboard.</p>
+      </div>
+
+      <div class="topic" data-topic="review">
+        <div class="topic-label">05 · POPS review gate</div>
+        <p>After completion, the pill enters <em>Review</em>. The platform's 5-gate qualification engine (device signal, dwell, attention score, completion event, fraud check) decides whether the full amount clears — full or nothing, never partial. Settlement runs server-side via Edge Functions, not client-side minting.</p>
+      </div>
+
+      <div class="topic" data-topic="settled">
+        <div class="topic-label">06 · Wallet settlement</div>
+        <p>On approval, the pill fades and value moves to the Attention Wallet — pending first, then available per trust tier. The feed stays immersive; economics happen in the glass layer, not a separate fintech shell.</p>
+      </div>
+
+      <div class="pros-block">
+        <h3>Why this matters</h3>
+        <ul>
+          <li>Prices attention at the point of consumption — familiar feed UX, novel economics underneath</li>
+          <li>Transparent pre-commit offer reduces fraud disputes and increases sponsor trust</li>
+          <li>Server-verified payout (POPS + Edge Functions) — no client-side coin inflation</li>
+          <li>30% of sponsored revenue funds the viewer reward pool — aligned creator / viewer / platform split</li>
+          <li>Non-intrusive glass overlay preserves immersion; reward never hijacks the media canvas</li>
+          <li>Maps directly to Loop 1: Watch → Verify → Reward → Wallet</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- CENTER: official platform phone -->
+    <div class="phone-wrap">
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="notch"></div>
+          <div class="media"></div>
+
+          <!-- Static TIMER (not animated — separate zone per design law) -->
+          <div class="timer-line" aria-hidden="true">
+            <div class="timer-line-fill"></div>
+          </div>
+
+          <!-- REWARD — animated feature -->
+          <div class="reward-anchor" id="reward-anchor">
+            <svg class="reward-ring" id="reward-ring" width="72" height="72" viewBox="0 0 72 72" aria-hidden="true">
+              <circle class="track" cx="36" cy="36" r="32"/>
+              <circle class="progress" id="reward-progress" cx="36" cy="36" r="32"/>
+            </svg>
+            <div class="reward-pill" id="reward-pill" data-phase="offer" role="status" aria-live="polite">
+              <span class="reward-pill__coin" aria-hidden="true"></span>
+              <span class="reward-pill__amount" id="reward-amount">50ic</span>
+              <span class="reward-pill__hint" id="reward-hint"></span>
+            </div>
+          </div>
+
+          <!-- Static chrome -->
+          <div class="out-profile">
+            <div class="out-avatar">R</div>
+            <div class="out-name">RAFAELO</div>
+            <div class="out-loc">Cape Town</div>
+          </div>
+
+          <div class="action-rail">
+            <div>
+              <div class="action-btn">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 15s-6-4.5-6-8.5a4 4 0 018 0 4 4 0 018 0c0 4-6 8.5-6 8.5z" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" fill="none"/></svg>
+              </div>
+              <div class="action-count">2.4k</div>
+            </div>
+            <div class="action-btn">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h12v9H5L2 14V2z" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" fill="none"/></svg>
+            </div>
+            <div class="action-btn">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="action-btn">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="3" r="1.2" fill="rgba(255,255,255,0.85)"/><circle cx="7" cy="7" r="1.2" fill="rgba(255,255,255,0.85)"/><circle cx="7" cy="11" r="1.2" fill="rgba(255,255,255,0.85)"/></svg>
+            </div>
+          </div>
+
+          <nav class="bottom-nav" aria-label="Main navigation">
+            <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 8l7-5 7 5v9H3V8z" stroke="#888" stroke-width="1.3" fill="none"/></svg></div>
+            <div class="nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C6 6 3 8 3 12a6 6 0 0012 0c0-4-3-6-6-10z" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+            <div class="nav-icon nav-icon--create"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 5v12M5 11h12" stroke="#666" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="2" stroke="#888" stroke-width="1.2" fill="none"/><path d="M2 9h16" stroke="#888" stroke-width="1.2"/></svg></div>
+            <div class="nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="#888" stroke-width="1.2" fill="none"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: phase callouts -->
+    <div class="copy-right">
+      <div class="callout-line" id="callout-line"></div>
+      <div class="callout-bubble active" data-callout="offer">
+        <div class="phase-name">REWARD</div>
+        <div class="phase-detail">Offer visible<br/>top-right glass pill</div>
+      </div>
+      <div class="callout-bubble" data-callout="display" hidden>
+        <div class="phase-name">50ic</div>
+        <div class="phase-detail">Coin amount + ledger<br/>shown before earn</div>
+      </div>
+      <div class="callout-bubble" data-callout="accumulating" hidden>
+        <div class="phase-name">ARC</div>
+        <div class="phase-detail">Ring rolls toward<br/>offered amount</div>
+      </div>
+      <div class="callout-bubble" data-callout="complete" hidden>
+        <div class="phase-name">EARNED</div>
+        <div class="phase-detail">Highlight pulse<br/>on completion</div>
+      </div>
+      <div class="callout-bubble" data-callout="review" hidden>
+        <div class="phase-name">REVIEW</div>
+        <div class="phase-detail">POPS 5-gate<br/>qualification</div>
+      </div>
+      <div class="callout-bubble" data-callout="validating" hidden>
+        <div class="phase-name">VALIDATE</div>
+        <div class="phase-detail">Edge Function<br/>settlement</div>
+      </div>
+      <div class="callout-bubble" data-callout="settled" hidden>
+        <div class="phase-name">WALLET</div>
+        <div class="phase-detail">Pill fades · value<br/>credits pending</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase-strip" id="phase-strip" aria-label="Animation phases"></div>
+  <p class="footer-note">[ i ] Platform · REWARD layer · Canonical Picture 2 immersive shell · Click dots to scrub · Auto-loops</p>
+</div>
+
+<script>
+(function () {
+  const CIRC = 2 * Math.PI * 32; // r=32
+
+  const phases = [
+    {
+      id: 'offer',
+      duration: 2200,
+      ring: false,
+      progress: 0,
+      amount: '50ic',
+      hint: '',
+      onEnter(pill) { pill.dataset.phase = 'offer'; }
+    },
+    {
+      id: 'display',
+      duration: 2400,
+      ring: false,
+      progress: 0,
+      amount: '50ic',
+      hint: '',
+      onEnter(pill) { pill.dataset.phase = 'offer'; }
+    },
+    {
+      id: 'accumulating',
+      duration: 4200,
+      ring: true,
+      progress: 1,
+      amount: '50ic',
+      hint: '',
+      onEnter(pill) { pill.dataset.phase = 'accumulating'; }
+    },
+    {
+      id: 'complete',
+      duration: 1800,
+      ring: true,
+      progress: 1,
+      amount: '50ic',
+      hint: '',
+      onEnter(pill) { pill.dataset.phase = 'complete'; }
+    },
+    {
+      id: 'review',
+      duration: 2600,
+      ring: false,
+      progress: 1,
+      amount: '50ic',
+      hint: 'Review · tap to edit',
+      onEnter(pill) { pill.dataset.phase = 'review'; }
+    },
+    {
+      id: 'validating',
+      duration: 2000,
+      ring: false,
+      progress: 1,
+      amount: '50ic',
+      hint: 'Validating',
+      onEnter(pill) { pill.dataset.phase = 'validating'; }
+    },
+    {
+      id: 'settled',
+      duration: 2200,
+      ring: false,
+      progress: 1,
+      amount: '50ic',
+      hint: '',
+      onEnter(pill) { pill.dataset.phase = 'settled'; }
+    }
+  ];
+
+  const pill = document.getElementById('reward-pill');
+  const ring = document.getElementById('reward-ring');
+  const progressEl = document.getElementById('reward-progress');
+  const amountEl = document.getElementById('reward-amount');
+  const hintEl = document.getElementById('reward-hint');
+  const calloutLine = document.getElementById('callout-line');
+  const strip = document.getElementById('phase-strip');
+
+  progressEl.style.strokeDasharray = CIRC;
+  progressEl.style.strokeDashoffset = CIRC;
+
+  let phaseIndex = 0;
+  let rafId = null;
+  let timeoutId = null;
+  let accumStart = 0;
+  let paused = false;
+
+  phases.forEach((p, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'phase-dot' + (i === 0 ? ' active' : '');
+    dot.type = 'button';
+    dot.title = p.id;
+    dot.setAttribute('aria-label', 'Phase: ' + p.id);
+    dot.addEventListener('click', () => goToPhase(i, true));
+    strip.appendChild(dot);
+  });
+
+  function setProgress(t) {
+    const offset = CIRC * (1 - Math.min(1, Math.max(0, t)));
+    progressEl.style.strokeDashoffset = offset;
+  }
+
+  function syncUI(phase) {
+    document.querySelectorAll('.topic').forEach(el => {
+      el.classList.toggle('active', el.dataset.topic === phase.id);
+    });
+
+    document.querySelectorAll('.callout-bubble').forEach(el => {
+      const on = el.dataset.callout === phase.id;
+      el.hidden = !on;
+      el.classList.toggle('active', on);
+    });
+
+    document.querySelectorAll('.phase-dot').forEach((el, i) => {
+      el.classList.toggle('active', i === phaseIndex);
+    });
+
+    calloutLine.classList.toggle('visible', phase.id !== 'settled');
+    amountEl.textContent = phase.amount;
+    hintEl.textContent = phase.hint;
+
+    ring.classList.toggle('visible', phase.ring);
+    if (!phase.ring && phase.progress === 0) setProgress(0);
+
+    phase.onEnter(pill);
+  }
+
+  function goToPhase(index, manual) {
+    if (manual) {
+      cancelAnimationFrame(rafId);
+      clearTimeout(timeoutId);
+    }
+    phaseIndex = index % phases.length;
+    const phase = phases[phaseIndex];
+    syncUI(phase);
+
+    if (phase.id === 'accumulating') {
+      accumStart = performance.now();
+      const tick = (now) => {
+        const t = Math.min(1, (now - accumStart) / (phase.duration - 200));
+        setProgress(t);
+        if (t < 1) rafId = requestAnimationFrame(tick);
+      };
+      rafId = requestAnimationFrame(tick);
+    } else if (phase.ring) {
+      setProgress(phase.progress);
+    }
+
+    timeoutId = setTimeout(() => {
+      if (!paused) goToPhase(phaseIndex + 1);
+    }, phase.duration);
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    paused = document.hidden;
+    if (!paused) goToPhase(phaseIndex, true);
+  });
+
+  goToPhase(0);
+})();
+</script>
+</body>
+</html>
