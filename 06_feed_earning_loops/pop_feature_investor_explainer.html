@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] — POP · Attention Control Layer Explainer</title>
+<style>
+/* ── Base styles ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --page-bg: #fff; --heading: #333; --text: #555; --text-secondary: #777; --text-light: #999;
+  --border: #e5e5e5; --card-bg: #fafafa; --shadow: rgba(0,0,0,0.08);
+  --bg-void: #070709; --bg-panel: #16161f; --text-primary: #f0ede8; --text-muted: #9997a0;
+  --icoin: #4ade80; --gold: #f59e0b; --cyan: #00e5ff;
+  --glass: rgba(7,7,9,0.42); --glass-border: rgba(255,255,255,0.14);
+  --mono: 'SF Mono', Menlo, Consolas, monospace;
+}
+html, body { min-height: 100vh; background: var(--page-bg); font-family: Arial, Helvetica, sans-serif; color: var(--text); }
+.page { max-width: 1180px; margin: 0 auto; padding: 48px 36px 40px; }
+.page-header { margin-bottom: 36px; }
+.page-header h1 { font-size: 13px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-secondary); font-weight: 400; margin-bottom: 8px; }
+.page-header .title { font-size: 22px; font-weight: 400; color: var(--heading); margin-bottom: 8px; max-width: 640px; }
+.page-header .thesis { font-size: 15px; line-height: 1.55; max-width: 680px; color: var(--text); }
+
+/* ── Layout ── */
+.stage { display: grid; grid-template-columns: 42% 1fr; gap: 48px; align-items: start; margin-bottom: 36px; }
+.phone-column { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.panel-column { display: flex; flex-direction: column; gap: 14px; padding-top: 4px; max-height: 680px; overflow-y: auto; }
+.controls-bar { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.ctrl-btn { font-family: Arial, Helvetica, sans-serif; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; padding: 8px 16px; border: 1px solid var(--border); border-radius: 6px; background: var(--page-bg); color: var(--text-secondary); cursor: pointer; }
+.scene-dots { display: flex; gap: 6px; }
+.scene-dot { width: 7px; height: 7px; border-radius: 50%; border: none; background: #ddd; cursor: pointer; padding: 0; }
+.scene-dot.active { background: var(--heading); transform: scale(1.3); }
+
+/* ── Side content ── */
+.block { padding: 14px 16px; border: 1px solid var(--border); border-radius: 8px; background: var(--page-bg); opacity: 0.38; transition: opacity 0.45s, border-color 0.45s, box-shadow 0.45s; }
+.block.active { opacity: 1; border-color: #ccc; box-shadow: 0 2px 12px var(--shadow); }
+.block-title { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-light); margin-bottom: 5px; }
+.block h2 { font-size: 16px; font-weight: 400; color: var(--heading); margin-bottom: 5px; }
+.block p, .block li { font-size: 12px; line-height: 1.55; }
+.block ul { list-style: none; margin-top: 6px; display: flex; flex-direction: column; gap: 5px; }
+.block ul li { padding-left: 12px; position: relative; }
+.block ul li::before { content: '·'; position: absolute; left: 0; color: var(--text-light); }
+.block.subtitle h2 { font-size: 18px; }
+.block.subtitle p { font-size: 13px; color: var(--text-secondary); font-style: italic; }
+.pros-card { background: var(--card-bg); }
+.pros-card li::before { content: '—'; }
+.arch-list { font-family: var(--mono); font-size: 10px; color: var(--text-secondary); line-height: 1.7; margin-top: 6px; }
+.roadmap { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+.road-item { font-size: 11px; padding: 6px 8px; border-radius: 6px; background: var(--card-bg); border: 0.5px solid var(--border); }
+.road-item strong { color: var(--heading); font-weight: 500; }
+.framing { border-left: 3px solid #ccc; padding-left: 16px; }
+.framing p { font-size: 13px; color: var(--heading); line-height: 1.55; }
+.status-note { font-size: 10px; color: var(--text-light); font-style: italic; margin-top: 5px; }
+
+/* ── Phone mockup ── */
+.phone { width: 360px; height: 720px; border-radius: 44px; background: #ececec; padding: 10px; box-shadow: 0 24px 48px var(--shadow); }
+.phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; position: relative; background: var(--bg-void); }
+.notch { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 108px; height: 28px; background: #000; border-radius: 0 0 18px 18px; z-index: 30; }
+
+/* ── Phone UI (static chrome) ── */
+.media { position: absolute; inset: 0; background: linear-gradient(165deg, #1a1035 0%, #c45c26 38%, #2d1b4e 72%, #0a1520 100%); z-index: 1; }
+.scrim-top { position: absolute; top: 0; left: 0; right: 0; height: 100px; background: linear-gradient(to bottom, rgba(0,0,0,0.4), transparent); z-index: 2; }
+.scrim-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 200px; background: linear-gradient(to top, rgba(0,0,0,0.75), transparent); z-index: 2; }
+.timer-line { position: absolute; top: 36px; left: 14px; right: 14px; height: 2px; background: rgba(255,255,255,0.12); z-index: 8; }
+.timer-fill { height: 100%; width: 45%; background: rgba(255,255,255,0.5); }
+.wallet-chip {
+  position: absolute; top: 48px; left: 16px; z-index: 8;
+  display: flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 16px;
+  background: var(--glass); border: 0.5px solid var(--glass-border); backdrop-filter: blur(10px);
+  transition: border-color 0.4s, box-shadow 0.4s;
+}
+.wallet-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--icoin); }
+.wallet-val { font-family: var(--mono); font-size: 11px; color: var(--text-primary); transition: color 0.4s; }
+.wallet-pending { font-family: var(--mono); font-size: 8px; color: var(--gold); margin-left: 2px; opacity: 0; transition: opacity 0.4s; }
+.reward-pill {
+  position: absolute; top: 48px; right: 16px; z-index: 9;
+  padding: 5px 11px; border-radius: 16px; background: var(--glass); border: 0.5px solid var(--glass-border);
+  backdrop-filter: blur(10px); font-family: var(--mono); font-size: 11px; color: var(--text-primary);
+  transition: border-color 0.4s, box-shadow 0.4s, color 0.4s;
+}
+.reward-target-ring {
+  position: absolute; top: 42px; right: 10px; width: 52px; height: 52px; border-radius: 50%;
+  border: 2px solid transparent; z-index: 8; pointer-events: none;
+  transition: border-color 0.4s, transform 0.4s;
+}
+.dwell-ring {
+  position: absolute; inset: -6px; border-radius: 50%; border: 2px solid var(--cyan);
+  opacity: 0; transform: scale(0.85);
+  transition: opacity 0.35s, transform 0.35s;
+}
+.dwell-fill {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: conic-gradient(var(--cyan) 0deg, transparent 0deg);
+  opacity: 0.25; transition: background 0.6s ease;
+}
+.out-profile { position: absolute; left: 16px; bottom: 28px; z-index: 8; }
+.out-name { font-size: 12px; font-weight: 600; color: var(--text-primary); }
+.out-loc { font-size: 9px; color: var(--text-muted); }
+.action-rail { position: absolute; right: 14px; bottom: 40px; z-index: 8; display: flex; flex-direction: column; gap: 12px; opacity: 0.45; }
+.rail-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--glass); border: 0.5px solid var(--glass-border); }
+
+/* ── POP animation layers ── */
+.pop-layer { position: absolute; inset: 0; z-index: 12; pointer-events: none; }
+.gaze-dot {
+  position: absolute; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--cyan); box-shadow: 0 0 12px rgba(0,229,255,0.6);
+  top: 55%; left: 45%; opacity: 0; transition: top 0.8s ease, left 0.8s ease, opacity 0.35s;
+}
+.gaze-trail {
+  position: absolute; width: 24px; height: 24px; border-radius: 50%;
+  border: 1px solid rgba(0,229,255,0.25); top: 55%; left: 45%;
+  transform: translate(-7px,-7px); opacity: 0; transition: top 0.8s ease, left 0.8s ease, opacity 0.35s;
+}
+.signal-tags {
+  position: absolute; top: 72px; left: 16px; z-index: 10;
+  display: flex; flex-direction: column; gap: 4px; opacity: 0; transition: opacity 0.4s;
+}
+.signal-tag {
+  font-family: var(--mono); font-size: 8px; padding: 3px 7px; border-radius: 6px;
+  background: rgba(0,229,255,0.1); border: 0.5px solid rgba(0,229,255,0.25); color: var(--cyan);
+  opacity: 0; transform: translateX(-6px); transition: opacity 0.35s, transform 0.35s;
+}
+.blink-pulse {
+  position: absolute; top: 48px; right: 16px; width: 52px; height: 28px; border-radius: 14px;
+  border: 1px solid rgba(0,229,255,0.4); z-index: 11; opacity: 0;
+  animation: none;
+}
+@keyframes blinkOnce {
+  0%, 100% { opacity: 0; transform: scale(1); }
+  40% { opacity: 1; transform: scale(1.06); }
+  70% { opacity: 0.3; transform: scale(1); }
+}
+
+.gate-stack {
+  position: absolute; left: 16px; right: 16px; top: 50%; transform: translateY(-50%);
+  z-index: 14; padding: 14px 16px; border-radius: 14px;
+  background: rgba(22,22,31,0.94); border: 0.5px solid rgba(255,255,255,0.1);
+  opacity: 0; transition: opacity 0.4s;
+}
+.gate-title { font-size: 11px; color: var(--text-primary); margin-bottom: 10px; }
+.gate-row {
+  display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 9px; color: var(--text-muted);
+}
+.gate-check {
+  width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15);
+  display: flex; align-items: center; justify-content: center; font-size: 8px; color: transparent;
+  transition: background 0.3s, border-color 0.3s, color 0.3s;
+}
+.gate-check.done { background: rgba(74,222,128,0.15); border-color: rgba(74,222,128,0.4); color: var(--icoin); }
+
+.action-preview {
+  position: absolute; left: 16px; right: 16px; bottom: 100px; z-index: 13;
+  padding: 10px 12px; border-radius: 12px; background: var(--bg-panel);
+  border: 0.5px solid rgba(0,229,255,0.2); opacity: 0; transform: translateY(8px);
+  transition: opacity 0.4s, transform 0.4s;
+}
+.preview-label { font-size: 9px; color: var(--cyan); margin-bottom: 3px; }
+.preview-text { font-size: 10px; color: var(--text-muted); }
+
+.pending-banner {
+  position: absolute; left: 16px; right: 16px; top: 88px; z-index: 10;
+  padding: 8px 12px; border-radius: 10px; background: rgba(245,158,11,0.12);
+  border: 0.5px solid rgba(245,158,11,0.3); font-size: 9px; color: var(--gold);
+  opacity: 0; transition: opacity 0.4s;
+}
+.release-flash {
+  position: absolute; inset: 0; z-index: 5; pointer-events: none;
+  background: radial-gradient(circle at 20% 15%, rgba(74,222,128,0.12) 0%, transparent 45%);
+  opacity: 0; transition: opacity 0.5s;
+}
+
+.platform-overlay {
+  position: absolute; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.45s;
+}
+.flow-card {
+  background: rgba(7,7,9,0.82); border: 0.5px solid rgba(255,255,255,0.12);
+  border-radius: 14px; padding: 16px 18px; max-width: 280px; width: 90%;
+}
+.flow-row { display: flex; align-items: center; justify-content: center; gap: 4px; flex-wrap: wrap; margin-bottom: 8px; }
+.flow-node { font-size: 8px; padding: 4px 7px; border-radius: 7px; background: rgba(255,255,255,0.06); color: var(--text-primary); border: 0.5px solid rgba(255,255,255,0.1); }
+.flow-arrow { font-size: 7px; color: var(--text-muted); }
+.flow-sub { font-size: 9px; color: var(--text-muted); text-align: center; line-height: 1.45; }
+
+/* ── Animation states ── */
+#phoneScene[data-scene="attention"] .gaze-dot { opacity: 1; top: 58%; left: 72%; }
+#phoneScene[data-scene="attention"] .gaze-trail { opacity: 0.5; top: 58%; left: 72%; }
+#phoneScene[data-scene="attention"] .signal-tags { opacity: 1; }
+#phoneScene[data-scene="attention"] .signal-tag:nth-child(1) { opacity: 1; transform: translateX(0); transition-delay: 0.1s; }
+#phoneScene[data-scene="attention"] .signal-tag:nth-child(2) { opacity: 1; transform: translateX(0); transition-delay: 0.25s; }
+#phoneScene[data-scene="attention"] .signal-tag:nth-child(3) { opacity: 1; transform: translateX(0); transition-delay: 0.4s; }
+
+#phoneScene[data-scene="intent"] .gaze-dot { opacity: 1; top: 52px; left: calc(100% - 52px); }
+#phoneScene[data-scene="intent"] .reward-target-ring { border-color: rgba(0,229,255,0.35); }
+#phoneScene[data-scene="intent"] .dwell-ring { opacity: 1; transform: scale(1); }
+#phoneScene[data-scene="intent"] .dwell-fill { background: conic-gradient(var(--cyan) 270deg, transparent 270deg); }
+#phoneScene[data-scene="intent"] .blink-pulse { animation: blinkOnce 0.8s ease forwards; }
+
+#phoneScene[data-scene="safety"] .action-preview { opacity: 1; transform: translateY(0); }
+#phoneScene[data-scene="safety"] .gate-stack { opacity: 1; }
+#phoneScene[data-scene="safety"] .gate-row:nth-child(2) .gate-check { transition-delay: 0.1s; }
+#phoneScene[data-scene="safety"] .gate-row:nth-child(3) .gate-check { transition-delay: 0.2s; }
+#phoneScene[data-scene="safety"] .gate-row:nth-child(4) .gate-check { transition-delay: 0.3s; }
+#phoneScene[data-scene="safety"] .gate-row:nth-child(5) .gate-check { transition-delay: 0.4s; }
+#phoneScene[data-scene="safety"] .gate-row:nth-child(6) .gate-check { transition-delay: 0.5s; }
+#phoneScene[data-scene="safety"] .gate-row .gate-check { background: rgba(74,222,128,0.15); border-color: rgba(74,222,128,0.4); color: var(--icoin); }
+
+#phoneScene[data-scene="verified"] .reward-pill { color: var(--gold); border-color: rgba(245,158,11,0.35); }
+#phoneScene[data-scene="verified"] .pending-banner { opacity: 1; }
+#phoneScene[data-scene="verified"] .wallet-pending { opacity: 1; }
+#phoneScene[data-scene="verified"] .wallet-val::after { content: ''; }
+
+#phoneScene[data-scene="settlement"] .pending-banner { opacity: 0; }
+#phoneScene[data-scene="settlement"] .wallet-pending { opacity: 0; }
+#phoneScene[data-scene="settlement"] .wallet-val { color: var(--icoin); }
+#phoneScene[data-scene="settlement"] .wallet-chip { border-color: rgba(74,222,128,0.35); box-shadow: 0 0 12px rgba(74,222,128,0.15); }
+#phoneScene[data-scene="settlement"] .reward-pill { color: var(--icoin); border-color: rgba(74,222,128,0.3); }
+#phoneScene[data-scene="settlement"] .release-flash { opacity: 1; }
+
+#phoneScene[data-scene="platform"] .media { opacity: 0.35; }
+#phoneScene[data-scene="platform"] .platform-overlay { opacity: 1; }
+
+/* ── Pipeline strip ── */
+.pipeline-wrap { border-top: 1px solid var(--border); padding-top: 24px; }
+.pipeline-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-light); margin-bottom: 14px; }
+.pipeline {
+  display: flex; align-items: flex-start; gap: 0; overflow-x: auto; padding-bottom: 8px;
+}
+.pipe-node {
+  flex: 1; min-width: 100px; text-align: center; padding: 0 6px; opacity: 0.35;
+  transition: opacity 0.4s, transform 0.4s;
+}
+.pipe-node.active { opacity: 1; transform: translateY(-2px); }
+.pipe-dot {
+  width: 10px; height: 10px; border-radius: 50%; background: #ddd; margin: 0 auto 8px;
+  transition: background 0.4s, box-shadow 0.4s;
+}
+.pipe-node.active .pipe-dot { background: var(--heading); box-shadow: 0 0 0 3px rgba(0,0,0,0.06); }
+.pipe-name { font-size: 11px; color: var(--heading); margin-bottom: 3px; }
+.pipe-desc { font-size: 9px; color: var(--text-light); line-height: 1.4; }
+.pipe-connector { flex: 0 0 16px; height: 1px; background: var(--border); margin-top: 14px; opacity: 0.5; }
+
+@media (max-width: 960px) { .stage { grid-template-columns: 1fr; } .panel-column { max-height: none; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="page-header">
+    <h1>[ i ] Platform · POP System</h1>
+    <p class="title">POP turns attention into controlled action.</p>
+    <p class="thesis">POP is the platform layer that reads verified attention signals, converts them into safe interaction intent, and connects those interactions to rewards, campaign proof, and wallet settlement.</p>
+  </header>
+
+  <div class="stage">
+    <div class="phone-column">
+      <div class="phone">
+        <div class="phone-screen" id="phoneScene" data-scene="attention">
+          <div class="notch"></div>
+          <div class="media"></div>
+          <div class="scrim-top"></div>
+          <div class="scrim-bottom"></div>
+          <div class="release-flash"></div>
+          <div class="timer-line"><div class="timer-fill"></div></div>
+
+          <div class="wallet-chip">
+            <div class="wallet-dot"></div>
+            <span class="wallet-val">847</span>
+            <span class="wallet-pending">+$0.25</span>
+          </div>
+          <div class="reward-target-ring"><div class="dwell-ring"><div class="dwell-fill"></div></div></div>
+          <div class="reward-pill">50 ic</div>
+          <div class="blink-pulse"></div>
+
+          <div class="pop-layer">
+            <div class="gaze-trail"></div>
+            <div class="gaze-dot"></div>
+          </div>
+          <div class="signal-tags">
+            <span class="signal-tag">face present</span>
+            <span class="signal-tag">gaze stable</span>
+            <span class="signal-tag">attention active</span>
+          </div>
+
+          <div class="action-preview">
+            <div class="preview-label">Action preview · not instant</div>
+            <div class="preview-text">Confirm REWARD claim after safety gates pass</div>
+          </div>
+          <div class="gate-stack">
+            <div class="gate-title">Safety gates</div>
+            <div class="gate-row"><div class="gate-check">✓</div><span>Face present</span></div>
+            <div class="gate-row"><div class="gate-check">✓</div><span>Gaze forward</span></div>
+            <div class="gate-row"><div class="gate-check">✓</div><span>Head stable</span></div>
+            <div class="gate-row"><div class="gate-check">✓</div><span>Duration complete</span></div>
+            <div class="gate-row"><div class="gate-check">✓</div><span>Fraud clear</span></div>
+          </div>
+          <div class="pending-banner">Pending review · earned, validating…</div>
+
+          <div class="out-profile">
+            <div class="out-name">RAFAELO</div>
+            <div class="out-loc">Cape Town · Sponsored</div>
+          </div>
+          <div class="action-rail">
+            <div class="rail-btn"></div><div class="rail-btn"></div><div class="rail-btn"></div>
+          </div>
+
+          <div class="platform-overlay">
+            <div class="flow-card">
+              <div class="flow-row">
+                <span class="flow-node">User</span><span class="flow-arrow">→</span>
+                <span class="flow-node">Verified</span><span class="flow-arrow">→</span>
+                <span class="flow-node">Campaign</span><span class="flow-arrow">→</span>
+                <span class="flow-node">Pending</span><span class="flow-arrow">→</span>
+                <span class="flow-node">Wallet</span>
+              </div>
+              <div class="flow-sub">Attention → action → creator proof → platform settlement</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="controls-bar">
+        <button type="button" class="ctrl-btn" id="btnPlayPause" aria-label="Pause animation">Pause</button>
+        <button type="button" class="ctrl-btn" id="btnRestart" aria-label="Restart animation">Restart</button>
+        <div class="scene-dots" id="sceneDots" role="tablist" aria-label="Animation scenes"></div>
+      </div>
+    </div>
+
+    <div class="panel-column">
+      <div class="block subtitle active" data-scene="attention" data-block="thesis">
+        <h2>POP turns attention into controlled action.</h2>
+        <p>Verified signal → safe intent → auditable value.</p>
+      </div>
+      <div class="block" data-scene="attention" data-block="attention">
+        <div class="block-title">Scene · Attention detected</div>
+        <p>Verified attention becomes a usable signal. POP reads gaze, face presence, head stability, and dwell — processed on-device for privacy.</p>
+        <p class="status-note">POP is not eye tracking alone — it is multimodal sensor fusion (POPS six-layer model).</p>
+      </div>
+      <div class="block" data-scene="intent" data-block="intent">
+        <div class="block-title">Scene · Intent formed</div>
+        <p>POP separates accidental looking from intentional action. Stable dwell + blink coupling forms governed intent before any UI action fires.</p>
+      </div>
+      <div class="block" data-scene="safety" data-block="safety">
+        <div class="block-title">Scene · Safety gate</div>
+        <p>High-risk actions require confirmation, not raw gaze. Five gates check presence, gaze, stability, duration, and fraud before financial actions execute.</p>
+      </div>
+      <div class="block" data-scene="verified" data-block="verified">
+        <div class="block-title">Scene · Verified action</div>
+        <p>Verified engagement creates auditable value. Reward enters pending review — no client-side minting. Proof Packet v0 seals session evidence.</p>
+      </div>
+      <div class="block" data-scene="settlement" data-block="settlement">
+        <div class="block-title">Scene · Wallet settlement</div>
+        <p>POP links attention proof to payout logic. Server scores layers async; pending moves to available when review passes.</p>
+      </div>
+      <div class="block" data-scene="platform" data-block="platform">
+        <div class="block-title">Scene · Platform value</div>
+        <p>A new market layer for paid attention and controlled interaction. Advertisers pay for verified engagement, not blind impressions.</p>
+      </div>
+      <div class="block" data-block="does">
+        <div class="block-title">What it does</div>
+        <ul>
+          <li>Detects attention using gaze, face, head stability, dwell, and timing</li>
+          <li>Converts stable intent into controlled UI actions</li>
+          <li>Adds safety gates before irreversible or financial actions</li>
+          <li>Creates verification evidence for paid campaigns</li>
+          <li>Routes qualified rewards to pending review or wallet release</li>
+          <li>Enables hands-free navigation and accessibility controls</li>
+        </ul>
+      </div>
+      <div class="block" data-block="matters">
+        <div class="block-title">Why it matters</div>
+        <p>Current platforms monetize attention without proving it. POP creates a measurable signal — advertisers pay for verified attention, users earn from real engagement, creators get campaign proof, and the platform holds a defensible interaction layer.</p>
+      </div>
+      <div class="block" data-block="architecture">
+        <div class="block-title">Architecture</div>
+        <div class="arch-list">Camera / Sensors → On-device extraction → Gaze + attention model → Intent engine → Safety gates → Verified action → Pending reward → Wallet settlement → Reporting</div>
+      </div>
+      <div class="block pros-card" data-block="pros">
+        <div class="block-title">Pros</div>
+        <ul>
+          <li>New monetization primitive: verified attention</li>
+          <li>Lower fraud than passive impressions</li>
+          <li>Hands-free accessibility layer</li>
+          <li>Stronger campaign reporting for advertisers</li>
+          <li>Built-in safety before risky actions</li>
+          <li>Wallet-native reward settlement</li>
+          <li>Creator-friendly value split (60/30/10)</li>
+          <li>Scales to commerce, local offers, remote control</li>
+        </ul>
+      </div>
+      <div class="block framing" data-block="framing">
+        <p>POP is not just eye tracking. It is the transaction layer for attention — a proprietary way to verify engagement, price it, route it through campaigns, and settle it into a wallet.</p>
+      </div>
+      <div class="block" data-block="roadmap">
+        <div class="block-title">Feature status</div>
+        <div class="roadmap">
+          <div class="road-item"><strong>Demo</strong> — animated UX, mocked verification flow, ProofLayerScreen narrative</div>
+          <div class="road-item"><strong>MVP</strong> — Flutter VSL, validate-attention Edge Function, pending-first wallet, Seal Proof local</div>
+          <div class="road-item"><strong>Production</strong> — full POPS backend ingestion, fraud scoring, trust tiers, advertiser reporting</div>
+        </div>
+        <p class="status-note">Proof Packet → POPS → pending wallet: schema shipped; full wiring in progress.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pipeline strip -->
+  <div class="pipeline-wrap">
+    <div class="pipeline-label">POP pipeline · synchronized to scene</div>
+    <div class="pipeline" id="pipeline">
+      <div class="pipe-node" data-pipe="watch"><div class="pipe-dot"></div><div class="pipe-name">Watch</div><div class="pipe-desc">Paid interaction starts</div></div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-node" data-pipe="verify"><div class="pipe-dot"></div><div class="pipe-name">Verify</div><div class="pipe-desc">Signal extraction</div></div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-node" data-pipe="intent"><div class="pipe-dot"></div><div class="pipe-name">Intent</div><div class="pipe-desc">Dwell + blink</div></div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-node" data-pipe="safety"><div class="pipe-dot"></div><div class="pipe-name">Safety</div><div class="pipe-desc">Gate confirmation</div></div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-node" data-pipe="reward"><div class="pipe-dot"></div><div class="pipe-name">Reward</div><div class="pipe-desc">Action completes</div></div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-node" data-pipe="pending"><div class="pipe-dot"></div><div class="pipe-name">Pending</div><div class="pipe-desc">Async review</div></div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-node" data-pipe="wallet"><div class="pipe-dot"></div><div class="pipe-name">Wallet</div><div class="pipe-desc">Released balance</div></div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-node" data-pipe="report"><div class="pipe-dot"></div><div class="pipe-name">Report</div><div class="pipe-desc">Campaign proof</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- JS scene controller -->
+<script>
+(function(){
+  var SCENES=[
+    {id:'attention',duration:3200,panel:['thesis','attention'],pipes:['watch','verify']},
+    {id:'intent',duration:3200,panel:['intent'],pipes:['verify','intent']},
+    {id:'safety',duration:3400,panel:['safety'],pipes:['intent','safety']},
+    {id:'verified',duration:3200,panel:['verified'],pipes:['safety','reward','pending']},
+    {id:'settlement',duration:3200,panel:['settlement'],pipes:['pending','wallet']},
+    {id:'platform',duration:3400,panel:['platform'],pipes:['wallet','report']}
+  ];
+  var phoneScene=document.getElementById('phoneScene'),btnPlayPause=document.getElementById('btnPlayPause'),btnRestart=document.getElementById('btnRestart'),sceneDots=document.getElementById('sceneDots'),blocks=document.querySelectorAll('.block[data-block]'),pipeNodes=document.querySelectorAll('.pipe-node');
+  var sceneIndex=0,playing=true,pausedByHover=false,timeoutId=null,reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  SCENES.forEach(function(s,i){
+    var d=document.createElement('button');d.type='button';d.className='scene-dot'+(i===0?' active':'');d.setAttribute('role','tab');d.setAttribute('aria-label','Scene: '+s.id);d.addEventListener('click',function(){goToScene(i,true);});sceneDots.appendChild(d);
+  });
+
+  function clearTimers(){if(timeoutId){clearTimeout(timeoutId);timeoutId=null;}}
+  function setPanelActive(keys){blocks.forEach(function(b){var k=b.getAttribute('data-block');b.classList.toggle('active',keys.indexOf(k)!==-1);});}
+  function setDots(i){sceneDots.querySelectorAll('.scene-dot').forEach(function(d,j){d.classList.toggle('active',j===i);});}
+  function setPipes(ids){pipeNodes.forEach(function(n){n.classList.toggle('active',ids.indexOf(n.getAttribute('data-pipe'))!==-1);});}
+  function applyScene(i){
+    phoneScene.setAttribute('data-scene',SCENES[i].id);
+    setPanelActive(SCENES[i].panel||[]);setDots(i);setPipes(SCENES[i].pipes||[]);
+  }
+  function goToScene(index,manual){
+    clearTimers();sceneIndex=((index%SCENES.length)+SCENES.length)%SCENES.length;applyScene(sceneIndex);
+    if(manual&&!playing)return;if(!playing||pausedByHover)return;
+    timeoutId=setTimeout(function(){if(playing&&!pausedByHover)goToScene(sceneIndex+1);},reducedMotion?900:SCENES[sceneIndex].duration);
+  }
+  btnPlayPause.addEventListener('click',function(){playing=!playing;btnPlayPause.textContent=playing?'Pause':'Play';if(playing&&!pausedByHover)goToScene(sceneIndex,false);else clearTimers();});
+  btnRestart.addEventListener('click',function(){playing=true;pausedByHover=false;btnPlayPause.textContent='Pause';goToScene(0,false);});
+  blocks.forEach(function(b){
+    b.addEventListener('mouseenter',function(){
+      var s=b.getAttribute('data-scene');if(!s)return;pausedByHover=true;clearTimers();
+      var idx=SCENES.findIndex(function(x){return x.id===s;});
+      if(idx>=0){applyScene(idx);setPanelActive([b.getAttribute('data-block')]);}
+    });
+    b.addEventListener('mouseleave',function(){if(!playing)return;pausedByHover=false;goToScene(sceneIndex,false);});
+  });
+  goToScene(0,false);
+})();
+</script>
+</body>
+</html>
