@@ -5,6 +5,18 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-30 — ELO presence membrane + investor explainer series
+
+### Delivered
+- **ELO membrane** — `useEloFaceMirror` smoothed POP landmark paths; richer idle contours; glass ghost strokes; auto `openPanel()` after voice evoke (`SESSION_PANEL_DELAY_MS`); `sessionOpenings` greeting copy.
+- **Investor explainers** — 9 HTML walkthroughs in `06_feed_earning_loops/`: REWARD, CONTROLS, SHARE, MESSAGE, Hold/Love, ELO presence, WALLET/PROMO/CREATE dock tabs.
+- **Regression smokes** — `smoke_pop_finish.sh` (15 Flutter tests in CI); hardened `smoke_elo_presence.sh`; new `smoke_investor_explainers.sh`.
+
+### Verification
+- `./scripts/smoke_elo_presence.sh` · `./scripts/smoke_pop_finish.sh` · `./scripts/smoke_organism_spine.sh`
+
+---
+
 ## 2026-05-30 — POP finish plan merged (PR #2)
 
 ### Delivered

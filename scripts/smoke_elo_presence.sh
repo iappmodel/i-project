@@ -13,8 +13,10 @@ required=(
   "$APP/src/components/elo/EloEvokePrompt.tsx"
   "$APP/src/components/elo/EloSessionGreeting.tsx"
   "$APP/src/hooks/useEloWakeWord.ts"
+  "$APP/src/hooks/useEloFaceMirror.ts"
   "$APP/src/lib/elo/types.ts"
   "$APP/src/lib/elo/expressionEngine.ts"
+  "$APP/src/lib/elo/sessionOpenings.ts"
   "$APP/src/state/eloContext.tsx"
   "$APP/src/styles/elo-presence.css"
   "$ROOT/MASTER_BRAIN/CHAT_RECOVERY/EXTRACTED/conversations/143_elo_personal_intelligence_companion.md"
@@ -40,6 +42,18 @@ if ! grep -q "EloEvokePrompt" "$APP/src/components/elo/EloPresenceLayer.tsx"; th
 fi
 if ! grep -q "armVoice" "$APP/src/hooks/useEloWakeWord.ts"; then
   echo "FAIL: useEloWakeWord must support opt-in armed voice" >&2
+  exit 1
+fi
+if ! grep -q "useEloFaceMirror" "$APP/src/components/elo/EloPresenceLayer.tsx"; then
+  echo "FAIL: EloPresenceLayer must mirror POP face landmarks via useEloFaceMirror" >&2
+  exit 1
+fi
+if ! grep -q "openPanel()" "$APP/src/components/elo/EloPresenceLayer.tsx"; then
+  echo "FAIL: EloPresenceLayer must auto-open panel after evoke session" >&2
+  exit 1
+fi
+if ! grep -q "getSessionGreetingShort" "$APP/src/components/elo/EloSessionGreeting.tsx"; then
+  echo "FAIL: EloSessionGreeting must use sessionOpenings copy" >&2
   exit 1
 fi
 
