@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Investor explainer HTML series — file presence + minimal structure checks.
+# Investor explainer HTML series — file presence + index link integrity.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -8,6 +8,7 @@ DIR="$ROOT/06_feed_earning_loops"
 echo "== Investor explainer smoke =="
 
 required=(
+  "investor_explainer_index.html"
   "reward_feature_explainer.html"
   "controls_button_explainer.html"
   "share_button_explainer.html"
@@ -30,6 +31,16 @@ for name in "${required[@]}"; do
   fi
   echo "OK $name"
 done
+
+index="$DIR/investor_explainer_index.html"
+for name in "${required[@]}"; do
+  [[ "$name" == "investor_explainer_index.html" ]] && continue
+  if ! grep -q "href=\"$name\"" "$index"; then
+    echo "FAIL: index must link to $name" >&2
+    exit 1
+  fi
+done
+echo "OK index links (11 walkthroughs)"
 
 echo ""
 echo "PASS: investor explainer smoke"

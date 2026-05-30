@@ -5,6 +5,17 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-30 — ELO runtime engine + explainer index
+
+### Delivered
+- **ELO runtime** — `eloRuntimeEngine` + `eloDoctrine` POP safety rails + `eloPersonalization`; sculptural glass eye sockets in `EloFaceMembrane`; `visualForms` picker in onboarding.
+- **Explainer index** — `investor_explainer_index.html` maps Picture 2 shell zones and links all 11 walkthroughs; smoke asserts index link integrity.
+
+### Verification
+- `./scripts/smoke_elo_presence.sh` · `./scripts/smoke_investor_explainers.sh`
+
+---
+
 ## 2026-05-30 — ELO session scope + complete dock explainer series
 
 ### Delivered
