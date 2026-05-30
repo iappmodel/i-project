@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import {
   mockContentPreference,
   mockCreatorInsight,
-  mockEarningHistory,
   mockMessages,
   mockPermissions,
   mockSharedPresenceMemory,
@@ -10,6 +9,7 @@ import {
   mockWalletState,
   DEMO_PUBLISHED_PERSONALITIES,
 } from '../../lib/elo/mockData'
+import { composeEloReply } from '../../lib/elo/eloReplyService'
 import { getSessionOpening } from '../../lib/elo/sessionOpenings'
 import { getEloMemories } from '../../lib/elo/services/eloMemoryService'
 import { setEloPermission } from '../../lib/elo/services/eloPermissionService'
@@ -67,7 +67,7 @@ function EloChat({
 }
 
 export function EloPresencePanel() {
-  const { panelOpen, closePanel, setStack, sessionActive, config } = useElo()
+  const { panelOpen, closePanel, setStack, sessionActive, config, room } = useElo()
   const { displayName, relationship, operating } = useEloPersonality()
   const { setScreen, setActiveTab, eloStatusLine, proofEventsConnected } = useDemo()
   const [messages, setMessages] = useState<EloMessage[]>(mockMessages)
@@ -137,7 +137,12 @@ export function EloPresencePanel() {
             const assistantMessage: EloMessage = {
               id: `a-${Date.now() + 1}`,
               role: 'assistant',
-              content: `I'm here beside you. Based on your patterns, ${mockEarningHistory.bestCategory} remains a strong path — and I'm holding continuity in this room.`,
+              content: composeEloReply({
+                userText: text,
+                stack: config.stack,
+                room,
+                proofConnected: proofEventsConnected,
+              }),
               createdAt: new Date().toISOString(),
             }
             setMessages((prev) => [...prev, userMessage, assistantMessage])

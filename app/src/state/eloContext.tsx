@@ -43,6 +43,7 @@ export interface EloContextValue {
   setStack: (stack: EloPersonalityStack) => void
   setRoom: (roomId: PresenceRoomId) => void
   completeOnboarding: (stack: EloPersonalityStack) => void
+  dismissSession: () => void
   setEmergence: (value: number) => void
 }
 
@@ -112,6 +113,14 @@ export function EloProvider({ children }: { children: ReactNode }) {
     [persist],
   )
 
+  const dismissSession = useCallback(() => {
+    setEvoked(false)
+    setSessionActive(false)
+    setEmergence(0)
+    setPanelOpen(false)
+    setOnboardingOpen(false)
+  }, [])
+
   const openPanel = useCallback(() => setPanelOpen(true), [])
   const closePanel = useCallback(() => setPanelOpen(false), [])
   const openOnboarding = useCallback(() => setOnboardingOpen(true), [])
@@ -143,6 +152,7 @@ export function EloProvider({ children }: { children: ReactNode }) {
       setStack,
       setRoom,
       completeOnboarding,
+      dismissSession,
       setEmergence,
     }),
     [
@@ -164,6 +174,7 @@ export function EloProvider({ children }: { children: ReactNode }) {
       setStack,
       setRoom,
       completeOnboarding,
+      dismissSession,
     ],
   )
 

@@ -17,6 +17,8 @@ required=(
   "$APP/src/lib/elo/types.ts"
   "$APP/src/lib/elo/expressionEngine.ts"
   "$APP/src/lib/elo/sessionOpenings.ts"
+  "$APP/src/lib/elo/eloReplyService.ts"
+  "$APP/src/components/elo/EloSessionScope.tsx"
   "$APP/src/state/eloContext.tsx"
   "$APP/src/styles/elo-presence.css"
   "$ROOT/MASTER_BRAIN/CHAT_RECOVERY/EXTRACTED/conversations/143_elo_personal_intelligence_companion.md"
@@ -54,6 +56,22 @@ if ! grep -q "openPanel()" "$APP/src/components/elo/EloPresenceLayer.tsx"; then
 fi
 if ! grep -q "getSessionGreetingShort" "$APP/src/components/elo/EloSessionGreeting.tsx"; then
   echo "FAIL: EloSessionGreeting must use sessionOpenings copy" >&2
+  exit 1
+fi
+if ! grep -q "dismissSession" "$APP/src/state/eloContext.tsx"; then
+  echo "FAIL: eloContext must expose dismissSession for session scope" >&2
+  exit 1
+fi
+if ! grep -q "composeEloReply" "$APP/src/components/elo/EloPresencePanel.tsx"; then
+  echo "FAIL: EloPresencePanel must use contextual eloReplyService" >&2
+  exit 1
+fi
+if ! grep -q "EloSessionScope" "$APP/src/App.tsx"; then
+  echo "FAIL: App must mount EloSessionScope for immersive session reset" >&2
+  exit 1
+fi
+if ! grep -q "elo-manifest-enter" "$APP/src/styles/elo-presence.css"; then
+  echo "FAIL: elo-presence.css must animate membrane manifest from rail" >&2
   exit 1
 fi
 

@@ -5,6 +5,7 @@ import { VisionStreamProvider } from './contexts/VisionStreamContext'
 import { VisionTargetOverlay } from './components/VisionTargetOverlay'
 import { AccessibilityProvider } from './contexts/AccessibilityContext'
 import { DemoProvider } from './state/demoContext'
+import { EloSessionScope } from './components/elo/EloSessionScope'
 import { EloProvider } from './state/eloContext'
 import { useDemo } from './state/useDemo'
 import type { DemoScreenId } from './state/types'
@@ -56,6 +57,7 @@ export default function App() {
   return (
     <DemoProvider>
       <EloProvider>
+        <EloSessionScope />
         <AccessibilityProvider>
           <VisionStreamProvider>
             <VisionProvider>
