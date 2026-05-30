@@ -67,6 +67,7 @@ flowchart LR
 | `./scripts/smoke_investor_explainers.sh` | Investor explainer index + 14 HTML walkthroughs |
 | `./scripts/smoke_vision_proof_bridge.sh` | Vision → proof packet hints (Phase 34) |
 | `./scripts/smoke_immersive_shell.sh` | Glass wallet/profile, out-profile, loop1 watch path (Phases 35–38) |
+| `./scripts/smoke_immersive_promo.sh` | Promo marketplace tab + watch flow (Phase 41) |
 | `./scripts/enable_stripe_live_env.sh` | Stripe checkout env when keys in stack |
 
 ---
