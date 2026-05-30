@@ -21,6 +21,17 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-30 — Loop 1 spine capstone explainer
+
+### Delivered
+- **Loop 1 explainer** — `loop1_spine_explainer.html` (Watch → Verify → Reward → Wallet in one phone; ties feature series to MVP_CANONICAL_FLOW).
+- **Presenter deck slide 2** — after Feed; index Loop 1 section; smoke **16** walkthroughs.
+
+### Verification
+- `./scripts/smoke_investor_explainers.sh`
+
+---
+
 ## 2026-05-30 — Like tap explainer (heart preset tap path)
 
 ### Delivered

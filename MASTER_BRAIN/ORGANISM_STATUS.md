@@ -23,7 +23,7 @@
 | Web vision (flagged) | ✅ operator panel + proof hints bridge when `VITE_VISION_ENGINE=1` |
 | Blink Remote lite | ✅ Combo matcher + tabbed panel (combos/debug/settings); full archive UI deferred |
 | ELO presence | ✅ Membrane + speech energy (`pulseSpeech`); panel voice + optional `elo-reply` |
-| Investor explainers | ✅ 15 HTML walkthroughs + index + presenter deck (`investor_presenter_deck.html`) |
+| Investor explainers | ✅ 16 HTML walkthroughs + index + presenter deck (`investor_presenter_deck.html`) |
 | CI | Validator + app + POP finish Flutter + investor explainers + vision smokes |
 
 **One command:** `./scripts/dev_stack.sh`

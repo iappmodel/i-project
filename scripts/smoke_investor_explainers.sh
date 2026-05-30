@@ -18,6 +18,7 @@ required=(
   "like_tap_explainer.html"
   "elo_presence_explainer.html"
   "feed_dock_explainer.html"
+  "loop1_spine_explainer.html"
   "wallet_dock_explainer.html"
   "promo_dock_explainer.html"
   "create_studio_explainer.html"
@@ -40,12 +41,13 @@ done
 index="$DIR/investor_explainer_index.html"
 for name in "${required[@]}"; do
   [[ "$name" == "investor_explainer_index.html" ]] && continue
+  [[ "$name" == "investor_presenter_deck.html" ]] && continue
   if ! grep -q "href=\"$name\"" "$index"; then
     echo "FAIL: index must link to $name" >&2
     exit 1
   fi
 done
-echo "OK index links (15 walkthroughs)"
+echo "OK index links (16 walkthroughs)"
 
 deck="$DIR/investor_presenter_deck.html"
 grep -q 'href="investor_presenter_deck.html"' "$index" || { echo "FAIL: index must link to presenter deck" >&2; exit 1; }
