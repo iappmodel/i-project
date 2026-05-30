@@ -29,6 +29,9 @@ verify_jwt = false
 [functions.tip-creator]
 verify_jwt = false
 
+[functions.elo-reply]
+verify_jwt = false
+
 [db.seed]
 enabled = true
 sql_paths = ["./seed.sql"]

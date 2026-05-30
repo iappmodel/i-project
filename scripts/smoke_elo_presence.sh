@@ -65,8 +65,20 @@ if ! grep -q "dismissSession" "$APP/src/state/eloContext.tsx"; then
   echo "FAIL: eloContext must expose dismissSession for session scope" >&2
   exit 1
 fi
-if ! grep -q "resolveEloReply" "$APP/src/components/elo/EloPresencePanel.tsx"; then
-  echo "FAIL: EloPresencePanel must use eloRuntimeEngine" >&2
+if ! grep -q "resolveEloReplyAsync" "$APP/src/components/elo/EloPresencePanel.tsx"; then
+  echo "FAIL: EloPresencePanel must use async eloRuntimeEngine" >&2
+  exit 1
+fi
+if ! grep -q "fetchFoundationReply" "$APP/src/services/eloReply.ts"; then
+  echo "FAIL: eloReply service must invoke elo-reply edge function" >&2
+  exit 1
+fi
+if ! grep -q "useEloPanelVoice" "$APP/src/components/elo/EloPresencePanel.tsx"; then
+  echo "FAIL: EloPresencePanel must support panel voice input" >&2
+  exit 1
+fi
+if [[ ! -f "$APP/supabase/functions/elo-reply/index.ts" ]]; then
+  echo "FAIL: elo-reply edge function missing" >&2
   exit 1
 fi
 if ! grep -q "evaluateDoctrineInput" "$APP/src/lib/elo/eloDoctrine.ts"; then

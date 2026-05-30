@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   mockContentPreference,
   mockCreatorInsight,
@@ -9,8 +9,9 @@ import {
   mockWalletState,
   DEMO_PUBLISHED_PERSONALITIES,
 } from '../../lib/elo/mockData'
-import { resolveEloReply } from '../../lib/elo/eloRuntimeEngine'
+import { resolveEloReplyAsync } from '../../lib/elo/eloRuntimeEngine'
 import { getSessionOpening } from '../../lib/elo/sessionOpenings'
+import { useEloPanelVoice } from '../../hooks/useEloPanelVoice'
 import { getEloMemories } from '../../lib/elo/services/eloMemoryService'
 import { setEloPermission } from '../../lib/elo/services/eloPermissionService'
 import { getEloRecommendations } from '../../lib/elo/services/eloRecommendationService'
@@ -32,9 +33,13 @@ const toneClass: Record<string, string> = {
 function EloChat({
   messages,
   onSend,
+  sending,
+  voice,
 }: {
   messages: EloMessage[]
   onSend: (text: string) => void
+  sending: boolean
+  voice: ReturnType<typeof useEloPanelVoice>
 }) {
   const [draft, setDraft] = useState('')
   return (
@@ -46,11 +51,13 @@ function EloChat({
             {m.content}
           </div>
         ))}
+        {sending ? <div className="elo-bubble assistant elo-bubble--thinking">…</div> : null}
       </div>
       <form
+        className="elo-chat-form"
         onSubmit={(e) => {
           e.preventDefault()
-          if (!draft.trim()) return
+          if (!draft.trim() || sending) return
           onSend(draft)
           setDraft('')
         }}
@@ -60,8 +67,21 @@ function EloChat({
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder="Ask about wallet, trust, or your presence…"
+          disabled={sending}
         />
+        {voice.supported ? (
+          <button
+            type="button"
+            className={`elo-chat-mic${voice.listening ? ' elo-chat-mic--active' : ''}`}
+            aria-label={voice.listening ? 'Listening…' : 'Speak to ELO'}
+            disabled={sending}
+            onClick={voice.startListening}
+          >
+            {voice.listening ? '●' : 'Mic'}
+          </button>
+        ) : null}
       </form>
+      {voice.error ? <p className="elo-chat-voice-error">{voice.error}</p> : null}
     </div>
   )
 }
@@ -72,8 +92,54 @@ export function EloPresencePanel() {
   const { setScreen, setActiveTab, eloStatusLine, proofEventsConnected } = useDemo()
   const [messages, setMessages] = useState<EloMessage[]>(mockMessages)
   const [permissions, setPermissions] = useState<EloPermission[]>(mockPermissions)
+  const [sending, setSending] = useState(false)
   const memories = useMemo(() => getEloMemories(), [])
   const recommendations = useMemo(() => getEloRecommendations(), [])
+
+  const handleSend = useCallback(
+    async (text: string) => {
+      const trimmed = text.trim()
+      if (!trimmed || sending) return
+
+      const userMessage: EloMessage = {
+        id: `u-${Date.now()}`,
+        role: 'user',
+        content: trimmed,
+        createdAt: new Date().toISOString(),
+      }
+      const history = [...messages, userMessage]
+      setMessages(history)
+      setSending(true)
+      setOrbState('thinking')
+
+      try {
+        const result = await resolveEloReplyAsync(
+          {
+            userText: trimmed,
+            stack: config.stack,
+            room,
+            proofConnected: proofEventsConnected,
+          },
+          history,
+        )
+        setOrbState(result.orbState)
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `a-${Date.now() + 1}`,
+            role: 'assistant',
+            content: result.reply,
+            createdAt: new Date().toISOString(),
+          },
+        ])
+      } finally {
+        setSending(false)
+      }
+    },
+    [config.stack, messages, proofEventsConnected, room, sending, setOrbState],
+  )
+
+  const panelVoice = useEloPanelVoice(handleSend, panelOpen && sessionActive)
 
   useEffect(() => {
     if (!sessionActive) return
@@ -125,32 +191,7 @@ export function EloPresencePanel() {
           </button>
         </header>
 
-        <EloChat
-          messages={messages}
-          onSend={(text) => {
-            const userMessage: EloMessage = {
-              id: `u-${Date.now()}`,
-              role: 'user',
-              content: text,
-              createdAt: new Date().toISOString(),
-            }
-            setOrbState('thinking')
-            const result = resolveEloReply({
-              userText: text,
-              stack: config.stack,
-              room,
-              proofConnected: proofEventsConnected,
-            })
-            setOrbState(result.orbState)
-            const assistantMessage: EloMessage = {
-              id: `a-${Date.now() + 1}`,
-              role: 'assistant',
-              content: result.reply,
-              createdAt: new Date().toISOString(),
-            }
-            setMessages((prev) => [...prev, userMessage, assistantMessage])
-          }}
-        />
+        <EloChat messages={messages} onSend={handleSend} sending={sending} voice={panelVoice} />
 
         <div className={`elo-card ${toneClass.earning}`}>
           <h4>Today&apos;s best move</h4>

@@ -413,7 +413,14 @@
   margin-left: 24px;
 }
 
+.elo-chat-form {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
 .elo-chat-input {
+  flex: 1;
   width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.15);
   background: rgba(0, 0, 0, 0.3);
@@ -421,6 +428,35 @@
   border-radius: 10px;
   padding: 10px 12px;
   font-size: 0.85rem;
+}
+
+.elo-chat-mic {
+  flex-shrink: 0;
+  min-width: 44px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(7, 7, 9, 0.45);
+  color: rgba(220, 240, 255, 0.9);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.elo-chat-mic--active {
+  border-color: rgba(100, 180, 255, 0.55);
+  box-shadow: 0 0 12px rgba(100, 180, 255, 0.35);
+}
+
+.elo-bubble--thinking {
+  opacity: 0.65;
+  font-style: italic;
+}
+
+.elo-chat-voice-error {
+  margin: 6px 0 0;
+  font-size: 0.75rem;
+  color: rgba(255, 160, 120, 0.9);
 }
 
 .elo-section-title {
