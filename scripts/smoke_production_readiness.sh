@@ -45,6 +45,7 @@ npm run build --silent
 echo ""
 echo "== Immersive product smokes =="
 "$ROOT/scripts/smoke_immersive_shell.sh"
+"$ROOT/scripts/smoke_gesture_buttons.sh"
 "$ROOT/scripts/smoke_immersive_promo.sh"
 "$ROOT/scripts/smoke_blink_remote_lite.sh"
 "$ROOT/scripts/smoke_elo_presence.sh"

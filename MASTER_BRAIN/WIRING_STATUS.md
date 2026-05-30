@@ -69,6 +69,7 @@ flowchart LR
 | `./scripts/smoke_open_investor_presenter.sh` | Presenter open script + deck file check (CI-safe) |
 | `./scripts/smoke_vision_proof_bridge.sh` | Vision → proof packet hints (Phase 34) |
 | `./scripts/smoke_immersive_shell.sh` | Glass wallet/profile, out-profile, loop1 watch path (Phases 35–38) |
+| `./scripts/smoke_gesture_buttons.sh` | Picture 2 gesture rail + offer review + builder |
 | `./scripts/smoke_blink_remote_lite.sh` | Gesture combo store + matcher + Blink Remote lite panel (Phase 42) |
 | `./scripts/smoke_blink_remote_lite.sh` | Blink remote combos + matcher (Phase 42) |
 | `./scripts/enable_stripe_live_env.sh` | Stripe checkout env when keys in stack |

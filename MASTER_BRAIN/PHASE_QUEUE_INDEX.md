@@ -1,10 +1,13 @@
 # Autonomous phase queue index
 
 **Workspace:** `i_project_migration_archive`  
-**Updated:** 2026-05-27
+**Updated:** 2026-05-30
 
 | Phase | Tracker | Theme |
 |------:|---------|-------|
+| 41 | [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md) | Immersive promo marketplace tab |
+| 42 | [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md) | Gesture combo matcher + Blink Remote lite |
+| 1–40 | see below | Loop 1 spine through vision import bridge |
 | 1 | [AUTONOMOUS_QUEUE_30.md](AUTONOMOUS_QUEUE_30.md) | Loop 1 spine, CI, smokes, chat 90/104 |
 | 2 | [AUTONOMOUS_QUEUE_PHASE2.md](AUTONOMOUS_QUEUE_PHASE2.md) | Auth, chat 104/104, settle user id |
 | 3 | [AUTONOMOUS_QUEUE_PHASE3.md](AUTONOMOUS_QUEUE_PHASE3.md) | SSE proof-events, Stripe promote |

@@ -24,7 +24,7 @@
 | Blink Remote lite | ✅ Combo matcher + tabbed panel (combos/debug/settings); full archive UI deferred |
 | ELO presence | ✅ Membrane + speech energy (`pulseSpeech`); panel voice + optional `elo-reply` |
 | Investor explainers | ✅ 16 HTML walkthroughs + index + presenter deck (`investor_presenter_deck.html`) |
-| CI | Validator + app + POP finish Flutter + investor explainers + vision smokes |
+| CI | Validator + app + POP finish + gesture/promo/ELO/investor smokes |
 
 **One command:** `./scripts/dev_stack.sh`
 
@@ -61,10 +61,10 @@ Immersive feed ──► consent ──► watch-verify ──► earn settle
 
 ---
 
-## Deferred (post Phase 40)
+## Deferred (post Phase 42)
 
 - Full archive `BlinkRemoteControl` parity (voice/Tobii/tutorial tabs)
-- Promo marketplace tab + live feed API
+- Promo live feed API + geo map layer (UI scaffold shipped Phase 41)
 - ELO full companion product (MOD-01, iAM entity)
 - Production cloud cutover (owner credentials)
 
