@@ -18,6 +18,18 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-30 — Phase 41 immersive promo marketplace + ELO speech energy
+
+### Delivered
+- **Promo tab** — `ImmersivePromoScreen` with sponsor brief list, map placeholder, `beginImmersiveWatch` on card tap; canon `PROMO_MARKETPLACE.md`.
+- **Routing** — `immersive-promo` screen; AppShell titlebar hidden; feed Promo dock navigates to marketplace.
+- **ELO speech energy** — `pulseSpeech` in context; membrane glow on panel/wake voice; `--elo-speech-energy` CSS.
+
+### Verification
+- `./scripts/smoke_immersive_promo.sh` · `./scripts/smoke_elo_presence.sh`
+
+---
+
 ## 2026-05-30 — ELO runtime engine + explainer index
 
 ### Delivered

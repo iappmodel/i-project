@@ -966,3 +966,155 @@
   flex-wrap: wrap;
   gap: 8px;
 }
+
+/* Immersive promo marketplace (Picture 2 · Promo tab) */
+.immersive-promo {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  background: #070709;
+  padding: 48px 16px 88px;
+  overflow: hidden;
+}
+
+.immersive-promo__header {
+  margin-bottom: 16px;
+}
+
+.immersive-promo__label {
+  margin: 0 0 4px;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.immersive-promo__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.immersive-promo__sub {
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: rgba(240, 237, 232, 0.55);
+}
+
+.immersive-promo__list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.immersive-promo-card {
+  position: relative;
+  border: none;
+  border-radius: 14px;
+  overflow: hidden;
+  min-height: 112px;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+}
+
+.immersive-promo-card__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.35) 55%, rgba(0, 0, 0, 0.2) 100%);
+}
+
+.immersive-promo-card__body {
+  position: relative;
+  z-index: 1;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.immersive-promo-card__brand {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.immersive-promo-card__title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(240, 237, 232, 0.92);
+  line-height: 1.3;
+}
+
+.immersive-promo-card__desc {
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.45;
+  color: rgba(240, 237, 232, 0.55);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.immersive-promo-card__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.immersive-promo-card__reward {
+  font-size: 10px;
+  color: var(--accent-green, #4ade80);
+}
+
+.immersive-promo-card__type {
+  font-size: 8px;
+  padding: 3px 7px;
+  border-radius: 8px;
+  background: rgba(55, 138, 221, 0.12);
+  color: #6eb5ff;
+  border: 0.5px solid rgba(55, 138, 221, 0.25);
+}
+
+.immersive-promo-card__distance {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.immersive-promo__map-chip {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 0.5px dashed rgba(255, 255, 255, 0.12);
+  font-size: 9px;
+  color: rgba(240, 237, 232, 0.45);
+  text-align: center;
+}
+
+.immersive-promo__toast {
+  position: absolute;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%);
+  z-index: 12;
+  font-size: 10px;
+  color: rgba(240, 237, 232, 0.75);
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(7, 7, 9, 0.72);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+}

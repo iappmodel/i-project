@@ -327,6 +327,7 @@ flowchart LR
 | Vision → proof bridge (hints only) | ✅ `visionProofBridge.ts` + `demoProofPacket` + ADR |
 | Vision source badge (Earn/Watch) | ✅ `VisionSourceBadge` |
 | Immersive wallet/profile glass sheets | ✅ `ImmersiveGlassSheet`, wired on `ImmersiveFeedScreen` |
+| Immersive promo marketplace | ✅ `ImmersivePromoScreen` + `promoOffers.ts` (Phase 41) |
 | Blink Remote lite (debug gaze) | ✅ `VisionBlinkRemoteLite` in `VisionControlPanel` |
 | OUT-PROFILE engine v1 | ✅ `outProfileEngine.ts` + tap → consent/watch |
 | Loop 1 immersive watch path | ✅ `beginImmersiveWatch` → consent gate → watch-verify |

@@ -12,6 +12,7 @@ export type DemoScreenId =
   | 'splash'
   | 'feed'
   | 'immersive-feed'
+  | 'immersive-promo'
   | 'earn'
   | 'profile'
   | 'offer-detail'

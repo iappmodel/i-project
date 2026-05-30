@@ -83,6 +83,10 @@ echo "== Immersive shell smoke (Phases 35–38) =="
 "$ROOT/scripts/smoke_immersive_shell.sh"
 
 echo ""
+echo "== Immersive promo smoke (Phase 41) =="
+"$ROOT/scripts/smoke_immersive_promo.sh"
+
+echo ""
 echo "== Investor explainer smoke =="
 "$ROOT/scripts/smoke_investor_explainers.sh"
 

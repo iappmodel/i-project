@@ -43,6 +43,9 @@ function tabForScreen(screen: DemoScreenId): ProductTabId | null {
   if (screen === 'saved' || screen === 'immersive-feed') {
     return 'feed'
   }
+  if (screen === 'immersive-promo') {
+    return 'earn'
+  }
   if (screen === 'convert' || screen === 'withdraw-preview' || screen === 'creator-economics') {
     return 'wallet'
   }
