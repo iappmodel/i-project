@@ -5,6 +5,17 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-30 — Like tap explainer (heart preset tap path)
+
+### Delivered
+- **Like tap explainer** — `like_tap_explainer.html` (tap toggle, content_likes, tap vs Hold Love contrast).
+- **Presenter deck + index** — slide 5 in deck; earn section now 3 files; smoke tracks **15** walkthroughs.
+
+### Verification
+- `./scripts/smoke_investor_explainers.sh`
+
+---
+
 ## 2026-05-30 — Investor presenter deck (14-slide auto tour)
 
 ### Delivered

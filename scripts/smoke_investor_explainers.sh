@@ -15,6 +15,7 @@ required=(
   "share_button_explainer.html"
   "message_button_explainer.html"
   "love_hold_creator_offer_explainer.html"
+  "like_tap_explainer.html"
   "elo_presence_explainer.html"
   "feed_dock_explainer.html"
   "wallet_dock_explainer.html"
@@ -44,7 +45,7 @@ for name in "${required[@]}"; do
     exit 1
   fi
 done
-echo "OK index links (14 walkthroughs)"
+echo "OK index links (15 walkthroughs)"
 
 deck="$DIR/investor_presenter_deck.html"
 grep -q 'href="investor_presenter_deck.html"' "$index" || { echo "FAIL: index must link to presenter deck" >&2; exit 1; }
