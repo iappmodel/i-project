@@ -1185,8 +1185,8 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
       }
       final double? ear = meanEarFromPairIfFinite(leftEar: face.leftEar, rightEar: face.rightEar);
       final blink = updateBlink(ear, rawMeanBaseline: rawMeanBaseline);
-      zoneOverlayDirty |= _trySelectZoneOnMeanEarClosedEdge(
-        ear,
+      zoneOverlayDirty |= _trySelectZoneOnBlinkEdge(
+        isBlinking: blink['isBlinking']! as bool,
         hasFace: face.landmarks.isNotEmpty,
         now: now,
         faceConfidence: face.faceConfidence,
@@ -1690,28 +1690,21 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
     return zoneOverlayDirty;
   }
 
-  /// Mean EAR blink edge: `hasFace && ear > 0 && ear < 0.08`.
-  /// Fixation + dwell→zone policy: [IntentEngine.process] only (no duplicate fixation→[_selectZone]).
-  bool _trySelectZoneOnMeanEarClosedEdge(
-    double? avgEar, {
+  /// Blink edge from [BlinkDetector] FSM (single authoritative blink path).
+  /// Fixation + dwell→zone policy: [IntentEngine.process] only.
+  bool _trySelectZoneOnBlinkEdge({
+    required bool isBlinking,
     required bool hasFace,
     required int now,
     required double faceConfidence,
     required bool likelyFake,
   }) {
-    final confidence = faceConfidence.clamp(0.0, 1.0).toDouble();
-    if (confidence < 0.65) return false;
-    if (avgEar == null || !avgEar.isFinite) {
+    if (!hasFace) {
       _wasBlinking = false;
       return false;
     }
-    final isBlinking = meanEarIsBlinking(
-      wasBlinking: _wasBlinking,
-      avgEar: avgEar,
-      hasFace: hasFace,
-      closeThreshold: _blinkCloseThreshold,
-      openThreshold: _blinkOpenThreshold,
-    );
+    final confidence = faceConfidence.clamp(0.0, 1.0).toDouble();
+    if (confidence < 0.65) return false;
     final fixation = _fixationState == FixationState.fixation;
     var dirty = false;
     if (fixation && !_wasBlinking && isBlinking) {
