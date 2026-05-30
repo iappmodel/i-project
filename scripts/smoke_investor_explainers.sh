@@ -20,6 +20,8 @@ required=(
   "promo_dock_explainer.html"
   "create_studio_explainer.html"
   "profile_dock_explainer.html"
+  "pop_feature_investor_explainer.html"
+  "out_profile_explainer.html"
 )
 
 for name in "${required[@]}"; do
@@ -40,7 +42,7 @@ for name in "${required[@]}"; do
     exit 1
   fi
 done
-echo "OK index links (11 walkthroughs)"
+echo "OK index links (13 walkthroughs)"
 
 echo ""
 echo "PASS: investor explainer smoke"
