@@ -91,6 +91,10 @@ echo "== Investor explainer smoke =="
 "$ROOT/scripts/smoke_investor_explainers.sh"
 
 echo ""
+echo "== Open investor presenter smoke =="
+"$ROOT/scripts/smoke_open_investor_presenter.sh"
+
+echo ""
 echo "== ELO presence smoke =="
 "$ROOT/scripts/smoke_elo_presence.sh"
 
