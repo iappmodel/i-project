@@ -61,5 +61,11 @@ for name in "${required[@]}"; do
 done
 echo "OK presenter deck references all walkthroughs"
 
+elo="$DIR/elo_presence_explainer.html"
+grep -q 'eloManifestEnter' "$elo" || { echo "FAIL: elo explainer must show rail-to-center manifest" >&2; exit 1; }
+grep -q 'elo-reply' "$elo" || { echo "FAIL: elo explainer must document elo-reply runtime" >&2; exit 1; }
+grep -q 'speechEnergy' "$elo" || { echo "FAIL: elo explainer must document speech reactions" >&2; exit 1; }
+echo "OK elo_presence_explainer content checks"
+
 echo ""
 echo "PASS: investor explainer smoke"

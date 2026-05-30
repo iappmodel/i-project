@@ -94,6 +94,13 @@ html, body { min-height: 100vh; background: var(--page-bg); font-family: Arial, 
   fill: none; stroke: rgba(255,255,255,0.35); stroke-width: 1.2;
   stroke-dasharray: 400; stroke-dashoffset: 400;
 }
+.elo-socket { fill: rgba(4,8,16,0.42); stroke: rgba(180,210,255,0.12); stroke-width: 0.6; }
+.panel-mic {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 6px;
+  font-size: 9px; padding: 4px 10px; border-radius: 10px;
+  background: rgba(255,255,255,0.06); border: 0.5px solid rgba(255,255,255,0.14); color: var(--text-primary);
+}
+.panel-mic-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); }
 .elo-greeting {
   position: absolute; left: 50%; top: 62%; transform: translateX(-50%);
   font-size: 11px; color: rgba(240,237,232,0.8); text-align: center; white-space: nowrap;
@@ -131,7 +138,12 @@ html, body { min-height: 100vh; background: var(--page-bg); font-family: Arial, 
 #phoneScene[data-scene="evoke"] .elo-hint { opacity: 0; }
 #phoneScene[data-scene="evoke"] .elo-mic { opacity: 1; box-shadow: 0 0 24px rgba(0,229,255,0.2); }
 #phoneScene[data-scene="manifest"] .elo-hint, #phoneScene[data-scene="manifest"] .elo-mic { opacity: 0; }
-#phoneScene[data-scene="manifest"] .elo-membrane-wrap { opacity: 1; }
+#phoneScene[data-scene="manifest"] .elo-membrane-wrap { opacity: 1; animation: eloManifestEnter 1.35s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+@keyframes eloManifestEnter {
+  0% { opacity: 0; transform: translate(22%, -50%) scale(0.38); filter: blur(10px); }
+  40% { opacity: 0.5; transform: translate(8%, -50%) scale(0.62); filter: blur(5px); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); filter: blur(0); }
+}
 #phoneScene[data-scene="manifest"] .elo-fill { opacity: 1; }
 #phoneScene[data-scene="manifest"] .face-contour { animation: drawFace 1.35s ease forwards; }
 @keyframes drawFace { to { stroke-dashoffset: 0; } }
@@ -143,6 +155,15 @@ html, body { min-height: 100vh; background: var(--page-bg); font-family: Arial, 
 #phoneScene[data-scene="panel"] .elo-membrane-wrap, #phoneScene[data-scene="panel"] .elo-fill { opacity: 1; }
 #phoneScene[data-scene="panel"] .face-contour { stroke-dashoffset: 0; }
 #phoneScene[data-scene="panel"] .elo-panel { opacity: 1; transform: translateY(0); }
+#phoneScene[data-scene="speech"] .elo-membrane-wrap, #phoneScene[data-scene="speech"] .elo-fill { opacity: 1; }
+#phoneScene[data-scene="speech"] .face-contour { stroke-dashoffset: 0; }
+#phoneScene[data-scene="speech"] .elo-membrane-wrap { animation: eloSpeakPulse 1.4s ease-in-out infinite; }
+#phoneScene[data-scene="speech"] .elo-panel { opacity: 1; transform: translateY(0); }
+#phoneScene[data-scene="speech"] .panel-mic { border-color: rgba(0,229,255,0.45); box-shadow: 0 0 12px rgba(0,229,255,0.2); }
+@keyframes eloSpeakPulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.18); }
+}
 #phoneScene[data-scene="pop"] .elo-membrane-wrap, #phoneScene[data-scene="pop"] .elo-fill { opacity: 1; }
 #phoneScene[data-scene="pop"] .face-contour { stroke-dashoffset: 0; stroke: rgba(74,222,128,0.5); }
 #phoneScene[data-scene="pop"] .pop-glow { opacity: 1; }
@@ -194,6 +215,8 @@ html, body { min-height: 100vh; background: var(--page-bg); font-family: Arial, 
             <div class="elo-membrane-wrap">
               <div class="elo-fill"></div>
               <svg viewBox="0 0 200 260" aria-hidden="true">
+                <ellipse class="elo-socket" cx="72" cy="118" rx="14" ry="10"/>
+                <ellipse class="elo-socket" cx="128" cy="118" rx="14" ry="10"/>
                 <ellipse class="face-contour" cx="100" cy="130" rx="72" ry="95"/>
                 <path class="face-contour" d="M55 118 Q100 95 145 118"/>
                 <path class="face-contour" d="M68 108 Q85 98 102 108"/>
@@ -207,6 +230,7 @@ html, body { min-height: 100vh; background: var(--page-bg); font-family: Arial, 
               <div class="panel-title">ELO · Presence</div>
               <div class="panel-line">Companion mode · Mentor relationship</div>
               <div class="panel-line">Recommendations · memories · guided actions</div>
+              <div class="panel-mic"><span class="panel-mic-dot"></span> Mic · speak your question</div>
               <span class="panel-chip">Tap membrane anytime</span>
             </div>
             <div class="relationship-overlay">
@@ -233,23 +257,27 @@ html, body { min-height: 100vh; background: var(--page-bg); font-family: Arial, 
       <div class="block" data-scene="idle" data-block="concept">
         <div class="block-title">Concept</div>
         <p>ELO is a living presence membrane — procedural glass face contours over full-bleed media. Not a static avatar, not an orb, not a chatbot card.</p>
-        <p class="status-note">Implemented: EloPresenceLayer, voice wake, presence panel, personality stack (MVP).</p>
+        <p class="status-note">Shipped in app: EloPresenceLayer, procedural SVG membrane, elo-reply edge function, doctrine runtime, panel mic, speech-reactive pulse.</p>
       </div>
       <div class="block" data-scene="evoke" data-block="evoke">
         <div class="block-title">Voice evoke</div>
-        <p>Opt-in activation: a non-blocking “Say ELO” hint appears. User taps to arm mic — no always-listening. Saying “ELO” manifests the membrane at center (~1.35s emergence).</p>
+        <p>Opt-in activation: a non-blocking “Say ELO” hint appears. User taps to arm mic — no always-listening. Saying “ELO” manifests the membrane from the right rail to center (~1.35s emergence).</p>
       </div>
       <div class="block" data-scene="manifest" data-block="membrane">
         <div class="block-title">Glass membrane</div>
-        <p>Semi-transparent frosted contour lines (jaw, brows, eyes, nose, lips) with soft radial fill — background visible through the membrane. ~62% width, centered over media.</p>
+        <p>Sculptural glass contours with eye sockets, cheek depth, and radial fill — background visible through the membrane. ~62% width, POP-mirrored when camera active. Four visual forms: Glass face, Light form, Abstract, Symbol.</p>
       </div>
       <div class="block" data-scene="greeting" data-block="greeting">
         <div class="block-title">Relationship</div>
-        <p>Returning users see “I'm here. Tap to talk.” First visit opens onboarding: “I heard you.” Tap membrane → glass presence panel with chat, recommendations, and personality settings.</p>
+        <p>Returning users get auto-open panel ~0.7s after manifest. First visit: onboarding “I heard you.” Leaving feed dismisses session — evoke again next visit.</p>
       </div>
       <div class="block" data-scene="panel" data-block="panel">
         <div class="block-title">Presence panel</div>
-        <p>Panel surfaces memories, permissions, recommendations, and stack editor — companion, mentor, muse modes. Config persists locally (`i-elo-presence-config-v1`).</p>
+        <p>Chat runs through rank-143 runtime: doctrine safety rails → personalization → elo-reply edge (OpenAI when configured) → local fallback. Panel Mic for spoken questions. Stack editor: personality, relationship, visual form.</p>
+      </div>
+      <div class="block" data-scene="speech" data-block="speech">
+        <div class="block-title">Speech reactions</div>
+        <p>Membrane brightens and breathes with voice — wake word, panel mic, and chat pulses drive speechEnergy on the face. ELO feels present, not pasted on.</p>
       </div>
       <div class="block" data-scene="pop" data-block="pop">
         <div class="block-title">POP boundary</div>
@@ -268,7 +296,9 @@ html, body { min-height: 100vh; background: var(--page-bg); font-family: Arial, 
           <li>Personality stack — mentor, companion, operating modes.</li>
           <li>POP-aware without bypassing verification gates.</li>
           <li>Does not replace creator OUT-PROFILE — clear zone ownership.</li>
-          <li>Defensible companion layer competitors lack.</li>
+          <li>Runtime doctrine — never bypass POP proof gates.</li>
+          <li>Foundation model slot via elo-reply when OpenAI configured.</li>
+          <li>Speech-reactive membrane — companion reacts while you talk.</li>
         </ul>
       </div>
       <div class="block framing" data-block="framing">
@@ -285,6 +315,7 @@ html, body { min-height: 100vh; background: var(--page-bg); font-family: Arial, 
     {id:'manifest',duration:1800,panel:['membrane']},
     {id:'greeting',duration:1400,panel:['greeting']},
     {id:'panel',duration:1500,panel:['panel']},
+    {id:'speech',duration:1400,panel:['speech']},
     {id:'pop',duration:1400,panel:['pop']},
     {id:'relationship',duration:1600,panel:['platform']}
   ];
