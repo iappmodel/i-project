@@ -17,6 +17,7 @@ required=(
   "$APP/src/lib/elo/expressionEngine.ts"
   "$APP/src/state/eloContext.tsx"
   "$APP/src/styles/elo-presence.css"
+  "$ROOT/MASTER_BRAIN/CHAT_RECOVERY/EXTRACTED/conversations/143_elo_personal_intelligence_companion.md"
   "$ROOT/MASTER_BRAIN/UX/ELO_PRESENCE_LAYER.md"
 )
 

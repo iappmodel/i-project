@@ -66,6 +66,8 @@ Voice wake is **opt-in** — mic does not start until user taps the hint pill.
 
 Persisted in `localStorage` key `i-elo-presence-config-v1`.
 
+**Companion law:** rank 143 extract — `MASTER_BRAIN/CHAT_RECOVERY/EXTRACTED/conversations/143_elo_personal_intelligence_companion.md`
+
 ---
 
 ## POP boundary

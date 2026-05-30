@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import type { FaceContourPaths } from '../../hooks/useEloFaceMirror'
 import type { EloExpressionState } from '../../lib/elo/types'
 
@@ -17,6 +18,10 @@ export function EloFaceMembrane({
   emerged,
   entering,
 }: EloFaceMembraneProps) {
+  const uid = useId().replace(/:/g, '')
+  const fillId = `elo-face-fill-${uid}`
+  const glowId = `elo-line-glow-${uid}`
+
   if (!emerged) return null
 
   const tilt = `rotateY(${expression.tiltY}deg) rotateX(${expression.tiltX}deg) scale(${1 + expression.nodPhase * 0.02})`
@@ -43,12 +48,12 @@ export function EloFaceMembrane({
         <div className="elo-membrane-halo" />
         <svg className="elo-membrane__svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
           <defs>
-            <radialGradient id="elo-face-fill" cx="50%" cy="40%" r="42%">
+            <radialGradient id={fillId} cx="50%" cy="40%" r="42%">
               <stop offset="0%" stopColor="rgba(210, 230, 255, 0.16)" />
               <stop offset="70%" stopColor="rgba(180, 210, 255, 0.05)" />
               <stop offset="100%" stopColor="rgba(180, 210, 255, 0)" />
             </radialGradient>
-            <filter id="elo-line-glow" x="-20%" y="-20%" width="140%" height="140%">
+            <filter id={glowId} x="-20%" y="-20%" width="140%" height="140%">
               <feGaussianBlur stdDeviation="0.9" result="blur" />
               <feMerge>
                 <feMergeNode in="blur" />
@@ -56,8 +61,8 @@ export function EloFaceMembrane({
               </feMerge>
             </filter>
           </defs>
-          <ellipse cx="50" cy="48" rx="27" ry="33" fill="url(#elo-face-fill)" />
-          <path className={`${pathClass} elo-membrane__path--jaw`} d={paths.jaw} filter="url(#elo-line-glow)" />
+          <ellipse cx="50" cy="48" rx="27" ry="33" fill={`url(#${fillId})`} />
+          <path className={`${pathClass} elo-membrane__path--jaw`} d={paths.jaw} filter={`url(#${glowId})`} />
           <path className={pathClass} d={paths.leftBrow} />
           <path className={pathClass} d={paths.rightBrow} />
           <path className={pathClass} d={paths.nose} />

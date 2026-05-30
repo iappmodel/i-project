@@ -64,8 +64,10 @@ flowchart LR
 
 | Component | Elo | POP |
 |-----------|-----|-----|
-| Code | ELO mock shell (i-initial-structures) | POPS docs + flutter VSL + Presence Layer chat |
-| Wired together | **No** | — |
+| Code | `app/` presence layer + panel + profile teaser | POPS docs + flutter VSL + `VisionContext` |
+| Wired together | **Partial** — vision landmarks, proof-events status, watch-verify attention → expression engine | Session/proof gates unchanged |
+
+**Loop 1 (2026-05-30):** `EloPresenceLayer` on immersive + watch-verify; procedural SVG membrane; voice evoke; personality stack in local config.
 
 ---
 
