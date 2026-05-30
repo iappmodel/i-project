@@ -4,6 +4,7 @@ import {
   transcriptContainsEloWake,
   type EloSpeechRecognition,
 } from '../lib/elo/speechRecognition'
+import { useElo } from '../state/eloContext'
 
 export interface EloWakeWordState {
   listening: boolean
@@ -15,6 +16,7 @@ export interface EloWakeWordState {
 }
 
 export function useEloWakeWord(onWake: () => void, enabled: boolean): EloWakeWordState {
+  const { pulseSpeech } = useElo()
   const [listening, setListening] = useState(false)
   const [armed, setArmed] = useState(false)
   const [lastHeard, setLastHeard] = useState<string | null>(null)
@@ -54,7 +56,9 @@ export function useEloWakeWord(onWake: () => void, enabled: boolean): EloWakeWor
     recognition.onresult = (event) => {
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const transcript = event.results[i][0].transcript
+        pulseSpeech(event.results[i].isFinal ? 0.45 : 0.2)
         if (transcriptContainsEloWake(transcript)) {
+          pulseSpeech(0.75)
           handleWake(transcript)
           break
         }
@@ -95,7 +99,7 @@ export function useEloWakeWord(onWake: () => void, enabled: boolean): EloWakeWor
       recognitionRef.current = null
       setListening(false)
     }
-  }, [enabled, supported, armed, handleWake])
+  }, [enabled, supported, armed, handleWake, pulseSpeech])
 
   return { listening, supported, armed, lastHeard, error, armVoice }
 }

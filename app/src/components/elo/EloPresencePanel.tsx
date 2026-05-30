@@ -87,7 +87,7 @@ function EloChat({
 }
 
 export function EloPresencePanel() {
-  const { panelOpen, closePanel, setStack, sessionActive, config, room, setOrbState } = useElo()
+  const { panelOpen, closePanel, setStack, sessionActive, config, room, setOrbState, pulseSpeech } = useElo()
   const { displayName, relationship, operating } = useEloPersonality()
   const { setScreen, setActiveTab, eloStatusLine, proofEventsConnected } = useDemo()
   const [messages, setMessages] = useState<EloMessage[]>(mockMessages)
@@ -111,6 +111,7 @@ export function EloPresencePanel() {
       setMessages(history)
       setSending(true)
       setOrbState('thinking')
+      pulseSpeech(0.35)
 
       try {
         const result = await resolveEloReplyAsync(
@@ -123,6 +124,7 @@ export function EloPresencePanel() {
           history,
         )
         setOrbState(result.orbState)
+        pulseSpeech(0.7)
         setMessages((prev) => [
           ...prev,
           {
@@ -136,7 +138,7 @@ export function EloPresencePanel() {
         setSending(false)
       }
     },
-    [config.stack, messages, proofEventsConnected, room, sending, setOrbState],
+    [config.stack, messages, proofEventsConnected, pulseSpeech, room, sending, setOrbState],
   )
 
   const panelVoice = useEloPanelVoice(handleSend, panelOpen && sessionActive)

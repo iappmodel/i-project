@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react'
@@ -45,6 +46,8 @@ export interface EloContextValue {
   completeOnboarding: (stack: EloPersonalityStack) => void
   dismissSession: () => void
   setEmergence: (value: number) => void
+  speechEnergy: number
+  pulseSpeech: (amount?: number) => void
 }
 
 const EloContext = createContext<EloContextValue | null>(null)
@@ -63,6 +66,32 @@ export function EloProvider({ children }: { children: ReactNode }) {
   const [sessionActive, setSessionActive] = useState(false)
   const [panelOpen, setPanelOpen] = useState(false)
   const [onboardingOpen, setOnboardingOpen] = useState(false)
+  const [speechEnergy, setSpeechEnergy] = useState(0)
+  const speechEnergyRef = useRef(0)
+  const decayFrameRef = useRef<number>(0)
+
+  const pulseSpeech = useCallback((amount = 1) => {
+    speechEnergyRef.current = Math.min(1, speechEnergyRef.current + amount)
+    setSpeechEnergy(speechEnergyRef.current)
+  }, [])
+
+  useEffect(() => {
+    if (speechEnergy <= 0.01) return
+
+    const decay = () => {
+      speechEnergyRef.current *= 0.92
+      if (speechEnergyRef.current > 0.02) {
+        setSpeechEnergy(speechEnergyRef.current)
+        decayFrameRef.current = requestAnimationFrame(decay)
+      } else {
+        speechEnergyRef.current = 0
+        setSpeechEnergy(0)
+      }
+    }
+
+    decayFrameRef.current = requestAnimationFrame(decay)
+    return () => cancelAnimationFrame(decayFrameRef.current)
+  }, [speechEnergy])
 
   const room = useMemo(() => getPresenceRoom(config.roomId), [config.roomId])
 
@@ -119,6 +148,8 @@ export function EloProvider({ children }: { children: ReactNode }) {
     setEmergence(0)
     setPanelOpen(false)
     setOnboardingOpen(false)
+    speechEnergyRef.current = 0
+    setSpeechEnergy(0)
   }, [])
 
   const openPanel = useCallback(() => setPanelOpen(true), [])
@@ -154,6 +185,8 @@ export function EloProvider({ children }: { children: ReactNode }) {
       completeOnboarding,
       dismissSession,
       setEmergence,
+      speechEnergy,
+      pulseSpeech,
     }),
     [
       config,
@@ -175,6 +208,8 @@ export function EloProvider({ children }: { children: ReactNode }) {
       setRoom,
       completeOnboarding,
       dismissSession,
+      speechEnergy,
+      pulseSpeech,
     ],
   )
 

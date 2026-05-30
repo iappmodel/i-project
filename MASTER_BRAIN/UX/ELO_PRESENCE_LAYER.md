@@ -10,7 +10,8 @@
 ELO is a **living presence membrane** — procedural glass face contours over full-bleed media, not a static image, not an orb, not a chatbot card.
 
 - Semi-transparent frosted contour lines (jaw, brows, eyes, nose, lips) + **sculptural glass** (eye sockets, cheek depth, forehead highlight)
-- **Visual form** chosen at onboarding: `lineFace` (default), `lightForm`, `abstract`, `symbol`
+- **Visual form** chosen at onboarding or in panel stack editor: `lineFace`, `lightForm`, `abstract`, `symbol`
+- Membrane **reacts to speech** — wake word, panel mic, and chat pulses drive `speechEnergy` on the face
 - Soft radial glass fill — background visible through the membrane
 - Centered over full-bleed media (~62% width); adapts to POP vision landmarks when camera active
 - Idle breathe + head tilt when camera off

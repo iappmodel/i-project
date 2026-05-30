@@ -413,6 +413,15 @@
   margin-left: 24px;
 }
 
+.elo-membrane-wrap--speaking .elo-membrane-halo {
+  animation-duration: calc(2.2s / var(--elo-pulse-speed, 0.5));
+  opacity: calc(0.85 + var(--elo-speech-energy, 0) * 0.35);
+}
+
+.elo-membrane-wrap--speaking .elo-membrane__path {
+  stroke-width: calc(1.35px + var(--elo-speech-energy, 0) * 0.6px);
+}
+
 .elo-chat-form {
   display: flex;
   gap: 8px;

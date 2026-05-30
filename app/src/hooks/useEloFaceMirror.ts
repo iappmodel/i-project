@@ -105,7 +105,7 @@ export function useEloFaceMirror(options: {
   attentionScore?: number
 }) {
   const vision = useVision()
-  const { config, room, emergence, evoked, orbState: ctxOrb } = useElo()
+  const { config, room, emergence, evoked, orbState: ctxOrb, speechEnergy } = useElo()
   const [idlePhase, setIdlePhase] = useState(0)
   const rafRef = useRef<number>(0)
 
@@ -141,6 +141,7 @@ export function useEloFaceMirror(options: {
         emergence,
         attentionScore: options.attentionScore,
         idlePhase,
+        speechEnergy,
       }),
     [
       hasFace,
@@ -156,6 +157,7 @@ export function useEloFaceMirror(options: {
       emergence,
       options.attentionScore,
       idlePhase,
+      speechEnergy,
     ],
   )
 

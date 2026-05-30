@@ -101,6 +101,18 @@ if ! grep -q "EloSessionScope" "$APP/src/App.tsx"; then
   echo "FAIL: App must mount EloSessionScope for immersive session reset" >&2
   exit 1
 fi
+if ! grep -q "pulseSpeech" "$APP/src/state/eloContext.tsx"; then
+  echo "FAIL: eloContext must expose pulseSpeech for membrane reactions" >&2
+  exit 1
+fi
+if ! grep -q "VISUAL_FORMS" "$APP/src/components/elo/EloStackEditor.tsx"; then
+  echo "FAIL: EloStackEditor must allow visualForm changes" >&2
+  exit 1
+fi
+if ! grep -q "speechEnergy" "$APP/src/hooks/useEloFaceMirror.ts"; then
+  echo "FAIL: useEloFaceMirror must wire speechEnergy into expression" >&2
+  exit 1
+fi
 if ! grep -q "elo-manifest-enter" "$APP/src/styles/elo-presence.css"; then
   echo "FAIL: elo-presence.css must animate membrane manifest from rail" >&2
   exit 1

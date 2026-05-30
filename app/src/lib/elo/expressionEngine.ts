@@ -75,7 +75,7 @@ export function computeExpression(input: ExpressionInput): EloExpressionState {
     if (input.attentionScore < 0.4) nodPhase -= 0.01
   }
 
-  const speechBoost = (input.speechEnergy ?? 0) * 0.03 * micro
+  const speechBoost = (input.speechEnergy ?? 0) * 0.08 * micro
   const isPresent = input.evoked
   const emergenceProgress = isPresent ? 1 : 0
   const baseOpacity = BASE_OPACITY * roomScale + glow.boost + faceBoost + speechBoost

@@ -28,6 +28,7 @@ export function EloPresenceLayer({ attentionScore: attentionScoreProp }: EloPres
     openOnboarding,
     onboardingOpen,
     panelOpen,
+    speechEnergy,
   } = useElo()
   const { expression, paths, eyeCenters, eyeScaleY } = useEloFaceMirror({ orbState, attentionScore })
   const [entering, setEntering] = useState(false)
@@ -81,6 +82,7 @@ export function EloPresenceLayer({ attentionScore: attentionScoreProp }: EloPres
               eyeCenters={eyeCenters}
               eyeScaleY={eyeScaleY}
               visualForm={config.stack.visualForm}
+              speechEnergy={speechEnergy}
               emerged={showMembrane}
               entering={entering}
             />

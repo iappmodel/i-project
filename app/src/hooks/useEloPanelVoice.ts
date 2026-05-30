@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { getSpeechRecognition, type EloSpeechRecognition } from '../lib/elo/speechRecognition'
+import { useElo } from '../state/eloContext'
 
 export interface EloPanelVoiceState {
   supported: boolean
@@ -11,6 +12,7 @@ export interface EloPanelVoiceState {
 
 /** One-shot speech capture for ELO panel chat (opt-in mic tap) */
 export function useEloPanelVoice(onTranscript: (text: string) => void, enabled: boolean): EloPanelVoiceState {
+  const { pulseSpeech } = useElo()
   const [listening, setListening] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const recognitionRef = useRef<EloSpeechRecognition | null>(null)
@@ -41,7 +43,10 @@ export function useEloPanelVoice(onTranscript: (text: string) => void, enabled: 
     recognition.onresult = (event) => {
       const last = event.results[event.results.length - 1]
       const transcript = last?.[0]?.transcript?.trim()
-      if (transcript) onTranscriptRef.current(transcript)
+      if (transcript) {
+        pulseSpeech(0.65)
+        onTranscriptRef.current(transcript)
+      }
     }
 
     recognition.onerror = (event) => {
@@ -60,11 +65,12 @@ export function useEloPanelVoice(onTranscript: (text: string) => void, enabled: 
       recognition.start()
       setListening(true)
       setError(null)
+      pulseSpeech(0.35)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Mic unavailable')
       setListening(false)
     }
-  }, [enabled, listening, supported, stopListening])
+  }, [enabled, listening, supported, stopListening, pulseSpeech])
 
   useEffect(() => () => stopListening(), [stopListening])
 

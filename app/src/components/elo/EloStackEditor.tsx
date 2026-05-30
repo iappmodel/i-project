@@ -1,6 +1,7 @@
 import { OPERATING_MODES } from '../../lib/elo/operatingModes'
 import { RELATIONSHIP_MODES } from '../../lib/elo/relationshipModes'
-import type { EloPersonalityStack, OperatingMode, PersonalityLayerRole } from '../../lib/elo/types'
+import { VISUAL_FORMS } from '../../lib/elo/visualForms'
+import type { EloPersonalityStack, EloVisualForm, OperatingMode, PersonalityLayerRole } from '../../lib/elo/types'
 import { useEloPersonality } from '../../hooks/useEloPersonality'
 import { PERSONALITY_PRESETS } from '../../lib/elo/presets'
 
@@ -24,6 +25,10 @@ export function EloStackEditor() {
 
   const setRelationship = (relationshipMode: EloPersonalityStack['relationshipMode']) => {
     setStack({ ...stack, relationshipMode })
+  }
+
+  const setVisualForm = (visualForm: EloVisualForm) => {
+    setStack({ ...stack, visualForm })
   }
 
   return (
@@ -79,6 +84,21 @@ export function EloStackEditor() {
             onClick={() => setRelationship(mode.id)}
           >
             {mode.label}
+          </button>
+        ))}
+      </div>
+
+      <p className="elo-section-title">Presence form</p>
+      <div className="elo-chip-row">
+        {VISUAL_FORMS.map((form) => (
+          <button
+            key={form.id}
+            type="button"
+            className={`elo-chip ${stack.visualForm === form.id ? 'elo-chip--active' : ''}`}
+            onClick={() => setVisualForm(form.id)}
+            title={form.description}
+          >
+            {form.label}
           </button>
         ))}
       </div>

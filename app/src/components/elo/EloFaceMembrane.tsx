@@ -18,6 +18,7 @@ export interface EloFaceMembraneProps {
   eyeCenters: FaceEyeCenters
   eyeScaleY: number
   visualForm: EloVisualForm
+  speechEnergy: number
   emerged: boolean
   entering: boolean
 }
@@ -29,6 +30,7 @@ export function EloFaceMembrane({
   eyeCenters,
   eyeScaleY,
   visualForm,
+  speechEnergy,
   emerged,
   entering,
 }: EloFaceMembraneProps) {
@@ -44,6 +46,7 @@ export function EloFaceMembrane({
     ? 'elo-membrane__path elo-membrane__path--emerge'
     : 'elo-membrane__path elo-membrane__path--idle'
   const formClass = `elo-membrane-wrap--${visualForm}`
+  const speakingClass = speechEnergy > 0.15 ? ' elo-membrane-wrap--speaking' : ''
   const showDetail = visualForm === 'lineFace'
   const showAbstract = visualForm === 'abstract'
   const showLight = visualForm === 'lightForm'
@@ -52,11 +55,12 @@ export function EloFaceMembrane({
 
   return (
     <div
-      className={`elo-membrane-wrap${entering ? ' elo-membrane-wrap--entering' : ''} ${formClass}`}
+      className={`elo-membrane-wrap${entering ? ' elo-membrane-wrap--entering' : ''} ${formClass}${speakingClass}`}
       style={{
         opacity: expression.opacity,
         ['--elo-line-color' as string]: expression.lineColor,
         ['--elo-pulse-speed' as string]: String(expression.pulseSpeed),
+        ['--elo-speech-energy' as string]: String(speechEnergy),
       }}
     >
       <div
