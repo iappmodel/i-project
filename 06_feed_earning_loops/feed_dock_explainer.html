@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] — Feed · Immersive Media Home Explainer</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --page-bg: #fff; --heading: #333; --text: #555; --text-secondary: #777; --text-light: #999;
+  --border: #e5e5e5; --card-bg: #fafafa; --shadow: rgba(0,0,0,0.08);
+  --bg-void: #070709; --bg-panel: #16161f; --text-primary: #f0ede8; --text-muted: #9997a0;
+  --icoin: #4ade80; --gold: #f59e0b; --cyan: #00e5ff; --brand: #378ADD;
+  --glass: rgba(7,7,9,0.42); --glass-border: rgba(255,255,255,0.14);
+  --mono: 'SF Mono', Menlo, Consolas, monospace;
+}
+html, body { min-height: 100vh; background: var(--page-bg); font-family: Arial, Helvetica, sans-serif; color: var(--text); }
+.page { max-width: 1180px; margin: 0 auto; padding: 48px 36px 56px; }
+.page-header { margin-bottom: 44px; }
+.page-header h1 { font-size: 13px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-secondary); font-weight: 400; margin-bottom: 8px; }
+.page-header .thesis { font-size: 15px; line-height: 1.5; max-width: 640px; }
+.stage { display: grid; grid-template-columns: 42% 1fr; gap: 56px; align-items: start; }
+.phone-column { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.panel-column { display: flex; flex-direction: column; gap: 18px; padding-top: 8px; }
+.controls-bar { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.ctrl-btn { font-family: Arial, Helvetica, sans-serif; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; padding: 8px 16px; border: 1px solid var(--border); border-radius: 6px; background: var(--page-bg); color: var(--text-secondary); cursor: pointer; }
+.scene-dots { display: flex; gap: 6px; }
+.scene-dot { width: 7px; height: 7px; border-radius: 50%; border: none; background: #ddd; cursor: pointer; padding: 0; }
+.scene-dot.active { background: var(--heading); transform: scale(1.3); }
+.block { padding: 16px 18px; border: 1px solid var(--border); border-radius: 8px; background: var(--page-bg); opacity: 0.42; transition: opacity 0.45s, border-color 0.45s, box-shadow 0.45s; }
+.block.active { opacity: 1; border-color: #ccc; box-shadow: 0 2px 12px var(--shadow); }
+.block-title { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-light); margin-bottom: 6px; }
+.block h2 { font-size: 17px; font-weight: 400; color: var(--heading); margin-bottom: 6px; }
+.block p { font-size: 13px; line-height: 1.55; }
+.block.subtitle h2 { font-size: 22px; }
+.block.subtitle p { font-size: 14px; color: var(--text-secondary); font-style: italic; }
+.pros-card { background: var(--card-bg); }
+.pros-card ul { list-style: none; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.pros-card li { font-size: 12px; padding-left: 14px; position: relative; }
+.pros-card li::before { content: '—'; position: absolute; left: 0; color: var(--text-light); }
+.framing { border-left: 3px solid #ccc; padding-left: 20px; }
+.framing p { font-size: 14px; color: var(--heading); }
+.status-note { font-size: 11px; color: var(--text-light); font-style: italic; margin-top: 6px; }
+
+.phone { width: 360px; height: 720px; border-radius: 44px; background: #ececec; padding: 10px; box-shadow: 0 24px 48px var(--shadow); }
+.phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; position: relative; background: var(--bg-void); }
+.notch { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 108px; height: 28px; background: #000; border-radius: 0 0 18px 18px; z-index: 30; }
+
+.feed-stack { position: absolute; inset: 0; z-index: 1; transition: transform 0.55s cubic-bezier(0.32,0.72,0,1); }
+.feed-card { position: absolute; inset: 0; }
+.media { position: absolute; inset: 0; background: linear-gradient(165deg, #1a1035 0%, #c45c26 38%, #2d1b4e 72%, #0a1520 100%); transition: background 0.5s; }
+.media--next { background: linear-gradient(165deg, #0a1520 0%, #1e4a6e 42%, #2d5a3e 78%, #1a1035 100%); opacity: 0; transform: translateY(100%); transition: opacity 0.45s, transform 0.55s cubic-bezier(0.32,0.72,0,1); }
+.scrim-top { position: absolute; top: 0; left: 0; right: 0; height: 100px; background: linear-gradient(to bottom, rgba(0,0,0,0.4), transparent); z-index: 2; }
+.scrim-bottom { position: absolute; bottom: 68px; left: 0; right: 0; height: 160px; background: linear-gradient(to top, rgba(0,0,0,0.65), transparent); z-index: 2; }
+
+.timer-line { position: absolute; top: 36px; left: 0; right: 0; height: 2px; background: rgba(255,255,255,0.12); z-index: 8; }
+.timer-fill { height: 100%; width: 0; background: var(--icoin); transition: width 0.8s ease; }
+
+.reward-pill {
+  position: absolute; top: 44px; right: 16px; z-index: 8;
+  padding: 5px 11px; border-radius: 16px; background: var(--glass); border: 0.5px solid var(--glass-border);
+  backdrop-filter: blur(10px); font-family: var(--mono); font-size: 11px; color: var(--text-primary);
+  opacity: 0.65; transition: opacity 0.35s, box-shadow 0.35s, border-color 0.35s, color 0.35s;
+}
+
+.out-profile {
+  position: absolute; bottom: 82px; left: 16px; z-index: 8;
+  display: flex; align-items: center; gap: 10px; padding: 8px 12px 8px 8px;
+  border-radius: 16px; background: var(--glass); border: 0.5px solid var(--glass-border);
+  backdrop-filter: blur(10px); transition: opacity 0.35s, box-shadow 0.35s;
+}
+.out-avatar {
+  width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.12);
+  display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--text-primary);
+}
+.out-name { font-size: 11px; font-weight: 500; color: var(--text-primary); line-height: 1.2; letter-spacing: 0.04em; }
+.out-loc { font-size: 9px; color: var(--text-muted); }
+
+.action-rail {
+  position: absolute; right: 14px; bottom: 108px; z-index: 10;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+}
+.rail-btn {
+  width: 40px; height: 40px; border-radius: 50%; background: var(--glass); border: 0.5px solid var(--glass-border);
+  backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center;
+  opacity: 0.55; transition: opacity 0.3s, box-shadow 0.3s, transform 0.3s;
+}
+.rail-label { font-size: 8px; color: rgba(255,255,255,0.5); margin-top: -6px; text-align: center; }
+
+.elo-center {
+  position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%); z-index: 6;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  opacity: 0; transition: opacity 0.45s;
+}
+.elo-ring {
+  width: 72px; height: 72px; border-radius: 50%;
+  border: 0.5px solid rgba(0,229,255,0.35); background: rgba(0,229,255,0.08);
+  box-shadow: 0 0 24px rgba(0,229,255,0.12); backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+}
+.elo-ring-inner {
+  width: 48px; height: 48px; border-radius: 50%;
+  border: 0.5px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.04);
+}
+.elo-caption {
+  font-family: var(--mono); font-size: 9px; color: rgba(240,237,232,0.75);
+  padding: 4px 10px; border-radius: 6px; background: rgba(7,7,9,0.55); border: 0.5px solid rgba(255,255,255,0.1);
+}
+
+.watch-overlay {
+  position: absolute; inset: 0; z-index: 4; pointer-events: none;
+  background: radial-gradient(circle at 50% 40%, rgba(74,222,128,0.08) 0%, transparent 55%);
+  opacity: 0; transition: opacity 0.45s;
+}
+
+.verify-chip {
+  position: absolute; top: 72px; left: 16px; right: 16px; z-index: 9;
+  padding: 10px 12px; border-radius: 12px; background: var(--bg-panel);
+  border: 0.5px solid rgba(245,158,11,0.28); opacity: 0; transform: translateY(-6px);
+  transition: opacity 0.4s, transform 0.4s;
+}
+.verify-title { font-size: 10px; color: var(--gold); margin-bottom: 4px; }
+.verify-sub { font-size: 9px; color: var(--text-muted); line-height: 1.45; }
+
+.gesture-label {
+  position: absolute; left: 50%; bottom: 82px; transform: translateX(-50%); z-index: 18;
+  font-family: var(--mono); font-size: 9px; color: rgba(240,237,232,0.75);
+  padding: 4px 10px; border-radius: 6px; background: rgba(7,7,9,0.55); border: 0.5px solid rgba(255,255,255,0.1);
+  white-space: nowrap; transition: opacity 0.3s;
+}
+
+.feed-zone { position: absolute; left: 28px; bottom: 14px; width: 36px; height: 36px; z-index: 22; }
+.feed-tab-ring {
+  position: absolute; inset: -4px; border-radius: 50%; border: 2px solid transparent; opacity: 0;
+  transition: opacity 0.3s, border-color 0.3s;
+}
+
+.bottom-nav {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 68px;
+  background: rgba(245,245,245,0.96); display: flex; align-items: center;
+  justify-content: space-around; padding-bottom: 6px; z-index: 20;
+  border-top: 0.5px solid rgba(0,0,0,0.06);
+}
+.nav-tab { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; opacity: 0.4; transition: opacity 0.3s; }
+.nav-tab--feed { opacity: 0.4; }
+.create-btn { width: 42px; height: 42px; border-radius: 13px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; opacity: 1; }
+
+.platform-overlay {
+  position: absolute; inset: 0; z-index: 28; display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.45s; pointer-events: none;
+}
+.platform-card {
+  background: rgba(7,7,9,0.78); border: 0.5px solid rgba(255,255,255,0.12);
+  border-radius: 16px; padding: 20px 22px; text-align: center; max-width: 280px;
+}
+.loop { display: flex; align-items: center; justify-content: center; gap: 4px; flex-wrap: wrap; margin-bottom: 10px; }
+.loop-node { font-size: 8px; padding: 4px 7px; border-radius: 8px; background: rgba(255,255,255,0.06); color: var(--text-primary); border: 0.5px solid rgba(255,255,255,0.1); }
+.loop-node--active { border-color: rgba(74,222,128,0.4); color: var(--icoin); }
+.loop-arrow { font-size: 8px; color: var(--text-muted); }
+.platform-text { font-size: 10px; color: var(--text-muted); line-height: 1.5; }
+
+#phoneScene[data-scene="idle"] .nav-tab--feed { opacity: 1; }
+#phoneScene[data-scene="idle"] .feed-tab-ring { opacity: 1; border-color: rgba(55,138,221,0.35); }
+#phoneScene[data-scene="idle"] .gesture-label::after { content: 'default product entry'; }
+#phoneScene[data-scene="idle"] .timer-fill { width: 18%; }
+
+#phoneScene[data-scene="scroll"] .feed-stack { transform: translateY(-18%); }
+#phoneScene[data-scene="scroll"] .media--next { opacity: 1; transform: translateY(0); }
+#phoneScene[data-scene="scroll"] .gesture-label::after { content: 'swipe · vertical feed'; }
+#phoneScene[data-scene="scroll"] .nav-tab--feed { opacity: 1; }
+
+#phoneScene[data-scene="rail"] .rail-btn { opacity: 1; box-shadow: 0 0 10px rgba(255,255,255,0.08); }
+#phoneScene[data-scene="rail"] .rail-btn:nth-child(1) { transform: scale(1.08); border-color: rgba(255,255,255,0.28); }
+#phoneScene[data-scene="rail"] .rail-btn:nth-child(3) { transform: scale(1.06); }
+#phoneScene[data-scene="rail"] .gesture-label::after { content: 'glass gesture rail'; }
+#phoneScene[data-scene="rail"] .nav-tab--feed { opacity: 1; }
+
+#phoneScene[data-scene="elo"] .elo-center { opacity: 1; }
+#phoneScene[data-scene="elo"] .out-profile { opacity: 0.5; }
+#phoneScene[data-scene="elo"] .action-rail { opacity: 0.35; }
+#phoneScene[data-scene="elo"] .gesture-label { opacity: 0; }
+#phoneScene[data-scene="elo"] .nav-tab--feed { opacity: 1; }
+
+#phoneScene[data-scene="watch"] .reward-pill { opacity: 1; box-shadow: 0 0 12px rgba(74,222,128,0.25); border-color: rgba(74,222,128,0.3); }
+#phoneScene[data-scene="watch"] .timer-fill { width: 58%; }
+#phoneScene[data-scene="watch"] .watch-overlay { opacity: 1; }
+#phoneScene[data-scene="watch"] .media { background: linear-gradient(165deg, #0a1a10 0%, #0d1a1a 40%, #0a0d1a 100%); }
+#phoneScene[data-scene="watch"] .gesture-label::after { content: 'beginImmersiveWatch'; }
+#phoneScene[data-scene="watch"] .nav-tab--feed { opacity: 1; }
+
+#phoneScene[data-scene="verify"] .reward-pill { opacity: 1; color: var(--gold); border-color: rgba(245,158,11,0.35); }
+#phoneScene[data-scene="verify"] .reward-pill::after { content: ' · POP'; font-size: 9px; }
+#phoneScene[data-scene="verify"] .verify-chip { opacity: 1; transform: translateY(0); }
+#phoneScene[data-scene="verify"] .timer-fill { width: 100%; background: var(--gold); }
+#phoneScene[data-scene="verify"] .gesture-label { opacity: 0; }
+#phoneScene[data-scene="verify"] .nav-tab--feed { opacity: 1; }
+
+#phoneScene[data-scene="loop"] .feed-stack { opacity: 0.35; }
+#phoneScene[data-scene="loop"] .platform-overlay { opacity: 1; }
+#phoneScene[data-scene="loop"] .gesture-label { opacity: 0; }
+#phoneScene[data-scene="loop"] .nav-tab--feed { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
+@media (max-width: 960px) { .stage { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="page-header">
+    <h1>[ i ] Platform · Feed Tab</h1>
+    <p class="thesis">Feed is the immersive media home — full-bleed vertical video, glass controls, and Loop 1 watch-to-earn on top of the content.</p>
+  </header>
+  <div class="stage">
+    <div class="phone-column">
+      <div class="phone">
+        <div class="phone-screen" id="phoneScene" data-scene="idle">
+          <div class="notch"></div>
+
+          <div class="feed-stack">
+            <div class="feed-card">
+              <div class="media"></div>
+              <div class="scrim-top"></div>
+              <div class="scrim-bottom"></div>
+            </div>
+            <div class="feed-card media--next" aria-hidden="true"></div>
+          </div>
+
+          <div class="watch-overlay"></div>
+          <div class="timer-line"><div class="timer-fill"></div></div>
+          <div class="reward-pill">50 ic</div>
+
+          <div class="out-profile" aria-hidden="true">
+            <div class="out-avatar">RA</div>
+            <div>
+              <div class="out-name">RAFAELO</div>
+              <div class="out-loc">Cape Town</div>
+            </div>
+          </div>
+
+          <div class="action-rail" aria-label="Gesture rail">
+            <div class="rail-btn" title="Like / Love">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 15s-6-4.5-6-8.5a4 4 0 018 0 4 4 0 018 0c0 4-6 8.5-6 8.5z" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" fill="none"/></svg>
+            </div>
+            <span class="rail-label">love</span>
+            <div class="rail-btn" title="Message">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h12v9H5L2 14V2z" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" fill="none"/></svg>
+            </div>
+            <span class="rail-label">msg</span>
+            <div class="rail-btn" title="Share">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span class="rail-label">share</span>
+            <div class="rail-btn" title="Controls">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="3" r="1.2" fill="rgba(255,255,255,0.85)"/><circle cx="7" cy="7" r="1.2" fill="rgba(255,255,255,0.85)"/><circle cx="7" cy="11" r="1.2" fill="rgba(255,255,255,0.85)"/></svg>
+            </div>
+            <span class="rail-label">ctrl</span>
+          </div>
+
+          <div class="elo-center" aria-hidden="true">
+            <div class="elo-ring"><div class="elo-ring-inner"></div></div>
+            <div class="elo-caption">Say “ELO” · companion zone</div>
+          </div>
+
+          <div class="verify-chip">
+            <div class="verify-title">POP verification</div>
+            <div class="verify-sub">Presence · dwell · gaze · completion — validate-attention Edge Function</div>
+          </div>
+
+          <div class="gesture-label" aria-live="polite"></div>
+          <div class="feed-zone"><div class="feed-tab-ring"></div></div>
+
+          <nav class="bottom-nav" aria-label="5-tab dock">
+            <div class="nav-tab nav-tab--feed"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 8l7-5 7 5v9H3V8z" stroke="#555" stroke-width="1.3" fill="none"/></svg></div>
+            <div class="nav-tab"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C6 6 3 8 3 12a6 6 0 0012 0c0-4-3-6-6-10z" stroke="#888" stroke-width="1.2" fill="none"/><circle cx="9" cy="10" r="2" fill="#888" stroke="none"/></svg></div>
+            <div class="create-btn"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 5v12M5 11h12" stroke="#666" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <div class="nav-tab"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="2" stroke="#888" stroke-width="1.3" fill="none"/><path d="M2 9h16" stroke="#888" stroke-width="1.3"/></svg></div>
+            <div class="nav-tab"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="#888" stroke-width="1.2" fill="none"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+          </nav>
+
+          <div class="platform-overlay">
+            <div class="platform-card">
+              <div class="loop">
+                <span class="loop-node loop-node--active">Watch</span><span class="loop-arrow">→</span>
+                <span class="loop-node loop-node--active">Verify</span><span class="loop-arrow">→</span>
+                <span class="loop-node loop-node--active">Earn</span><span class="loop-arrow">→</span>
+                <span class="loop-node">Wallet</span>
+              </div>
+              <div class="platform-text">Loop 1 runs on media — not a separate dashboard. Feed is where attention becomes verified value.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="controls-bar">
+        <button type="button" class="ctrl-btn" id="btnPlayPause" aria-label="Pause animation">Pause</button>
+        <button type="button" class="ctrl-btn" id="btnRestart" aria-label="Restart animation">Restart</button>
+        <div class="scene-dots" id="sceneDots" role="tablist" aria-label="Animation scenes"></div>
+      </div>
+    </div>
+
+    <div class="panel-column">
+      <div class="block subtitle active" data-scene="idle" data-block="title">
+        <h2>Feed</h2>
+        <p>Immersive media home — Picture 2 law.</p>
+      </div>
+      <div class="block" data-scene="idle" data-block="concept">
+        <div class="block-title">Concept</div>
+        <p>Feed is the default product entry: full-bleed vertical media with glass overlays — not a card-list dashboard or fintech wallet shell. Canon: <code>IMMERSIVE_UI_DESIGN_LAW</code> — TIMER line, REWARD pill, gesture rail, OUT-PROFILE, ELO center, 5-tab white dock.</p>
+        <p class="status-note">MVP: <code>ImmersiveFeedScreen</code> default route (<code>immersive-feed</code>); watch sessions via <code>beginImmersiveWatch</code> path.</p>
+      </div>
+      <div class="block" data-scene="idle" data-block="entry">
+        <div class="block-title">Default entry</div>
+        <p>App boot lands on Feed — same shell for organic clips and sponsor briefs. Promo, Wallet, and In-Profile are peer tabs; Loop 1 economics play out on top of media, not behind a separate “earn app.”</p>
+      </div>
+      <div class="block" data-scene="scroll" data-block="scroll">
+        <div class="block-title">Vertical media</div>
+        <p>TikTok-style full-bleed stack: swipe up advances clips. No grey card chrome, no stories row as home. Media fills the phone; scrims keep text readable.</p>
+      </div>
+      <div class="block" data-scene="rail" data-block="rail">
+        <div class="block-title">Gesture buttons</div>
+        <p>Right rail: Like/Love (gesture engine), Message, Share, Controls — 40px glass circles per <code>gesture-buttons.css</code>. Configurable order; cross-mode for offers. Not neumorphic 3D stacks.</p>
+      </div>
+      <div class="block" data-scene="elo" data-block="elo">
+        <div class="block-title">ELO · center</div>
+        <p>Transparent membrane at screen center — voice-evoked companion, separate from OUT-PROFILE (creator identity bottom-left). Feed is secondary to the Human → Presence → Relationship stack.</p>
+      </div>
+      <div class="block" data-scene="watch" data-block="watch">
+        <div class="block-title">Watch path</div>
+        <p>Timer line tracks session progress; REWARD pill shows offer amount. <code>beginImmersiveWatch</code> starts Loop 1 on the current clip — gaze/POP signals feed server-side validation without leaving immersive chrome.</p>
+      </div>
+      <div class="block" data-scene="verify" data-block="verify">
+        <div class="block-title">POP verification</div>
+        <p>Proof-of-Presence gates (presence, dwell, gaze, completion) run through Edge Functions — rewards pending-first until review passes. No client-side currency writes.</p>
+      </div>
+      <div class="block" data-scene="loop" data-block="loop">
+        <div class="block-title">Investor framing</div>
+        <p>Loop 1: Watch → Verify → Earn → Wallet. Feed is where the attention marketplace meets the user — verified eyeballs become iCoin, then spend/convert/withdraw from Wallet.</p>
+      </div>
+      <div class="block pros-card" data-block="pros">
+        <div class="block-title">Pros</div>
+        <ul>
+          <li>Picture 2 immersive shell — differentiated from fintech dashboards.</li>
+          <li>Loop 1 on media — watch and earn without context switch.</li>
+          <li>Glass gesture rail — social + controls without clutter.</li>
+          <li>ELO center zone — companion AI, not bolt-on chatbot.</li>
+          <li>OUT-PROFILE surfaces creator + geo (RAFAELO · Cape Town pattern).</li>
+          <li>Server-side POP + pending-first rewards — fraud-resistant.</li>
+          <li>Investor story: Feed → Verify → Wallet completes the dock series.</li>
+        </ul>
+      </div>
+      <div class="block framing" data-block="framing">
+        <p>Feed is [ i ]'s product front door — immersive media where attention is measured, verified, and converted into wallet-held value. Everything else in the 5-tab dock orbits this home.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var SCENES=[
+    {id:'idle',duration:1400,panel:['title','concept','entry']},
+    {id:'scroll',duration:1200,panel:['scroll']},
+    {id:'rail',duration:1300,panel:['rail']},
+    {id:'elo',duration:1400,panel:['elo']},
+    {id:'watch',duration:1600,panel:['watch']},
+    {id:'verify',duration:1500,panel:['verify']},
+    {id:'loop',duration:1600,panel:['loop']}
+  ];
+  var phoneScene=document.getElementById('phoneScene'),btnPlayPause=document.getElementById('btnPlayPause'),btnRestart=document.getElementById('btnRestart'),sceneDots=document.getElementById('sceneDots'),blocks=document.querySelectorAll('.block[data-block]');
+  var sceneIndex=0,playing=true,pausedByHover=false,timeoutId=null,reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  SCENES.forEach(function(s,i){var d=document.createElement('button');d.type='button';d.className='scene-dot'+(i===0?' active':'');d.setAttribute('role','tab');d.setAttribute('aria-label','Scene: '+s.id);d.addEventListener('click',function(){goToScene(i,true);});sceneDots.appendChild(d);});
+  function clearTimers(){if(timeoutId){clearTimeout(timeoutId);timeoutId=null;}}
+  function setPanelActive(keys){blocks.forEach(function(b){b.classList.toggle('active',keys.indexOf(b.getAttribute('data-block'))!==-1);});}
+  function setDots(i){sceneDots.querySelectorAll('.scene-dot').forEach(function(d,j){d.classList.toggle('active',j===i);});}
+  function applyScene(i){phoneScene.setAttribute('data-scene',SCENES[i].id);setPanelActive(SCENES[i].panel||[]);setDots(i);}
+  function goToScene(index,manual){clearTimers();sceneIndex=((index%SCENES.length)+SCENES.length)%SCENES.length;applyScene(sceneIndex);if(manual&&!playing)return;if(!playing||pausedByHover)return;timeoutId=setTimeout(function(){if(playing&&!pausedByHover)goToScene(sceneIndex+1);},reducedMotion?800:SCENES[sceneIndex].duration);}
+  btnPlayPause.addEventListener('click',function(){playing=!playing;btnPlayPause.textContent=playing?'Pause':'Play';if(playing&&!pausedByHover)goToScene(sceneIndex,false);else clearTimers();});
+  btnRestart.addEventListener('click',function(){playing=true;pausedByHover=false;btnPlayPause.textContent='Pause';goToScene(0,false);});
+  blocks.forEach(function(b){b.addEventListener('mouseenter',function(){var s=b.getAttribute('data-scene');if(!s)return;pausedByHover=true;clearTimers();var idx=SCENES.findIndex(function(x){return x.id===s;});if(idx>=0){applyScene(idx);setPanelActive([b.getAttribute('data-block')]);}});b.addEventListener('mouseleave',function(){if(!playing)return;pausedByHover=false;goToScene(sceneIndex,false);});});
+  goToScene(0,false);
+})();
+</script>
+</body>
+</html>

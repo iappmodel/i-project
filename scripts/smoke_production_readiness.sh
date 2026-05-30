@@ -33,6 +33,10 @@ echo "== POP finish regression smoke =="
 "$ROOT/scripts/smoke_pop_finish.sh"
 
 echo ""
+echo "== Investor explainer smoke =="
+"$ROOT/scripts/smoke_investor_explainers.sh"
+
+echo ""
 echo "== App typecheck + build =="
 cd "$ROOT/app"
 npm run typecheck --silent

@@ -5,11 +5,24 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-30 — ELO session scope + complete dock explainer series
+
+### Delivered
+- **ELO session scope** — `EloSessionScope` dismisses evoke on route leave; `eloReplyService` contextual panel replies; `elo-manifest-enter` rail animation; smoke asserts `dismissSession`, `composeEloReply`, `EloSessionScope` in `App.tsx`.
+- **IN-PROFILE explainer** — `profile_dock_explainer.html` (identity, trust, vision settings entry).
+- **FEED explainer** — `feed_dock_explainer.html` completes 5-tab dock investor walkthrough set.
+- **CI** — `smoke_investor_explainers.sh` in production readiness (11 HTML files).
+
+### Verification
+- `./scripts/smoke_investor_explainers.sh` · `./scripts/smoke_elo_presence.sh`
+
+---
+
 ## 2026-05-30 — ELO presence membrane + investor explainer series
 
 ### Delivered
 - **ELO membrane** — `useEloFaceMirror` smoothed POP landmark paths; richer idle contours; glass ghost strokes; auto `openPanel()` after voice evoke (`SESSION_PANEL_DELAY_MS`); `sessionOpenings` greeting copy.
-- **Investor explainers** — 9 HTML walkthroughs in `06_feed_earning_loops/`: REWARD, CONTROLS, SHARE, MESSAGE, Hold/Love, ELO presence, WALLET/PROMO/CREATE dock tabs.
+- **Investor explainers** — HTML walkthroughs in `06_feed_earning_loops/`: REWARD, CONTROLS, SHARE, MESSAGE, Hold/Love, ELO presence, all five dock tabs.
 - **Regression smokes** — `smoke_pop_finish.sh` (15 Flutter tests in CI); hardened `smoke_elo_presence.sh`; new `smoke_investor_explainers.sh`.
 
 ### Verification

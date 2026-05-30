@@ -14,9 +14,11 @@ required=(
   "message_button_explainer.html"
   "love_hold_creator_offer_explainer.html"
   "elo_presence_explainer.html"
+  "feed_dock_explainer.html"
   "wallet_dock_explainer.html"
   "promo_dock_explainer.html"
   "create_studio_explainer.html"
+  "profile_dock_explainer.html"
 )
 
 for name in "${required[@]}"; do
