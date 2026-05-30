@@ -20,6 +20,11 @@ jobs:
             integrations/pop-core/validator/package-lock.json
             app/package-lock.json
 
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
       - name: Install validator dependencies
         working-directory: integrations/pop-core/validator
         run: npm ci

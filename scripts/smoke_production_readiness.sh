@@ -29,6 +29,10 @@ cd "$ROOT/integrations/pop-core/validator"
 npm test
 
 echo ""
+echo "== POP finish regression smoke =="
+"$ROOT/scripts/smoke_pop_finish.sh"
+
+echo ""
 echo "== App typecheck + build =="
 cd "$ROOT/app"
 npm run typecheck --silent

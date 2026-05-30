@@ -15,6 +15,10 @@ echo "== Organism spine smoke =="
 "$ROOT/scripts/smoke_organism_spine.sh"
 
 echo ""
+echo "== POP finish regression smoke =="
+"$ROOT/scripts/smoke_pop_finish.sh"
+
+echo ""
 echo "== Capacitor prep smoke =="
 "$ROOT/scripts/smoke_capacitor_prep.sh"
 
