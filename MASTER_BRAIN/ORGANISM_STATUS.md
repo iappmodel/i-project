@@ -1,7 +1,7 @@
 # [ i ] Organism status — one page
 
 **Updated:** 2026-05-30  
-**Phases complete:** 1–40 + POP finish plan (see [PHASE_QUEUE_INDEX.md](PHASE_QUEUE_INDEX.md))
+**Phases complete:** 1–41 (see [PHASE_QUEUE_INDEX.md](PHASE_QUEUE_INDEX.md))
 
 ---
 
@@ -12,6 +12,7 @@
 | Loop 1 web | Immersive feed → consent → watch → session attention evidence → proof → validator → wallet |
 | POP Flutter runtime | Zone commits gated via `PopActionExecutor`; calibrated gaze; Y-plane transport |
 | Immersive shell (Picture 2) | Default product entry; glass wallet/profile sheets; OUT-PROFILE tap |
+| Immersive promo (Phase 41) | Promo dock → `ImmersivePromoScreen` → consent → watch-verify |
 | Ledger | Supabase `pop_pending_holds` → `wallet_ledger` (local Docker) |
 | Auth | Demo user auto sign-in |
 | Flutter bridge | Seal Proof → validator; SSE + deep link to React wallet |
@@ -21,7 +22,7 @@
 | Validator packaging | ✅ Dockerfile + `smoke_validator_docker.sh` |
 | Web vision (flagged) | ✅ operator panel + proof hints bridge when `VITE_VISION_ENGINE=1` |
 | Blink Remote lite | ✅ debug gaze panel (full archive UI still deferred) |
-| ELO presence | ✅ Membrane + session panel; optional `elo-reply` edge + panel voice |
+| ELO presence | ✅ Membrane + speech energy (`pulseSpeech`); panel voice + optional `elo-reply` |
 | Investor explainers | ✅ 14 HTML walkthroughs + index (`06_feed_earning_loops/investor_explainer_index.html`) |
 | CI | Validator + app + POP finish Flutter + investor explainers + vision smokes |
 

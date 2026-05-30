@@ -43,6 +43,12 @@ npm run typecheck --silent
 npm run build --silent
 
 echo ""
+echo "== Immersive product smokes =="
+"$ROOT/scripts/smoke_immersive_shell.sh"
+"$ROOT/scripts/smoke_immersive_promo.sh"
+"$ROOT/scripts/smoke_elo_presence.sh"
+
+echo ""
 echo "== Capacitor prep =="
 "$ROOT/scripts/smoke_capacitor_prep.sh"
 

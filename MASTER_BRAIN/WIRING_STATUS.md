@@ -328,13 +328,25 @@ flowchart LR
 | Vision → proof bridge (hints only) | ✅ `visionProofBridge.ts` + `demoProofPacket` + ADR |
 | Vision source badge (Earn/Watch) | ✅ `VisionSourceBadge` |
 | Immersive wallet/profile glass sheets | ✅ `ImmersiveGlassSheet`, wired on `ImmersiveFeedScreen` |
-| Immersive promo marketplace | ✅ `ImmersivePromoScreen` + `promoOffers.ts` (Phase 41) |
 | Blink Remote lite (debug gaze) | ✅ `VisionBlinkRemoteLite` in `VisionControlPanel` |
 | OUT-PROFILE engine v1 | ✅ `outProfileEngine.ts` + tap → consent/watch |
 | Loop 1 immersive watch path | ✅ `beginImmersiveWatch` → consent gate → watch-verify |
 | Consent gate vision copy | ✅ when `VITE_VISION_ENGINE=1` |
 | Canon doc sync | ✅ FEATURE_BIBLE, ORGANISM_STATUS, this file |
 | Production cutover checklist | ✅ `docs/technical/PRODUCTION_CUTOVER_CHECKLIST.md` (owner-gated) |
+
+---
+
+## Phase 41 (2026-05-30)
+
+| Item | Status |
+|------|--------|
+| Immersive promo marketplace | ✅ `ImmersivePromoScreen` + `promoOffers.ts` |
+| Promo → watch flow | ✅ `beginImmersiveWatch` on brief card tap |
+| ELO speech energy | ✅ `pulseSpeech` drives membrane glow |
+| ELO visual form live edit | ✅ `EloStackEditor` visualForm picker |
+| Promo canon | ✅ `PROMO_MARKETPLACE.md` |
+| Smoke | ✅ `smoke_immersive_promo.sh` in production readiness |
 
 ---
 
