@@ -16,14 +16,58 @@
   position: absolute;
   left: 50%;
   top: 44%;
-  height: 58%;
-  width: auto;
-  aspect-ratio: 596 / 872;
-  max-width: 72%;
+  width: min(62%, 290px);
+  height: min(52%, 360px);
+  max-height: 58%;
+  aspect-ratio: 4 / 5;
   transform: translate(-50%, -50%);
   transform-origin: center center;
   pointer-events: none;
   z-index: 1;
+}
+
+.elo-membrane-surface {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-origin: center center;
+}
+
+.elo-membrane-halo {
+  position: absolute;
+  inset: 4% 8% 10%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 38%,
+    rgba(160, 210, 255, 0.12) 0%,
+    rgba(120, 180, 255, 0.04) 45%,
+    transparent 72%
+  );
+  pointer-events: none;
+  animation: elo-breathe calc(4s / var(--elo-pulse-speed, 0.5)) ease-in-out infinite;
+}
+
+.elo-membrane-wrap .elo-membrane__svg {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 8px 28px rgba(0, 0, 0, 0.18));
+}
+
+.elo-membrane-wrap .elo-membrane__path {
+  fill: none;
+  stroke: var(--elo-line-color, rgba(220, 240, 255, 0.72));
+  stroke-width: 1.35;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.elo-membrane-wrap .elo-membrane__path--jaw {
+  stroke-width: 1.6;
+  stroke: rgba(235, 245, 255, 0.82);
 }
 
 .elo-membrane-wrap--entering {
@@ -43,68 +87,14 @@
   }
 }
 
-.elo-glass-mask {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-.elo-glass-mask__photo {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center;
-  pointer-events: none;
-  user-select: none;
-  -webkit-user-drag: none;
-  filter: drop-shadow(0 10px 32px rgba(0, 0, 0, 0.28)) drop-shadow(0 0 32px rgba(190, 220, 255, 0.28));
-}
-
-.elo-glass-mask__sheen {
-  position: absolute;
-  inset: 8% 12% 20%;
-  border-radius: 50%;
-  background: radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.35) 0%, transparent 55%);
-  pointer-events: none;
-  animation: elo-breathe calc(4s / var(--elo-pulse-speed, 0.5)) ease-in-out infinite;
-}
-
-.elo-glass-mask__eyes {
-  position: absolute;
-  left: 50%;
-  top: 43%;
-  width: 46%;
-  height: 8%;
-  transform: translate(-50%, -50%);
-  transform-origin: center center;
-  pointer-events: none;
-  background: radial-gradient(
-    ellipse 22% 80% at 28% 50%,
-    rgba(0, 0, 0, 0.35) 0%,
-    transparent 70%
-  ),
-  radial-gradient(
-    ellipse 22% 80% at 72% 50%,
-    rgba(0, 0, 0, 0.35) 0%,
-    transparent 70%
-  );
-  opacity: 0.5;
-  mix-blend-mode: multiply;
-}
-
-.elo-glass-mask--live {
-  /* emergence handled by .elo-membrane-wrap--entering */
-}
-
 .elo-membrane-hit {
   position: absolute;
   left: 50%;
   top: 44%;
-  height: 58%;
-  width: auto;
-  aspect-ratio: 596 / 872;
-  max-width: 72%;
+  width: min(62%, 290px);
+  height: min(52%, 360px);
+  max-height: 58%;
+  aspect-ratio: 4 / 5;
   transform: translate(-50%, -50%);
   background: transparent;
   border: none;

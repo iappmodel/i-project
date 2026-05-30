@@ -59,7 +59,7 @@ ELO on immersive surfaces is a **transparent face membrane** — not the legacy 
 
 | Concept | Implementation |
 |---------|----------------|
-| Visual | Center contour lines, emergence animation — `EloFaceMembrane` |
+| Visual | Procedural glass contour membrane — `EloFaceMembrane` SVG + `useEloFaceMirror` |
 | Mirroring | POP vision landmarks + head pose when camera active |
 | Personality stack | Primary/secondary presets, relationship + operating modes |
 | Rooms | Philosophy, Focus, Creator, Sleep, Grief, Writing, Study |
