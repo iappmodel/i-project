@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] — Promo · Sponsor Briefs Explainer</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --page-bg: #fff; --heading: #333; --text: #555; --text-secondary: #777; --text-light: #999;
+  --border: #e5e5e5; --card-bg: #fafafa; --shadow: rgba(0,0,0,0.08);
+  --bg-void: #070709; --bg-panel: #16161f; --text-primary: #f0ede8; --text-muted: #9997a0;
+  --icoin: #4ade80; --gold: #f59e0b; --brand: #378ADD;
+  --glass: rgba(7,7,9,0.42); --glass-border: rgba(255,255,255,0.14);
+  --mono: 'SF Mono', Menlo, Consolas, monospace;
+}
+html, body { min-height: 100vh; background: var(--page-bg); font-family: Arial, Helvetica, sans-serif; color: var(--text); }
+.page { max-width: 1180px; margin: 0 auto; padding: 48px 36px 56px; }
+.page-header { margin-bottom: 44px; }
+.page-header h1 { font-size: 13px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-secondary); font-weight: 400; margin-bottom: 8px; }
+.page-header .thesis { font-size: 15px; line-height: 1.5; max-width: 640px; }
+.stage { display: grid; grid-template-columns: 42% 1fr; gap: 56px; align-items: start; }
+.phone-column { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.panel-column { display: flex; flex-direction: column; gap: 18px; padding-top: 8px; }
+.controls-bar { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.ctrl-btn { font-family: Arial, Helvetica, sans-serif; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; padding: 8px 16px; border: 1px solid var(--border); border-radius: 6px; background: var(--page-bg); color: var(--text-secondary); cursor: pointer; }
+.scene-dots { display: flex; gap: 6px; }
+.scene-dot { width: 7px; height: 7px; border-radius: 50%; border: none; background: #ddd; cursor: pointer; padding: 0; }
+.scene-dot.active { background: var(--heading); transform: scale(1.3); }
+.block { padding: 16px 18px; border: 1px solid var(--border); border-radius: 8px; background: var(--page-bg); opacity: 0.42; transition: opacity 0.45s, border-color 0.45s, box-shadow 0.45s; }
+.block.active { opacity: 1; border-color: #ccc; box-shadow: 0 2px 12px var(--shadow); }
+.block-title { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-light); margin-bottom: 6px; }
+.block h2 { font-size: 17px; font-weight: 400; color: var(--heading); margin-bottom: 6px; }
+.block p { font-size: 13px; line-height: 1.55; }
+.block.subtitle h2 { font-size: 22px; }
+.block.subtitle p { font-size: 14px; color: var(--text-secondary); font-style: italic; }
+.pros-card { background: var(--card-bg); }
+.pros-card ul { list-style: none; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.pros-card li { font-size: 12px; padding-left: 14px; position: relative; }
+.pros-card li::before { content: '—'; position: absolute; left: 0; color: var(--text-light); }
+.framing { border-left: 3px solid #ccc; padding-left: 20px; }
+.framing p { font-size: 14px; color: var(--heading); }
+.status-note { font-size: 11px; color: var(--text-light); font-style: italic; margin-top: 6px; }
+
+.phone { width: 360px; height: 720px; border-radius: 44px; background: #ececec; padding: 10px; box-shadow: 0 24px 48px var(--shadow); }
+.phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; position: relative; background: var(--bg-void); }
+.notch { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 108px; height: 28px; background: #000; border-radius: 0 0 18px 18px; z-index: 30; }
+
+.feed-layer { position: absolute; inset: 0; z-index: 1; transition: opacity 0.45s, transform 0.45s; }
+.media { position: absolute; inset: 0; background: linear-gradient(165deg, #1a1035 0%, #c45c26 38%, #2d1b4e 72%, #0a1520 100%); }
+.scrim-top { position: absolute; top: 0; left: 0; right: 0; height: 100px; background: linear-gradient(to bottom, rgba(0,0,0,0.4), transparent); z-index: 2; }
+.scrim-bottom { position: absolute; bottom: 68px; left: 0; right: 0; height: 160px; background: linear-gradient(to top, rgba(0,0,0,0.65), transparent); z-index: 2; }
+.timer-line { position: absolute; top: 36px; left: 0; right: 0; height: 2px; background: rgba(255,255,255,0.12); z-index: 8; }
+.timer-fill { height: 100%; width: 0; background: var(--icoin); transition: width 0.8s ease; }
+.reward-pill {
+  position: absolute; top: 44px; right: 16px; z-index: 8;
+  padding: 5px 11px; border-radius: 16px; background: var(--glass); border: 0.5px solid var(--glass-border);
+  backdrop-filter: blur(10px); font-family: var(--mono); font-size: 11px; color: var(--text-primary);
+  opacity: 0; transition: opacity 0.35s, box-shadow 0.35s;
+}
+.sponsored-bar {
+  position: absolute; bottom: 72px; left: 16px; right: 16px; height: 3px; border-radius: 2px;
+  background: rgba(255,255,255,0.1); z-index: 8; opacity: 0; transition: opacity 0.35s;
+}
+.sponsored-fill { height: 100%; width: 0; border-radius: 2px; background: var(--gold); transition: width 0.9s ease; }
+
+.promo-layer {
+  position: absolute; inset: 0; z-index: 5; background: var(--bg-void);
+  opacity: 0; transform: translateX(8%); transition: opacity 0.45s, transform 0.45s;
+  display: flex; flex-direction: column; padding: 48px 16px 76px;
+}
+.promo-header { margin-bottom: 14px; }
+.promo-label { font-size: 9px; letter-spacing: 0.1em; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+.promo-title { font-size: 16px; font-weight: 500; color: var(--text-primary); }
+.promo-sub { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+.offer-list { display: flex; flex-direction: column; gap: 10px; flex: 1; overflow: hidden; }
+.offer-card {
+  padding: 12px 14px; border-radius: 14px; background: var(--bg-panel);
+  border: 0.5px solid rgba(255,255,255,0.08); transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+}
+.offer-brand { font-size: 11px; font-weight: 500; color: var(--text-primary); margin-bottom: 3px; }
+.offer-desc { font-size: 9px; color: var(--text-muted); line-height: 1.45; margin-bottom: 8px; }
+.offer-meta { display: flex; align-items: center; justify-content: space-between; }
+.offer-reward { font-family: var(--mono); font-size: 10px; color: var(--icoin); }
+.offer-type { font-size: 8px; padding: 3px 7px; border-radius: 8px; background: rgba(55,138,221,0.12); color: var(--brand); border: 0.5px solid rgba(55,138,221,0.25); }
+.map-chip {
+  margin-top: 10px; padding: 10px 12px; border-radius: 12px;
+  background: rgba(255,255,255,0.04); border: 0.5px dashed rgba(255,255,255,0.12);
+  font-size: 9px; color: var(--text-muted); text-align: center; opacity: 0.5;
+}
+
+.bottom-nav {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 68px;
+  background: rgba(245,245,245,0.96); display: flex; align-items: center;
+  justify-content: space-around; padding-bottom: 6px; z-index: 20;
+  border-top: 0.5px solid rgba(0,0,0,0.06);
+}
+.nav-tab { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; opacity: 0.4; transition: opacity 0.3s; }
+.nav-tab--promo { opacity: 0.4; }
+.create-btn { width: 42px; height: 42px; border-radius: 13px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; opacity: 1; }
+
+.promo-zone { position: absolute; left: 72px; bottom: 14px; width: 36px; height: 36px; z-index: 22; }
+.promo-tab-ring {
+  position: absolute; inset: -4px; border-radius: 50%; border: 2px solid transparent; opacity: 0;
+  transition: opacity 0.3s, border-color 0.3s;
+}
+.thumb {
+  position: absolute; left: 68px; bottom: 8px; width: 32px; height: 44px; z-index: 23;
+  opacity: 0; transform: translateY(16px); transition: opacity 0.35s, transform 0.35s;
+}
+.thumb-shape {
+  width: 100%; height: 100%;
+  background: linear-gradient(145deg, rgba(255,220,200,0.92), rgba(230,180,160,0.88));
+  border-radius: 16px 16px 12px 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+}
+.gesture-label {
+  position: absolute; left: 50%; bottom: 82px; transform: translateX(-50%); z-index: 18;
+  font-family: var(--mono); font-size: 9px; color: rgba(240,237,232,0.75);
+  padding: 4px 10px; border-radius: 6px; background: rgba(7,7,9,0.55); border: 0.5px solid rgba(255,255,255,0.1);
+  white-space: nowrap; transition: opacity 0.3s;
+}
+
+.brief-overlay {
+  position: absolute; left: 16px; right: 16px; bottom: 88px; z-index: 12;
+  background: rgba(22,22,31,0.96); border-radius: 14px; padding: 14px 16px;
+  border: 0.5px solid rgba(55,138,221,0.28); opacity: 0; transform: translateY(10px);
+  transition: opacity 0.4s, transform 0.4s;
+}
+.brief-title { font-size: 12px; color: var(--text-primary); margin-bottom: 4px; }
+.brief-gates { font-size: 9px; color: var(--text-muted); line-height: 1.5; }
+.brief-cta {
+  margin-top: 10px; padding: 9px; border-radius: 10px; text-align: center; font-size: 10px;
+  background: var(--brand); color: #fff; opacity: 0.5; transition: opacity 0.3s, box-shadow 0.3s;
+}
+
+.verify-chip {
+  position: absolute; top: 72px; left: 16px; right: 16px; z-index: 9;
+  padding: 10px 12px; border-radius: 12px; background: var(--bg-panel);
+  border: 0.5px solid rgba(245,158,11,0.28); opacity: 0; transform: translateY(-6px);
+  transition: opacity 0.4s, transform 0.4s;
+}
+.verify-title { font-size: 10px; color: var(--gold); margin-bottom: 4px; }
+.verify-sub { font-size: 9px; color: var(--text-muted); }
+
+.platform-overlay {
+  position: absolute; inset: 0; z-index: 28; display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.45s; pointer-events: none;
+}
+.platform-card {
+  background: rgba(7,7,9,0.78); border: 0.5px solid rgba(255,255,255,0.12);
+  border-radius: 16px; padding: 20px 22px; text-align: center; max-width: 280px;
+}
+.split { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+.split-node { font-size: 9px; padding: 5px 8px; border-radius: 8px; background: rgba(255,255,255,0.06); color: var(--text-primary); border: 0.5px solid rgba(255,255,255,0.1); }
+.split-arrow { font-size: 8px; color: var(--text-muted); }
+.platform-text { font-size: 10px; color: var(--text-muted); line-height: 1.5; }
+
+#phoneScene[data-scene="idle"] .gesture-label::after { content: 'tap Promo tab'; }
+#phoneScene[data-scene="tap"] .thumb { opacity: 1; transform: translateY(0); }
+#phoneScene[data-scene="tap"] .nav-tab--promo { opacity: 1; }
+#phoneScene[data-scene="tap"] .promo-tab-ring { opacity: 1; border-color: rgba(55,138,221,0.4); }
+#phoneScene[data-scene="tap"] .gesture-label::after { content: 'sponsor marketplace'; }
+#phoneScene[data-scene="marketplace"] .feed-layer { opacity: 0.15; transform: scale(0.98); }
+#phoneScene[data-scene="marketplace"] .promo-layer { opacity: 1; transform: translateX(0); }
+#phoneScene[data-scene="marketplace"] .nav-tab--promo { opacity: 1; }
+#phoneScene[data-scene="marketplace"] .gesture-label { opacity: 0; }
+#phoneScene[data-scene="select"] .feed-layer { opacity: 0; }
+#phoneScene[data-scene="select"] .promo-layer { opacity: 1; transform: translateX(0); }
+#phoneScene[data-scene="select"] .offer-card:first-child { border-color: rgba(55,138,221,0.45); box-shadow: 0 0 14px rgba(55,138,221,0.15); transform: scale(1.02); }
+#phoneScene[data-scene="select"] .brief-overlay { opacity: 1; transform: translateY(0); }
+#phoneScene[data-scene="select"] .brief-cta { opacity: 1; box-shadow: 0 0 12px rgba(55,138,221,0.25); }
+#phoneScene[data-scene="select"] .nav-tab--promo { opacity: 1; }
+#phoneScene[data-scene="watch"] .feed-layer { opacity: 1; transform: scale(1); }
+#phoneScene[data-scene="watch"] .promo-layer { opacity: 0; pointer-events: none; }
+#phoneScene[data-scene="watch"] .reward-pill { opacity: 1; box-shadow: 0 0 12px rgba(74,222,128,0.2); }
+#phoneScene[data-scene="watch"] .timer-fill { width: 62%; }
+#phoneScene[data-scene="watch"] .sponsored-bar { opacity: 1; }
+#phoneScene[data-scene="watch"] .sponsored-fill { width: 58%; }
+#phoneScene[data-scene="watch"] .media { background: linear-gradient(165deg, #0a1a10 0%, #0d1a1a 40%, #0a0d1a 100%); }
+#phoneScene[data-scene="watch"] .gesture-label::after { content: 'watch · verify attention'; }
+#phoneScene[data-scene="verify"] .feed-layer { opacity: 1; }
+#phoneScene[data-scene="verify"] .promo-layer { opacity: 0; }
+#phoneScene[data-scene="verify"] .reward-pill { opacity: 1; color: var(--gold); border-color: rgba(245,158,11,0.35); }
+#phoneScene[data-scene="verify"] .reward-pill::after { content: ' pending'; font-size: 9px; }
+#phoneScene[data-scene="verify"] .verify-chip { opacity: 1; transform: translateY(0); }
+#phoneScene[data-scene="verify"] .gesture-label { opacity: 0; }
+#phoneScene[data-scene="platform"] .feed-layer { opacity: 0.25; }
+#phoneScene[data-scene="platform"] .promo-layer { opacity: 0.2; }
+#phoneScene[data-scene="platform"] .platform-overlay { opacity: 1; }
+#phoneScene[data-scene="platform"] .gesture-label { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
+@media (max-width: 960px) { .stage { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="page-header">
+    <h1>[ i ] Platform · Promo Tab</h1>
+    <p class="thesis">Promo is the sponsor marketplace — where brands fund verified attention and viewers choose what to watch and earn from.</p>
+  </header>
+  <div class="stage">
+    <div class="phone-column">
+      <div class="phone">
+        <div class="phone-screen" id="phoneScene" data-scene="idle">
+          <div class="notch"></div>
+
+          <div class="feed-layer">
+            <div class="media"></div>
+            <div class="scrim-top"></div>
+            <div class="scrim-bottom"></div>
+            <div class="timer-line"><div class="timer-fill"></div></div>
+            <div class="reward-pill">50 ic</div>
+            <div class="sponsored-bar"><div class="sponsored-fill"></div></div>
+          </div>
+
+          <div class="promo-layer">
+            <div class="promo-header">
+              <div class="promo-label">Promo · Earn</div>
+              <div class="promo-title">Sponsor briefs</div>
+              <div class="promo-sub">Watch · check-in · follow — verified actions only</div>
+            </div>
+            <div class="offer-list">
+              <div class="offer-card">
+                <div class="offer-brand">Nike Running · Pegasus 41</div>
+                <div class="offer-desc">4:30 launch spot · five verification gates · pending-first payout</div>
+                <div class="offer-meta">
+                  <span class="offer-reward">+2.00 ic</span>
+                  <span class="offer-type">Watch</span>
+                </div>
+              </div>
+              <div class="offer-card">
+                <div class="offer-brand">Cape Town Roasters</div>
+                <div class="offer-desc">Visit store · geo check-in · reward after review window</div>
+                <div class="offer-meta">
+                  <span class="offer-reward">+0.65 ic</span>
+                  <span class="offer-type">Check-in</span>
+                </div>
+              </div>
+              <div class="offer-card">
+                <div class="offer-brand">RAFAELO Studio</div>
+                <div class="offer-desc">Follow + watch 3 clips · streak bonus eligible</div>
+                <div class="offer-meta">
+                  <span class="offer-reward">+1.20 ic</span>
+                  <span class="offer-type">Campaign</span>
+                </div>
+              </div>
+            </div>
+            <div class="map-chip">Local map layer · iGo routing (roadmap)</div>
+          </div>
+
+          <div class="brief-overlay">
+            <div class="brief-title">Nike Running — Run the world</div>
+            <div class="brief-gates">Presence · dwell · gaze · completion · review</div>
+            <div class="brief-cta">Start watch session</div>
+          </div>
+
+          <div class="verify-chip">
+            <div class="verify-title">Pending verification</div>
+            <div class="verify-sub">5 gates clearing · reward lands in wallet when review passes</div>
+          </div>
+
+          <div class="gesture-label" aria-live="polite"></div>
+          <div class="promo-zone"><div class="promo-tab-ring"></div></div>
+          <div class="thumb" aria-hidden="true"><div class="thumb-shape"></div></div>
+
+          <nav class="bottom-nav">
+            <div class="nav-tab"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 8l7-5 7 5v9H3V8z" stroke="#888" stroke-width="1.3" fill="none"/></svg></div>
+            <div class="nav-tab nav-tab--promo"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C6 6 3 8 3 12a6 6 0 0012 0c0-4-3-6-6-10z" stroke="#555" stroke-width="1.2" fill="none"/><circle cx="9" cy="10" r="2" fill="#555" stroke="none"/></svg></div>
+            <div class="create-btn"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 5v12M5 11h12" stroke="#666" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <div class="nav-tab"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="2" stroke="#888" stroke-width="1.3" fill="none"/><path d="M2 9h16" stroke="#888" stroke-width="1.3"/></svg></div>
+            <div class="nav-tab"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="#888" stroke-width="1.2" fill="none"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+          </nav>
+
+          <div class="platform-overlay">
+            <div class="platform-card">
+              <div class="split">
+                <span class="split-node">Creator 60%</span><span class="split-arrow">·</span>
+                <span class="split-node">Viewer 30%</span><span class="split-arrow">·</span>
+                <span class="split-node">Platform 10%</span>
+              </div>
+              <div class="platform-text">Promo connects advertiser demand to verified attention supply — the revenue engine behind Loop 1.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="controls-bar">
+        <button type="button" class="ctrl-btn" id="btnPlayPause" aria-label="Pause animation">Pause</button>
+        <button type="button" class="ctrl-btn" id="btnRestart" aria-label="Restart animation">Restart</button>
+        <div class="scene-dots" id="sceneDots" role="tablist" aria-label="Animation scenes"></div>
+      </div>
+    </div>
+
+    <div class="panel-column">
+      <div class="block subtitle active" data-scene="idle" data-block="title">
+        <h2>Promo</h2>
+        <p>Sponsored attention, user-chosen.</p>
+      </div>
+      <div class="block" data-scene="idle" data-block="concept">
+        <div class="block-title">Concept</div>
+        <p>The Promo tab (legacy Earn) is the sponsor marketplace — briefs for watch-to-earn, geo check-ins, and campaign tasks. Same glass immersive language as Feed; not a separate ad network UI.</p>
+        <p class="status-note">MVP: `EarnScreen` card list + Supabase `promotions`; full immersive promo feed and local map layer on roadmap.</p>
+      </div>
+      <div class="block" data-scene="tap" data-block="interaction">
+        <div class="block-title">Interaction</div>
+        <p>Tap Promo in the 5-tab dock — or swipe right from Feed (gaze remote: `promoFeed`). Opens sponsor briefs without leaving the phone shell.</p>
+      </div>
+      <div class="block" data-scene="marketplace" data-block="marketplace">
+        <div class="block-title">Sponsor briefs</div>
+        <p>Each card shows brand, action type (Watch · Check-in · Campaign), and iCoin reward. Users opt in — no autoplay pre-roll. Daily promo view caps enforced server-side.</p>
+      </div>
+      <div class="block" data-scene="select" data-block="select">
+        <div class="block-title">Offer detail</div>
+        <p>Selecting a brief reveals verification gates upfront: presence, dwell, gaze, completion, review. Start watch session enters the same immersive player as organic feed — with REWARD pill active.</p>
+      </div>
+      <div class="block" data-scene="watch" data-block="watch">
+        <div class="block-title">Watch to earn</div>
+        <p>Timer line tracks session progress. Sponsored bar fills as attention is verified. Skipping pauses the earn timer. POP / gaze signals feed `validate-attention` Edge Function.</p>
+      </div>
+      <div class="block" data-scene="verify" data-block="verify">
+        <div class="block-title">Pending-first</div>
+        <p>Rewards enter pending — not instant credit. `finalize_promotion_checkin_reward` and `issue-reward` atomic paths credit wallet only after gates pass. Fraud-resistant by design.</p>
+      </div>
+      <div class="block" data-scene="platform" data-block="platform">
+        <div class="block-title">Platform impact</div>
+        <p>Promo is how brands pay for verified eyeballs. 60/30/10 split funds creators, viewers, and platform. Without Promo, [ i ] is entertainment — with it, attention becomes a marketplace.</p>
+      </div>
+      <div class="block pros-card" data-block="pros">
+        <div class="block-title">Pros</div>
+        <ul>
+          <li>User-opt-in sponsored actions — not forced pre-roll.</li>
+          <li>Verification gates reduce bot/farm abuse.</li>
+          <li>Same immersive shell as organic feed (Picture 2 law).</li>
+          <li>Geo check-ins extend earn beyond video (Supabase shipped).</li>
+          <li>Server-side promo caps and atomic reward issuance.</li>
+          <li>Clear 60/30/10 economics for investor narrative.</li>
+          <li>Investor path: Promo → Earn → Convert → Withdraw.</li>
+        </ul>
+      </div>
+      <div class="block framing" data-block="framing">
+        <p>Promo is [ i ]'s demand side — where sponsors fund verified attention, viewers choose what to earn from, and the marketplace loop turns brand budgets into user-held value.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var SCENES=[
+    {id:'idle',duration:1300,panel:['title','concept']},
+    {id:'tap',duration:1100,panel:['interaction']},
+    {id:'marketplace',duration:1500,panel:['marketplace']},
+    {id:'select',duration:1400,panel:['select']},
+    {id:'watch',duration:1600,panel:['watch']},
+    {id:'verify',duration:1500,panel:['verify']},
+    {id:'platform',duration:1600,panel:['platform']}
+  ];
+  var phoneScene=document.getElementById('phoneScene'),btnPlayPause=document.getElementById('btnPlayPause'),btnRestart=document.getElementById('btnRestart'),sceneDots=document.getElementById('sceneDots'),blocks=document.querySelectorAll('.block[data-block]');
+  var sceneIndex=0,playing=true,pausedByHover=false,timeoutId=null,reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  SCENES.forEach(function(s,i){var d=document.createElement('button');d.type='button';d.className='scene-dot'+(i===0?' active':'');d.setAttribute('role','tab');d.setAttribute('aria-label','Scene: '+s.id);d.addEventListener('click',function(){goToScene(i,true);});sceneDots.appendChild(d);});
+  function clearTimers(){if(timeoutId){clearTimeout(timeoutId);timeoutId=null;}}
+  function setPanelActive(keys){blocks.forEach(function(b){b.classList.toggle('active',keys.indexOf(b.getAttribute('data-block'))!==-1);});}
+  function setDots(i){sceneDots.querySelectorAll('.scene-dot').forEach(function(d,j){d.classList.toggle('active',j===i);});}
+  function applyScene(i){phoneScene.setAttribute('data-scene',SCENES[i].id);setPanelActive(SCENES[i].panel||[]);setDots(i);}
+  function goToScene(index,manual){clearTimers();sceneIndex=((index%SCENES.length)+SCENES.length)%SCENES.length;applyScene(sceneIndex);if(manual&&!playing)return;if(!playing||pausedByHover)return;timeoutId=setTimeout(function(){if(playing&&!pausedByHover)goToScene(sceneIndex+1);},reducedMotion?800:SCENES[sceneIndex].duration);}
+  btnPlayPause.addEventListener('click',function(){playing=!playing;btnPlayPause.textContent=playing?'Pause':'Play';if(playing&&!pausedByHover)goToScene(sceneIndex,false);else clearTimers();});
+  btnRestart.addEventListener('click',function(){playing=true;pausedByHover=false;btnPlayPause.textContent='Pause';goToScene(0,false);});
+  blocks.forEach(function(b){b.addEventListener('mouseenter',function(){var s=b.getAttribute('data-scene');if(!s)return;pausedByHover=true;clearTimers();var idx=SCENES.findIndex(function(x){return x.id===s;});if(idx>=0){applyScene(idx);setPanelActive([b.getAttribute('data-block')]);}});b.addEventListener('mouseleave',function(){if(!playing)return;pausedByHover=false;goToScene(sceneIndex,false);});});
+  goToScene(0,false);
+})();
+</script>
+</body>
+</html>
