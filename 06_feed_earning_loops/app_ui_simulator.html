@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] - Integrated App UI Simulator</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --page-bg: #f4f4f6;
+  --ink: #26262c;
+  --muted: #777983;
+  --soft: rgba(255,255,255,0.78);
+  --line: rgba(255,255,255,0.18);
+  --glass: rgba(7,7,9,0.44);
+  --glass-strong: rgba(7,7,9,0.68);
+  --mint: #4ade80;
+  --cyan: #67e8f9;
+  --amber: #fbbf24;
+  --rose: #fb7185;
+  --violet: #a78bfa;
+  --mono: "SF Mono", Menlo, Consolas, monospace;
+  --sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+}
+html, body { min-height: 100%; background: var(--page-bg); color: var(--ink); font-family: var(--sans); }
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(320px, 430px) minmax(280px, 1fr);
+  gap: 28px;
+  align-items: center;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px;
+}
+.phone-wrap { display: flex; justify-content: center; }
+.phone {
+  width: min(390px, 100%);
+  aspect-ratio: 390 / 760;
+  min-height: 640px;
+  border-radius: 42px;
+  padding: 10px;
+  background: linear-gradient(145deg, #101116, #f7f7f8 52%, #08090d);
+  box-shadow: 0 28px 90px rgba(0,0,0,0.24), inset 0 0 0 1px rgba(255,255,255,0.6);
+}
+.screen {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 34px;
+  background: #070709;
+  color: #f0ede8;
+  isolation: isolate;
+  touch-action: manipulation;
+}
+.media {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 45% 18%, rgba(255,210,129,0.78), transparent 15%),
+    linear-gradient(160deg, rgba(255,136,86,0.45), rgba(58,31,86,0.44) 42%, rgba(11,26,34,0.88)),
+    url("../app/public/media/immersive-sunset.svg");
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.02);
+  transition: filter 0.35s ease, transform 0.45s ease;
+}
+.screen[data-mode="wallet"] .media,
+.screen[data-mode="promo"] .media,
+.screen[data-mode="profile"] .media,
+.screen[data-mode="create"] .media { filter: blur(4px) saturate(0.72); transform: scale(1.05); }
+.scrim-top, .scrim-bottom { position: absolute; left: 0; right: 0; pointer-events: none; z-index: 1; }
+.scrim-top { top: 0; height: 150px; background: linear-gradient(to bottom, rgba(0,0,0,0.56), transparent); }
+.scrim-bottom { bottom: 0; height: 320px; background: linear-gradient(to top, rgba(0,0,0,0.86), rgba(0,0,0,0.28), transparent); }
+.timer { position: absolute; top: 10px; left: 14px; right: 14px; height: 2px; z-index: 5; background: rgba(255,255,255,0.16); border-radius: 4px; overflow: hidden; }
+.timer span { display: block; height: 100%; width: 38%; background: rgba(255,255,255,0.92); transition: width 0.28s ease; }
+.reward {
+  position: absolute; top: 32px; right: 16px; z-index: 8;
+  min-width: 66px; min-height: 32px; padding: 6px 12px;
+  border: 1px solid var(--line); border-radius: 999px;
+  color: rgba(240,237,232,0.94); background: var(--glass);
+  backdrop-filter: blur(12px); font-family: var(--mono); font-size: 12px;
+}
+.reward.review { border-color: rgba(74,222,128,0.48); box-shadow: 0 0 18px rgba(74,222,128,0.28); color: var(--mint); }
+.reward.validating { color: var(--cyan); }
+.elo {
+  position: absolute; left: 50%; top: 44%; z-index: 4; transform: translate(-50%, -50%);
+  width: 132px; height: 132px; border-radius: 50%;
+  background: radial-gradient(circle at 50% 38%, rgba(255,255,255,0.26), rgba(103,232,249,0.12) 28%, rgba(7,7,9,0.08) 58%, transparent 72%);
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 0 44px rgba(103,232,249,0.15);
+  display: grid; place-items: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.elo.awake { transform: translate(-50%, -50%) scale(1.08); box-shadow: 0 0 52px rgba(103,232,249,0.36); }
+.elo-face { width: 80px; height: 52px; position: relative; opacity: 0.9; }
+.elo-eye { position: absolute; top: 10px; width: 12px; height: 12px; border-radius: 50%; background: rgba(240,237,232,0.86); box-shadow: 0 0 10px rgba(255,255,255,0.7); }
+.elo-eye.left { left: 18px; }
+.elo-eye.right { right: 18px; }
+.elo-mouth { position: absolute; left: 27px; right: 27px; bottom: 8px; height: 8px; border-bottom: 2px solid rgba(240,237,232,0.76); border-radius: 0 0 20px 20px; }
+.out-profile { position: absolute; left: 16px; bottom: 118px; z-index: 6; display: grid; grid-template-columns: 38px auto; gap: 9px; align-items: center; color: rgba(240,237,232,0.9); }
+.avatar { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.22); backdrop-filter: blur(10px); font-size: 11px; }
+.out-profile b { display: block; font-size: 12px; letter-spacing: 0.04em; }
+.out-profile span { display: block; font-size: 10px; color: rgba(240,237,232,0.58); }
+.watch-cta { position: absolute; left: 16px; bottom: 178px; z-index: 7; padding: 9px 13px; border-radius: 999px; border: 1px solid var(--line); color: rgba(240,237,232,0.94); background: var(--glass); backdrop-filter: blur(12px); font-size: 11px; }
+.rail { position: absolute; right: 14px; bottom: 138px; z-index: 9; display: flex; flex-direction: column; gap: 18px; align-items: center; touch-action: none; }
+.rail-item { position: relative; display: grid; justify-items: center; gap: 5px; }
+.count { font-family: var(--mono); font-size: 10px; color: rgba(240,237,232,0.62); min-height: 12px; }
+.count.offer { color: var(--mint); text-shadow: 0 0 10px rgba(74,222,128,0.5); }
+.round {
+  width: 48px; height: 48px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.18);
+  background: var(--glass); color: rgba(240,237,232,0.92); backdrop-filter: blur(12px);
+  display: grid; place-items: center; font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.22);
+  transition: transform 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+.round:active, .round.active { transform: scale(0.92); border-color: rgba(255,255,255,0.38); }
+.round.liked { color: var(--rose); border-color: rgba(251,113,133,0.55); box-shadow: 0 0 18px rgba(251,113,133,0.24); }
+.gesture-cross { position: absolute; right: 52px; top: -42px; width: 118px; height: 118px; pointer-events: none; opacity: 0; transform: scale(0.82); transition: opacity 0.18s, transform 0.18s; }
+.gesture-cross.show { opacity: 1; transform: scale(1); }
+.cross-line { position: absolute; background: rgba(255,255,255,0.24); border-radius: 999px; }
+.cross-line.v { left: 58px; top: 0; width: 2px; height: 118px; }
+.cross-line.h { left: 0; top: 58px; width: 118px; height: 2px; }
+.cross-tip { position: absolute; font-family: var(--mono); font-size: 10px; color: rgba(240,237,232,0.7); }
+.cross-tip.up { top: -2px; left: 43px; }
+.cross-tip.down { bottom: -2px; left: 43px; }
+.cross-tip.left { left: -4px; top: 48px; }
+.cross-tip.right { right: -6px; top: 48px; }
+.hearts { position: absolute; right: 44px; bottom: 58px; width: 90px; height: 160px; pointer-events: none; overflow: visible; }
+.heart-pop { position: absolute; bottom: 0; color: var(--rose); animation: floatHeart 1s ease-out forwards; font-size: 18px; }
+@keyframes floatHeart { from { transform: translateY(0) scale(0.8); opacity: 1; } to { transform: translateY(-120px) translateX(var(--x)) scale(1.3); opacity: 0; } }
+.dock { position: absolute; left: 14px; right: 14px; bottom: 18px; z-index: 10; height: 66px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; align-items: center; padding: 7px; border-radius: 28px; background: rgba(255,255,255,0.9); color: #2b2b31; box-shadow: 0 16px 38px rgba(0,0,0,0.28); }
+.dock button { border: none; background: transparent; border-radius: 18px; height: 48px; color: #767782; font-size: 9px; text-transform: uppercase; letter-spacing: 0.04em; }
+.dock button.active { color: #101116; background: rgba(0,0,0,0.06); }
+.dock .create { width: 52px; height: 52px; justify-self: center; margin-top: -18px; border-radius: 50%; background: #fff; color: #101116; box-shadow: 0 9px 22px rgba(0,0,0,0.2); font-size: 22px; }
+.sheet, .overlay-panel {
+  position: absolute; left: 12px; right: 12px; bottom: 94px; z-index: 20;
+  max-height: 68%; overflow: auto; padding: 16px; border-radius: 24px;
+  background: rgba(10,10,14,0.76); border: 1px solid rgba(255,255,255,0.14);
+  color: rgba(240,237,232,0.92); backdrop-filter: blur(18px);
+  box-shadow: 0 20px 52px rgba(0,0,0,0.36);
+  transform: translateY(18px); opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.sheet.show, .overlay-panel.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+.sheet h2, .overlay-panel h2 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+.sheet p, .overlay-panel p { font-size: 12px; line-height: 1.5; color: rgba(240,237,232,0.66); }
+.row { display: flex; gap: 8px; align-items: center; justify-content: space-between; margin-top: 12px; }
+.row.wrap { flex-wrap: wrap; justify-content: flex-start; }
+.pill { border: 1px solid rgba(255,255,255,0.14); border-radius: 999px; background: rgba(255,255,255,0.08); color: rgba(240,237,232,0.88); padding: 8px 12px; font-size: 12px; }
+.pill.primary { background: rgba(74,222,128,0.18); border-color: rgba(74,222,128,0.42); color: #d9ffe6; }
+.pill.warn { background: rgba(251,191,36,0.16); border-color: rgba(251,191,36,0.36); }
+.slider { width: 100%; accent-color: var(--mint); margin-top: 12px; }
+.mini-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+.mini-card { padding: 12px; border-radius: 16px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); }
+.mini-card b { display: block; font-size: 13px; margin-bottom: 4px; }
+.field { width: 100%; margin-top: 10px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.08); color: #fff; padding: 10px 12px; outline: none; }
+.toast { position: absolute; top: 72px; left: 50%; transform: translateX(-50%) translateY(-8px); z-index: 50; max-width: 82%; padding: 9px 13px; border-radius: 999px; background: rgba(7,7,9,0.72); color: rgba(240,237,232,0.95); border: 1px solid rgba(255,255,255,0.16); backdrop-filter: blur(10px); font-size: 11px; opacity: 0; transition: opacity 0.2s, transform 0.2s; pointer-events: none; text-align: center; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.side {
+  align-self: stretch;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 16px;
+}
+.intro, .state-card {
+  background: #fff; border: 1px solid rgba(0,0,0,0.08); border-radius: 20px;
+  padding: 20px; box-shadow: 0 12px 36px rgba(0,0,0,0.06);
+}
+.intro h1 { font-size: 13px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); font-weight: 500; margin-bottom: 8px; }
+.intro .title { font-size: 27px; line-height: 1.12; color: var(--ink); margin-bottom: 10px; }
+.intro p { color: var(--muted); line-height: 1.55; font-size: 14px; }
+.state-card { overflow: auto; min-height: 420px; }
+.state-card h2 { font-size: 13px; letter-spacing: 0.13em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.state-list { display: grid; gap: 9px; margin-bottom: 16px; }
+.state-line { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid rgba(0,0,0,0.07); padding-bottom: 8px; font-size: 13px; }
+.state-line span:first-child { color: var(--muted); }
+.log { display: grid; gap: 8px; }
+.log-entry { border-left: 3px solid #d6d6dc; padding-left: 10px; font-size: 12px; line-height: 1.45; color: #4b4c55; }
+.log-entry.good { border-color: var(--mint); }
+.log-entry.warn { border-color: var(--amber); }
+.log-entry.info { border-color: var(--cyan); }
+.home-indicator { position: absolute; left: 50%; bottom: 5px; transform: translateX(-50%); width: 96px; height: 4px; border-radius: 999px; background: rgba(255,255,255,0.24); z-index: 12; }
+.hidden { display: none !important; }
+@media (max-width: 880px) {
+  .page { grid-template-columns: 1fr; padding: 18px; align-items: start; }
+  .side { grid-template-rows: auto; }
+  .state-card { min-height: auto; }
+}
+@media (max-width: 440px) {
+  .page { padding: 0; background: #070709; }
+  .intro, .state-card { border-radius: 0; }
+  .phone { width: 100%; min-height: 100vh; border-radius: 0; padding: 0; background: #070709; box-shadow: none; }
+  .screen { border-radius: 0; }
+  .phone-wrap { order: 1; }
+  .side { order: 2; }
+}
+</style>
+</head>
+<body>
+<main class="page">
+  <section class="phone-wrap" aria-label="Interactive app simulator">
+    <div class="phone">
+      <div class="screen" id="screen" data-mode="feed">
+        <div class="media"></div>
+        <div class="scrim-top"></div>
+        <div class="scrim-bottom"></div>
+        <div class="timer" aria-label="Watch progress"><span id="timerFill"></span></div>
+
+        <button class="reward" id="rewardBtn" type="button" aria-label="Open reward state">50ic</button>
+
+        <button class="elo" id="eloBtn" type="button" aria-label="Open ELO">
+          <span class="elo-face" aria-hidden="true">
+            <span class="elo-eye left"></span>
+            <span class="elo-eye right"></span>
+            <span class="elo-mouth"></span>
+          </span>
+        </button>
+
+        <button class="watch-cta" id="watchBtn" type="button">Watch & earn</button>
+
+        <button class="out-profile" id="outProfileBtn" type="button" aria-label="Open creator profile">
+          <span class="avatar">RA</span>
+          <span><b>RAFAELO</b><span>Cape Town</span></span>
+        </button>
+
+        <div class="rail" id="rail">
+          <div class="rail-item">
+            <div class="gesture-cross" id="gestureCross" aria-hidden="true">
+              <span class="cross-line v"></span><span class="cross-line h"></span>
+              <span class="cross-tip up">v tip</span><span class="cross-tip down">i tip</span>
+              <span class="cross-tip left">back</span><span class="cross-tip right">save</span>
+            </div>
+            <div class="count" id="likeCount">2,842</div>
+            <button class="round" id="likeBtn" type="button" aria-label="Like, save, or tip">HEART</button>
+            <div class="hearts" id="hearts"></div>
+          </div>
+          <button class="round" id="messageBtn" type="button" aria-label="Message creator">MSG</button>
+          <button class="round" id="shareBtn" type="button" aria-label="Share media">SHARE</button>
+          <button class="round" id="controlsBtn" type="button" aria-label="Open controls">CTL</button>
+        </div>
+
+        <nav class="dock" aria-label="Main app navigation">
+          <button type="button" class="active" data-tab="feed">Feed</button>
+          <button type="button" data-tab="promo">Promo</button>
+          <button type="button" class="create" data-tab="create">+</button>
+          <button type="button" data-tab="wallet">Wallet</button>
+          <button type="button" data-tab="profile">Profile</button>
+        </nav>
+
+        <section class="sheet" id="rewardSheet" aria-label="Reward review">
+          <h2 id="rewardTitle">Review offer</h2>
+          <p id="rewardCopy">Confirm the creator tip before settlement.</p>
+          <div class="row wrap">
+            <button class="pill" data-offer="5" type="button">5ic</button>
+            <button class="pill" data-offer="13" type="button">13ic</button>
+            <button class="pill primary" data-offer="49" type="button">49ic</button>
+          </div>
+          <input class="slider" id="offerSlider" type="range" min="1" max="99" value="49" aria-label="Offer amount">
+          <div class="row">
+            <button class="pill" id="cancelOffer" type="button">Cancel</button>
+            <button class="pill primary" id="sendOffer" type="button">Send offer</button>
+          </div>
+        </section>
+
+        <section class="sheet" id="messageSheet" aria-label="Message creator">
+          <h2>Message Rafaelo</h2>
+          <p>Context chip attaches the current clip so replies become creator relationship data.</p>
+          <textarea class="field" id="messageText" rows="3">Loved this sunset loop. Send more Cape Town drops.</textarea>
+          <div class="row">
+            <button class="pill" data-close type="button">Close</button>
+            <button class="pill primary" id="sendMessage" type="button">Send message</button>
+          </div>
+        </section>
+
+        <section class="sheet" id="shareSheet" aria-label="Share media">
+          <h2>Share with attribution</h2>
+          <p>Each destination preserves source, creator, and referral context.</p>
+          <div class="mini-grid">
+            <button class="mini-card" data-share="Copy link" type="button"><b>Copy link</b><p>Track referral path.</p></button>
+            <button class="mini-card" data-share="Send to friend" type="button"><b>Send to friend</b><p>Private thread.</p></button>
+            <button class="mini-card" data-share="Post clip" type="button"><b>Post clip</b><p>Public share.</p></button>
+            <button class="mini-card" data-share="Create remix" type="button"><b>Create remix</b><p>Route to Studio.</p></button>
+          </div>
+        </section>
+
+        <section class="sheet" id="controlsSheet" aria-label="Gesture controls">
+          <h2>Gesture builder</h2>
+          <p>Rebind the heart rail without changing the default product shell.</p>
+          <div class="mini-grid">
+            <label class="mini-card"><b>Tap</b><select class="field" data-bind="tap"><option>Like</option><option>Save</option><option>None</option></select></label>
+            <label class="mini-card"><b>Double tap</b><select class="field" data-bind="double"><option>Save</option><option>Like</option><option>Boost</option></select></label>
+            <label class="mini-card"><b>Swipe up</b><select class="field" data-bind="up"><option>Tip vCoin</option><option>Save</option><option>None</option></select></label>
+            <label class="mini-card"><b>Swipe down</b><select class="field" data-bind="down"><option>Tip iCoin</option><option>Like</option><option>None</option></select></label>
+          </div>
+          <div class="row">
+            <button class="pill" id="resetControls" type="button">Reset</button>
+            <button class="pill primary" id="saveControls" type="button">Save controls</button>
+          </div>
+        </section>
+
+        <section class="overlay-panel" id="modePanel" aria-label="Tab response panel"></section>
+        <div class="toast" id="toast" role="status"></div>
+        <div class="home-indicator" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+
+  <aside class="side">
+    <section class="intro">
+      <h1>[ i ] simulator</h1>
+      <p class="title">Integrated responsive UI model</p>
+      <p>Every visible control resolves to a real simulated response: rail gestures, REWARD review, Watch Verify Earn, Wallet, Promo, Studio, Profile, Out-Profile, ELO, share, message, and configurable controls.</p>
+    </section>
+    <section class="state-card" aria-label="Simulator state">
+      <h2>Live app state</h2>
+      <div class="state-list" id="stateList"></div>
+      <h2>Interaction log</h2>
+      <div class="log" id="log"></div>
+    </section>
+  </aside>
+</main>
+
+<script>
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+const state = {
+  tab: 'feed',
+  timer: 38,
+  reward: 50,
+  pending: 0,
+  vcoin: 1840,
+  liked: false,
+  likeCount: 2842,
+  saved: false,
+  offerAmount: 49,
+  offerCoin: 'ic',
+  offerStatus: 'idle',
+  trust: 82,
+  elo: 'ambient',
+  watch: 'ready',
+  controls: {
+    tap: 'Like',
+    double: 'Save',
+    up: 'Tip vCoin',
+    down: 'Tip iCoin'
+  }
+};
+
+const els = {
+  screen: $('#screen'),
+  timer: $('#timerFill'),
+  reward: $('#rewardBtn'),
+  like: $('#likeBtn'),
+  likeCount: $('#likeCount'),
+  cross: $('#gestureCross'),
+  hearts: $('#hearts'),
+  toast: $('#toast'),
+  stateList: $('#stateList'),
+  log: $('#log'),
+  modePanel: $('#modePanel'),
+  rewardSheet: $('#rewardSheet'),
+  rewardTitle: $('#rewardTitle'),
+  rewardCopy: $('#rewardCopy'),
+  offerSlider: $('#offerSlider'),
+  elo: $('#eloBtn')
+};
+
+let toastTimer;
+let tapTimer;
+let lastTap = 0;
+let holdTimer;
+let holdStart = null;
+let watchTimer;
+
+function format(n) { return Number(n).toLocaleString(); }
+
+function addLog(text, type = 'info') {
+  const item = document.createElement('div');
+  item.className = 'log-entry ' + type;
+  item.textContent = text;
+  els.log.prepend(item);
+  while (els.log.children.length > 9) els.log.lastElementChild.remove();
+}
+
+function toast(text) {
+  clearTimeout(toastTimer);
+  els.toast.textContent = text;
+  els.toast.classList.add('show');
+  toastTimer = setTimeout(() => els.toast.classList.remove('show'), 1800);
+}
+
+function closeSheets() {
+  $$('.sheet, .overlay-panel').forEach((el) => el.classList.remove('show'));
+}
+
+function openSheet(id) {
+  closeSheets();
+  $(id).classList.add('show');
+}
+
+function render() {
+  els.screen.dataset.mode = state.tab;
+  els.timer.style.width = state.timer + '%';
+  els.like.classList.toggle('liked', state.liked);
+  els.likeCount.textContent = state.offerStatus === 'draft' ? '+' + state.offerAmount : format(state.likeCount);
+  els.likeCount.classList.toggle('offer', state.offerStatus === 'draft');
+  els.elo.classList.toggle('awake', state.elo !== 'ambient');
+  $$('.dock button').forEach((btn) => btn.classList.toggle('active', btn.dataset.tab === state.tab));
+
+  if (state.offerStatus === 'review') {
+    els.reward.textContent = state.offerAmount + state.offerCoin;
+    els.reward.className = 'reward review';
+  } else if (state.offerStatus === 'validating') {
+    els.reward.textContent = 'validating';
+    els.reward.className = 'reward validating';
+  } else {
+    els.reward.textContent = state.reward + 'ic';
+    els.reward.className = 'reward';
+  }
+
+  els.stateList.innerHTML = [
+    ['Tab', state.tab],
+    ['Reward balance', state.reward + ' ic'],
+    ['Pending', state.pending + ' ic'],
+    ['vCoin utility', format(state.vcoin) + ' v'],
+    ['Like count', format(state.likeCount)],
+    ['Saved', state.saved ? 'yes' : 'no'],
+    ['Offer', state.offerStatus + ' / ' + state.offerAmount + state.offerCoin],
+    ['Watch state', state.watch],
+    ['ELO', state.elo],
+    ['Trust', state.trust + '%']
+  ].map(([k, v]) => `<div class="state-line"><span>${k}</span><b>${v}</b></div>`).join('');
+}
+
+function popHeart() {
+  const h = document.createElement('span');
+  h.className = 'heart-pop';
+  h.textContent = 'heart';
+  h.style.left = Math.round(Math.random() * 56) + 'px';
+  h.style.setProperty('--x', (Math.random() > 0.5 ? '' : '-') + Math.round(12 + Math.random() * 24) + 'px');
+  els.hearts.appendChild(h);
+  setTimeout(() => h.remove(), 1000);
+}
+
+function toggleLike() {
+  state.liked = !state.liked;
+  state.likeCount += state.liked ? 1 : -1;
+  if (state.liked) popHeart();
+  toast(state.liked ? 'Like saved to content_likes' : 'Like removed');
+  addLog(state.liked ? 'Tap HEART resolved: like persisted.' : 'Tap HEART resolved: unlike persisted.', 'good');
+  render();
+}
+
+function saveClip() {
+  state.saved = true;
+  toast('Saved to Loop 2 vault');
+  addLog('Double tap resolved: clip saved for retention path.', 'good');
+  render();
+}
+
+function startOffer(coin) {
+  state.offerCoin = coin;
+  state.offerStatus = 'review';
+  els.offerSlider.value = state.offerAmount;
+  els.rewardTitle.textContent = 'Review ' + state.offerAmount + coin + ' offer';
+  els.rewardCopy.textContent = coin === 'ic' ? 'iCoin offer uses the settlement path.' : 'vCoin utility tip stays inside the creator loop.';
+  openSheet('#rewardSheet');
+  addLog('Hold/swipe resolved: REWARD review sheet opened.', 'info');
+  render();
+}
+
+function runWatch() {
+  clearInterval(watchTimer);
+  closeSheets();
+  state.tab = 'feed';
+  state.watch = 'watching';
+  state.timer = 0;
+  toast('Watch session started');
+  addLog('Watch & earn resolved: timer + verification gates started.', 'info');
+  render();
+  watchTimer = setInterval(() => {
+    state.timer += 10;
+    if (state.timer >= 100) {
+      clearInterval(watchTimer);
+      state.timer = 100;
+      state.watch = 'verified';
+      state.pending += 12;
+      state.offerStatus = 'idle';
+      toast('Verified attention: +12ic pending');
+      addLog('Verify resolved: reward moved to pending wallet.', 'good');
+    }
+    render();
+  }, 360);
+}
+
+function settleOffer() {
+  state.offerStatus = 'validating';
+  closeSheets();
+  addLog('Send offer resolved: tip-creator validation simulated.', 'info');
+  render();
+  setTimeout(() => {
+    if (state.offerCoin === 'ic') state.reward = Math.max(0, state.reward - state.offerAmount);
+    if (state.offerCoin === 'v') state.vcoin = Math.max(0, state.vcoin - state.offerAmount);
+    state.offerStatus = 'idle';
+    toast('Offer settled to creator');
+    addLog('Settlement resolved: creator received ' + state.offerAmount + state.offerCoin + '.', 'good');
+    render();
+  }, 900);
+}
+
+function showMode(tab) {
+  state.tab = tab;
+  closeSheets();
+  const panels = {
+    feed: ['Feed', 'Full-bleed media, ELO membrane, rail gestures, timer, reward pill, and Out-Profile are active.'],
+    promo: ['Promo', 'Sponsored briefs resolve into Watch & Earn sessions with verified attention requirements.'],
+    create: ['Create Studio', 'Studio accepts remix, upload, and campaign draft actions. This simulator records the intent.'],
+    wallet: ['Wallet', `Spendable ${state.reward}ic, pending ${state.pending}ic, utility ${format(state.vcoin)}v. Convert and withdraw are simulated actions.`],
+    profile: ['In-Profile', `Trust ${state.trust}%. Profile stores preferences, ELO stack, saved content, and verification history.`]
+  };
+  const [title, copy] = panels[tab];
+  els.modePanel.innerHTML = `
+    <h2>${title}</h2>
+    <p>${copy}</p>
+    <div class="mini-grid">
+      <button class="mini-card" data-panel-action="primary" type="button"><b>Primary action</b><p>Resolve ${title} intent.</p></button>
+      <button class="mini-card" data-panel-action="secondary" type="button"><b>Secondary action</b><p>Open related state.</p></button>
+    </div>`;
+  if (tab !== 'feed') els.modePanel.classList.add('show');
+  toast(title + ' opened');
+  addLog('Dock resolved: ' + title + ' panel opened.', 'info');
+  render();
+}
+
+function openElo() {
+  state.elo = state.elo === 'ambient' ? 'evoked' : 'ambient';
+  els.modePanel.innerHTML = `
+    <h2>ELO companion</h2>
+    <p>ELO reads the current surface and responds without blocking touch gestures.</p>
+    <div class="mini-grid">
+      <button class="mini-card" data-elo="wallet" type="button"><b>Ask wallet</b><p>Explain balances.</p></button>
+      <button class="mini-card" data-elo="next" type="button"><b>Best next move</b><p>Suggest action.</p></button>
+    </div>
+    <input class="field" id="eloInput" value="What should I do next?">
+    <div class="row"><button class="pill primary" id="askElo" type="button">Ask ELO</button></div>`;
+  els.modePanel.classList.add('show');
+  toast('ELO evoked');
+  addLog('ELO resolved: companion panel opened.', 'info');
+  render();
+}
+
+$('#likeBtn').addEventListener('pointerdown', (e) => {
+  holdStart = { x: e.clientX, y: e.clientY, t: Date.now() };
+  holdTimer = setTimeout(() => {
+    state.offerStatus = 'draft';
+    state.offerAmount = 13;
+    els.cross.classList.add('show');
+    toast('Offer mode armed: swipe up/down');
+    addLog('Hold HEART resolved: offer gesture armed.', 'info');
+    render();
+  }, 500);
+});
+
+$('#likeBtn').addEventListener('pointermove', (e) => {
+  if (!holdStart || state.offerStatus !== 'draft') return;
+  const dy = e.clientY - holdStart.y;
+  const dx = e.clientX - holdStart.x;
+  const dist = Math.max(Math.abs(dx), Math.abs(dy));
+  state.offerAmount = Math.min(99, Math.max(5, Math.round(dist / 2)));
+  state.offerCoin = dy > 20 ? 'ic' : 'v';
+  render();
+});
+
+$('#likeBtn').addEventListener('pointerup', (e) => {
+  clearTimeout(holdTimer);
+  const wasDraft = state.offerStatus === 'draft';
+  els.cross.classList.remove('show');
+  if (wasDraft && holdStart) {
+    const dy = e.clientY - holdStart.y;
+    const dx = e.clientX - holdStart.x;
+    if (Math.max(Math.abs(dx), Math.abs(dy)) > 24) startOffer(dy > 0 ? 'ic' : 'v');
+    else { state.offerStatus = 'idle'; render(); }
+    holdStart = null;
+    return;
+  }
+  holdStart = null;
+  const now = Date.now();
+  if (now - lastTap < 320) {
+    clearTimeout(tapTimer);
+    lastTap = 0;
+    saveClip();
+  } else {
+    lastTap = now;
+    tapTimer = setTimeout(() => { lastTap = 0; toggleLike(); }, 330);
+  }
+});
+$('#likeBtn').addEventListener('pointercancel', () => {
+  clearTimeout(holdTimer);
+  holdStart = null;
+  state.offerStatus = 'idle';
+  els.cross.classList.remove('show');
+  render();
+});
+
+$('#messageBtn').addEventListener('click', () => { openSheet('#messageSheet'); addLog('MESSAGE resolved: compose sheet opened.', 'info'); });
+$('#shareBtn').addEventListener('click', () => { openSheet('#shareSheet'); addLog('SHARE resolved: attribution sheet opened.', 'info'); });
+$('#controlsBtn').addEventListener('click', () => { openSheet('#controlsSheet'); addLog('CONTROLS resolved: builder opened.', 'info'); });
+$('#watchBtn').addEventListener('click', runWatch);
+$('#eloBtn').addEventListener('click', openElo);
+$('#outProfileBtn').addEventListener('click', () => {
+  els.modePanel.innerHTML = '<h2>Out-Profile</h2><p>Rafaelo creator card opened. Follow, tip, sponsor, or browse creator feed from here.</p><div class="row wrap"><button class="pill primary" data-panel-action="follow" type="button">Follow</button><button class="pill" data-panel-action="creator-feed" type="button">Creator feed</button></div>';
+  els.modePanel.classList.add('show');
+  addLog('OUT-PROFILE resolved: creator profile overlay opened.', 'info');
+  render();
+});
+$('#rewardBtn').addEventListener('click', () => {
+  if (state.offerStatus === 'review') openSheet('#rewardSheet');
+  else showMode('wallet');
+});
+
+$$('.dock button').forEach((btn) => btn.addEventListener('click', () => showMode(btn.dataset.tab)));
+$$('[data-close]').forEach((btn) => btn.addEventListener('click', closeSheets));
+$$('[data-offer]').forEach((btn) => btn.addEventListener('click', () => {
+  state.offerAmount = Number(btn.dataset.offer);
+  els.offerSlider.value = state.offerAmount;
+  render();
+}));
+els.offerSlider.addEventListener('input', () => { state.offerAmount = Number(els.offerSlider.value); render(); });
+$('#cancelOffer').addEventListener('click', () => { state.offerStatus = 'idle'; closeSheets(); toast('Offer cancelled'); addLog('Cancel resolved: offer reset.', 'warn'); render(); });
+$('#sendOffer').addEventListener('click', settleOffer);
+$('#sendMessage').addEventListener('click', () => { closeSheets(); toast('Message sent'); addLog('Message resolved: creator inbox thread created.', 'good'); });
+$$('[data-share]').forEach((btn) => btn.addEventListener('click', () => { toast(btn.dataset.share + ' resolved'); addLog('Share resolved: ' + btn.dataset.share + '.', 'good'); }));
+$('#saveControls').addEventListener('click', () => {
+  $$('[data-bind]').forEach((el) => state.controls[el.dataset.bind] = el.value);
+  closeSheets();
+  toast('Gesture controls saved');
+  addLog('Builder resolved: bindings persisted locally.', 'good');
+  render();
+});
+$('#resetControls').addEventListener('click', () => {
+  state.controls = { tap: 'Like', double: 'Save', up: 'Tip vCoin', down: 'Tip iCoin' };
+  $$('[data-bind]').forEach((el) => el.value = state.controls[el.dataset.bind]);
+  toast('Controls reset');
+  addLog('Builder resolved: defaults restored.', 'warn');
+  render();
+});
+
+document.addEventListener('click', (e) => {
+  const panel = e.target.closest('[data-panel-action]');
+  if (panel) {
+    toast(panel.textContent.trim().split(/\s+/).slice(0, 3).join(' ') + ' resolved');
+    addLog('Panel button resolved: ' + panel.dataset.panelAction + '.', 'good');
+  }
+  const elo = e.target.closest('[data-elo], #askElo');
+  if (elo) {
+    state.elo = 'speaking';
+    toast('ELO: Watch this, then claim +12ic.');
+    addLog('ELO response resolved: guidance generated for current app state.', 'good');
+    setTimeout(() => { state.elo = 'evoked'; render(); }, 900);
+    render();
+  }
+});
+
+addLog('Simulator ready: every button resolves to a simulated app function.', 'good');
+render();
+</script>
+</body>
+</html>
