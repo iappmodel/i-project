@@ -47,6 +47,17 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-30 — Boost triple-tap gesture explainer
+
+### Delivered
+- **Boost explainer** — `boost_triple_tap_explainer.html` (triple_tap → custom:boost; demo toast; vCoin/bCoin roadmap; completes heart preset quartet).
+- **Presenter deck** — slide after Save; index Earn section 5 files; smoke **18** walkthroughs.
+
+### Verification
+- `./scripts/smoke_investor_explainers.sh`
+
+---
+
 ## 2026-05-30 — Save double-tap gesture explainer
 
 ### Delivered

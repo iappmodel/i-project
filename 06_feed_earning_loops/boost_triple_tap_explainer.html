@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] — Boost · Triple-Tap Gesture Explainer</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --page-bg: #fff; --heading: #333; --text: #555; --text-secondary: #777; --text-light: #999;
+  --border: #e5e5e5; --card-bg: #fafafa; --shadow: rgba(0,0,0,0.08);
+  --bg-void: #070709; --text-primary: #f0ede8; --text-muted: #9997a0;
+  --icoin: #4ade80; --rose: #fb7185; --vcoin: #c4b5fd; --boost: #fbbf24;
+  --glass: rgba(7,7,9,0.42); --glass-border: rgba(255,255,255,0.14);
+  --mono: 'SF Mono', Menlo, Consolas, monospace;
+}
+html, body { min-height: 100vh; background: var(--page-bg); font-family: Arial, Helvetica, sans-serif; color: var(--text); }
+.page { max-width: 1180px; margin: 0 auto; padding: 48px 36px 56px; }
+.page-header { margin-bottom: 44px; }
+.page-header h1 { font-size: 13px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-secondary); font-weight: 400; margin-bottom: 8px; }
+.page-header .thesis { font-size: 15px; line-height: 1.5; max-width: 640px; }
+.stage { display: grid; grid-template-columns: 42% 1fr; gap: 56px; align-items: start; }
+.phone-column { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.panel-column { display: flex; flex-direction: column; gap: 18px; padding-top: 8px; }
+.controls-bar { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.ctrl-btn { font-family: Arial, Helvetica, sans-serif; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; padding: 8px 16px; border: 1px solid var(--border); border-radius: 6px; background: var(--page-bg); color: var(--text-secondary); cursor: pointer; }
+.scene-dots { display: flex; gap: 6px; }
+.scene-dot { width: 7px; height: 7px; border-radius: 50%; border: none; background: #ddd; cursor: pointer; padding: 0; }
+.scene-dot.active { background: var(--heading); transform: scale(1.3); }
+.block { padding: 16px 18px; border: 1px solid var(--border); border-radius: 8px; background: var(--page-bg); opacity: 0.42; transition: opacity 0.45s, border-color 0.45s, box-shadow 0.45s; }
+.block.active { opacity: 1; border-color: #ccc; box-shadow: 0 2px 12px var(--shadow); }
+.block-title { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-light); margin-bottom: 6px; }
+.block h2 { font-size: 17px; font-weight: 400; color: var(--heading); margin-bottom: 6px; }
+.block p { font-size: 13px; line-height: 1.55; }
+.block.subtitle h2 { font-size: 22px; }
+.block.subtitle p { font-size: 14px; color: var(--text-secondary); font-style: italic; }
+.pros-card { background: var(--card-bg); }
+.pros-card ul { list-style: none; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.pros-card li { font-size: 12px; padding-left: 14px; position: relative; }
+.pros-card li::before { content: '—'; position: absolute; left: 0; color: var(--text-light); }
+.framing { border-left: 3px solid #ccc; padding-left: 20px; }
+.framing p { font-size: 14px; color: var(--heading); }
+.status-note { font-size: 11px; color: var(--text-light); font-style: italic; margin-top: 6px; }
+
+.phone { width: 360px; height: 720px; border-radius: 44px; background: #ececec; padding: 10px; box-shadow: 0 24px 48px var(--shadow); }
+.phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; position: relative; background: var(--bg-void); }
+.notch { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 108px; height: 28px; background: #000; border-radius: 0 0 18px 18px; z-index: 30; }
+.media { position: absolute; inset: 0; background: linear-gradient(165deg, #1a0a2e 0%, #5b21b6 38%, #312e81 62%, #0a1520 100%); z-index: 1; transition: opacity 0.45s; }
+.scrim-top { position: absolute; top: 0; left: 0; right: 0; height: 100px; background: linear-gradient(to bottom, rgba(0,0,0,0.4), transparent); z-index: 2; }
+.scrim-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 180px; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); z-index: 2; }
+
+.action-rail { position: absolute; right: 14px; bottom: 100px; z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.rail-btn {
+  width: 40px; height: 40px; border-radius: 50%; background: var(--glass); border: 0.5px solid var(--glass-border);
+  backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center;
+  opacity: 0.35; transition: opacity 0.35s, box-shadow 0.35s, border-color 0.35s, transform 0.25s;
+}
+.rail-btn--like { opacity: 1; position: relative; }
+.like-icon { width: 18px; height: 18px; transition: fill 0.35s, stroke 0.35s, transform 0.35s; }
+.boost-ring {
+  position: absolute; inset: -6px; border-radius: 50%; border: 2px solid transparent; opacity: 0;
+  transition: opacity 0.35s, border-color 0.35s, box-shadow 0.35s, transform 0.35s;
+}
+.boost-arrow {
+  position: absolute; top: -10px; left: 50%; transform: translateX(-50%) translateY(6px); opacity: 0;
+  font-size: 12px; color: var(--boost); transition: opacity 0.35s, transform 0.35s;
+}
+.tap-pulse {
+  position: absolute; inset: -6px; border-radius: 50%; pointer-events: none;
+  border: 1.5px solid rgba(251,191,36,0.5); opacity: 0; transform: scale(0.85);
+  transition: opacity 0.2s, transform 0.2s;
+}
+.tap-pulse--2 { transition-delay: 0.1s; }
+.tap-pulse--3 { transition-delay: 0.2s; }
+
+.thumb {
+  position: absolute; right: 10px; bottom: 168px; width: 32px; height: 44px; z-index: 14;
+  opacity: 0; transform: translateY(16px); transition: opacity 0.25s, transform 0.25s;
+}
+.thumb--2 { transition-delay: 0.1s; }
+.thumb--3 { transition-delay: 0.2s; }
+.thumb-shape {
+  width: 100%; height: 100%;
+  background: linear-gradient(145deg, rgba(255,220,200,0.92), rgba(230,180,160,0.88));
+  border-radius: 16px 16px 12px 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+}
+.gesture-label {
+  position: absolute; right: 58px; bottom: 178px; z-index: 13;
+  font-family: var(--mono); font-size: 9px; color: rgba(240,237,232,0.75);
+  padding: 4px 10px; border-radius: 6px; background: rgba(7,7,9,0.55); border: 0.5px solid rgba(255,255,255,0.1);
+  white-space: nowrap; transition: opacity 0.3s;
+}
+.gesture-label::after { content: 'triple tap = boost'; }
+
+.boost-toast {
+  position: absolute; top: 44px; left: 50%; transform: translateX(-50%) translateY(-8px); z-index: 16;
+  font-family: var(--mono); font-size: 10px; color: var(--boost);
+  padding: 8px 14px; border-radius: 20px; background: rgba(7,7,9,0.82);
+  border: 0.5px solid rgba(251,191,36,0.4); opacity: 0; transition: opacity 0.4s, transform 0.4s;
+}
+
+.reach-burst {
+  position: absolute; inset: 0; z-index: 4; pointer-events: none; opacity: 0; transition: opacity 0.45s;
+  background: radial-gradient(circle at 78% 72%, rgba(251,191,36,0.18) 0%, transparent 55%);
+}
+.reach-chip {
+  position: absolute; left: 16px; top: 52px; z-index: 12;
+  font-family: var(--mono); font-size: 9px; color: var(--boost);
+  padding: 6px 10px; border-radius: 8px; background: rgba(7,7,9,0.7);
+  border: 0.5px solid rgba(251,191,36,0.35); opacity: 0; transition: opacity 0.4s, transform 0.4s;
+  transform: translateY(-6px);
+}
+
+.spend-sheet {
+  position: absolute; left: 12px; right: 12px; bottom: 88px; z-index: 17;
+  background: rgba(14,14,20,0.96); border: 0.5px solid rgba(196,181,253,0.25);
+  border-radius: 14px; padding: 12px 14px; opacity: 0; transform: translateY(12px);
+  transition: opacity 0.4s, transform 0.4s;
+}
+.spend-head { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--vcoin); margin-bottom: 8px; }
+.spend-row { display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--text-primary); margin-bottom: 6px; }
+.spend-row span:last-child { font-family: var(--mono); color: var(--vcoin); }
+.spend-note { font-size: 9px; color: var(--text-muted); margin-top: 6px; font-style: italic; }
+
+.gesture-stack {
+  position: absolute; left: 16px; right: 16px; bottom: 92px; z-index: 12;
+  display: flex; flex-direction: column; gap: 5px; opacity: 0; transition: opacity 0.35s;
+}
+.stack-row {
+  font-size: 9px; padding: 5px 10px; border-radius: 8px; background: rgba(7,7,9,0.65);
+  border: 0.5px solid rgba(255,255,255,0.1); color: var(--text-muted);
+}
+.stack-row.active { border-color: rgba(251,191,36,0.4); color: var(--boost); background: rgba(251,191,36,0.08); }
+.stack-row.dim { opacity: 0.45; }
+
+.platform-overlay {
+  position: absolute; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.45s; pointer-events: none;
+}
+.platform-card {
+  background: rgba(7,7,9,0.78); border: 0.5px solid rgba(255,255,255,0.12);
+  border-radius: 16px; padding: 18px 20px; text-align: center; max-width: 260px;
+}
+.platform-card h3 { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--boost); margin-bottom: 8px; font-weight: 400; }
+.platform-text { font-size: 10px; color: var(--text-muted); line-height: 1.55; }
+
+#phoneScene[data-scene="idle"] .gesture-label { opacity: 1; }
+#phoneScene[data-scene="tripletap"] .thumb { opacity: 1; transform: translateY(0); }
+#phoneScene[data-scene="tripletap"] .thumb--2 { opacity: 1; transform: translateY(-4px); }
+#phoneScene[data-scene="tripletap"] .thumb--3 { opacity: 1; transform: translateY(-8px); }
+#phoneScene[data-scene="tripletap"] .tap-pulse { opacity: 1; transform: scale(1); }
+#phoneScene[data-scene="tripletap"] .tap-pulse--2 { opacity: 1; transform: scale(1.05); }
+#phoneScene[data-scene="tripletap"] .tap-pulse--3 { opacity: 1; transform: scale(1.1); }
+#phoneScene[data-scene="tripletap"] .rail-btn--like { transform: scale(0.92); }
+#phoneScene[data-scene="boost"] .boost-ring { opacity: 1; border-color: rgba(251,191,36,0.6); box-shadow: 0 0 16px rgba(251,191,36,0.3); transform: scale(1.06); }
+#phoneScene[data-scene="boost"] .boost-arrow { opacity: 1; transform: translateX(-50%) translateY(0); }
+#phoneScene[data-scene="boost"] .like-icon { stroke: var(--boost); transform: scale(1.08); }
+#phoneScene[data-scene="boost"] .boost-toast { opacity: 1; transform: translateX(-50%) translateY(0); }
+#phoneScene[data-scene="boost"] .gesture-label { opacity: 0; }
+#phoneScene[data-scene="amplify"] .reach-burst { opacity: 1; }
+#phoneScene[data-scene="amplify"] .reach-chip { opacity: 1; transform: translateY(0); }
+#phoneScene[data-scene="amplify"] .boost-ring { opacity: 0.7; border-color: rgba(251,191,36,0.45); }
+#phoneScene[data-scene="amplify"] .boost-toast { opacity: 0.4; transform: translateX(-50%) translateY(0); }
+#phoneScene[data-scene="spend"] .spend-sheet { opacity: 1; transform: translateY(0); }
+#phoneScene[data-scene="spend"] .reach-chip { opacity: 0.6; transform: translateY(0); }
+#phoneScene[data-scene="stack"] .gesture-stack { opacity: 1; }
+#phoneScene[data-scene="stack"] .gesture-label::after { content: '4 speeds · 1 heart'; }
+#phoneScene[data-scene="stack"] .gesture-label { opacity: 1; right: auto; left: 16px; bottom: 168px; }
+#phoneScene[data-scene="platform"] .media { opacity: 0.35; }
+#phoneScene[data-scene="platform"] .platform-overlay { opacity: 1; }
+#phoneScene[data-scene="platform"] .gesture-label { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0.01ms !important; } }
+@media (max-width: 960px) { .stage { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="page-header">
+    <h1>[ i ] Platform · Boost Triple-Tap</h1>
+    <p class="thesis">Triple-tap the heart fires the Boost action — amplify reach with utility coins. Shipped as a demo stub today; vCoin spend and bCoin promotion are the roadmap destination.</p>
+  </header>
+  <div class="stage">
+    <div class="phone-column">
+      <div class="phone">
+        <div class="phone-screen" id="phoneScene" data-scene="idle">
+          <div class="notch"></div>
+          <div class="media"></div>
+          <div class="reach-burst"></div>
+          <div class="scrim-top"></div>
+          <div class="scrim-bottom"></div>
+
+          <div class="boost-toast" aria-live="polite">Boost (demo)</div>
+          <div class="reach-chip">reach ×1.4 · queued</div>
+
+          <div class="action-rail">
+            <div class="rail-btn rail-btn--like">
+              <div class="boost-ring"></div>
+              <div class="tap-pulse"></div>
+              <div class="tap-pulse tap-pulse--2"></div>
+              <div class="tap-pulse tap-pulse--3"></div>
+              <div class="boost-arrow">↑</div>
+              <svg class="like-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(240,237,232,0.85)" stroke-width="1.6">
+                <path d="M12 21s-7-4.5-7-10a4.5 4.5 0 019-2.5A4.5 4.5 0 0119 11c0 5.5-7 10-7 10z"/>
+              </svg>
+            </div>
+            <div class="rail-btn"></div>
+            <div class="rail-btn"></div>
+            <div class="rail-btn"></div>
+          </div>
+
+          <div class="gesture-label" aria-live="polite"></div>
+          <div class="thumb" aria-hidden="true"><div class="thumb-shape"></div></div>
+          <div class="thumb thumb--2" aria-hidden="true"><div class="thumb-shape"></div></div>
+          <div class="thumb thumb--3" aria-hidden="true"><div class="thumb-shape"></div></div>
+
+          <div class="gesture-stack">
+            <div class="stack-row dim">tap · like</div>
+            <div class="stack-row dim">double · save</div>
+            <div class="stack-row active">triple · boost</div>
+            <div class="stack-row dim">hold · Love offer</div>
+          </div>
+
+          <div class="spend-sheet">
+            <div class="spend-head">Boost · roadmap sheet</div>
+            <div class="spend-row"><span>Promote clip</span><span>−200 v</span></div>
+            <div class="spend-row"><span>Duration</span><span>24h</span></div>
+            <div class="spend-note">FEATURE_BIBLE · not wired in MVP immersive feed yet</div>
+          </div>
+
+          <div class="platform-overlay">
+            <div class="platform-card">
+              <h3>Distribution layer</h3>
+              <div class="platform-text">Boost turns attention into reach — creators and sponsors spend utility coins to amplify proof-ready media inside the marketplace loop.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="controls-bar">
+        <button type="button" class="ctrl-btn" id="btnPlayPause" aria-label="Pause animation">Pause</button>
+        <button type="button" class="ctrl-btn" id="btnRestart" aria-label="Restart animation">Restart</button>
+        <div class="scene-dots" id="sceneDots" role="tablist" aria-label="Animation scenes"></div>
+      </div>
+    </div>
+
+    <div class="panel-column">
+      <div class="block subtitle active" data-scene="idle" data-block="title">
+        <h2>Boost</h2>
+        <p>Triple tap. Amplify reach.</p>
+      </div>
+      <div class="block" data-scene="idle" data-block="concept">
+        <div class="block-title">Concept</div>
+        <p>Default <strong>Like/Love</strong> preset binds <strong>triple_tap → custom:boost</strong>. Three quick taps within the 480ms window — distinct from tap (like) and double (save). The FSM resolves trigger priority in `useGestureButton.ts`.</p>
+        <p class="status-note">Shipped: binding + triple-tap detection · MVP shows demo toast only.</p>
+      </div>
+      <div class="block" data-scene="tripletap" data-block="tripletap">
+        <div class="block-title">Triple-tap interaction</div>
+        <p>Three taps on the glass heart before the arm timer fires. Pointer capture prevents feed scroll. Thresholds live in preset config: `doubleTapMs: 320`, `tripleTapMs: 480`.</p>
+      </div>
+      <div class="block" data-scene="boost" data-block="boost">
+        <div class="block-title">MVP behavior</div>
+        <p>Immersive feed routes to `onActionMessage('Boost (demo)')` — confirms the gesture path without debiting vCoins or opening a spend sheet. Honest stub, not fake wallet success.</p>
+      </div>
+      <div class="block" data-scene="amplify" data-block="amplify">
+        <div class="block-title">Reach intent</div>
+        <p>Vision: boost amplifies content in feed ranking and sponsor surfaces — bCoins / vCoins utility spend per economy rules. User gesture is the fast trigger; settlement stays on governed Edge paths.</p>
+      </div>
+      <div class="block" data-scene="spend" data-block="spend">
+        <div class="block-title">Roadmap · vCoin spend</div>
+        <p>FEATURE_BIBLE lists Promote → boost with vCoins. Full flow: review sheet → Edge Function debit → reach multiplier window. Not yet wired on immersive feed — next marketplace slice.</p>
+      </div>
+      <div class="block" data-scene="stack" data-block="stack">
+        <div class="block-title">Four speeds · one heart</div>
+        <p>Tap like · double save · triple boost · hold Love offer. Completes the Like/Love preset story alongside the dedicated tap, save, and hold explainers. Rebind any trigger in CONTROLS.</p>
+      </div>
+      <div class="block" data-scene="platform" data-block="platform">
+        <div class="block-title">Platform impact</div>
+        <p>Supply-side amplification inside the Attention Wallet marketplace — creators promote proof-ready media; sponsors extend campaign reach. Boost is spend, not earn — complements REWARD and Promo tabs.</p>
+      </div>
+      <div class="block pros-card" data-block="pros">
+        <div class="block-title">Pros</div>
+        <ul>
+          <li>Gesture path shipped — triple-tap FSM works today.</li>
+          <li>Zero new chrome — same glass heart control.</li>
+          <li>Demo-honest — no silent fake coin debit.</li>
+          <li>Composable — rebind triple_tap in builder.</li>
+          <li>Aligns with vCoin / bCoin utility taxonomy.</li>
+          <li>Completes heart preset investor story (tap/save/boost/hold).</li>
+          <li>Sets up Promote marketplace without overclaiming MVP.</li>
+        </ul>
+      </div>
+      <div class="block framing" data-block="framing">
+        <p>Boost is [ i ]'s amplification lever — spend utility to extend reach. Like is signal; Save is memory; Love is payment; Boost is promotion.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var SCENES=[
+    {id:'idle',duration:1300,panel:['title','concept']},
+    {id:'tripletap',duration:1500,panel:['tripletap']},
+    {id:'boost',duration:1500,panel:['boost']},
+    {id:'amplify',duration:1400,panel:['amplify']},
+    {id:'spend',duration:1500,panel:['spend']},
+    {id:'stack',duration:1400,panel:['stack']},
+    {id:'platform',duration:1600,panel:['platform']}
+  ];
+  var phoneScene=document.getElementById('phoneScene'),btnPlayPause=document.getElementById('btnPlayPause'),btnRestart=document.getElementById('btnRestart'),sceneDots=document.getElementById('sceneDots'),blocks=document.querySelectorAll('.block[data-block]');
+  var sceneIndex=0,playing=true,pausedByHover=false,timeoutId=null,reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  SCENES.forEach(function(s,i){var d=document.createElement('button');d.type='button';d.className='scene-dot'+(i===0?' active':'');d.setAttribute('role','tab');d.setAttribute('aria-label','Scene: '+s.id);d.addEventListener('click',function(){goToScene(i,true);});sceneDots.appendChild(d);});
+  function clearTimers(){if(timeoutId){clearTimeout(timeoutId);timeoutId=null;}}
+  function setPanelActive(keys){blocks.forEach(function(b){b.classList.toggle('active',keys.indexOf(b.getAttribute('data-block'))!==-1);});}
+  function setDots(i){sceneDots.querySelectorAll('.scene-dot').forEach(function(d,j){d.classList.toggle('active',j===i);});}
+  function applyScene(i){phoneScene.setAttribute('data-scene',SCENES[i].id);setPanelActive(SCENES[i].panel||[]);setDots(i);}
+  function goToScene(index,manual){clearTimers();sceneIndex=((index%SCENES.length)+SCENES.length)%SCENES.length;applyScene(sceneIndex);if(manual&&!playing)return;if(!playing||pausedByHover)return;timeoutId=setTimeout(function(){if(playing&&!pausedByHover)goToScene(sceneIndex+1);},reducedMotion?800:SCENES[sceneIndex].duration);}
+  btnPlayPause.addEventListener('click',function(){playing=!playing;btnPlayPause.textContent=playing?'Pause':'Play';if(playing&&!pausedByHover)goToScene(sceneIndex,false);else clearTimers();});
+  btnRestart.addEventListener('click',function(){playing=true;pausedByHover=false;btnPlayPause.textContent='Pause';goToScene(0,false);});
+  blocks.forEach(function(b){b.addEventListener('mouseenter',function(){var s=b.getAttribute('data-scene');if(!s)return;pausedByHover=true;clearTimers();var idx=SCENES.findIndex(function(x){return x.id===s;});if(idx>=0){applyScene(idx);setPanelActive([b.getAttribute('data-block')]);}});b.addEventListener('mouseleave',function(){if(!playing)return;pausedByHover=false;goToScene(sceneIndex,false);});});
+  goToScene(0,false);
+})();
+</script>
+</body>
+</html>
