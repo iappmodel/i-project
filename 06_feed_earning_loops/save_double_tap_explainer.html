@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] — Save · Double-Tap Gesture Explainer</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --page-bg: #fff; --heading: #333; --text: #555; --text-secondary: #777; --text-light: #999;
+  --border: #e5e5e5; --card-bg: #fafafa; --shadow: rgba(0,0,0,0.08);
+  --bg-void: #070709; --text-primary: #f0ede8; --text-muted: #9997a0;
+  --icoin: #4ade80; --rose: #fb7185; --mint: #6ee7b7;
+  --glass: rgba(7,7,9,0.42); --glass-border: rgba(255,255,255,0.14);
+  --mono: 'SF Mono', Menlo, Consolas, monospace;
+}
+html, body { min-height: 100vh; background: var(--page-bg); font-family: Arial, Helvetica, sans-serif; color: var(--text); }
+.page { max-width: 1180px; margin: 0 auto; padding: 48px 36px 56px; }
+.page-header { margin-bottom: 44px; }
+.page-header h1 { font-size: 13px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-secondary); font-weight: 400; margin-bottom: 8px; }
+.page-header .thesis { font-size: 15px; line-height: 1.5; max-width: 640px; }
+.stage { display: grid; grid-template-columns: 42% 1fr; gap: 56px; align-items: start; }
+.phone-column { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.panel-column { display: flex; flex-direction: column; gap: 18px; padding-top: 8px; }
+.controls-bar { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.ctrl-btn { font-family: Arial, Helvetica, sans-serif; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; padding: 8px 16px; border: 1px solid var(--border); border-radius: 6px; background: var(--page-bg); color: var(--text-secondary); cursor: pointer; }
+.scene-dots { display: flex; gap: 6px; }
+.scene-dot { width: 7px; height: 7px; border-radius: 50%; border: none; background: #ddd; cursor: pointer; padding: 0; }
+.scene-dot.active { background: var(--heading); transform: scale(1.3); }
+.block { padding: 16px 18px; border: 1px solid var(--border); border-radius: 8px; background: var(--page-bg); opacity: 0.42; transition: opacity 0.45s, border-color 0.45s, box-shadow 0.45s; }
+.block.active { opacity: 1; border-color: #ccc; box-shadow: 0 2px 12px var(--shadow); }
+.block-title { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-light); margin-bottom: 6px; }
+.block h2 { font-size: 17px; font-weight: 400; color: var(--heading); margin-bottom: 6px; }
+.block p { font-size: 13px; line-height: 1.55; }
+.block.subtitle h2 { font-size: 22px; }
+.block.subtitle p { font-size: 14px; color: var(--text-secondary); font-style: italic; }
+.pros-card { background: var(--card-bg); }
+.pros-card ul { list-style: none; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.pros-card li { font-size: 12px; padding-left: 14px; position: relative; }
+.pros-card li::before { content: '—'; position: absolute; left: 0; color: var(--text-light); }
+.framing { border-left: 3px solid #ccc; padding-left: 20px; }
+.framing p { font-size: 14px; color: var(--heading); }
+.status-note { font-size: 11px; color: var(--text-light); font-style: italic; margin-top: 6px; }
+
+.phone { width: 360px; height: 720px; border-radius: 44px; background: #ececec; padding: 10px; box-shadow: 0 24px 48px var(--shadow); }
+.phone-screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; position: relative; background: var(--bg-void); }
+.notch { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 108px; height: 28px; background: #000; border-radius: 0 0 18px 18px; z-index: 30; }
+.media { position: absolute; inset: 0; background: linear-gradient(165deg, #0f2027 0%, #2c5364 42%, #203a43 68%, #0a1520 100%); z-index: 1; }
+.scrim-top { position: absolute; top: 0; left: 0; right: 0; height: 100px; background: linear-gradient(to bottom, rgba(0,0,0,0.4), transparent); z-index: 2; }
+.scrim-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 180px; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); z-index: 2; }
+
+.action-rail { position: absolute; right: 14px; bottom: 100px; z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.rail-btn {
+  width: 40px; height: 40px; border-radius: 50%; background: var(--glass); border: 0.5px solid var(--glass-border);
+  backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center;
+  opacity: 0.35; transition: opacity 0.35s, box-shadow 0.35s, border-color 0.35s, transform 0.25s;
+}
+.rail-btn--like { opacity: 1; position: relative; }
+.like-icon { width: 18px; height: 18px; transition: fill 0.35s, stroke 0.35s, transform 0.35s, opacity 0.35s; }
+.save-badge {
+  position: absolute; inset: -4px; border-radius: 50%; border: 2px solid transparent; opacity: 0;
+  transition: opacity 0.35s, border-color 0.35s, box-shadow 0.35s;
+}
+.bookmark-mini {
+  position: absolute; bottom: -2px; right: -2px; width: 14px; height: 14px; border-radius: 4px;
+  background: var(--icoin); opacity: 0; transform: scale(0.6); transition: opacity 0.35s, transform 0.35s;
+  display: flex; align-items: center; justify-content: center;
+}
+.bookmark-mini svg { width: 8px; height: 8px; fill: #0a1520; }
+
+.tap-pulse {
+  position: absolute; inset: -6px; border-radius: 50%; pointer-events: none;
+  border: 1.5px solid rgba(255,255,255,0.35); opacity: 0; transform: scale(0.85);
+  transition: opacity 0.25s, transform 0.25s;
+}
+.tap-pulse--2 { transition-delay: 0.12s; }
+
+.thumb {
+  position: absolute; right: 10px; bottom: 168px; width: 32px; height: 44px; z-index: 14;
+  opacity: 0; transform: translateY(16px); transition: opacity 0.3s, transform 0.3s;
+}
+.thumb--2 { transition-delay: 0.15s; }
+.thumb-shape {
+  width: 100%; height: 100%;
+  background: linear-gradient(145deg, rgba(255,220,200,0.92), rgba(230,180,160,0.88));
+  border-radius: 16px 16px 12px 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+}
+.gesture-label {
+  position: absolute; right: 58px; bottom: 178px; z-index: 13;
+  font-family: var(--mono); font-size: 9px; color: rgba(240,237,232,0.75);
+  padding: 4px 10px; border-radius: 6px; background: rgba(7,7,9,0.55); border: 0.5px solid rgba(255,255,255,0.1);
+  white-space: nowrap; transition: opacity 0.3s;
+}
+.gesture-label::after { content: 'double tap = save'; }
+
+.save-toast {
+  position: absolute; top: 44px; left: 50%; transform: translateX(-50%) translateY(-8px); z-index: 16;
+  font-family: var(--mono); font-size: 10px; color: var(--icoin);
+  padding: 8px 14px; border-radius: 20px; background: rgba(7,7,9,0.82);
+  border: 0.5px solid rgba(74,222,128,0.35); opacity: 0; transition: opacity 0.4s, transform 0.4s;
+}
+
+.vault-sheet {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 18;
+  background: rgba(14,14,20,0.96); border-top: 0.5px solid rgba(255,255,255,0.12);
+  border-radius: 18px 18px 0 0; padding: 14px 16px 72px;
+  transform: translateY(100%); transition: transform 0.45s ease;
+}
+.vault-head { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; }
+.vault-item {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
+  background: rgba(255,255,255,0.05); border: 0.5px solid rgba(74,222,128,0.2);
+}
+.vault-thumb { width: 36px; height: 36px; border-radius: 8px; background: linear-gradient(135deg, #2c5364, #0f2027); flex-shrink: 0; }
+.vault-meta { flex: 1; min-width: 0; }
+.vault-title { font-size: 11px; color: var(--text-primary); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vault-sub { font-size: 9px; color: var(--text-muted); font-family: var(--mono); }
+
+.gesture-stack {
+  position: absolute; left: 16px; right: 16px; bottom: 92px; z-index: 12;
+  display: flex; flex-direction: column; gap: 6px; opacity: 0; transition: opacity 0.35s;
+}
+.stack-row {
+  font-size: 9px; padding: 6px 10px; border-radius: 8px; background: rgba(7,7,9,0.65);
+  border: 0.5px solid rgba(255,255,255,0.1); color: var(--text-muted);
+}
+.stack-row.active { border-color: rgba(74,222,128,0.35); color: var(--icoin); background: rgba(74,222,128,0.08); }
+.stack-row.dim { opacity: 0.5; }
+
+.platform-overlay {
+  position: absolute; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.45s; pointer-events: none;
+}
+.platform-card {
+  background: rgba(7,7,9,0.78); border: 0.5px solid rgba(255,255,255,0.12);
+  border-radius: 16px; padding: 18px 20px; text-align: center; max-width: 260px;
+}
+.platform-card h3 { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--icoin); margin-bottom: 8px; font-weight: 400; }
+.platform-text { font-size: 10px; color: var(--text-muted); line-height: 1.55; }
+
+#phoneScene[data-scene="idle"] .gesture-label { opacity: 1; }
+#phoneScene[data-scene="doubletap"] .thumb { opacity: 1; transform: translateY(0); }
+#phoneScene[data-scene="doubletap"] .thumb--2 { opacity: 1; transform: translateY(-6px); }
+#phoneScene[data-scene="doubletap"] .tap-pulse { opacity: 1; transform: scale(1); }
+#phoneScene[data-scene="doubletap"] .tap-pulse--2 { opacity: 1; transform: scale(1.08); }
+#phoneScene[data-scene="doubletap"] .rail-btn--like { transform: scale(0.94); }
+#phoneScene[data-scene="saved"] .save-badge { opacity: 1; border-color: rgba(74,222,128,0.55); box-shadow: 0 0 12px rgba(74,222,128,0.25); }
+#phoneScene[data-scene="saved"] .bookmark-mini { opacity: 1; transform: scale(1); }
+#phoneScene[data-scene="saved"] .like-icon { stroke: var(--icoin); opacity: 0.85; }
+#phoneScene[data-scene="saved"] .save-toast { opacity: 1; transform: translateX(-50%) translateY(0); }
+#phoneScene[data-scene="saved"] .gesture-label { opacity: 0; }
+#phoneScene[data-scene="vault"] .save-badge { opacity: 1; border-color: rgba(74,222,128,0.45); }
+#phoneScene[data-scene="vault"] .bookmark-mini { opacity: 1; transform: scale(1); }
+#phoneScene[data-scene="vault"] .vault-sheet { transform: translateY(0); }
+#phoneScene[data-scene="vault"] .save-toast { opacity: 0.5; transform: translateX(-50%) translateY(0); }
+#phoneScene[data-scene="contrast"] .gesture-stack { opacity: 1; }
+#phoneScene[data-scene="contrast"] .stack-row--save { opacity: 1; border-color: rgba(74,222,128,0.35); color: var(--icoin); background: rgba(74,222,128,0.08); }
+#phoneScene[data-scene="contrast"] .gesture-label::after { content: '3 speeds · 1 button'; }
+#phoneScene[data-scene="contrast"] .gesture-label { opacity: 1; right: auto; left: 16px; bottom: 168px; }
+#phoneScene[data-scene="signal"] .vault-sheet { transform: translateY(55%); opacity: 0.85; }
+#phoneScene[data-scene="signal"] .bookmark-mini { opacity: 1; transform: scale(1); }
+#phoneScene[data-scene="platform"] .media { opacity: 0.35; }
+#phoneScene[data-scene="platform"] .platform-overlay { opacity: 1; }
+#phoneScene[data-scene="platform"] .gesture-label { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0.01ms !important; } }
+@media (max-width: 960px) { .stage { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="page-header">
+    <h1>[ i ] Platform · Save Double-Tap</h1>
+    <p class="thesis">Double-tap the heart saves the clip to your return layer — retention without wallet friction. Same glass rail, third speed on the Like/Love preset.</p>
+  </header>
+  <div class="stage">
+    <div class="phone-column">
+      <div class="phone">
+        <div class="phone-screen" id="phoneScene" data-scene="idle">
+          <div class="notch"></div>
+          <div class="media"></div>
+          <div class="scrim-top"></div>
+          <div class="scrim-bottom"></div>
+
+          <div class="save-toast" aria-live="polite">Saved</div>
+
+          <div class="action-rail">
+            <div class="rail-btn rail-btn--like" id="likeBtn">
+              <div class="save-badge"></div>
+              <div class="tap-pulse"></div>
+              <div class="tap-pulse tap-pulse--2"></div>
+              <svg class="like-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(240,237,232,0.85)" stroke-width="1.6">
+                <path d="M12 21s-7-4.5-7-10a4.5 4.5 0 019-2.5A4.5 4.5 0 0119 11c0 5.5-7 10-7 10z"/>
+              </svg>
+              <div class="bookmark-mini" aria-hidden="true">
+                <svg viewBox="0 0 12 12"><path d="M2 1h8v10l-4-3-4 3V1z"/></svg>
+              </div>
+            </div>
+            <div class="rail-btn"></div>
+            <div class="rail-btn"></div>
+            <div class="rail-btn"></div>
+          </div>
+
+          <div class="gesture-label" aria-live="polite"></div>
+          <div class="thumb" aria-hidden="true"><div class="thumb-shape"></div></div>
+          <div class="thumb thumb--2" aria-hidden="true"><div class="thumb-shape"></div></div>
+
+          <div class="gesture-stack">
+            <div class="stack-row dim">tap · like · engagement</div>
+            <div class="stack-row stack-row--save active">double tap · save · return</div>
+            <div class="stack-row dim">hold 500ms · Love · wallet offer</div>
+          </div>
+
+          <div class="vault-sheet">
+            <div class="vault-head">Saved · Loop 2</div>
+            <div class="vault-item">
+              <div class="vault-thumb"></div>
+              <div class="vault-meta">
+                <div class="vault-title">Coastal drone reel · @rafaelo</div>
+                <div class="vault-sub">loop2_saved_items_v1 · just now</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="platform-overlay">
+            <div class="platform-card">
+              <h3>Loop 2 · iSAVE</h3>
+              <div class="platform-text">Save anything worth returning to — content, creators, offers, routes. Double-tap is the fast capture; the vault is the long-term retention moat.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="controls-bar">
+        <button type="button" class="ctrl-btn" id="btnPlayPause" aria-label="Pause animation">Pause</button>
+        <button type="button" class="ctrl-btn" id="btnRestart" aria-label="Restart animation">Restart</button>
+        <div class="scene-dots" id="sceneDots" role="tablist" aria-label="Animation scenes"></div>
+      </div>
+    </div>
+
+    <div class="panel-column">
+      <div class="block subtitle active" data-scene="idle" data-block="title">
+        <h2>Save</h2>
+        <p>Double tap. Return later.</p>
+      </div>
+      <div class="block" data-scene="idle" data-block="concept">
+        <div class="block-title">Concept</div>
+        <p>On the default <strong>Like/Love</strong> preset, <strong>double_tap → save</strong>. One button, three speeds: tap like, double save, hold offer. Saves are retention — not wallet mutations.</p>
+        <p class="status-note">Shipped: binding in `presets.ts` · `GestureButton` FSM · rebindable via CONTROLS.</p>
+      </div>
+      <div class="block" data-scene="doubletap" data-block="doubletap">
+        <div class="block-title">Double-tap interaction</div>
+        <p>Two quick taps on the glass heart within the gesture window. Pointer capture keeps the feed still. Distinct from single tap (like toggle) — the FSM routes to the save action.</p>
+      </div>
+      <div class="block" data-scene="saved" data-block="saved">
+        <div class="block-title">Immediate feedback</div>
+        <p>MVP immersive feed flashes <strong>Saved</strong> toast via `onActionMessage`. Bookmark badge on the heart confirms capture — no REWARD sheet, no coin debit.</p>
+      </div>
+      <div class="block" data-scene="vault" data-block="vault">
+        <div class="block-title">Loop 2 vault</div>
+        <p>Feed teaser path writes to `loop2_saved_items_v1` localStorage and opens the Saved screen. Full immersive save→vault wiring is the next Loop 2 slice — roadmap-honest, not vapor.</p>
+      </div>
+      <div class="block" data-scene="contrast" data-block="contrast">
+        <div class="block-title">Three speeds · one heart</div>
+        <p>Tap = social signal. Double = save for return. Hold = creator offer + wallet. Users learn one muscle memory; power users rebind everything in the gesture builder.</p>
+      </div>
+      <div class="block" data-scene="signal" data-block="signal">
+        <div class="block-title">Engagement signal</div>
+        <p>Saves are high-intent engagement — stronger than passive watch for recommendation and future eCoin paths. Distinct from verified earn (REWARD pill) and paid tips (hold).</p>
+      </div>
+      <div class="block" data-scene="platform" data-block="platform">
+        <div class="block-title">Platform impact</div>
+        <p>Loop 2 closes the attention loop: watch → save → return → spend/convert. iSAVE is the vault layer for creators, offers, and routes — double-tap is the in-feed capture affordance.</p>
+      </div>
+      <div class="block pros-card" data-block="pros">
+        <div class="block-title">Pros</div>
+        <ul>
+          <li>Fast retention gesture — no modal friction.</li>
+          <li>Same glass rail — zero new chrome.</li>
+          <li>Preset shipped — not a mockup-only story.</li>
+          <li>Composable — rebind double_tap in builder.</li>
+          <li>Loop 2 scaffold exists (`savedLoop.ts`, Saved screen).</li>
+          <li>No wallet Edge Function on save — governed separately.</li>
+          <li>Sets up iSAVE vault vision without overclaiming MVP depth.</li>
+        </ul>
+      </div>
+      <div class="block framing" data-block="framing">
+        <p>Save is [ i ]'s return hook — proof you want to come back. Like is taste; Love is payment; Save is memory.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var SCENES=[
+    {id:'idle',duration:1300,panel:['title','concept']},
+    {id:'doubletap',duration:1400,panel:['doubletap']},
+    {id:'saved',duration:1500,panel:['saved']},
+    {id:'vault',duration:1600,panel:['vault']},
+    {id:'contrast',duration:1500,panel:['contrast']},
+    {id:'signal',duration:1400,panel:['signal']},
+    {id:'platform',duration:1600,panel:['platform']}
+  ];
+  var phoneScene=document.getElementById('phoneScene'),btnPlayPause=document.getElementById('btnPlayPause'),btnRestart=document.getElementById('btnRestart'),sceneDots=document.getElementById('sceneDots'),blocks=document.querySelectorAll('.block[data-block]');
+  var sceneIndex=0,playing=true,pausedByHover=false,timeoutId=null,reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  SCENES.forEach(function(s,i){var d=document.createElement('button');d.type='button';d.className='scene-dot'+(i===0?' active':'');d.setAttribute('role','tab');d.setAttribute('aria-label','Scene: '+s.id);d.addEventListener('click',function(){goToScene(i,true);});sceneDots.appendChild(d);});
+  function clearTimers(){if(timeoutId){clearTimeout(timeoutId);timeoutId=null;}}
+  function setPanelActive(keys){blocks.forEach(function(b){b.classList.toggle('active',keys.indexOf(b.getAttribute('data-block'))!==-1);});}
+  function setDots(i){sceneDots.querySelectorAll('.scene-dot').forEach(function(d,j){d.classList.toggle('active',j===i);});}
+  function applyScene(i){phoneScene.setAttribute('data-scene',SCENES[i].id);setPanelActive(SCENES[i].panel||[]);setDots(i);}
+  function goToScene(index,manual){clearTimers();sceneIndex=((index%SCENES.length)+SCENES.length)%SCENES.length;applyScene(sceneIndex);if(manual&&!playing)return;if(!playing||pausedByHover)return;timeoutId=setTimeout(function(){if(playing&&!pausedByHover)goToScene(sceneIndex+1);},reducedMotion?800:SCENES[sceneIndex].duration);}
+  btnPlayPause.addEventListener('click',function(){playing=!playing;btnPlayPause.textContent=playing?'Pause':'Play';if(playing&&!pausedByHover)goToScene(sceneIndex,false);else clearTimers();});
+  btnRestart.addEventListener('click',function(){playing=true;pausedByHover=false;btnPlayPause.textContent='Pause';goToScene(0,false);});
+  blocks.forEach(function(b){b.addEventListener('mouseenter',function(){var s=b.getAttribute('data-scene');if(!s)return;pausedByHover=true;clearTimers();var idx=SCENES.findIndex(function(x){return x.id===s;});if(idx>=0){applyScene(idx);setPanelActive([b.getAttribute('data-block')]);}});b.addEventListener('mouseleave',function(){if(!playing)return;pausedByHover=false;goToScene(sceneIndex,false);});});
+  goToScene(0,false);
+})();
+</script>
+</body>
+</html>

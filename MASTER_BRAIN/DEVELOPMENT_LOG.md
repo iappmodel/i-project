@@ -35,6 +35,17 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-30 — Save double-tap gesture explainer
+
+### Delivered
+- **Save explainer** — `save_double_tap_explainer.html` (double_tap → save on Like/Love preset; Loop 2 vault + iSAVE vision; roadmap-honest MVP toast vs localStorage scaffold).
+- **Presenter deck** — slide after Like Tap; index Earn section; smoke **17** walkthroughs.
+
+### Verification
+- `./scripts/smoke_investor_explainers.sh`
+
+---
+
 ## 2026-05-30 — Loop 1 spine capstone explainer
 
 ### Delivered
