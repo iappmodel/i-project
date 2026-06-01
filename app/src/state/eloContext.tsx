@@ -16,6 +16,7 @@ import {
   updateStack as persistStack,
 } from '../lib/elo/configStore'
 import { getPresenceRoom } from '../lib/elo/rooms'
+import { stopEloSpeech } from '../lib/elo/eloSpeechOut'
 import type {
   EloOrbState,
   EloPersonalityStack,
@@ -150,6 +151,7 @@ export function EloProvider({ children }: { children: ReactNode }) {
     setOnboardingOpen(false)
     speechEnergyRef.current = 0
     setSpeechEnergy(0)
+    stopEloSpeech()
   }, [])
 
   const openPanel = useCallback(() => setPanelOpen(true), [])

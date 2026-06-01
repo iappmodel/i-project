@@ -90,6 +90,7 @@ Persisted in `localStorage` key `i-elo-presence-config-v1`.
 | Membrane | `app/src/components/elo/EloFaceMembrane.tsx` |
 | Panel replies | `eloRuntimeEngine.ts` → `elo-reply` edge function (OpenAI when `OPENAI_API_KEY` set) → local mock fallback |
 | Panel voice | `useEloPanelVoice` — opt-in mic in chat form |
+| Voice out | `useEloVoiceOut` + `eloSpeechOut` — optional TTS for assistant replies (personality-tuned rate/pitch) |
 | Doctrine | `eloDoctrine.ts` — never bypass POP, no attention certainty |
 | Visual forms | `visualForms.ts` + onboarding picker |
 | State | `app/src/state/eloContext.tsx` |

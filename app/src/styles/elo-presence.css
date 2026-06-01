@@ -422,6 +422,37 @@
   stroke-width: calc(1.35px + var(--elo-speech-energy, 0) * 0.6px);
 }
 
+.elo-chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.elo-chat-header h3 {
+  margin: 0;
+}
+
+.elo-chat-voice-out {
+  flex-shrink: 0;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(0, 0, 0, 0.25);
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+}
+
+.elo-chat-voice-out--on {
+  border-color: rgba(180, 140, 255, 0.45);
+  color: rgba(220, 210, 255, 0.95);
+  box-shadow: 0 0 10px rgba(180, 140, 255, 0.2);
+}
+
 .elo-chat-form {
   display: flex;
   gap: 8px;

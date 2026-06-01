@@ -93,6 +93,7 @@ flowchart LR
 | ELO panel replies | ✅ Local runtime + optional `elo-reply` edge (OpenAI when configured) |
 | ELO panel voice | ✅ `useEloPanelVoice` opt-in mic in presence session |
 | ELO speech reactions | ✅ `pulseSpeech` drives membrane halo/contours during voice + chat |
+| ELO voice out | ✅ Opt-in TTS for panel replies (`eloSpeechOut`, personality-tuned) |
 | ELO personality stack / rooms | ✅ Local config + onboarding + panel (visualForm editable) |
 | React↔Flutter bridge | Design only — Phase 3 |
 | Stripe checkout | Prep doc — owner keys needed |

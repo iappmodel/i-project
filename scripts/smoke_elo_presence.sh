@@ -105,6 +105,14 @@ if ! grep -q "pulseSpeech" "$APP/src/state/eloContext.tsx"; then
   echo "FAIL: eloContext must expose pulseSpeech for membrane reactions" >&2
   exit 1
 fi
+if ! grep -q "useEloVoiceOut" "$APP/src/components/elo/EloPresencePanel.tsx"; then
+  echo "FAIL: EloPresencePanel must support voice-out TTS toggle" >&2
+  exit 1
+fi
+if ! grep -q "speakEloText" "$APP/src/lib/elo/eloSpeechOut.ts"; then
+  echo "FAIL: eloSpeechOut must expose browser TTS for assistant replies" >&2
+  exit 1
+fi
 if ! grep -q "VISUAL_FORMS" "$APP/src/components/elo/EloStackEditor.tsx"; then
   echo "FAIL: EloStackEditor must allow visualForm changes" >&2
   exit 1

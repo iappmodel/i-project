@@ -12,6 +12,7 @@ import {
 import { resolveEloReplyAsync } from '../../lib/elo/eloRuntimeEngine'
 import { getSessionOpening } from '../../lib/elo/sessionOpenings'
 import { useEloPanelVoice } from '../../hooks/useEloPanelVoice'
+import { useEloVoiceOut } from '../../hooks/useEloVoiceOut'
 import { getEloMemories } from '../../lib/elo/services/eloMemoryService'
 import { setEloPermission } from '../../lib/elo/services/eloPermissionService'
 import { getEloRecommendations } from '../../lib/elo/services/eloRecommendationService'
@@ -35,16 +36,30 @@ function EloChat({
   onSend,
   sending,
   voice,
+  voiceOut,
 }: {
   messages: EloMessage[]
   onSend: (text: string) => void
   sending: boolean
   voice: ReturnType<typeof useEloPanelVoice>
+  voiceOut: ReturnType<typeof useEloVoiceOut>
 }) {
   const [draft, setDraft] = useState('')
   return (
     <div className="elo-card">
-      <h3>Ask ELO</h3>
+      <div className="elo-chat-header">
+        <h3>Ask ELO</h3>
+        {voiceOut.supported ? (
+          <button
+            type="button"
+            className={`elo-chat-voice-out${voiceOut.enabled ? ' elo-chat-voice-out--on' : ''}`}
+            onClick={voiceOut.toggle}
+            aria-pressed={voiceOut.enabled}
+          >
+            Voice {voiceOut.enabled ? 'on' : 'off'}
+          </button>
+        ) : null}
+      </div>
       <div className="elo-chat-list">
         {messages.map((m) => (
           <div key={m.id} className={`elo-bubble ${m.role === 'assistant' ? 'assistant' : 'user'}`}>
@@ -95,6 +110,7 @@ export function EloPresencePanel() {
   const [sending, setSending] = useState(false)
   const memories = useMemo(() => getEloMemories(), [])
   const recommendations = useMemo(() => getEloRecommendations(), [])
+  const voiceOut = useEloVoiceOut(pulseSpeech)
 
   const handleSend = useCallback(
     async (text: string) => {
@@ -134,14 +150,20 @@ export function EloPresencePanel() {
             createdAt: new Date().toISOString(),
           },
         ])
+        voiceOut.speak(result.reply, config.stack)
       } finally {
         setSending(false)
       }
     },
-    [config.stack, messages, proofEventsConnected, pulseSpeech, room, sending, setOrbState],
+    [config.stack, messages, proofEventsConnected, pulseSpeech, room, sending, setOrbState, voiceOut.speak],
   )
 
   const panelVoice = useEloPanelVoice(handleSend, panelOpen && sessionActive)
+
+  useEffect(() => {
+    if (panelOpen) return
+    voiceOut.stop()
+  }, [panelOpen, voiceOut.stop])
 
   useEffect(() => {
     if (!sessionActive) return
@@ -193,7 +215,7 @@ export function EloPresencePanel() {
           </button>
         </header>
 
-        <EloChat messages={messages} onSend={handleSend} sending={sending} voice={panelVoice} />
+        <EloChat messages={messages} onSend={handleSend} sending={sending} voice={panelVoice} voiceOut={voiceOut} />
 
         <div className={`elo-card ${toneClass.earning}`}>
           <h4>Today&apos;s best move</h4>
