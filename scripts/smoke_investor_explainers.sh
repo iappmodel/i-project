@@ -66,7 +66,10 @@ elo="$DIR/elo_presence_explainer.html"
 grep -q 'eloManifestEnter' "$elo" || { echo "FAIL: elo explainer must show rail-to-center manifest" >&2; exit 1; }
 grep -q 'elo-reply' "$elo" || { echo "FAIL: elo explainer must document elo-reply runtime" >&2; exit 1; }
 grep -q 'speechEnergy' "$elo" || { echo "FAIL: elo explainer must document speech reactions" >&2; exit 1; }
+grep -q 'voice-out' "$elo" || { echo "FAIL: elo explainer must document voice-out TTS" >&2; exit 1; }
 echo "OK elo_presence_explainer content checks"
+
+"$ROOT/scripts/smoke_app_ui_simulator.sh"
 
 echo ""
 echo "PASS: investor explainer smoke"

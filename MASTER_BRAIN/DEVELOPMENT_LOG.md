@@ -9,6 +9,18 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-30 — Integrated app UI simulator
+
+### Delivered
+- **Touch simulator** — `app_ui_simulator.html`: responsive Picture 2 phone model where dock, rail, REWARD, Watch & Earn, ELO, share/message/controls, and gesture builder all resolve to visible state + interaction log.
+- **Investor index** — recommended Loop 1 card + header link to simulator alongside 17-slide presenter deck.
+- **Smoke** — `smoke_app_ui_simulator.sh` chained from investor explainer smoke; `open_app_ui_simulator.sh` for local demos.
+
+### Verification
+- `./scripts/smoke_app_ui_simulator.sh` · `./scripts/smoke_investor_explainers.sh`
+
+---
+
 ## 2026-05-30 — Phase 43 gesture combo builder + import/export
 
 ### Delivered

@@ -257,7 +257,7 @@ html, body { min-height: 100vh; background: var(--page-bg); font-family: Arial, 
       <div class="block" data-scene="idle" data-block="concept">
         <div class="block-title">Concept</div>
         <p>ELO is a living presence membrane — procedural glass face contours over full-bleed media. Not a static avatar, not an orb, not a chatbot card.</p>
-        <p class="status-note">Shipped in app: EloPresenceLayer, procedural SVG membrane, elo-reply edge function, doctrine runtime, panel mic, speech-reactive pulse.</p>
+        <p class="status-note">Shipped in app: EloPresenceLayer, procedural SVG membrane, elo-reply edge function, doctrine runtime, panel mic, speech-reactive pulse, opt-in voice-out TTS (`eloSpeechOut`).</p>
       </div>
       <div class="block" data-scene="evoke" data-block="evoke">
         <div class="block-title">Voice evoke</div>
@@ -273,11 +273,11 @@ html, body { min-height: 100vh; background: var(--page-bg); font-family: Arial, 
       </div>
       <div class="block" data-scene="panel" data-block="panel">
         <div class="block-title">Presence panel</div>
-        <p>Chat runs through rank-143 runtime: doctrine safety rails → personalization → elo-reply edge (OpenAI when configured) → local fallback. Panel Mic for spoken questions. Stack editor: personality, relationship, visual form.</p>
+        <p>Chat runs through rank-143 runtime: doctrine safety rails → personalization → elo-reply edge (OpenAI when configured) → local fallback. Panel Mic for spoken questions; voice-out toggle reads replies aloud via browser TTS. Stack editor: personality, relationship, visual form.</p>
       </div>
       <div class="block" data-scene="speech" data-block="speech">
         <div class="block-title">Speech reactions</div>
-        <p>Membrane brightens and breathes with voice — wake word, panel mic, and chat pulses drive speechEnergy on the face. ELO feels present, not pasted on.</p>
+        <p>Membrane brightens and breathes with voice — wake word, panel mic, chat input, and voice-out TTS playback all drive speechEnergy on the face. ELO feels present, not pasted on.</p>
       </div>
       <div class="block" data-scene="pop" data-block="pop">
         <div class="block-title">POP boundary</div>
@@ -299,6 +299,7 @@ html, body { min-height: 100vh; background: var(--page-bg); font-family: Arial, 
           <li>Runtime doctrine — never bypass POP proof gates.</li>
           <li>Foundation model slot via elo-reply when OpenAI configured.</li>
           <li>Speech-reactive membrane — companion reacts while you talk.</li>
+          <li>Voice-out TTS — opt-in spoken replies with membrane pulse.</li>
         </ul>
       </div>
       <div class="block framing" data-block="framing">
