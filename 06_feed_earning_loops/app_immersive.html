@@ -18,6 +18,8 @@
   --mint: #4ade80;
   --rose: #fb7185;
   --gold: #ffd27f;
+  --amber: #f59e0b;
+  --cyan: #67e8f9;
   --mono: "SF Mono", Menlo, Consolas, monospace;
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Arial, sans-serif;
   --safe-top: env(safe-area-inset-top, 0px);
@@ -26,52 +28,44 @@
 html, body { height: 100%; background: #e9e9ec; font-family: var(--sans); overflow: hidden; }
 body { display: grid; place-items: center; }
 
-/* Desktop: white neumorphic phone. Phone: edge-to-edge immersive. */
-.device {
-  position: relative;
-  width: 100vw; height: 100vh;
-  background: #000;
-  overflow: hidden;
-}
+.device { position: relative; width: 100vw; height: 100vh; background: #000; overflow: hidden; }
 @media (min-width: 760px) {
   body { background: #e9e9ec; }
   .device {
-    width: 392px; height: 800px;
-    border-radius: 46px;
-    padding: 12px;
+    width: 392px; height: 800px; border-radius: 46px; padding: 12px;
     background: linear-gradient(150deg, #fdfdfe, #eef0f2 55%, #e3e5e8);
     box-shadow: 0 30px 80px rgba(0,0,0,0.22), inset 0 0 0 1px rgba(255,255,255,0.9), 8px 8px 22px rgba(0,0,0,0.12), -8px -8px 22px rgba(255,255,255,0.9);
   }
 }
 
 .screen {
-  position: relative;
-  width: 100%; height: 100%;
-  overflow: hidden;
-  background: #070709;
-  color: var(--ink);
-  border-radius: 0;
-  isolation: isolate;
-  touch-action: none;
+  position: relative; width: 100%; height: 100%; overflow: hidden;
+  background: #070709; color: var(--ink); border-radius: 0; isolation: isolate; touch-action: none;
 }
 @media (min-width: 760px) { .screen { border-radius: 34px; } }
 
+/* Fallback media (sunset) — base layer */
 .media {
-  position: absolute; inset: 0;
+  position: absolute; inset: 0; z-index: 0;
   background:
     linear-gradient(180deg, rgba(255,196,128,0.16), rgba(20,20,28,0.0) 30%, rgba(8,10,16,0.22)),
     url("https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1100&q=80") center/cover no-repeat,
     linear-gradient(160deg, #ffb888, #3a1f56 46%, #0b1a22);
   background-color: #0b1a22;
-  transition: filter .4s ease, transform .5s ease;
 }
-.screen[data-surface="wallet"] .media,
-.screen[data-surface="promo"] .media,
-.screen[data-surface="create"] .media,
-.screen[data-surface="profile"] .media { filter: blur(7px) brightness(0.7) saturate(0.8); transform: scale(1.06); }
+/* Video reels */
+.reel { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; opacity: 0; transition: opacity .4s ease; background: #000; }
+.reel.show { opacity: 1; }
 
-.scrim-top { position: absolute; top: 0; left: 0; right: 0; height: 160px; background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent); pointer-events: none; z-index: 1; }
-.scrim-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 360px; background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.22), transparent); pointer-events: none; z-index: 1; }
+/* Swipe capture (between media and controls) */
+.swipe { position: absolute; inset: 0; z-index: 2; background: transparent; touch-action: none; }
+
+.scrim-top { position: absolute; top: 0; left: 0; right: 0; height: 160px; background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent); pointer-events: none; z-index: 3; }
+.scrim-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 360px; background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.22), transparent); pointer-events: none; z-index: 3; }
+.screen[data-surface="wallet"] .reel, .screen[data-surface="promo"] .reel,
+.screen[data-surface="create"] .reel, .screen[data-surface="profile"] .reel,
+.screen[data-surface="wallet"] .media, .screen[data-surface="promo"] .media,
+.screen[data-surface="create"] .media, .screen[data-surface="profile"] .media { filter: blur(7px) brightness(0.6); }
 
 /* TIMER */
 .timer { position: absolute; top: calc(14px + var(--safe-top)); left: 18px; right: 64px; height: 2px; z-index: 6; background: rgba(255,255,255,0.16); border-radius: 4px; overflow: hidden; }
@@ -82,11 +76,15 @@ body { display: grid; place-items: center; }
   position: absolute; top: calc(28px + var(--safe-top)); right: 16px; z-index: 9;
   min-width: 52px; min-height: 30px; padding: 6px 12px; border-radius: 999px;
   border: 0.5px solid var(--ring); background: var(--glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  color: var(--ink); font-family: var(--mono); font-size: 12px; letter-spacing: .02em;
-  display: grid; place-items: center;
+  color: var(--ink); font-family: var(--mono); font-size: 12px; display: grid; place-items: center;
 }
 .reward.review { border-color: rgba(74,222,128,0.5); color: var(--mint); box-shadow: 0 0 18px rgba(74,222,128,0.3); }
 .reward.validating { color: var(--gold); }
+
+/* lane dots (vertical position indicator) */
+.lane-dots { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); z-index: 6; display: flex; flex-direction: column; gap: 5px; }
+.lane-dots i { width: 4px; height: 4px; border-radius: 50%; background: rgba(255,255,255,0.3); }
+.lane-dots i.on { background: #fff; height: 12px; border-radius: 4px; }
 
 /* RIGHT RAIL */
 .rail { position: absolute; right: 14px; bottom: calc(132px + var(--safe-bottom)); z-index: 9; display: flex; flex-direction: column; align-items: center; gap: 20px; touch-action: none; }
@@ -96,8 +94,7 @@ body { display: grid; place-items: center; }
 .glass-btn {
   width: 50px; height: 50px; border-radius: 50%;
   border: 0.5px solid var(--ring); background: var(--glass); backdrop-filter: blur(13px); -webkit-backdrop-filter: blur(13px);
-  color: var(--ink); display: grid; place-items: center;
-  box-shadow: 0 8px 22px rgba(0,0,0,0.28);
+  color: var(--ink); display: grid; place-items: center; box-shadow: 0 8px 22px rgba(0,0,0,0.28);
   transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease, color .16s ease;
 }
 .glass-btn svg { width: 24px; height: 24px; }
@@ -105,9 +102,8 @@ body { display: grid; place-items: center; }
 .glass-btn.armed { border-color: var(--gold); box-shadow: 0 0 22px rgba(255,210,127,0.45); }
 .glass-btn.liked { color: var(--rose); border-color: rgba(251,113,133,0.55); box-shadow: 0 0 20px rgba(251,113,133,0.4); }
 .glass-btn.liked svg path { fill: var(--rose); }
-.glass-btn.saved svg path.bookmark { fill: var(--gold); }
+.glass-btn.saved { border-color: rgba(255,210,127,0.5); }
 
-/* gesture cross */
 .cross { position: absolute; right: 56px; top: -38px; width: 120px; height: 120px; pointer-events: none; opacity: 0; transform: scale(.8); transition: opacity .15s, transform .15s; }
 .cross.show { opacity: 1; transform: scale(1); }
 .cross .ln { position: absolute; background: rgba(255,255,255,0.22); border-radius: 999px; }
@@ -117,7 +113,6 @@ body { display: grid; place-items: center; }
 .cross .lbl.up { top: -3px; left: 44px; } .cross .lbl.dn { bottom: -3px; left: 46px; }
 .cross .lbl.lf { left: -2px; top: 50px; } .cross .lbl.rt { right: -4px; top: 50px; }
 
-/* floating hearts */
 .hearts { position: absolute; right: 46px; bottom: 64px; width: 80px; height: 200px; pointer-events: none; z-index: 8; overflow: visible; }
 .fly { position: absolute; bottom: 0; color: var(--rose); font-size: 20px; animation: fly 1.05s ease-out forwards; }
 @keyframes fly { from { transform: translateY(0) scale(.7); opacity: 1; } to { transform: translateY(-150px) translateX(var(--x)) scale(1.25) rotate(var(--r)); opacity: 0; } }
@@ -131,57 +126,65 @@ body { display: grid; place-items: center; }
 /* DOCK */
 .dock {
   position: absolute; left: 14px; right: 14px; bottom: calc(16px + var(--safe-bottom)); z-index: 11;
-  height: 64px; display: grid; grid-template-columns: repeat(5, 1fr); align-items: center;
-  padding: 0 10px; border-radius: 30px;
+  height: 64px; display: grid; grid-template-columns: repeat(5, 1fr); align-items: center; padding: 0 10px; border-radius: 30px;
   background: rgba(248,248,250,0.92); backdrop-filter: blur(8px);
   box-shadow: 0 14px 34px rgba(0,0,0,0.3), inset 0 0 0 1px rgba(255,255,255,0.7);
 }
 .dock button { border: none; background: transparent; display: grid; place-items: center; height: 56px; color: #7c7d86; }
 .dock button svg { width: 24px; height: 24px; }
 .dock button.active { color: #16171c; }
-.dock .plus {
-  justify-self: center; width: 52px; height: 52px; margin-top: -22px; border-radius: 50%;
-  background: #fff; color: #16171c; box-shadow: 0 10px 22px rgba(0,0,0,0.22), inset 0 0 0 1px rgba(0,0,0,0.05);
-}
+.dock .plus { justify-self: center; width: 52px; height: 52px; margin-top: -22px; border-radius: 50%; background: #fff; color: #16171c; box-shadow: 0 10px 22px rgba(0,0,0,0.22), inset 0 0 0 1px rgba(0,0,0,0.05); }
 .dock .plus svg { width: 26px; height: 26px; }
 
 .home-ind { position: absolute; left: 50%; bottom: calc(6px + var(--safe-bottom)); transform: translateX(-50%); width: 120px; height: 4px; border-radius: 999px; background: rgba(255,255,255,0.26); z-index: 12; pointer-events: none; }
-@media (min-width: 760px) { .home-ind { background: rgba(255,255,255,0.3); } }
 
-/* SHEETS / OVERLAYS */
+/* SHEETS */
 .sheet {
   position: absolute; left: 10px; right: 10px; bottom: calc(92px + var(--safe-bottom)); z-index: 20;
-  max-height: 64%; overflow: auto; padding: 16px; border-radius: 26px;
-  background: rgba(12,12,16,0.74); border: 0.5px solid rgba(255,255,255,0.14);
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 24px 60px rgba(0,0,0,0.42);
+  max-height: 70%; overflow: auto; padding: 16px; border-radius: 26px;
+  background: rgba(12,12,16,0.78); border: 0.5px solid rgba(255,255,255,0.14);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 24px 60px rgba(0,0,0,0.42);
   transform: translateY(16px); opacity: 0; pointer-events: none; transition: transform .22s ease, opacity .22s ease;
 }
 .sheet.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
 .sheet h3 { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+.sheet .sub { font-size: 11px; color: var(--ink-dim); margin-top: 2px; }
 .sheet .big { font-family: var(--mono); font-size: 30px; color: var(--mint); margin: 6px 0 2px; }
 .handle { width: 38px; height: 4px; border-radius: 999px; background: rgba(255,255,255,0.28); margin: -4px auto 12px; }
+.back { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; background: rgba(255,255,255,0.08); border: 0.5px solid rgba(255,255,255,0.14); color: var(--ink); font-size: 13px; }
 .row { display: flex; gap: 8px; align-items: center; }
 .row.sb { justify-content: space-between; }
 .row.mt { margin-top: 14px; }
-.chip {
-  flex: 1; text-align: center; padding: 11px 8px; border-radius: 14px; font-family: var(--mono); font-size: 13px;
-  background: rgba(255,255,255,0.07); border: 0.5px solid rgba(255,255,255,0.12); color: var(--ink);
-}
+.chip { flex: 1; text-align: center; padding: 11px 8px; border-radius: 14px; font-family: var(--mono); font-size: 13px; background: rgba(255,255,255,0.07); border: 0.5px solid rgba(255,255,255,0.12); color: var(--ink); }
 .chip.sel { border-color: rgba(74,222,128,0.5); box-shadow: 0 0 14px rgba(74,222,128,0.22); color: var(--mint); }
 .btn { flex: 1; padding: 12px; border-radius: 14px; font-size: 13px; font-weight: 600; border: 0.5px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.08); color: var(--ink); }
 .btn.go { background: rgba(74,222,128,0.2); border-color: rgba(74,222,128,0.46); color: #e3ffee; }
 .slider { width: 100%; margin-top: 12px; accent-color: var(--mint); }
 .field { width: 100%; margin-top: 10px; padding: 11px 12px; border-radius: 14px; border: 0.5px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.07); color: #fff; outline: none; font-size: 13px; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 12px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 12px; }
 .tile { padding: 14px 12px; border-radius: 16px; background: rgba(255,255,255,0.07); border: 0.5px solid rgba(255,255,255,0.12); color: var(--ink); display: grid; gap: 6px; justify-items: start; text-align: left; }
+.tile.sel { border-color: rgba(74,222,128,0.5); }
 .tile svg { width: 22px; height: 22px; opacity: .9; }
 .tile b { font-size: 13px; }
 .tile small { font-size: 11px; color: var(--ink-dim); }
 .kv { display: flex; justify-content: space-between; padding: 11px 0; border-bottom: 0.5px solid rgba(255,255,255,0.08); font-size: 13px; }
 .kv span { color: var(--ink-dim); }
 .kv b { font-family: var(--mono); }
+.kv b.mint { color: var(--mint); } .kv b.amber { color: var(--amber); }
 .sel-field { width: 100%; margin-top: 6px; padding: 9px 10px; border-radius: 12px; background: rgba(255,255,255,0.08); border: 0.5px solid rgba(255,255,255,0.14); color: #fff; font-size: 12px; }
+.note { padding: 10px 12px; border: 0.5px solid rgba(74,222,128,0.22); border-radius: 12px; background: rgba(74,222,128,0.06); color: var(--mint); font-size: 11px; line-height: 1.5; margin-top: 12px; }
+.gate { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 0.5px solid rgba(255,255,255,0.07); }
+.gate .ic { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; background: rgba(255,255,255,0.08); font-size: 12px; color: var(--ink-dim); transition: all .25s; }
+.gate.pass .ic { background: rgba(74,222,128,0.2); color: var(--mint); }
+.gate .nm { flex: 1; font-size: 13px; }
+.gate .st { font-family: var(--mono); font-size: 10px; color: var(--ink-dim); }
+.gate.pass .st { color: var(--mint); }
+.coin-reveal { display: grid; place-items: center; text-align: center; padding: 10px 0 4px; }
+.coin-disc { width: 92px; height: 92px; border-radius: 50%; display: grid; place-items: center; font-family: var(--sans); font-weight: 800; font-size: 34px; border: 2px solid rgba(74,222,128,0.5); background: rgba(74,222,128,0.12); color: var(--mint); animation: drop .6s cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes drop { 0%{opacity:0;transform:scale(.5) translateY(-20px)} 60%{transform:scale(1.12) translateY(4px)} 100%{opacity:1;transform:scale(1) translateY(0)} }
+.coin-amt { font-family: var(--mono); font-size: 30px; color: var(--mint); margin-top: 12px; }
+.coin-tag { font-size: 12px; color: var(--ink-dim); margin: 6px 24px 0; line-height: 1.5; }
 
 .toast {
   position: absolute; top: calc(70px + var(--safe-top)); left: 50%; transform: translateX(-50%) translateY(-8px);
@@ -190,18 +193,23 @@ body { display: grid; place-items: center; }
   color: var(--ink); font-size: 12px; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s;
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-.hidden { display: none !important; }
+.hint { position: absolute; left: 50%; bottom: calc(96px + var(--safe-bottom)); transform: translateX(-50%); z-index: 6; font-size: 10px; color: rgba(255,255,255,0.5); text-shadow: 0 1px 4px rgba(0,0,0,.6); pointer-events: none; opacity: 0; transition: opacity .3s; }
+.hint.show { opacity: 1; }
 </style>
 </head>
 <body>
 <div class="device">
   <div class="screen" id="screen" data-surface="feed">
     <div class="media" id="media"></div>
+    <video class="reel" id="reelA" muted loop playsinline preload="metadata"></video>
+    <video class="reel" id="reelB" muted loop playsinline preload="metadata"></video>
+    <div class="swipe" id="swipe"></div>
     <div class="scrim-top"></div>
     <div class="scrim-bottom"></div>
 
     <div class="timer" id="timer"><i id="timerFill"></i></div>
     <button class="reward" id="reward" type="button" aria-label="Reward">50<span style="font-size:9px">ic</span></button>
+    <div class="lane-dots" id="laneDots"></div>
 
     <div class="rail" id="rail">
       <div class="rail-item">
@@ -219,7 +227,7 @@ body { display: grid; place-items: center; }
         <svg viewBox="0 0 24 24" fill="none"><path d="M20 11.5a7.5 7.5 0 01-10.9 6.7L4.5 19.5l1.3-3.7A7.5 7.5 0 1120 11.5z" stroke="currentColor" stroke-width="1.5"/></svg>
       </button>
       <button class="glass-btn" id="share" type="button" aria-label="Share or save">
-        <svg viewBox="0 0 24 24" fill="none"><path d="M4.5 12.5l15-7-6 15-3-6-6-2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path class="bookmark" d="" fill="none"/></svg>
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4.5 12.5l15-7-6 15-3-6-6-2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
       </button>
       <button class="glass-btn" id="controls" type="button" aria-label="Controls">
         <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7.5" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="2.3" fill="currentColor"/></svg>
@@ -227,9 +235,11 @@ body { display: grid; place-items: center; }
     </div>
 
     <button class="out" id="outProfile" type="button" aria-label="Creator">
-      <span class="pfp" style="background-image:url('https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=70')"></span>
-      <span><b>RAFAELO</b><span>Cape Town</span></span>
+      <span class="pfp" id="outPfp" style="background-image:url('https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=70')"></span>
+      <span><b id="outName">RAFAELO</b><span id="outLoc">Cape Town</span></span>
     </button>
+
+    <div class="hint" id="hint">swipe ↑↓ reels · ←→ lanes</div>
 
     <nav class="dock" aria-label="Navigation">
       <button type="button" class="active" data-tab="feed" aria-label="Feed">
@@ -249,7 +259,7 @@ body { display: grid; place-items: center; }
       </button>
     </nav>
 
-    <!-- Offer review -->
+    <!-- Offer review (heart swipe) -->
     <section class="sheet" id="offerSheet" aria-label="Offer">
       <div class="handle"></div>
       <h3>Reward offer</h3>
@@ -269,12 +279,9 @@ body { display: grid; place-items: center; }
     <!-- Comment / message -->
     <section class="sheet" id="msgSheet" aria-label="Message">
       <div class="handle"></div>
-      <h3>Message Rafaelo</h3>
+      <h3>Message <span id="msgWho" style="font-weight:400;color:var(--ink-dim)"></span></h3>
       <input class="field" id="msgText" value="Loved this loop">
-      <div class="row mt">
-        <button class="btn" data-close type="button">Close</button>
-        <button class="btn go" id="msgSend" type="button">Send</button>
-      </div>
+      <div class="row mt"><button class="btn" data-close type="button">Close</button><button class="btn go" id="msgSend" type="button">Send</button></div>
     </section>
 
     <!-- Share / save -->
@@ -282,10 +289,10 @@ body { display: grid; place-items: center; }
       <div class="handle"></div>
       <h3>Share</h3>
       <div class="grid2">
-        <button class="tile" data-share="Saved" type="button"><svg viewBox="0 0 24 24" fill="none"><path d="M6.5 4.5h11v15l-5.5-3.5L6.5 19.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg><b>Save</b><small>Loop 2 vault</small></button>
+        <button class="tile" data-share="Saved to vault" type="button"><svg viewBox="0 0 24 24" fill="none"><path d="M6.5 4.5h11v15l-5.5-3.5L6.5 19.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg><b>Save</b><small>Loop 2 vault</small></button>
         <button class="tile" data-share="Link copied" type="button"><svg viewBox="0 0 24 24" fill="none"><path d="M9 15l6-6M8 13l-2 2a3 3 0 104 4l2-2M16 11l2-2a3 3 0 10-4-4l-2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><b>Copy link</b><small>Referral path</small></button>
         <button class="tile" data-share="Sent to friend" type="button"><svg viewBox="0 0 24 24" fill="none"><path d="M4.5 12.5l15-7-6 15-3-6-6-2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg><b>Send</b><small>Private thread</small></button>
-        <button class="tile" data-share="Remix in Studio" type="button"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><b>Remix</b><small>Studio</small></button>
+        <button class="tile" data-go="studio" type="button"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><b>Remix</b><small>Studio</small></button>
       </div>
     </section>
 
@@ -299,13 +306,10 @@ body { display: grid; place-items: center; }
         <label class="tile"><b>Swipe up</b><select class="sel-field" data-bind="up"><option>Tip vCoin</option><option>Save</option><option>None</option></select></label>
         <label class="tile"><b>Swipe down</b><select class="sel-field" data-bind="down"><option>Tip iCoin</option><option>Like</option><option>None</option></select></label>
       </div>
-      <div class="row mt">
-        <button class="btn" id="ctlReset" type="button">Reset</button>
-        <button class="btn go" id="ctlSave" type="button">Save</button>
-      </div>
+      <div class="row mt"><button class="btn" id="ctlReset" type="button">Reset</button><button class="btn go" id="ctlSave" type="button">Save</button></div>
     </section>
 
-    <!-- Surface overlays (promo/create/wallet/profile/out) -->
+    <!-- Dynamic surface router -->
     <section class="sheet" id="surfaceSheet" aria-label="Surface"></section>
 
     <div class="toast" id="toast" role="status"></div>
@@ -313,28 +317,32 @@ body { display: grid; place-items: center; }
   </div>
 </div>
 
+<script src="mockups.manifest.js" onerror="window.MOCKUPS=null"></script>
 <script>
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 
 const S = {
   surface: 'feed', timer: 38, watching: false,
-  reward: 50, pending: 0, vcoin: 1840,
+  reward: 50, pending: 0, acoins: 1840, vcoin: 1840,
   liked: false, likeCount: 2842, saved: false,
   offer: 'idle', amount: 49, coin: 'ic',
-  controls: { tap: 'Like', double: 'Save', up: 'Tip vCoin', down: 'Tip iCoin' }
+  trust: 82, tier: 2, mult: 1.15,
+  controls: { tap: 'Like', double: 'Save', up: 'Tip vCoin', down: 'Tip iCoin' },
+  lane: 0, idx: 0
 };
 
 const reward = $('#reward'), like = $('#like'), likeCount = $('#likeCount'),
       cross = $('#cross'), hearts = $('#hearts'), timerFill = $('#timerFill'),
-      toastEl = $('#toast'), screen = $('#screen'), offerSlider = $('#offerSlider'), offerBig = $('#offerBig');
+      toastEl = $('#toast'), screen = $('#screen'), offerSlider = $('#offerSlider'),
+      offerBig = $('#offerBig'), reelA = $('#reelA'), reelB = $('#reelB'),
+      laneDots = $('#laneDots'), hint = $('#hint');
 
-let toastT, tapT, lastTap = 0, holdT, holdFrom = null, watchT;
-
+let toastT, tapT, lastTap = 0, holdT, holdFrom = null, watchT, nav = [];
 const fmt = (n) => Number(n).toLocaleString();
-function toast(t){ clearTimeout(toastT); toastEl.textContent = t; toastEl.classList.add('show'); toastT = setTimeout(()=>toastEl.classList.remove('show'), 1500); }
-function closeSheets(){ $$('.sheet').forEach(s => s.classList.remove('show')); }
-function open(id){ closeSheets(); $(id).classList.add('show'); }
+function toast(t){ clearTimeout(toastT); toastEl.textContent = t; toastEl.classList.add('show'); toastT = setTimeout(()=>toastEl.classList.remove('show'), 1600); }
+function closeSheets(){ $$('.sheet').forEach(s => s.classList.remove('show')); nav = []; }
+function openId(id){ $$('.sheet').forEach(s => s.classList.remove('show')); $(id).classList.add('show'); }
 
 function render(){
   screen.dataset.surface = S.surface;
@@ -349,51 +357,203 @@ function render(){
   $$('.dock button').forEach(b => b.classList.toggle('active', b.dataset.tab === S.surface));
 }
 
+/* ---------- MEDIA REELS (infinite up/down/left/right) ---------- */
+const M = (window.MOCKUPS && window.MOCKUPS.lanes && window.MOCKUPS.lanes.length) ? window.MOCKUPS.lanes : null;
+let liveReel = reelA, idleReel = reelB;
+function laneLen(l){ return M ? M[l].files.length : 0; }
+function mod(n, m){ return ((n % m) + m) % m; }
+
+function paintLaneDots(){
+  if (!M){ laneDots.innerHTML=''; return; }
+  const len = laneLen(S.lane);
+  laneDots.innerHTML = Array.from({length: Math.min(len, 8)}).map((_,i)=>`<i class="${i===S.idx%Math.min(len,8)?'on':''}"></i>`).join('');
+}
+function setCreator(){
+  if (!M) return;
+  $('#outName').textContent = M[S.lane].creator;
+  $('#outLoc').textContent = M[S.lane].loc;
+  $('#outPfp').style.backgroundImage = `url('https://i.pravatar.cc/120?img=${(S.lane*7+S.idx)%70}')`;
+  S.likeCount = 900 + ((S.lane*131 + S.idx*37) % 8000); render();
+}
+function showReel(animate){
+  if (!M) return;
+  const url = M[S.lane].files[mod(S.idx, laneLen(S.lane))];
+  idleReel.src = url;
+  idleReel.currentTime = 0;
+  const swap = () => { liveReel.classList.remove('show'); idleReel.classList.add('show'); const t = liveReel; liveReel = idleReel; idleReel = t; };
+  idleReel.play().then(()=>{ swap(); }).catch(()=>{ swap(); });
+  paintLaneDots(); setCreator();
+}
+function nextReel(d){ if(!M) return; S.idx = mod(S.idx + d, laneLen(S.lane)); showReel(true); }
+function switchLane(d){ if(!M) return; S.lane = mod(S.lane + d, M.length); S.idx = 0; showReel(true); toast(M[S.lane].creator + ' · lane ' + (S.lane+1)); }
+
+/* ---------- FEED actions ---------- */
 function fly(){ const h=document.createElement('span'); h.className='fly'; h.textContent='♥';
   h.style.left=Math.round(Math.random()*46)+'px'; h.style.setProperty('--x',(Math.random()>.5?'':'-')+Math.round(10+Math.random()*26)+'px');
   h.style.setProperty('--r',(Math.random()>.5?'':'-')+Math.round(Math.random()*20)+'deg'); hearts.appendChild(h); setTimeout(()=>h.remove(),1050); }
-
 function toggleLike(){ S.liked=!S.liked; S.likeCount+=S.liked?1:-1; if(S.liked) fly(); toast(S.liked?'Liked':'Unliked'); render(); }
 function saveClip(){ S.saved=true; toast('Saved'); render(); }
 function armOffer(){ S.offer='draft'; S.amount=13; cross.classList.add('show'); like.classList.add('armed'); render(); }
-function openOffer(coin){ S.coin=coin; S.offer='review'; offerSlider.value=S.amount; offerBig.textContent=S.amount+coin; $$('#offerSheet .chip').forEach(c=>c.classList.toggle('sel',Number(c.dataset.amt)===S.amount)); open('#offerSheet'); render(); }
+function openOffer(coin){ S.coin=coin; S.offer='review'; offerSlider.value=S.amount; offerBig.textContent=S.amount+coin; $$('#offerSheet .chip').forEach(c=>c.classList.toggle('sel',Number(c.dataset.amt)===S.amount)); openId('#offerSheet'); render(); }
 function settle(){ S.offer='validating'; closeSheets(); render(); setTimeout(()=>{ if(S.coin==='ic') S.reward=Math.max(0,S.reward-S.amount); else S.vcoin=Math.max(0,S.vcoin-S.amount); S.offer='idle'; toast('Offer sent to creator'); render(); }, 850); }
 
+/* ---------- WATCH → VERIFY → COIN UNLOCK → WALLET (the loop) ---------- */
 function toggleWatch(){
-  if (S.watching){ clearInterval(watchT); S.watching=false; toast('Paused'); return; }
+  if (S.watching){ clearInterval(watchT); S.watching=false; toast('Paused'); if(M) liveReel.pause(); return; }
   if (S.surface!=='feed'){ S.surface='feed'; closeSheets(); }
-  S.watching=true; S.timer=0; toast('Watching'); render();
-  watchT=setInterval(()=>{ S.timer+=8; if(S.timer>=100){ clearInterval(watchT); S.timer=100; S.watching=false; S.pending+=12; toast('Verified · +12ic pending'); } render(); }, 320);
+  S.watching=true; S.timer=0; toast('Watching'); if(M) liveReel.play().catch(()=>{}); render();
+  watchT=setInterval(()=>{ S.timer+=7; if(S.timer>=100){ clearInterval(watchT); S.timer=100; S.watching=false; runVerify(12); } render(); }, 300);
+}
+function runVerify(amount){
+  S.surface='feed';
+  openView('verify', { amount });
+  const gates = $$('#surfaceSheet .gate');
+  gates.forEach((g,i)=> setTimeout(()=>{ g.classList.add('pass'); g.querySelector('.st').textContent='passed'; if(i===gates.length-1) setTimeout(()=>openView('unlock',{amount}), 500); }, 350*(i+1)));
 }
 
-const surfaces = {
-  promo: () => `<div class="handle"></div><h3>Promo</h3>
-    <div class="grid2">
-      <button class="tile" data-act="Sponsored watch" type="button"><b>Sunset · sponsor</b><small>+12ic · 45s</small></button>
-      <button class="tile" data-act="Brand brief" type="button"><b>Run campaign</b><small>+18ic · 60s</small></button>
-    </div><div class="row mt"><button class="btn go" data-act="Start watch" id="promoWatch" type="button">Watch & earn</button></div>`,
-  create: () => `<div class="handle"></div><h3>Create</h3>
-    <div class="grid2">
-      <button class="tile" data-act="Upload" type="button"><b>Upload</b><small>New media</small></button>
-      <button class="tile" data-act="Remix" type="button"><b>Remix</b><small>This clip</small></button>
-      <button class="tile" data-act="Campaign draft" type="button"><b>Campaign</b><small>Brief draft</small></button>
-      <button class="tile" data-act="Go live" type="button"><b>Go live</b><small>Stream</small></button>
+/* ---------- VIEW ROUTER (wallet / promo / create / profile + sub-flows) ---------- */
+const VIEWS = {
+  wallet: () => `<div class="handle"></div>
+    <div class="row sb"><h3>Wallet</h3><span class="sub">Trust ${S.trust}% · Tier ${S.tier}</span></div>
+    <div class="row mt">
+      <div class="tile" style="flex:1"><small>icoins · spendable</small><b style="font-family:var(--mono);font-size:20px;color:var(--mint)">${S.reward}</b></div>
+      <div class="tile" style="flex:1"><small>acoins</small><b style="font-family:var(--mono);font-size:20px">${fmt(S.acoins)}</b></div>
+    </div>
+    <div class="note">${S.pending} icoins clearing · 1–2 days</div>
+    <div class="grid3">
+      <button class="btn" data-go="convert" type="button">Convert</button>
+      <button class="btn" data-go="withdraw" type="button">Withdraw</button>
+      <button class="btn" data-go="pay" type="button">Pay</button>
+      <button class="btn" data-go="tip" type="button">Tip</button>
+      <button class="btn" data-go="connect" type="button">Connect</button>
+      <button class="btn go" data-go="withdraw" type="button">Cash out</button>
     </div>`,
-  wallet: () => `<div class="handle"></div><h3>Wallet</h3>
-    <div class="kv"><span>Spendable</span><b>${S.reward} ic</b></div>
-    <div class="kv"><span>Pending</span><b>${S.pending} ic</b></div>
-    <div class="kv"><span>Utility</span><b>${fmt(S.vcoin)} v</b></div>
-    <div class="row mt"><button class="btn" data-act="Convert" type="button">Convert</button><button class="btn go" data-act="Withdraw" type="button">Withdraw</button></div>`,
-  profile: () => `<div class="handle"></div><h3>In-Profile</h3>
-    <div class="kv"><span>Trust</span><b>82%</b></div>
-    <div class="kv"><span>Saved</span><b>${S.saved?'1 clip':'0'}</b></div>
-    <div class="row mt"><button class="btn" data-act="ELO stack" type="button">ELO stack</button><button class="btn" data-act="Settings" type="button">Settings</button></div>`,
-  out: () => `<div class="handle"></div><h3>RAFAELO · Cape Town</h3>
-    <div class="row mt"><button class="btn go" data-act="Following" type="button">Follow</button><button class="btn" data-act="Creator feed" type="button">Feed</button><button class="btn" data-act="Tip creator" type="button">Tip</button></div>`
+  convert: () => `<div class="handle"></div>
+    <div class="row"><button class="back" data-back type="button">←</button><h3>Convert</h3></div>
+    <div class="sub">Tier ${S.tier} · ${S.mult}× multiplier active</div>
+    <div class="row mt"><div class="tile" style="flex:1"><small>from acoins</small><b style="font-family:var(--mono)">${fmt(S.acoins)}</b></div><div class="tile" style="flex:1"><small>to icoins</small><b style="font-family:var(--mono);color:var(--mint)" id="cvOut">+0</b></div></div>
+    <input class="slider" id="cvSlider" type="range" min="0" max="${S.acoins}" value="500">
+    <div class="row mt"><button class="btn" data-back type="button">Back</button><button class="btn go" id="cvRun" type="button">Convert →</button></div>`,
+  confirm: (c) => `<div class="handle"></div>
+    <div class="coin-reveal"><div class="coin-disc">i</div><div class="coin-amt">+${c.got}</div><div class="coin-tag">credited to your wallet</div></div>
+    <div class="row mt"><button class="btn go" data-go="wallet" type="button">Done</button></div>`,
+  withdraw: () => `<div class="handle"></div>
+    <div class="row"><button class="back" data-back type="button">←</button><h3>Withdraw</h3></div>
+    <div class="sub">Move icoins to your bank or card</div>
+    <div class="grid2">
+      <button class="tile sel" data-pick="bank" type="button"><b>Bank</b><small>1–2 days · no fee</small></button>
+      <button class="tile" data-pick="card" type="button"><b>Debit card</b><small>Instant · small fee</small></button>
+      <button class="tile" data-pick="ext" type="button"><b>External</b><small>xcoins · Tier 4 gate</small></button>
+      <button class="tile" data-pick="paypal" type="button"><b>PayPal</b><small>Same day</small></button>
+    </div>
+    <input class="field" id="wAmt" type="number" value="${S.reward}" min="1">
+    <div class="row mt"><button class="btn" data-back type="button">Back</button><button class="btn go" id="wRun" type="button">Withdraw</button></div>`,
+  pay: () => `<div class="handle"></div>
+    <div class="row"><button class="back" data-back type="button">←</button><h3>Pay</h3></div>
+    <div class="sub">In person or anywhere online</div>
+    <div class="row mt"><button class="chip sel" data-pay="nfc">Tap to pay</button><button class="chip" data-pay="qr">QR</button><button class="chip" data-pay="link">Pay link</button></div>
+    <input class="field" id="payAmt" type="number" value="5" min="1">
+    <div id="payBody" class="note">Hold near terminal to pay · icoins</div>
+    <div class="row mt"><button class="btn" data-back type="button">Back</button><button class="btn go" id="payRun" type="button">Pay</button></div>`,
+  tip: () => `<div class="handle"></div>
+    <div class="row"><button class="back" data-back type="button">←</button><h3>Tip ${M?M[S.lane].creator:'creator'}</h3></div>
+    <div class="sub">Send directly — zero platform cut</div>
+    <div class="grid3">
+      <button class="chip" data-tip="10">10 b</button><button class="chip" data-tip="50">50 b</button><button class="chip sel" data-tip="100">100 b</button>
+      <button class="chip" data-tip="5">5 m</button><button class="chip" data-tip="10">10 m</button><button class="chip" data-tip="1">1 i</button>
+    </div>
+    <input class="field" id="tipNote" placeholder="Add a note… (optional)">
+    <div class="note" id="tipNoteBar">100 goes entirely to the creator. No platform fee.</div>
+    <div class="row mt"><button class="btn" data-back type="button">Back</button><button class="btn go" id="tipSend" type="button">Send tip</button></div>`,
+  connect: () => `<div class="handle"></div>
+    <div class="row"><button class="back" data-back type="button">←</button><h3>Connect platforms</h3></div>
+    <div class="sub">Import your content. You keep ownership — [ i ] distributes it.</div>
+    <div class="grid2">
+      <button class="tile sel" data-conn="YouTube" type="button"><b>YouTube</b><small>connected · syncing</small></button>
+      <button class="tile sel" data-conn="TikTok" type="button"><b>TikTok</b><small>connected</small></button>
+      <button class="tile" data-conn="Instagram" type="button"><b>Instagram</b><small>tap to connect</small></button>
+      <button class="tile" data-conn="X" type="button"><b>X</b><small>tap to connect</small></button>
+    </div>
+    <div class="row mt"><button class="btn go" data-go="wallet" type="button">Done</button></div>`,
+  verify: (c) => `<div class="handle"></div>
+    <h3>Verifying attention</h3><div class="sub">Qualification, not surveillance</div>
+    <div style="margin-top:12px">
+      ${['Presence detected','Required watch time','Attention score','Completion received','Fraud check']
+        .map(n=>`<div class="gate"><div class="ic">○</div><div class="nm">${n}</div><div class="st">pending</div></div>`).join('')}
+    </div>`,
+  unlock: (c) => `<div class="handle"></div>
+    <div class="coin-reveal"><div class="coin-disc">i</div>
+      <div class="coin-amt">+${c.amount} i</div>
+      <div class="coin-tag">Verified attention has real value now. Reward is clearing to your wallet.</div>
+    </div>
+    <div class="row mt"><button class="btn" data-act="Keep watching" data-loop="feed" type="button">Keep watching</button><button class="btn go" data-loop="wallet" type="button">Add to wallet</button></div>`,
+  promo: () => `<div class="handle"></div>
+    <div class="row sb"><h3>Promo</h3><span class="sub">Watch to earn</span></div>
+    <div style="margin-top:6px">
+      ${[['Sunset · sponsor','+12ic','45s'],['Run campaign','+18ic','60s'],['App install','+25ic','30s']]
+        .map(([t,r,d],i)=>`<button class="tile" style="width:100%;margin-top:9px" data-watch="${10+i*5}" type="button"><div class="row sb" style="width:100%"><b>${t}</b><span style="color:var(--mint);font-family:var(--mono)">${r}</span></div><small>${d} · verified attention</small></button>`).join('')}
+    </div>`,
+  create: () => `<div class="handle"></div>
+    <h3>Create</h3>
+    <div class="grid2">
+      <button class="tile" data-go="studio" type="button"><b>Studio</b><small>Edit & post</small></button>
+      <button class="tile" data-go="campaign" type="button"><b>Campaign</b><small>Advertiser brief</small></button>
+      <button class="tile" data-act="Upload started" type="button"><b>Upload</b><small>New media</small></button>
+      <button class="tile" data-act="Going live" type="button"><b>Go live</b><small>Stream</small></button>
+    </div>`,
+  studio: () => `<div class="handle"></div>
+    <div class="row"><button class="back" data-back type="button">←</button><h3>Studio</h3></div>
+    <div class="sub">Trim · music · export</div>
+    <div class="tile" style="margin-top:12px;height:64px;justify-content:center;background:linear-gradient(90deg,rgba(29,158,117,0.3),rgba(55,138,221,0.25))"><small>video track · clip 1</small></div>
+    <div class="grid3">
+      <button class="chip" data-act="Lo-fi music" type="button">Lo-fi</button><button class="chip" data-act="Upbeat music" type="button">Upbeat</button><button class="chip" data-act="Cinematic music" type="button">Cinematic</button>
+    </div>
+    <div class="row mt"><button class="btn" data-back type="button">Back</button><button class="btn go" data-loop="exportPost" type="button">Export →</button></div>`,
+  campaign: () => `<div class="handle"></div>
+    <div class="row"><button class="back" data-back type="button">←</button><h3>Campaign Builder</h3></div>
+    <div class="sub">03 · Reward</div>
+    <div class="row mt"><button class="chip sel" data-rt="instant">Instant</button><button class="chip" data-rt="pending">Pending</button></div>
+    <input class="field" id="campAmt" type="number" value="0.25" step="0.01" min="0.01">
+    <div class="kv"><span>budget cap</span><b>$100</b></div>
+    <div class="row mt"><button class="btn" data-back type="button">Back</button><button class="btn go" data-loop="publish" type="button">Publish →</button></div>`,
+  profile: () => `<div class="handle"></div>
+    <h3>In-Profile</h3>
+    <div class="kv"><span>Trust tier</span><b class="mint">${S.trust}% · Tier ${S.tier}</b></div>
+    <div class="kv"><span>Saved clips</span><b>${S.saved?1:0}</b></div>
+    <div class="kv"><span>icoins / acoins</span><b>${S.reward} / ${fmt(S.acoins)}</b></div>
+    <div class="grid2">
+      <button class="btn" data-go="connect" type="button">Connect platforms</button>
+      <button class="btn" data-act="ELO stack" type="button">ELO stack</button>
+      <button class="btn" data-act="Settings opened" type="button">Settings</button>
+      <button class="btn" data-go="wallet" type="button">Wallet</button>
+    </div>`,
+  out: () => `<div class="handle"></div>
+    <h3>${M?M[S.lane].creator:'RAFAELO'} · ${M?M[S.lane].loc:'Cape Town'}</h3>
+    <div class="sub">Creator on this media</div>
+    <div class="grid2">
+      <button class="btn go" data-act="Following" type="button">Follow</button>
+      <button class="btn" data-act="Creator feed" type="button">Feed</button>
+      <button class="btn" data-go="tip" type="button">Tip</button>
+      <button class="btn" data-go="message-from-out" type="button">Message</button>
+    </div>`
 };
-function openSurface(key){ const sheet=$('#surfaceSheet'); sheet.innerHTML=surfaces[key](); open('#surfaceSheet'); }
 
-/* ---- Rail: HEART gesture engine ---- */
+function openView(name, ctx){
+  const sheet = $('#surfaceSheet');
+  if (!nav.length || nav[nav.length-1].name !== name) nav.push({ name, ctx: ctx||{} });
+  sheet.innerHTML = VIEWS[name](ctx||{});
+  openId('#surfaceSheet');
+  if (name === 'convert') bindConvert();
+}
+function back(){ nav.pop(); const prev = nav[nav.length-1]; if (prev){ const sheet=$('#surfaceSheet'); sheet.innerHTML=VIEWS[prev.name](prev.ctx); if(prev.name==='convert') bindConvert(); } else closeSheets(); }
+
+function bindConvert(){
+  const sl = $('#cvSlider'); if (!sl) return;
+  const upd = () => { const v = Number(sl.value); $('#cvOut').textContent = '+' + Math.round(v * S.mult); };
+  sl.addEventListener('input', upd); upd();
+}
+
+/* ---------- HEART gesture engine (locked) ---------- */
 like.addEventListener('pointerdown', (e)=>{ like.setPointerCapture?.(e.pointerId); holdFrom={x:e.clientX,y:e.clientY,t:Date.now()};
   holdT=setTimeout(()=>{ armOffer(); toast('Swipe up/down to tip'); }, 500); });
 like.addEventListener('pointermove', (e)=>{ if(!holdFrom||S.offer!=='draft') return;
@@ -407,49 +567,97 @@ like.addEventListener('pointerup', (e)=>{ clearTimeout(holdT); like.classList.re
   else { lastTap=now; tapT=setTimeout(()=>{ lastTap=0; toggleLike(); }, 330); } });
 like.addEventListener('pointercancel', ()=>{ clearTimeout(holdT); holdFrom=null; S.offer='idle'; like.classList.remove('armed'); cross.classList.remove('show'); render(); });
 
-/* ---- Other rail buttons ---- */
-$('#message').addEventListener('click', ()=>open('#msgSheet'));
-$('#share').addEventListener('click', ()=>open('#shareSheet'));
-$('#controls').addEventListener('click', ()=>open('#ctlSheet'));
-let ctlHoldT; $('#controls').addEventListener('pointerdown', ()=>{ ctlHoldT=setTimeout(()=>{ open('#ctlSheet'); toast('Builder'); }, 600); });
+/* ---------- Rail buttons ---------- */
+$('#message').addEventListener('click', ()=>{ $('#msgWho').textContent = M?M[S.lane].creator:''; openId('#msgSheet'); });
+$('#share').addEventListener('click', ()=>openId('#shareSheet'));
+$('#controls').addEventListener('click', ()=>openId('#ctlSheet'));
+let ctlHoldT; $('#controls').addEventListener('pointerdown', ()=>{ ctlHoldT=setTimeout(()=>{ openId('#ctlSheet'); toast('Builder'); }, 600); });
 $('#controls').addEventListener('pointerup', ()=>clearTimeout(ctlHoldT));
 
-/* ---- REWARD + OUT-PROFILE + TIMER/media ---- */
-reward.addEventListener('click', ()=>{ if(S.offer==='review') open('#offerSheet'); else openSurface('wallet'); });
-$('#outProfile').addEventListener('click', ()=>openSurface('out'));
-$('#media').addEventListener('click', toggleWatch);
-$('#timer').addEventListener('click', (e)=>{ e.stopPropagation(); toggleWatch(); });
-
-/* ---- Dock ---- */
+/* ---------- Reward / out / dock ---------- */
+reward.addEventListener('click', ()=>{ if(S.offer==='review') openId('#offerSheet'); else { S.surface='wallet'; openView('wallet'); render(); } });
+$('#outProfile').addEventListener('click', ()=>openView('out'));
 $$('.dock button').forEach(b=>b.addEventListener('click', ()=>{
   S.surface=b.dataset.tab;
   if(b.dataset.tab==='feed'){ closeSheets(); toast('Feed'); }
-  else openSurface(b.dataset.tab);
+  else openView(b.dataset.tab);
   render();
 }));
 
-/* ---- Offer sheet ---- */
+/* ---------- Offer sheet ---------- */
 $$('#offerSheet .chip').forEach(c=>c.addEventListener('click', ()=>{ S.amount=Number(c.dataset.amt); offerSlider.value=S.amount; offerBig.textContent=S.amount+S.coin; $$('#offerSheet .chip').forEach(x=>x.classList.toggle('sel',x===c)); render(); }));
 offerSlider.addEventListener('input', ()=>{ S.amount=Number(offerSlider.value); offerBig.textContent=S.amount+S.coin; $$('#offerSheet .chip').forEach(x=>x.classList.toggle('sel',Number(x.dataset.amt)===S.amount)); render(); });
 $('#offerCancel').addEventListener('click', ()=>{ S.offer='idle'; closeSheets(); toast('Cancelled'); render(); });
 $('#offerSend').addEventListener('click', settle);
 
-/* ---- Message / share / controls ---- */
+/* ---------- Message / share / controls ---------- */
 $('#msgSend').addEventListener('click', ()=>{ closeSheets(); toast('Message sent'); });
-$$('[data-share]').forEach(b=>b.addEventListener('click', ()=>{ if(b.dataset.share==='Saved') S.saved=true; closeSheets(); toast(b.dataset.share); render(); }));
+$$('[data-share]').forEach(b=>b.addEventListener('click', ()=>{ if(b.dataset.share.startsWith('Saved')) S.saved=true; closeSheets(); toast(b.dataset.share); render(); }));
 $('#ctlSave').addEventListener('click', ()=>{ $$('[data-bind]').forEach(el=>S.controls[el.dataset.bind]=el.value); closeSheets(); toast('Controls saved'); });
 $('#ctlReset').addEventListener('click', ()=>{ S.controls={tap:'Like',double:'Save',up:'Tip vCoin',down:'Tip iCoin'}; $$('[data-bind]').forEach(el=>el.value=S.controls[el.dataset.bind]); toast('Reset'); });
 $$('[data-close]').forEach(b=>b.addEventListener('click', closeSheets));
 
-/* ---- Surface action delegation ---- */
-$('#surfaceSheet').addEventListener('click', (e)=>{ const a=e.target.closest('[data-act]'); if(!a) return;
-  if(a.id==='promoWatch'||a.dataset.act==='Start watch'||a.dataset.act==='Sponsored watch'){ closeSheets(); toggleWatch(); return; }
-  toast(a.dataset.act); });
+/* ---------- Surface delegation (sub-flows + loops) ---------- */
+$('#surfaceSheet').addEventListener('click', (e)=>{
+  const go = e.target.closest('[data-go]');
+  const back_ = e.target.closest('[data-back]');
+  const loop = e.target.closest('[data-loop]');
+  const act = e.target.closest('[data-act]');
+  if (back_) { back(); return; }
+  if (go){
+    const v = go.dataset.go;
+    if (v === 'message-from-out'){ closeSheets(); $('#msgWho').textContent = M?M[S.lane].creator:''; openId('#msgSheet'); return; }
+    openView(v); return;
+  }
+  // withdraw method / pay mode / tip amount / campaign / connect selections
+  const pick = e.target.closest('[data-pick]'); if (pick){ $$('#surfaceSheet [data-pick]').forEach(x=>x.classList.remove('sel')); pick.classList.add('sel'); return; }
+  const pay = e.target.closest('[data-pay]'); if (pay){ $$('#surfaceSheet [data-pay]').forEach(x=>x.classList.remove('sel')); pay.classList.add('sel');
+    const map={nfc:'Hold near terminal to pay · icoins',qr:'Scan to pay — expires in 5 min',link:'iapp.pay/you/'+($('#payAmt')?.value||5)+'i'}; const b=$('#payBody'); if(b) b.textContent=map[pay.dataset.pay]; return; }
+  const tip = e.target.closest('[data-tip]'); if (tip){ $$('#surfaceSheet [data-tip]').forEach(x=>x.classList.remove('sel')); tip.classList.add('sel');
+    const bar=$('#tipNoteBar'); if(bar) bar.textContent = tip.dataset.tip + ' goes entirely to the creator. No platform fee.'; return; }
+  const rt = e.target.closest('[data-rt]'); if (rt){ $$('#surfaceSheet [data-rt]').forEach(x=>x.classList.remove('sel')); rt.classList.add('sel'); return; }
+  const conn = e.target.closest('[data-conn]'); if (conn){ conn.classList.toggle('sel'); toast(conn.dataset.conn + (conn.classList.contains('sel')?' connected':' disconnected')); return; }
+  const watch = e.target.closest('[data-watch]'); if (watch){ closeSheets(); S.surface='feed'; render(); toggleWatch(); return; }
 
-/* ---- best-effort fullscreen on first tap ---- */
+  // run buttons
+  if (e.target.id === 'cvRun'){ const v=Number($('#cvSlider').value); const got=Math.round(v*S.mult); S.acoins=Math.max(0,S.acoins-v); S.reward+=got; openView('confirm',{got}); render(); return; }
+  if (e.target.id === 'wRun'){ const v=Math.min(S.reward,Number($('#wAmt').value)||0); S.reward=Math.max(0,S.reward-v); closeSheets(); toast('Withdrawing '+v+'i'); render(); return; }
+  if (e.target.id === 'payRun'){ closeSheets(); toast('Payment sent'); return; }
+  if (e.target.id === 'tipSend'){ const sel=$('#surfaceSheet [data-tip].sel'); closeSheets(); toast('Tip sent · '+(sel?sel.textContent.trim():'100 b')); return; }
+
+  // loop connectors (never-ending)
+  if (loop){
+    const k = loop.dataset.loop;
+    if (k === 'feed'){ closeSheets(); S.surface='feed'; render(); setTimeout(toggleWatch, 250); return; }
+    if (k === 'wallet'){ const c=nav[nav.length-1]?.ctx||{}; S.pending += (c.amount||12); openView('wallet'); render(); return; }
+    if (k === 'exportPost'){ closeSheets(); S.surface='feed'; render(); toast('Exported · posted to your feed'); return; }
+    if (k === 'publish'){ closeSheets(); S.surface='promo'; openView('promo'); render(); toast('Campaign published · live in Promo'); return; }
+    return;
+  }
+  if (act){ toast(act.dataset.act); }
+});
+
+/* ---------- SWIPE LAYER: reels + tap to watch ---------- */
+const swipe = $('#swipe'); let sw = null;
+swipe.addEventListener('pointerdown', (e)=>{ sw={x:e.clientX,y:e.clientY,t:Date.now()}; });
+swipe.addEventListener('pointerup', (e)=>{
+  if(!sw) return; const dx=e.clientX-sw.x, dy=e.clientY-sw.y, adx=Math.abs(dx), ady=Math.abs(dy), dt=Date.now()-sw.t; sw=null;
+  if (adx<24 && ady<24 && dt<400){ toggleWatch(); return; }      // tap
+  if (ady>adx){ if(dy<0) nextReel(1); else nextReel(-1); }        // vertical → reel
+  else { if(dx<0) switchLane(1); else switchLane(-1); }           // horizontal → lane
+});
+swipe.addEventListener('pointercancel', ()=>{ sw=null; });
+document.addEventListener('keydown', (e)=>{
+  if(e.key==='ArrowUp') nextReel(1); else if(e.key==='ArrowDown') nextReel(-1);
+  else if(e.key==='ArrowLeft') switchLane(-1); else if(e.key==='ArrowRight') switchLane(1);
+});
+
+/* ---------- best-effort fullscreen on first tap ---------- */
 let askedFs=false;
-document.addEventListener('click', ()=>{ if(askedFs) return; askedFs=true; const el=document.documentElement; (el.requestFullscreen||el.webkitRequestFullscreen||(()=>{})).call(el).catch(()=>{}); }, { once:true });
+document.addEventListener('pointerdown', ()=>{ if(askedFs) return; askedFs=true; const el=document.documentElement; (el.requestFullscreen||el.webkitRequestFullscreen||(()=>{})).call(el).catch(()=>{}); }, { once:true });
 
+/* ---------- init ---------- */
+if (M){ setCreator(); showReel(false); hint.classList.add('show'); setTimeout(()=>hint.classList.remove('show'), 4200); }
 render();
 </script>
 </body>

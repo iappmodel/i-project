@@ -22,3 +22,7 @@ integrations/pop-core/validator/node_modules/.vite/
 
 # OS
 .DS_Store
+
+# Heavy local mockup reels (symlinked + generated manifest — not committed)
+06_feed_earning_loops/mockup_media
+06_feed_earning_loops/mockups.manifest.js
