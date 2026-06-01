@@ -311,7 +311,7 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
     <section class="intro">
       <h1>[ i ] simulator</h1>
       <p class="title">Integrated responsive UI model</p>
-      <p>Every visible control resolves to a real simulated response: rail gestures, REWARD review, Watch Verify Earn, Wallet, Promo, Studio, Profile, Out-Profile, ELO, share, message, and configurable controls.</p>
+      <p>Every visible control resolves to a real simulated response: rail gestures (tap like · double save · triple boost · hold offer), REWARD review, Watch Verify Earn, Wallet, Promo, Studio, Profile, Out-Profile, ELO, share, message, and configurable controls.</p>
     </section>
     <section class="state-card" aria-label="Simulator state">
       <h2>Live app state</h2>
@@ -335,6 +335,7 @@ const state = {
   liked: false,
   likeCount: 2842,
   saved: false,
+  boosted: false,
   offerAmount: 49,
   offerCoin: 'ic',
   offerStatus: 'idle',
@@ -370,7 +371,7 @@ const els = {
 
 let toastTimer;
 let tapTimer;
-let lastTap = 0;
+let tapCount = 0;
 let holdTimer;
 let holdStart = null;
 let watchTimer;
@@ -428,6 +429,7 @@ function render() {
     ['vCoin utility', format(state.vcoin) + ' v'],
     ['Like count', format(state.likeCount)],
     ['Saved', state.saved ? 'yes' : 'no'],
+    ['Boosted', state.boosted ? 'yes' : 'no'],
     ['Offer', state.offerStatus + ' / ' + state.offerAmount + state.offerCoin],
     ['Watch state', state.watch],
     ['ELO', state.elo],
@@ -458,6 +460,13 @@ function saveClip() {
   state.saved = true;
   toast('Saved to Loop 2 vault');
   addLog('Double tap resolved: clip saved for retention path.', 'good');
+  render();
+}
+
+function boostClip() {
+  state.boosted = true;
+  toast('Boost (demo) — reach amplify roadmap');
+  addLog('Triple tap resolved: custom:boost demo stub (vCoin settlement roadmap).', 'good');
   render();
 }
 
@@ -587,15 +596,14 @@ $('#likeBtn').addEventListener('pointerup', (e) => {
     return;
   }
   holdStart = null;
-  const now = Date.now();
-  if (now - lastTap < 320) {
-    clearTimeout(tapTimer);
-    lastTap = 0;
-    saveClip();
-  } else {
-    lastTap = now;
-    tapTimer = setTimeout(() => { lastTap = 0; toggleLike(); }, 330);
-  }
+  tapCount += 1;
+  clearTimeout(tapTimer);
+  tapTimer = setTimeout(() => {
+    if (tapCount === 1) toggleLike();
+    else if (tapCount === 2) saveClip();
+    else boostClip();
+    tapCount = 0;
+  }, 480);
 });
 $('#likeBtn').addEventListener('pointercancel', () => {
   clearTimeout(holdTimer);

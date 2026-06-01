@@ -9,11 +9,25 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+---
+
+## 2026-05-30 — Boost triple-tap gesture explainer
+
+### Delivered
+- **Boost explainer** — `boost_triple_tap_explainer.html` (triple_tap → custom:boost; demo toast; vCoin/bCoin roadmap; completes heart preset quartet).
+- **Presenter deck** — slide after Save; index Earn section 5 files; smoke **18** walkthroughs.
+- **Simulator** — triple-tap boost resolution in `app_ui_simulator.html` (tap / double save / triple boost FSM).
+
+### Verification
+- `./scripts/smoke_investor_explainers.sh` · `./scripts/smoke_app_ui_simulator.sh`
+
+---
+
 ## 2026-05-30 — Integrated app UI simulator
 
 ### Delivered
 - **Touch simulator** — `app_ui_simulator.html`: responsive Picture 2 phone model where dock, rail, REWARD, Watch & Earn, ELO, share/message/controls, and gesture builder all resolve to visible state + interaction log.
-- **Investor index** — recommended Loop 1 card + header link to simulator alongside 17-slide presenter deck.
+- **Investor index** — recommended Loop 1 card + header link to simulator alongside 18-slide presenter deck.
 - **Smoke** — `smoke_app_ui_simulator.sh` chained from investor explainer smoke; `open_app_ui_simulator.sh` for local demos.
 
 ### Verification
@@ -44,17 +58,6 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ### Verification
 - `./scripts/smoke_blink_remote_lite.sh` · `./scripts/smoke_vision_prep.sh`
-
----
-
-## 2026-05-30 — Boost triple-tap gesture explainer
-
-### Delivered
-- **Boost explainer** — `boost_triple_tap_explainer.html` (triple_tap → custom:boost; demo toast; vCoin/bCoin roadmap; completes heart preset quartet).
-- **Presenter deck** — slide after Save; index Earn section 5 files; smoke **18** walkthroughs.
-
-### Verification
-- `./scripts/smoke_investor_explainers.sh`
 
 ---
 

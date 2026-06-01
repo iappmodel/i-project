@@ -70,6 +70,11 @@ grep -q 'speechEnergy' "$elo" || { echo "FAIL: elo explainer must document speec
 grep -q 'voice-out' "$elo" || { echo "FAIL: elo explainer must document voice-out TTS" >&2; exit 1; }
 echo "OK elo_presence_explainer content checks"
 
+boost="$DIR/boost_triple_tap_explainer.html"
+grep -q 'triple_tap' "$boost" || { echo "FAIL: boost explainer must document triple_tap trigger" >&2; exit 1; }
+grep -q 'custom:boost' "$boost" || { echo "FAIL: boost explainer must document custom:boost action" >&2; exit 1; }
+echo "OK boost_triple_tap_explainer content checks"
+
 "$ROOT/scripts/smoke_app_ui_simulator.sh"
 
 echo ""

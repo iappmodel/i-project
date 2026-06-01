@@ -33,6 +33,8 @@ required_markers=(
   'data-bind="double"'
   'function runWatch'
   'function openElo'
+  'function boostClip'
+  'Triple tap resolved'
   'immersive-sunset.svg'
 )
 

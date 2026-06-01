@@ -65,6 +65,7 @@ All coin debits via Edge Functions (`tip-creator`) when `walletBackend === 'live
 
 - Lovable: `eye-earn-sparkle` `MorphingLikeButton`, `LongPressButtonWrapper` (patterns only; not final UX)  
 - Visual: `assets/like-love-cross-gestures-mockup.png`  
+- Investor walkthroughs: `06_feed_earning_loops/like_tap_explainer.html`, `save_double_tap_explainer.html`, `boost_triple_tap_explainer.html`, `love_hold_creator_offer_explainer.html`  
 - Economy: `MASTER_BRAIN/ECONOMY/i-app-economy-rules.md` — i/v separate ledgers  
 
 ---
@@ -74,10 +75,12 @@ All coin debits via Edge Functions (`tip-creator`) when `walletBackend === 'live
 Run `./scripts/smoke_gesture_buttons.sh`, then on `immersive-feed`:
 
 1. Tap heart → like toggles; count updates (local or `content_likes` live).  
-2. Hold 500ms → cross; swipe up (v) / down (i) → ramp; release → review sheet.  
-3. Send → validating → settled (demo toast or `tip-creator`).  
-4. Long-press CONTROLS 1s → builder; bindings persist in localStorage.  
-5. Rail pointer capture — feed does not scroll while gesturing.
+2. Double-tap heart → save toast / Loop 2 vault path.  
+3. Triple-tap heart → boost demo stub (MVP toast).  
+4. Hold 500ms → cross; swipe up (v) / down (i) → ramp; release → review sheet.  
+5. Send → validating → settled (demo toast or `tip-creator`).  
+6. Long-press CONTROLS 1s → builder; bindings persist in localStorage.  
+7. Rail pointer capture — feed does not scroll while gesturing.
 
 ## REWARD pill states
 
