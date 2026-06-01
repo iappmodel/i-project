@@ -126,6 +126,60 @@ export function addGestureComboPreset(preset: Omit<GestureComboRecord, 'id' | 'c
   return next
 }
 
+export function saveGestureCombo(input: {
+  id?: string
+  name: string
+  steps: ComboStep[]
+  action: ComboAction
+  enabled?: boolean
+}): GestureComboRecord[] {
+  if (!input.name.trim() || input.steps.length === 0) return loadGestureCombos()
+
+  if (input.id) {
+    const next = loadGestureCombos().map((c) =>
+      c.id === input.id
+        ? {
+            ...c,
+            name: input.name.trim(),
+            steps: input.steps,
+            action: input.action,
+            enabled: input.enabled ?? c.enabled,
+          }
+        : c,
+    )
+    saveGestureCombos(next)
+    return next
+  }
+
+  return addGestureComboPreset({
+    name: input.name.trim(),
+    steps: input.steps,
+    action: input.action,
+    enabled: input.enabled ?? true,
+  })
+}
+
+export function exportGestureCombosJson(): string {
+  return JSON.stringify(loadGestureCombos(), null, 2)
+}
+
+export function importGestureCombosJson(raw: string): GestureComboRecord[] {
+  const parsed = JSON.parse(raw) as GestureComboRecord[]
+  if (!Array.isArray(parsed) || parsed.length === 0) {
+    throw new Error('Invalid combo JSON')
+  }
+  const sanitized = parsed.map((c, i) => ({
+    id: c.id && typeof c.id === 'string' ? c.id : newComboId(),
+    name: String(c.name ?? `Imported ${i + 1}`),
+    steps: Array.isArray(c.steps) ? c.steps : [],
+    action: c.action ?? 'none',
+    enabled: c.enabled !== false,
+    createdAt: typeof c.createdAt === 'number' ? c.createdAt : Date.now(),
+  }))
+  saveGestureCombos(sanitized)
+  return sanitized
+}
+
 export function resetGestureCombos(): GestureComboRecord[] {
   localStorage.removeItem(GESTURE_COMBOS_KEY)
   const fresh = DEFAULT_GESTURE_COMBOS.map((c) => ({ ...c, createdAt: Date.now() }))

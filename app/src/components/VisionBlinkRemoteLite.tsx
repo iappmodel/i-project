@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
+import { GestureComboBuilderSheet } from './GestureComboBuilderSheet'
 import { COMBO_ACTION_LABELS } from '../hooks/useGestureCombos'
 import {
   DEFAULT_GESTURE_COMBOS,
   addGestureComboPreset,
   describeComboSteps,
+  exportGestureCombosJson,
+  importGestureCombosJson,
   loadGestureCombos,
   removeGestureCombo,
   resetGestureCombos,
@@ -40,6 +43,11 @@ export function VisionBlinkRemoteLite() {
   const [combos, setCombos] = useState<GestureComboRecord[]>(() => loadGestureCombos())
   const [settings, setSettings] = useState(() => loadRemoteControlSettings())
   const [eventLog, setEventLog] = useState<string[]>([])
+  const [builderOpen, setBuilderOpen] = useState(false)
+  const [editingCombo, setEditingCombo] = useState<GestureComboRecord | null>(null)
+  const [importOpen, setImportOpen] = useState(false)
+  const [importText, setImportText] = useState('')
+  const [importError, setImportError] = useState<string | null>(null)
 
   const pushLog = useCallback((line: string) => {
     setEventLog((prev) => [line, ...prev].slice(0, 8))
@@ -132,6 +140,16 @@ export function VisionBlinkRemoteLite() {
           <div className="vision-blink-remote__toolbar">
             <button
               type="button"
+              className="ds-btn ds-btn--primary"
+              onClick={() => {
+                setEditingCombo(null)
+                setBuilderOpen(true)
+              }}
+            >
+              Create combo
+            </button>
+            <button
+              type="button"
               className="ds-btn ds-btn--secondary"
               onClick={() => {
                 const preset = DEFAULT_GESTURE_COMBOS.find(
@@ -144,12 +162,60 @@ export function VisionBlinkRemoteLite() {
             </button>
             <button
               type="button"
+              className="ds-btn ds-btn--secondary"
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(exportGestureCombosJson())
+                  pushLog('exported combos JSON')
+                } catch {
+                  pushLog('export failed — copy from import panel')
+                  setImportText(exportGestureCombosJson())
+                  setImportOpen(true)
+                }
+              }}
+            >
+              Export
+            </button>
+            <button type="button" className="ds-btn ds-btn--secondary" onClick={() => setImportOpen((v) => !v)}>
+              Import
+            </button>
+            <button
+              type="button"
               className="ds-btn ds-btn--ghost"
               onClick={() => setCombos(resetGestureCombos())}
             >
               Reset
             </button>
           </div>
+
+          {importOpen ? (
+            <div className="combo-builder-import">
+              <textarea
+                className="combo-builder-import__area mono"
+                rows={4}
+                value={importText}
+                onChange={(e) => setImportText(e.target.value)}
+                placeholder="Paste combo JSON array…"
+              />
+              {importError ? <p className="combo-builder-error mono">{importError}</p> : null}
+              <button
+                type="button"
+                className="ds-btn ds-btn--secondary"
+                onClick={() => {
+                  try {
+                    setCombos(importGestureCombosJson(importText))
+                    setImportError(null)
+                    setImportOpen(false)
+                    pushLog('imported combos')
+                  } catch (err) {
+                    setImportError(err instanceof Error ? err.message : 'Import failed')
+                  }
+                }}
+              >
+                Apply import
+              </button>
+            </div>
+          ) : null}
 
           <ul className="vision-blink-remote__combo-list">
             {combos.map((combo) => (
@@ -165,6 +231,16 @@ export function VisionBlinkRemoteLite() {
                 <p className="vision-blink-remote__combo-steps mono">
                   {describeComboSteps(combo.steps)} → {COMBO_ACTION_LABELS[combo.action]}
                 </p>
+                <button
+                  type="button"
+                  className="vision-blink-remote__combo-edit"
+                  onClick={() => {
+                    setEditingCombo(combo)
+                    setBuilderOpen(true)
+                  }}
+                >
+                  Edit
+                </button>
                 <button
                   type="button"
                   className="vision-blink-remote__combo-remove"
@@ -220,6 +296,16 @@ export function VisionBlinkRemoteLite() {
           </p>
         </div>
       ) : null}
+
+      <GestureComboBuilderSheet
+        open={builderOpen}
+        editCombo={editingCombo}
+        onClose={() => {
+          setBuilderOpen(false)
+          setEditingCombo(null)
+        }}
+        onSaved={() => setCombos(loadGestureCombos())}
+      />
     </section>
   )
 }

@@ -36,10 +36,18 @@ if ! grep -q "immersive-promo" "$APP/src/lib/visionScreenTargets.ts"; then
   echo "FAIL: promoFeed command must route to immersive-promo" >&2
   exit 1
 fi
+if ! grep -q "GestureComboBuilderSheet" "$APP/src/components/VisionBlinkRemoteLite.tsx"; then
+  echo "FAIL: Blink remote panel must open combo builder" >&2
+  exit 1
+fi
 if ! grep -q "vision-blink-remote" "$APP/src/styles/gesture-buttons.css"; then
   echo "FAIL: blink remote CSS missing" >&2
   exit 1
 fi
+[[ -f "$APP/src/components/GestureComboBuilderSheet.tsx" ]] || {
+  echo "FAIL: GestureComboBuilderSheet.tsx missing" >&2
+  exit 1
+}
 
 cd "$APP"
 npm run typecheck --silent

@@ -7,6 +7,20 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+---
+
+## 2026-05-30 — Phase 43 gesture combo builder + import/export
+
+### Delivered
+- **GestureComboBuilderSheet** — create/edit multi-step combos (blinks + gestures), action picker, reorder.
+- **Store** — `saveGestureCombo`, `exportGestureCombosJson`, `importGestureCombosJson`.
+- **Blink Remote panel** — Create combo, Edit per row, Export/Import JSON toolbar.
+
+### Verification
+- `./scripts/smoke_blink_remote_lite.sh`
+
+---
+
 ## 2026-05-30 — Phase 42 gesture combo matcher + Blink Remote lite panel
 
 ### Delivered
