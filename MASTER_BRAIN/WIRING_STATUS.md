@@ -70,8 +70,7 @@ flowchart LR
 | `./scripts/smoke_vision_proof_bridge.sh` | Vision → proof packet hints (Phase 34) |
 | `./scripts/smoke_immersive_shell.sh` | Glass wallet/profile, out-profile, loop1 watch path (Phases 35–38) |
 | `./scripts/smoke_gesture_buttons.sh` | Picture 2 gesture rail + offer review + builder |
-| `./scripts/smoke_blink_remote_lite.sh` | Gesture combo store + matcher + Blink Remote lite panel (Phase 42) |
-| `./scripts/smoke_blink_remote_lite.sh` | Blink remote combos + matcher (Phase 42) |
+| `./scripts/smoke_blink_remote_lite.sh` | Combo store + matcher + builder/import-export + Blink Remote lite (Phases 42–43) |
 | `./scripts/enable_stripe_live_env.sh` | Stripe checkout env when keys in stack |
 
 ---
@@ -364,6 +363,17 @@ flowchart LR
 | Blink Remote lite panel | ✅ Combos / debug / settings tabs in `VisionBlinkRemoteLite` |
 | Promo combo routing | ✅ `promoFeed` → `immersive-promo` |
 | Smoke | ✅ `smoke_blink_remote_lite.sh` in production readiness |
+
+---
+
+## Phase 43 (2026-05-30)
+
+| Item | Status |
+|------|--------|
+| Combo builder sheet | ✅ `GestureComboBuilderSheet` — multi-step blinks/gestures, action picker, reorder |
+| Combo import/export | ✅ `exportGestureCombosJson` / `importGestureCombosJson` in `gestureComboStore` |
+| Blink Remote toolbar | ✅ Create / Edit / Export / Import JSON in `VisionBlinkRemoteLite` |
+| Smoke | ✅ `smoke_blink_remote_lite.sh` asserts builder + import/export wiring |
 
 ---
 

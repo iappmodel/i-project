@@ -5,8 +5,9 @@
 
 | Phase | Tracker | Theme |
 |------:|---------|-------|
-| 41 | [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md) | Immersive promo marketplace tab |
+| 43 | [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md) | Gesture combo builder + JSON import/export |
 | 42 | [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md) | Gesture combo matcher + Blink Remote lite |
+| 41 | [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md) | Immersive promo marketplace tab |
 | 1–40 | see below | Loop 1 spine through vision import bridge |
 | 1 | [AUTONOMOUS_QUEUE_30.md](AUTONOMOUS_QUEUE_30.md) | Loop 1 spine, CI, smokes, chat 90/104 |
 | 2 | [AUTONOMOUS_QUEUE_PHASE2.md](AUTONOMOUS_QUEUE_PHASE2.md) | Auth, chat 104/104, settle user id |

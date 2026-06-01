@@ -46,6 +46,18 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-30 — ELO voice-out TTS
+
+### Delivered
+- **Speech out** — `eloSpeechOut.ts` + `useEloVoiceOut` opt-in browser TTS for panel replies; personality-tuned rate/pitch.
+- **Panel toggle** — voice-out switch in `EloPresencePanel`; `stopEloSpeech` on session dismiss in `eloContext`.
+- **Membrane sync** — TTS playback drives `pulseSpeech` halo during spoken replies.
+
+### Verification
+- `./scripts/smoke_elo_presence.sh`
+
+---
+
 ## 2026-05-30 — Loop 1 spine capstone explainer
 
 ### Delivered

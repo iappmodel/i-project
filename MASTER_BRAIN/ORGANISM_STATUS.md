@@ -1,7 +1,7 @@
 # [ i ] Organism status — one page
 
 **Updated:** 2026-05-30  
-**Phases complete:** 1–42 (see [PHASE_QUEUE_INDEX.md](PHASE_QUEUE_INDEX.md))
+**Phases complete:** 1–43 (see [PHASE_QUEUE_INDEX.md](PHASE_QUEUE_INDEX.md))
 
 ---
 
@@ -21,8 +21,8 @@
 | Loop 2 scaffold | ✅ Save/return flow (`saved` screen + localStorage) |
 | Validator packaging | ✅ Dockerfile + `smoke_validator_docker.sh` |
 | Web vision (flagged) | ✅ operator panel + proof hints bridge when `VITE_VISION_ENGINE=1` |
-| Blink Remote lite | ✅ Combo matcher + tabbed panel (combos/debug/settings); full archive UI deferred |
-| ELO presence | ✅ Membrane + speech energy (`pulseSpeech`); panel voice + optional `elo-reply` |
+| Blink Remote lite | ✅ Combo matcher + builder/import-export + tabbed panel; full archive UI deferred |
+| ELO presence | ✅ Membrane + speech energy (`pulseSpeech`); panel voice-in + opt-in voice-out TTS + optional `elo-reply` |
 | Investor explainers | ✅ 17 HTML walkthroughs + index + presenter deck (`investor_presenter_deck.html`) |
 | CI | Validator + app + POP finish + gesture/promo/ELO/investor smokes |
 
@@ -61,7 +61,7 @@ Immersive feed ──► consent ──► watch-verify ──► earn settle
 
 ---
 
-## Deferred (post Phase 42)
+## Deferred (post Phase 43)
 
 - Full archive `BlinkRemoteControl` parity (voice/Tobii/tutorial tabs)
 - Promo live feed API + geo map layer (UI scaffold shipped Phase 41)
