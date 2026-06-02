@@ -62,6 +62,7 @@ describe("createPendingHoldFromReview", () => {
         releaseEligibleAt: null,
         appealExpiresAt: null,
         reverifyUsed: false,
+        trustTierAtHold: "t0_new",
         createdAt,
         reviewAudit: {
           sessionId: record.sessionId,

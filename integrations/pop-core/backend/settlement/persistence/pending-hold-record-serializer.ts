@@ -26,6 +26,7 @@ export interface PendingHoldStoredRecordV1 {
   releaseEligibleAt?: string | null;
   appealExpiresAt?: string | null;
   reverifyUsed?: boolean;
+  trustTierAtHold?: string | null;
 }
 
 export class PendingHoldRecordStorageError extends Error {
@@ -55,7 +56,8 @@ export function toStoredRecord(record: PendingHoldRecord): PendingHoldStoredReco
     reviewAudit: record.reviewAudit,
     releaseEligibleAt: record.releaseEligibleAt ?? null,
     appealExpiresAt: record.appealExpiresAt ?? null,
-    reverifyUsed: record.reverifyUsed ?? false
+    reverifyUsed: record.reverifyUsed ?? false,
+    trustTierAtHold: record.trustTierAtHold ?? "t0_new"
   };
 }
 
@@ -188,6 +190,10 @@ export function fromStoredRecord(stored: unknown): PendingHoldRecord {
         ? undefined
         : (stored.appealExpiresAt as string | null),
     reverifyUsed:
-      stored.reverifyUsed === undefined ? undefined : Boolean(stored.reverifyUsed)
+      stored.reverifyUsed === undefined ? undefined : Boolean(stored.reverifyUsed),
+    trustTierAtHold:
+      stored.trustTierAtHold === undefined
+        ? undefined
+        : (stored.trustTierAtHold as PendingHoldRecord["trustTierAtHold"])
   });
 }

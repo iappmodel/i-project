@@ -1,6 +1,7 @@
 import type { ProofReviewStatus } from "../types/proof-packet-v0.types.js";
 import type { ProofReviewRecord } from "../review/proof-review-store.js";
 import type { SettlementAmountBreakdown } from "./settlement-amount.types.js";
+import type { PopTrustTier } from "./trust-tier.js";
 
 export type PendingHoldStatus = "pending" | "appeal_pending";
 export type PendingHoldReleaseStatus =
@@ -46,6 +47,8 @@ export interface PendingHoldRecord {
   appealExpiresAt?: string | null;
   /** One re-verification attempt allowed before forfeit. */
   reverifyUsed?: boolean;
+  /** Trust tier at hold creation (v2 settlement gating). */
+  trustTierAtHold?: PopTrustTier | null;
 }
 
 export type CreatePendingHoldOutcome = "created" | "existing" | "skipped";
@@ -62,7 +65,8 @@ export function normalizePendingHoldRecord(record: PendingHoldRecord): PendingHo
     ...record,
     releaseEligibleAt: record.releaseEligibleAt ?? null,
     appealExpiresAt: record.appealExpiresAt ?? null,
-    reverifyUsed: record.reverifyUsed ?? false
+    reverifyUsed: record.reverifyUsed ?? false,
+    trustTierAtHold: record.trustTierAtHold ?? "t0_new"
   };
 }
 

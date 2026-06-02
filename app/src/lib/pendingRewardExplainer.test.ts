@@ -15,6 +15,7 @@ const base: PopPendingHold = {
   releaseEligibleAt: null,
   appealExpiresAt: null,
   reverifyUsed: false,
+  trustTierAtHold: 't0_new',
   createdAt: '2026-06-02T12:00:00Z',
   settledAt: null,
 }

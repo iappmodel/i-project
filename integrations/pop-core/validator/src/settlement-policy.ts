@@ -1,17 +1,22 @@
-import type { ProofReviewStatus } from "@pop-core/backend";
+import type { ProofReviewStatus, PopTrustTier } from "@pop-core/backend";
+import {
+  computeReleaseEligibleAtForTier,
+  canServerAutoSettleNowForTier,
+  releaseDelaySecondsForTier
+} from "@pop-core/backend";
 
 /** Server-side settlement policy (not client VITE_AUTO_SETTLE). */
 export interface ServerSettlementPolicy {
-  /** Seconds after validate before approved holds may settle (0 = immediate when auto-settle on). */
+  /** Legacy single delay; maps to t0 when tier env unset. */
   releaseDelaySeconds: number;
-  /** When true, validator may call settle after validate for eligible holds. */
+  /** When true, validator may call settle after validate for t2_trusted holds only. */
   serverAutoSettle: boolean;
   /** Days until pending/escalated appeal expires without re-verification. */
   appealExpiryDays: number;
 }
 
 export function readServerSettlementPolicy(): ServerSettlementPolicy {
-  const releaseDelaySeconds = Number(process.env.POP_RELEASE_DELAY_SECONDS ?? "0");
+  const releaseDelaySeconds = releaseDelaySecondsForTier("t0_new");
   const serverAutoSettle = process.env.POP_SERVER_AUTO_SETTLE === "true";
   const appealExpiryDays = Number(process.env.POP_APPEAL_EXPIRY_DAYS ?? "7");
   return {
@@ -24,16 +29,10 @@ export function readServerSettlementPolicy(): ServerSettlementPolicy {
 export function computeReleaseEligibleAt(
   submittedAtIso: string,
   reviewStatus: ProofReviewStatus,
-  policy: ServerSettlementPolicy
+  _policy: ServerSettlementPolicy,
+  trustTier: PopTrustTier = "t0_new"
 ): string | null {
-  if (reviewStatus !== "approved" && reviewStatus !== "partial") {
-    return null;
-  }
-  const base = Date.parse(submittedAtIso);
-  if (!Number.isFinite(base)) {
-    return null;
-  }
-  return new Date(base + policy.releaseDelaySeconds * 1000).toISOString();
+  return computeReleaseEligibleAtForTier(submittedAtIso, reviewStatus, trustTier);
 }
 
 export function computeAppealExpiresAt(
@@ -50,14 +49,13 @@ export function computeAppealExpiresAt(
 export function canServerAutoSettleNow(
   reviewStatus: ProofReviewStatus,
   releaseEligibleAt: string | null,
-  nowMs: number = Date.now()
+  nowMs: number = Date.now(),
+  trustTier: PopTrustTier = "t0_new"
 ): boolean {
-  if (reviewStatus !== "approved" && reviewStatus !== "partial") {
-    return false;
-  }
-  if (!releaseEligibleAt) {
-    return true;
-  }
-  const at = Date.parse(releaseEligibleAt);
-  return Number.isFinite(at) && at <= nowMs;
+  return canServerAutoSettleNowForTier(
+    reviewStatus,
+    trustTier,
+    releaseEligibleAt,
+    nowMs
+  );
 }

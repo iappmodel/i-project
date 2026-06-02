@@ -53,7 +53,7 @@ export function pendingHoldToRow(hold: PendingHoldRecord): PopPendingHoldRow {
     release_eligible_at: hold.releaseEligibleAt ?? null,
     appeal_expires_at: hold.appealExpiresAt ?? null,
     reverify_used: hold.reverifyUsed ?? false,
-    trust_tier_at_hold: "t0_new"
+    trust_tier_at_hold: hold.trustTierAtHold ?? "t0_new"
   };
 }
 

@@ -51,9 +51,12 @@ cd integrations/eye-tracking/flutter-runtime && flutter test
 | `VITE_POP_TELEMETRY` | Dev anonymized events |
 | `VITE_AUTO_SETTLE` | **Demo only** — not production authority |
 
-## Deferred (v2)
+## v2 progress
 
-- Full `t0` / `t1` / `t2` trust-tier engine
+- **Trust tiers** — shipped (`docs/POP_TRUST_TIERS_V2.md`): tiered release delay + t2-only auto-settle
+
+## Deferred (v2 remainder)
+
 - Durable Supabase-backed pop-core stores (production path)
 - iOS `attention_mediapipe` parity with Android native map
 - External/OS control behind hard flag + Play policy review

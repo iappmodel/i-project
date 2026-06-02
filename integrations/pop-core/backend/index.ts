@@ -130,6 +130,19 @@ export {
   createPendingHoldFromReview,
   type CreatePendingHoldOptions
 } from "./settlement/pending-hold-service.js";
+
+export {
+  POP_TRUST_TIERS,
+  DEFAULT_RELEASE_DELAY_SECONDS_BY_TIER,
+  isPopTrustTier,
+  resolveTrustTier,
+  releaseDelaySecondsForTier,
+  isAutoSettleEligibleTier,
+  computeReleaseEligibleAtForTier,
+  canServerAutoSettleNowForTier,
+  readReleaseDelaySecondsByTier,
+  type PopTrustTier
+} from "./settlement/trust-tier.js";
 export {
   createAppealHoldFromReview,
   APPEAL_PLACEHOLDER_AMOUNT_MINOR,

@@ -7,7 +7,9 @@ import {
   createAppealHoldFromReview,
   createDefaultPopValueFlowStores,
   runPopValueFlow,
-  type PopValueFlowResult
+  resolveTrustTier,
+  type PopValueFlowResult,
+  type PopTrustTier
 } from "@pop-core/backend";
 
 import type { SupabaseSettlementClient } from "./supabase-settlement-client.js";
@@ -50,6 +52,7 @@ export interface PendingValidateResponse {
   skipReason?: string;
   appealHold?: boolean;
   releaseEligibleAt?: string | null;
+  trustTierAtHold?: PopTrustTier;
   popsSession?: PopsSessionSyncResult;
   autoSettle?: { attempted: boolean; code?: string };
   supabase?: SettlementSyncResult;
@@ -145,16 +148,22 @@ export async function validateProofPacket(
       submittedAt
     });
 
+  const trustTierAtHold = resolveTrustTier({
+    localUserRef: body.packet.localUserRef
+  });
+
   const releaseEligibleAt = computeReleaseEligibleAt(
     submittedAt,
     reviewRecord.status,
-    policy
+    policy,
+    trustTierAtHold
   );
 
   let holdResult = createPendingHoldFromReview(reviewRecord, {
     store: stores.holdStore,
     createdAt: submittedAt,
-    releaseEligibleAt
+    releaseEligibleAt,
+    trustTierAtHold
   });
 
   let appealHold = false;
@@ -202,7 +211,7 @@ export async function validateProofPacket(
     hold &&
     hold.status === "pending" &&
     reviewRecord.userId &&
-    canServerAutoSettleNow(reviewRecord.status, releaseEligibleAt)
+    canServerAutoSettleNow(reviewRecord.status, releaseEligibleAt, Date.now(), trustTierAtHold)
   ) {
     try {
       const settlement = await settleHoldViaSupabase(
@@ -233,6 +242,7 @@ export async function validateProofPacket(
     skipReason: holdResult.skipReason,
     appealHold,
     releaseEligibleAt,
+    trustTierAtHold,
     popsSession,
     autoSettle,
     supabase: supabaseSync

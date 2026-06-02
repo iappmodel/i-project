@@ -14,12 +14,14 @@ import {
   type PendingHoldStore
 } from "./pending-hold-store.js";
 import { computeSettlementAmount } from "./settlement-amount-policy.js";
+import type { PopTrustTier } from "./trust-tier.js";
 
 export interface CreatePendingHoldOptions {
   createdAt?: string;
   store?: PendingHoldStore;
   offerTermsProvider?: OfferSettlementTermsProvider;
   releaseEligibleAt?: string | null;
+  trustTierAtHold?: PopTrustTier | null;
 }
 
 export function createPendingHoldFromReview(
@@ -88,7 +90,8 @@ export function createPendingHoldFromReview(
     createdAt: options?.createdAt ?? new Date().toISOString(),
     reviewAudit: toReviewAudit(record),
     releaseEligibleAt: options?.releaseEligibleAt ?? null,
-    reverifyUsed: false
+    reverifyUsed: false,
+    trustTierAtHold: options?.trustTierAtHold ?? "t0_new"
   };
 
   return {

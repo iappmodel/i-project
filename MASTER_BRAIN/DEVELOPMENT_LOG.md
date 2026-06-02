@@ -7,6 +7,22 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-06-02 — POP v2 trust tiers (release delay + auto-settle gating)
+
+### Delivered
+- **Trust tier engine** — `t0_new` / `t1_established` / `t2_trusted` in `integrations/pop-core/backend/settlement/trust-tier.ts`.
+- **Tiered `release_eligible_at`** — per-tier env delays; only `t2_trusted` eligible for `POP_SERVER_AUTO_SETTLE`.
+- **Validator + Supabase** — `trust_tier_at_hold` on holds; wallet explainer shows tier copy.
+- **Docs** — `docs/POP_TRUST_TIERS_V2.md`.
+
+### Verification
+```bash
+cd integrations/pop-core/backend && npm test
+cd integrations/pop-core/validator && npm test
+```
+
+---
+
 ## 2026-06-02 — POP Android MVP v1 (Stages 1–9 complete)
 
 ### Delivered

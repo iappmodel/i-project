@@ -30,7 +30,13 @@ When `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` are set, pending holds are ins
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `POP_RELEASE_DELAY_SECONDS` | `0` | Delay before `release_eligible_at` on approved/partial holds |
+| `POP_RELEASE_DELAY_SECONDS` | `0` | Legacy t0 fallback when `POP_TRUST_T0_DELAY_SECONDS` unset |
+| `POP_TRUST_T0_DELAY_SECONDS` | `3600` | Release delay for `t0_new` |
+| `POP_TRUST_T1_DELAY_SECONDS` | `900` | Release delay for `t1_established` |
+| `POP_TRUST_T2_DELAY_SECONDS` | `0` | Release delay for `t2_trusted` |
+| `POP_TRUST_T1_ALLOWLIST` | — | Comma-separated `localUserRef` → t1 |
+| `POP_TRUST_T2_ALLOWLIST` | — | Comma-separated `localUserRef` → t2 (auto-settle eligible) |
+| `POP_DEFAULT_TRUST_TIER` | — | Force tier for all users (demo) |
 | `POP_SERVER_AUTO_SETTLE` | `false` | When `true` + Supabase, validator may call `settle_pop_pending_hold` after release window |
 | `POP_APPEAL_EXPIRY_DAYS` | `7` | Appeal window for `pending`/`escalated` reviews (appeal hold, not auto-pay) |
 

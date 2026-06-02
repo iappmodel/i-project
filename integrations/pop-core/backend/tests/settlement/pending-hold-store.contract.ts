@@ -53,6 +53,7 @@ export function buildPendingHoldRecord(
     releaseEligibleAt: null,
     appealExpiresAt: null,
     reverifyUsed: false,
+    trustTierAtHold: "t0_new",
     createdAt,
     reviewAudit: toReviewAudit(reviewRecord),
     ...overrides

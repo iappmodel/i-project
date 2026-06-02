@@ -14,6 +14,7 @@ export interface PopPendingHold {
   releaseEligibleAt: string | null
   appealExpiresAt: string | null
   reverifyUsed: boolean
+  trustTierAtHold: string | null
   createdAt: string
   settledAt: string | null
 }
@@ -65,6 +66,7 @@ function mapHold(row: Record<string, unknown>): PopPendingHold {
       : null,
     appealExpiresAt: row.appeal_expires_at ? String(row.appeal_expires_at) : null,
     reverifyUsed: row.reverify_used === true,
+    trustTierAtHold: row.trust_tier_at_hold ? String(row.trust_tier_at_hold) : null,
     createdAt: String(row.created_at),
     settledAt: row.settled_at ? String(row.settled_at) : null,
   }
