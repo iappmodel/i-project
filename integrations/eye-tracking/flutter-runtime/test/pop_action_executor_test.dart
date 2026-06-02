@@ -31,6 +31,7 @@ void main() {
         stabilityVariance: 0.01,
         riskScore: 0.0,
         likelyFake: false,
+        gazeFreshForCommit: true,
         onAllowed: () => called = true,
       );
 
@@ -57,6 +58,7 @@ void main() {
         stabilityVariance: 0.01,
         riskScore: 0.0,
         likelyFake: true,
+        gazeFreshForCommit: true,
         onAllowed: () => called = true,
       );
       expect(gate, AutonomousActionGateResult.blockedPrefilter);
@@ -81,8 +83,9 @@ void main() {
           autonomyLevel: 0.9,
           stabilityVariance: 0.01,
           riskScore: 0.0,
-          likelyFake: false,
-          onAllowed: () => count++,
+        likelyFake: false,
+        gazeFreshForCommit: true,
+        onAllowed: () => count++,
         );
       }
       expect(count, lessThan(3));
@@ -106,10 +109,36 @@ void main() {
         stabilityVariance: 0.01,
         riskScore: 0.0,
         likelyFake: false,
+        gazeFreshForCommit: true,
         onAllowed: () => called = true,
       );
       expect(gate, AutonomousActionGateResult.allowed);
       expect(called, isTrue);
+    });
+
+    test('blocks zone commit when gaze is stale during face hold', () {
+      final executor = PopActionExecutor();
+      var called = false;
+      final gate = executor.tryZoneSelect(
+        zone: 'CENTER',
+        confidence: 0.9,
+        fixationState: FixationState.fixation,
+        dwellProgress: 1.0,
+        dwellMs: 1200,
+        nowMs: 10_000,
+        isTracking: true,
+        calibrationBusy: false,
+        visionError: false,
+        userIsDistracted: false,
+        autonomyLevel: 0.9,
+        stabilityVariance: 0.01,
+        riskScore: 0.0,
+        likelyFake: false,
+        gazeFreshForCommit: false,
+        onAllowed: () => called = true,
+      );
+      expect(gate, AutonomousActionGateResult.blockedHighRisk);
+      expect(called, isFalse);
     });
   });
 }

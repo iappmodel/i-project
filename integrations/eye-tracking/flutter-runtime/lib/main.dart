@@ -53,6 +53,7 @@ import 'core/intent_os/intent_event.dart';
 import 'core/intent_os/intent_influence_pipeline.dart';
 import 'core/intent_os/intent_predictor.dart';
 import 'core/intent_os/kernel_evaluation_input.dart';
+import 'core/intent_os/action_risk_policy.dart';
 import 'core/intent_os/pop_action_executor.dart';
 import 'core/pop/frame_coordinator.dart';
 import 'core/pop/pop_runtime_config.dart';
@@ -362,6 +363,9 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
   static const int _faceHoldMs = 500;
 
   int _lastFaceSeenMs = 0;
+
+  /// Last wall-clock ms when live landmarks produced valid pipeline gaze (face-hold freshness).
+  int _lastFreshGazeMs = 0;
 
   /// True while a live or held-within-[_faceHoldMs] face is driving the pipeline (for UI / future use).
   // ignore: unused_field
@@ -807,6 +811,10 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
       stabilityVariance: _pipeline.varianceX(),
       riskScore: 0.0,
       likelyFake: likelyFake,
+      gazeFreshForCommit: isGazeFreshForCommit(
+        lastFreshGazeMs: _lastFreshGazeMs,
+        nowMs: nowMs,
+      ),
       onAllowed: () {
         applied = _applyZoneSelectSideEffects(zone);
       },
@@ -894,6 +902,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
         _pipelinePerf.recordDrop(PipelineDropKind.invalid, now);
         _faceLocked = false;
         _lastHeldFace = null;
+        _lastFreshGazeMs = 0;
         if (fresh == null && _kVerbosePerFrameLogs) {
           debugPrint('EAR L: n/a | EAR R: n/a');
         }
@@ -1039,6 +1048,9 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
           result.x!,
           result.y!,
         );
+        if (held.refreshHoldState) {
+          _lastFreshGazeMs = now;
+        }
         final px = pipelineGaze.dx;
         final py = pipelineGaze.dy;
 
@@ -1851,6 +1863,9 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
     required double confidence,
     required int nowMs,
     required double simulationRisk,
+    bool fromGazeOnly = true,
+    bool explicitConfirmationGranted = false,
+    bool gazeFreshForCommit = true,
   }) {
     final UIActionType resolvedType;
     final String resolvedTarget;
@@ -1869,8 +1884,13 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
       actionType: resolvedType,
       target: resolvedTarget,
       confidence: confidence,
-      // UISandbox twin risk — GovernanceKernel / SafetyKernel read this; do not pre-block in main.
-      riskScore: simulationRisk,
+      riskScore: effectiveActionRisk(
+        actionType: resolvedType,
+        twinRiskScore: simulationRisk,
+      ),
+      fromGazeOnly: fromGazeOnly,
+      explicitConfirmationGranted: explicitConfirmationGranted,
+      gazeFreshForCommit: gazeFreshForCommit,
       userTrust: _autonomyLevel,
       fixationState: _fixationState,
       dwellProgress: _dwellProgress,
@@ -1939,6 +1959,11 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
       confidence: action.confidence,
       nowMs: nowMs,
       simulationRisk: simulation.riskScore,
+      explicitConfirmationGranted: true,
+      gazeFreshForCommit: isGazeFreshForCommit(
+        lastFreshGazeMs: _lastFreshGazeMs,
+        nowMs: nowMs,
+      ),
     );
 
     final gateResult = _autonomousExecution.tryExecute(

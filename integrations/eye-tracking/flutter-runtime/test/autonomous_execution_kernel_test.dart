@@ -29,6 +29,8 @@ ActionContext _ctx({
   int sinceLast = 700,
   int recentActionsLast1s = 0,
   bool reversible = true,
+  bool explicitConfirmationGranted = true,
+  bool fromGazeOnly = true,
 }) =>
     ActionContext(
       actionType: UIActionType.tap,
@@ -45,6 +47,8 @@ ActionContext _ctx({
       timestampMs: 0,
       autonomyLevel: 1.0,
       stabilityVariance: 0.0,
+      explicitConfirmationGranted: explicitConfirmationGranted,
+      fromGazeOnly: fromGazeOnly,
     );
 
 void main() {
@@ -89,6 +93,20 @@ void main() {
       });
 
       expect(ok, AutonomousActionGateResult.blockedEmergencyKillSwitch);
+      expect(called, isFalse);
+    });
+
+    test('blocks tap from gaze without explicit confirmation', () {
+      var called = false;
+      final ok = kernel.tryExecute(
+        _prefilter(),
+        _ctx(explicitConfirmationGranted: false),
+        () {
+          called = true;
+        },
+      );
+
+      expect(ok, AutonomousActionGateResult.blockedHighRisk);
       expect(called, isFalse);
     });
 

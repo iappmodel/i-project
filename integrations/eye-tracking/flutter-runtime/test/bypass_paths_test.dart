@@ -31,5 +31,9 @@ void main() {
     );
     expect(src.contains('_cameFromKernel = true'), isTrue);
     expect(src.contains('Unsafe execution path detected'), isTrue);
+    expect(src.contains('HighRiskActionLane'), isFalse);
+    expect(src.contains('blockedHighRisk'), isFalse);
+    expect(src.contains('isGazeFreshForCommit'), isTrue);
+    expect(src.contains('explicitConfirmationGranted: true'), isTrue);
   });
 }

@@ -19,6 +19,9 @@ final class ActionContext {
     required this.autonomyLevel,
     required this.stabilityVariance,
     this.governanceMinConfidence = 0.85,
+    this.fromGazeOnly = true,
+    this.explicitConfirmationGranted = false,
+    this.gazeFreshForCommit = true,
   });
 
   /// Optional caller convention for “no prior action” (e.g. logging). [GovernanceKernel]
@@ -57,4 +60,13 @@ final class ActionContext {
   /// (`kMinZoneCommitConfidence`) so governance honestly checks the true confidence
   /// instead of being neutralized by a floored value.
   final double governanceMinConfidence;
+
+  /// True when the trigger is gaze/blink (not touch or confirmed second step).
+  final bool fromGazeOnly;
+
+  /// Second-blink confirm, touch confirm, or preview OK for high-risk actions.
+  final bool explicitConfirmationGranted;
+
+  /// False during face-hold when gaze is older than [kMaxGazeFreshnessDuringHoldMs].
+  final bool gazeFreshForCommit;
 }

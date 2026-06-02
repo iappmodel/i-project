@@ -1,5 +1,7 @@
 import '../../gaze_fixation.dart' show FixationState;
 import 'action_context.dart';
+import 'action_risk_policy.dart';
+import 'risk_tier.dart';
 
 /// Cross-cutting policy on [ActionContext] (confidence, risk, gaze user state, rate limit, reversibility).
 ///
@@ -23,7 +25,18 @@ final class GovernanceKernel {
   bool _intentValid(ActionContext ctx) =>
       ctx.confidence > ctx.governanceMinConfidence;
 
-  bool _riskValid(ActionContext ctx) => ctx.riskScore < 0.25;
+  bool _riskValid(ActionContext ctx) {
+    final ceiling = switch (getRisk(ctx.actionType)) {
+      RiskTier.low => 0.35,
+      RiskTier.medium => 0.28,
+      RiskTier.high => 0.25,
+    };
+    final effective = effectiveActionRisk(
+      actionType: ctx.actionType,
+      twinRiskScore: ctx.riskScore,
+    );
+    return effective < ceiling;
+  }
 
   bool _userStateValid(ActionContext ctx) =>
       ctx.fixationState == FixationState.fixation &&

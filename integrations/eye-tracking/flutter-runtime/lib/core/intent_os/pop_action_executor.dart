@@ -2,7 +2,9 @@ import '../../gaze_fixation.dart' show FixationState;
 import '../pop/pop_runtime_config.dart';
 import '../system_state.dart';
 import 'action_context.dart';
+import 'action_risk_policy.dart';
 import 'autonomous_execution_kernel.dart';
+import 'high_risk_action_lane.dart';
 import 'kernel_evaluation_input.dart';
 import 'ui_action_type.dart';
 
@@ -19,18 +21,30 @@ final class PopActionExecutor {
   AutonomousExecutionKernel get kernel => _kernel;
 
   /// Gaze-only paths must never execute high-risk UI operations directly.
+  ///
+  /// Prefer [HighRiskActionLane]; kept for static analysis / tests.
   static bool isHighRiskFromGazeOnly(UIActionType type) {
-    switch (type) {
-      case UIActionType.tap:
-      case UIActionType.openZone:
-      case UIActionType.highlight:
-      case UIActionType.preload:
-        return false;
-      case UIActionType.longPress:
-      case UIActionType.scroll:
-      case UIActionType.closeZone:
-        return true;
-    }
+    return const HighRiskActionLane().blocks(
+      ActionContext(
+        actionType: type,
+        target: '',
+        confidence: 1.0,
+        riskScore: 0.0,
+        userTrust: 1.0,
+        fixationState: FixationState.fixation,
+        dwellProgress: 1.0,
+        dwellMs: 1200,
+        timeSinceLastActionMs: 1000,
+        recentActionsLast1s: 0,
+        isReversible: true,
+        timestampMs: 0,
+        autonomyLevel: 1.0,
+        stabilityVariance: 0.0,
+        fromGazeOnly: true,
+        explicitConfirmationGranted: false,
+        gazeFreshForCommit: true,
+      ),
+    );
   }
 
   int _timeSinceLastCommitMs(int nowMs) {
@@ -67,6 +81,7 @@ final class PopActionExecutor {
     required double stabilityVariance,
     required double riskScore,
     required bool likelyFake,
+    required bool gazeFreshForCommit,
     required void Function() onAllowed,
   }) {
     if (!isTracking) {
@@ -80,9 +95,6 @@ final class PopActionExecutor {
     }
 
     const actionType = UIActionType.openZone;
-    if (isHighRiskFromGazeOnly(actionType)) {
-      return AutonomousActionGateResult.blockedGovernance;
-    }
 
     // Feeds ONLY the autonomy-scaled prefilter (ActionPipelineKernel). The real
     // confidence is carried on ActionContext below so governance/safety and the audit
@@ -112,7 +124,13 @@ final class PopActionExecutor {
       // Low-risk reversible zone select: governance honestly checks the real
       // confidence against the explicit zone-commit floor (not the generic 0.85).
       governanceMinConfidence: kMinZoneCommitConfidence,
-      riskScore: riskScore,
+      riskScore: effectiveActionRisk(
+        actionType: actionType,
+        twinRiskScore: riskScore,
+      ),
+      fromGazeOnly: true,
+      explicitConfirmationGranted: false,
+      gazeFreshForCommit: gazeFreshForCommit,
       userTrust: autonomyLevel,
       fixationState: fixationState,
       dwellProgress: dwellProgress,

@@ -26,3 +26,6 @@ const double kMinZoneCommitConfidence = 0.65;
 
 /// Minimum confidence passed to governance for manual zone select.
 const double kMinGovernanceConfidence = 0.86;
+
+/// External/OS remote control (AccessibilityService, etc.) — off for Android MVP.
+const bool kEnableExternalOsControl = false;

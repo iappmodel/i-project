@@ -5,6 +5,7 @@ import 'action_decision.dart';
 import 'action_pipeline_kernel.dart';
 import 'governance_kernel.dart';
 import 'kernel_evaluation_input.dart';
+import 'high_risk_action_lane.dart';
 import 'safety_kernel.dart';
 import 'ui_action_type.dart';
 
@@ -13,6 +14,7 @@ enum AutonomousActionGateResult {
   allowed,
   blockedEmergencyKillSwitch,
   blockedPrefilter,
+  blockedHighRisk,
   blockedGovernance,
   blockedSafety,
 
@@ -26,14 +28,17 @@ final class AutonomousExecutionKernel {
     ActionPipelineKernel? pipeline,
     GovernanceKernel? governance,
     SafetyKernel? safety,
+    HighRiskActionLane? highRiskLane,
     this.emergencyKillSwitch = false,
   })  : pipeline = pipeline ?? const ActionPipelineKernel(),
         governance = governance ?? const GovernanceKernel(),
-        safety = safety ?? const SafetyKernel();
+        safety = safety ?? const SafetyKernel(),
+        highRiskLane = highRiskLane ?? const HighRiskActionLane();
 
   final ActionPipelineKernel pipeline;
   final GovernanceKernel governance;
   final SafetyKernel safety;
+  final HighRiskActionLane highRiskLane;
 
   /// When true, [tryExecute] returns [AutonomousActionGateResult.blockedEmergencyKillSwitch] without running [execute].
   bool emergencyKillSwitch;
@@ -77,6 +82,10 @@ final class AutonomousExecutionKernel {
     if (pipeline.evaluateSafety(prefilterInput) != ActionDecision.allow) {
       audit(AutonomousActionGateResult.blockedPrefilter, blockedGate: 'ActionPipelineKernel');
       return AutonomousActionGateResult.blockedPrefilter;
+    }
+    if (highRiskLane.blocks(ctx)) {
+      audit(AutonomousActionGateResult.blockedHighRisk, blockedGate: 'HighRiskActionLane');
+      return AutonomousActionGateResult.blockedHighRisk;
     }
     if (!governance.approve(ctx)) {
       audit(AutonomousActionGateResult.blockedGovernance, blockedGate: 'GovernanceKernel');

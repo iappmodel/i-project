@@ -1,4 +1,5 @@
 import '../system_state.dart';
+import 'action_risk_policy.dart';
 import 'ui_action.dart';
 
 enum ActionDecision {
@@ -7,8 +8,14 @@ enum ActionDecision {
   requireConfirmation,
 }
 
-/// Per-action policy before [ActionExecutor] runs side effects.
+/// Per-action policy before side effects (legacy [UIAction] path).
 ActionDecision decideAction(UIAction action) {
+  if (requiresExplicitConfirmation(action.type)) {
+    return ActionDecision.requireConfirmation;
+  }
+  if (requiresExplicitConfirmationByName(action.type.name)) {
+    return ActionDecision.requireConfirmation;
+  }
   return ActionDecision.allow;
 }
 
