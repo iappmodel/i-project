@@ -16,8 +16,15 @@ if command -v flutter >/dev/null 2>&1; then
   flutter test \
     test/pop_stage9_ship_gate_test.dart \
     test/pop_privacy_gate_test.dart \
+    test/pop_ios_vision_contract_test.dart \
     test/proof_packet_emission_test.dart \
     test/frame_perf_metrics_test.dart
+  if [[ -f "$FLUTTER/ios/Runner/VisionProcessor.swift" ]] && [[ -f "$FLUTTER/ios/Runner/face_landmarker.task" ]]; then
+    echo "OK iOS vision_channel native stack"
+  else
+    echo "FAIL: missing iOS VisionProcessor or face_landmarker.task" >&2
+    exit 1
+  fi
 fi
 
 if [[ -f "$POP_CORE/fixtures/PP-000001.json" ]]; then

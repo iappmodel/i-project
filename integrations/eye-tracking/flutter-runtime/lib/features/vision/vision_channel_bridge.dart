@@ -40,12 +40,15 @@ final class VisionChannelBridge {
   }
 
   /// Tells the native side to capture the current head pose as the neutral
-  /// baseline. No-op on non-Android platforms.
+  /// baseline. No-op on platforms without native vision (web/desktop).
   ///
   /// [PlatformException] is caught and logged, mirroring the original
   /// `_requestHeadNeutralCalibration` behaviour.
   Future<void> calibrateHeadPose() async {
-    if (defaultTargetPlatform != TargetPlatform.android) return;
+    if (defaultTargetPlatform != TargetPlatform.android &&
+        defaultTargetPlatform != TargetPlatform.iOS) {
+      return;
+    }
     try {
       await _channel.invokeMethod<void>(_calibrateMethod);
       debugPrint('Head yaw neutral: next frame will capture baseline.');

@@ -7,6 +7,23 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-06-02 — POP v2 iOS vision_channel parity
+
+### Delivered
+- **iOS native stack** — `VisionProcessor.swift` + `VisionChannelHandler.swift` on `vision_channel` (JPEG + Y8, `calibrateHeadPose`).
+- **MediaPipe** — `face_landmarker.task` in iOS bundle; `MediaPipeTasksVision` pod (~> 0.10.14).
+- **Dart** — `calibrateHeadPose` enabled on iOS; contract test `pop_ios_vision_contract_test.dart`.
+- **Docs** — `docs/POP_IOS_VISION_PARITY.md`; ship gate checks iOS native files.
+
+### Verification
+```bash
+cd integrations/eye-tracking/flutter-runtime && flutter test test/pop_ios_vision_contract_test.dart
+./scripts/smoke_pop_ship_gate.sh
+# Device: cd ios && pod install && flutter run
+```
+
+---
+
 ## 2026-06-02 — POP v2 durable Supabase settlement primary
 
 ### Delivered

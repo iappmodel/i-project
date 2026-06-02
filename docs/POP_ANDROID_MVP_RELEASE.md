@@ -58,7 +58,7 @@ cd integrations/eye-tracking/flutter-runtime && flutter test
 ## Deferred (v2 remainder)
 
 - Durable Supabase-backed pop-core stores (production path)
-- iOS `attention_mediapipe` parity with Android native map
+- iOS `vision_channel` parity — see `docs/POP_IOS_VISION_PARITY.md` (shipped v2)
 - External/OS control behind hard flag + Play policy review
 
 ## Canonical docs

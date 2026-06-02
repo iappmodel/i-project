@@ -1,4 +1,4 @@
-/// Parsed Android [VisionProcessor.process] map for one frame.
+/// Parsed native [VisionProcessor.process] map (Android Kotlin / iOS Swift).
 ///
 /// Extracted from `lib/main.dart`; field names, types, and [fromMap] key
 /// strings are identical to the original private `_VisionFrame` class.
