@@ -15,6 +15,7 @@ required=(
   "$FLUTTER/lib/replay/pop_replay_driver.dart"
   "$FLUTTER/POP_FINISH_DELETION_MANIFEST.md"
   "$FLUTTER/POP_PRIVACY_BOUNDARIES.md"
+  "$FLUTTER/lib/proof/pop_privacy_gate.dart"
   "$APP/src/lib/popFeatureFlags.ts"
   "$APP/src/lib/demoProofPacket.ts"
   "$APP/supabase/migrations/20260529120000_pops_sessions.sql"
@@ -54,7 +55,9 @@ flutter test \
   test/pop_action_executor_test.dart \
   test/governance_kernel_test.dart \
   test/pop_replay_harness_test.dart \
-  test/high_risk_action_lane_test.dart
+  test/high_risk_action_lane_test.dart \
+  test/pop_privacy_gate_test.dart \
+  test/pop_stage9_ship_gate_test.dart
 
 echo ""
 echo "PASS: POP finish smoke"

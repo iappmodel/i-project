@@ -22,7 +22,8 @@
 | Layer | Control |
 |-------|---------|
 | Flutter native | `includeFullLandmarks` false in release |
-| Flutter Dart | `kDerivedSignalsOnly` in `pop_runtime_config.dart` |
+| Flutter Dart | `kDerivedSignalsOnly` in `pop_runtime_config.dart`; `pop_privacy_gate.dart` ship-gate tests |
+| Web demo | `popPrivacyGate.ts` + `sanitizeEyeTrackingForProof` (no landmarks / gaze stream) |
 | Web | `visionProofBridge` hints only; not POPS truth |
 | Backend | `proof-packet-v0` schema — no frame buffers |
 | DB | `pops_sessions` — no biometric columns |

@@ -31,11 +31,49 @@ export function getPopFeatureFlags(): PopFeatureFlags {
   }
 }
 
+/** Flutter is sole production sensing runtime; web vision is hints-only. */
+export function isPopProductionRuntimeFlutter(): boolean {
+  return true
+}
+
+/** Android MVP ship gate: live wallet path without web vision authority. */
+export function isPopMvpShipReady(flags: PopFeatureFlags = getPopFeatureFlags()): boolean {
+  return !flags.popKillSwitch && isPopProductionRuntimeFlutter()
+}
+
+/** Admin / dev monitoring snapshot (no PII). */
+export function getPopRolloutStatus(flags: PopFeatureFlags = getPopFeatureFlags()): {
+  betaCohort: string | null
+  killSwitch: boolean
+  liveWallet: boolean
+  telemetry: boolean
+  autoSettleDemoOnly: boolean
+  flutterProductionRuntime: boolean
+  webVisionAuthority: boolean
+  mvpShipReady: boolean
+} {
+  return {
+    betaCohort: flags.betaCohort,
+    killSwitch: flags.popKillSwitch,
+    liveWallet: flags.liveWallet,
+    telemetry: flags.telemetry,
+    autoSettleDemoOnly: flags.autoSettle,
+    flutterProductionRuntime: isPopProductionRuntimeFlutter(),
+    webVisionAuthority: false,
+    mvpShipReady: isPopMvpShipReady(flags),
+  }
+}
+
 /** Session-level telemetry — derived metrics only; never raw gaze stream. */
 export function emitPopTelemetry(event: string, payload: Record<string, unknown>): void {
   const flags = getPopFeatureFlags()
   if (!flags.telemetry || flags.popKillSwitch) return
+  const status = getPopRolloutStatus(flags)
   if (import.meta.env.DEV) {
-    console.info(`[POP_TELEMETRY] ${event}`, { cohort: flags.betaCohort, ...payload })
+    console.info(`[POP_TELEMETRY] ${event}`, {
+      cohort: status.betaCohort,
+      shipReady: status.mvpShipReady,
+      ...payload,
+    })
   }
 }

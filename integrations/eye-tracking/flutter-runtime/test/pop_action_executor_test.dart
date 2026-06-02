@@ -65,6 +65,33 @@ void main() {
       expect(called, isFalse);
     });
 
+    test('double-fire same timestamp allows one commit', () {
+      final executor = PopActionExecutor();
+      var count = 0;
+      const t = 20_000;
+      for (var i = 0; i < 2; i++) {
+        executor.tryZoneSelect(
+          zone: 'LEFT',
+          confidence: 0.9,
+          fixationState: FixationState.fixation,
+          dwellProgress: 1.0,
+          dwellMs: 1200,
+          nowMs: t,
+          isTracking: true,
+          calibrationBusy: false,
+          visionError: false,
+          userIsDistracted: false,
+          autonomyLevel: 0.9,
+          stabilityVariance: 0.01,
+          riskScore: 0.0,
+          likelyFake: false,
+          gazeFreshForCommit: true,
+          onAllowed: () => count++,
+        );
+      }
+      expect(count, 1);
+    });
+
     test('rate limits rapid zone commits', () {
       final executor = PopActionExecutor();
       var count = 0;

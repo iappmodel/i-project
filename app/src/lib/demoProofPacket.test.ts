@@ -27,5 +27,7 @@ describe('buildDemoProofPacket', () => {
     expect(packet.signals.perception.notes).toContain('acsScore=88')
     expect(packet.eyeTracking.attentionScoreHint).toBe(88)
     expect(packet.review.status).toBe('pending')
+    expect(packet.eyeTracking.derivedOnly).toBe(true)
+    expect('landmarks' in packet.eyeTracking).toBe(false)
   })
 })

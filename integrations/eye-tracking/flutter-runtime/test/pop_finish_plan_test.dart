@@ -128,4 +128,14 @@ void main() {
       );
     });
   });
+
+  group('Stage 9 ship gate', () {
+    test('POP_PRIVACY_BOUNDARIES doc exists', () {
+      expect(File('POP_PRIVACY_BOUNDARIES.md').existsSync(), isTrue);
+    });
+
+    test('pop_privacy_gate module exists', () {
+      expect(File('lib/proof/pop_privacy_gate.dart').existsSync(), isTrue);
+    });
+  });
 }

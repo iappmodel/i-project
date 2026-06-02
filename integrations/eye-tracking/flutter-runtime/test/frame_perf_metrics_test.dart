@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:eye_tracking_app/features/vision/frame_perf_metrics.dart';
+import 'package:eye_tracking_app/features/vision/frame_perf_metrics.dart'
+    show FramePerfMetrics, percentileP95;
 
 void main() {
   group('FramePerfMetrics', () {
@@ -54,6 +55,12 @@ void main() {
       final line = m.snapshot(nowMs: 2000).hudLine;
       expect(line, contains('0/0/0/2'));
       expect(line, contains('native=44.0'));
+    });
+
+    test('percentileP95 computes ship-gate threshold', () {
+      final p95 = percentileP95([10, 20, 30, 40, 50, 60, 70]);
+      expect(p95, greaterThanOrEqualTo(60));
+      expect(p95, lessThanOrEqualTo(70));
     });
   });
 }

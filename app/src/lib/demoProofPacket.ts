@@ -8,6 +8,7 @@ import {
 } from './visionProofBridge'
 import { isWebVisionEnabled } from './visionEngine'
 import { DEMO_LOCAL_USER_REF, resolveValidatorOfferId } from './settlementConfig'
+import { sanitizeEyeTrackingForProof } from './popPrivacyGate'
 
 export interface ProofPacketV0Json {
   packetVersion: '0'
@@ -119,47 +120,49 @@ export function buildDemoProofPacket(input: {
         notes: likelyFake ? 'held_for_review' : 'offerRulesMet=pending_review',
       },
     },
-    eyeTracking: mergeVisionHintsIntoEyeTracking(
-      {
-        facePresentRatio: layerScores.presence,
-        likelyFake,
-        attentionScoreHint: acsScore,
-        peakAttentionScore: input.session.peakAttentionScore ?? acsScore,
-        sampleCount,
-        stableGazeWindows: [
-          {
-            startedAtMs: input.session.createdAt,
-            endedAtMs: input.session.validatedAt ?? Date.now(),
-            zone: 'CENTER',
-            confidence: layerScores.perception,
-          },
-        ],
-        dwellEvents: [
-          {
-            zone: 'CENTER',
-            startedAtMs: input.session.createdAt,
-            endedAtMs: input.session.validatedAt ?? Date.now(),
-            satisfied: acsScore >= 55,
-          },
-        ],
-        blinkEvents: [{ timestampMs: Date.now(), detected: true }],
-        verificationStabilitySnapshot: {
-          stableZone: 'CENTER',
-          confidenceBand: acsScore >= 70 ? 'STRONG' : acsScore >= 50 ? 'MODERATE' : 'WEAK',
-          validFrameRatio: layerScores.signalIntegrity,
-          zoneConsistency: layerScores.perception,
-          dwellReadiness: layerScores.participation,
-          blinkConfidence: 0.59,
-          fpsConfidence: 0.84,
-          reason: runtimeVersion,
+    eyeTracking: sanitizeEyeTrackingForProof(
+      mergeVisionHintsIntoEyeTracking(
+        {
+          facePresentRatio: layerScores.presence,
+          likelyFake,
+          attentionScoreHint: acsScore,
+          peakAttentionScore: input.session.peakAttentionScore ?? acsScore,
           sampleCount,
-          windowMs: durationMs,
+          stableGazeWindows: [
+            {
+              startedAtMs: input.session.createdAt,
+              endedAtMs: input.session.validatedAt ?? Date.now(),
+              zone: 'CENTER',
+              confidence: layerScores.perception,
+            },
+          ],
+          dwellEvents: [
+            {
+              zone: 'CENTER',
+              startedAtMs: input.session.createdAt,
+              endedAtMs: input.session.validatedAt ?? Date.now(),
+              satisfied: acsScore >= 55,
+            },
+          ],
+          blinkEvents: [{ timestampMs: Date.now(), detected: true }],
+          verificationStabilitySnapshot: {
+            stableZone: 'CENTER',
+            confidenceBand: acsScore >= 70 ? 'STRONG' : acsScore >= 50 ? 'MODERATE' : 'WEAK',
+            validFrameRatio: layerScores.signalIntegrity,
+            zoneConsistency: layerScores.perception,
+            dwellReadiness: layerScores.participation,
+            blinkConfidence: 0.59,
+            fpsConfidence: 0.84,
+            reason: runtimeVersion,
+            sampleCount,
+            windowMs: durationMs,
+          },
+          calibrationConfidence: 0.71,
+          invalidFrameRatio: likelyFake ? 0.45 : Math.max(0, 1 - layerScores.presence),
+          processedFpsAvg: 7.8,
         },
-        calibrationConfidence: 0.71,
-        invalidFrameRatio: likelyFake ? 0.45 : Math.max(0, 1 - layerScores.presence),
-        processedFpsAvg: 7.8,
-      },
-      visionHints,
+        visionHints,
+      ),
     ),
     interaction: {
       taps: 2,

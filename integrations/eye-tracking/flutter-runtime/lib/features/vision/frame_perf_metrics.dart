@@ -89,3 +89,11 @@ final class FramePerfSnapshot {
       'ms enc=${avgEncodeMs.toStringAsFixed(1)} ch=${avgChannelMs.toStringAsFixed(1)} '
       'post=${avgPostMs.toStringAsFixed(1)} native=${lastNativeTotalMs.toStringAsFixed(1)}';
 }
+
+/// P95 of native frame times for ship-gate perf checks (Stage 9).
+double percentileP95(List<double> values) {
+  if (values.isEmpty) return 0;
+  final sorted = List<double>.from(values)..sort();
+  final idx = ((sorted.length - 1) * 0.95).round();
+  return sorted[idx.clamp(0, sorted.length - 1)];
+}
