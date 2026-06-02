@@ -7,6 +7,20 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-06-02 — POP v2 release tag (`pop-v2-complete`)
+
+### Delivered
+- **Ship gate** — `./scripts/smoke_pop_ship_gate.sh` PASS (Flutter, validator 22, backend 277, app vitest 15).
+- **Release doc** — `docs/POP_V2_RELEASE.md`; MVP doc updated to point at v2 complete.
+
+### Verification
+```bash
+./scripts/smoke_pop_ship_gate.sh
+git tag pop-v2-complete   # on 3053a15+
+```
+
+---
+
 ## 2026-06-02 — POP v2 external/OS control hard gate
 
 ### Delivered

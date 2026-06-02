@@ -51,15 +51,14 @@ cd integrations/eye-tracking/flutter-runtime && flutter test
 | `VITE_POP_TELEMETRY` | Dev anonymized events |
 | `VITE_AUTO_SETTLE` | **Demo only** — not production authority |
 
-## v2 progress
+## v2 complete
 
-- **Trust tiers** — shipped (`docs/POP_TRUST_TIERS_V2.md`): tiered release delay + t2-only auto-settle
+See **`docs/POP_V2_RELEASE.md`** (tag `pop-v2-complete`).
 
-## Deferred (v2 remainder)
-
-- Durable Supabase-backed pop-core stores (production path)
-- iOS `vision_channel` parity — see `docs/POP_IOS_VISION_PARITY.md` (shipped v2)
-- External/OS: shipped v2 hard gate; Play policy review before enabling flag in production
+- Trust tiers — `docs/POP_TRUST_TIERS_V2.md`
+- Durable Supabase settlement — `docs/POP_DURABLE_SETTLEMENT.md`
+- iOS `vision_channel` — `docs/POP_IOS_VISION_PARITY.md`
+- External/OS hard gate — `docs/POP_EXTERNAL_OS_CONTROL.md` (Play policy review before enabling flag in production)
 
 ## Canonical docs
 
