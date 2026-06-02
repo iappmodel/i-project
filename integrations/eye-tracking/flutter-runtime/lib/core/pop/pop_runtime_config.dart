@@ -29,3 +29,12 @@ const double kMinGovernanceConfidence = 0.86;
 
 /// External/OS remote control (AccessibilityService, etc.) — off for Android MVP.
 const bool kEnableExternalOsControl = false;
+
+/// HUD + verification stability overlay refresh cap (~5 Hz).
+const int kOverlayRefreshIntervalMs = 200;
+
+/// Camera ingest spacing (~12.5 fps); native budget gates adaptive skip.
+const int kCameraFrameSpacingMs = 80;
+
+/// Selfie segmenter adds ~15–25 ms/frame; off unless anti-spoof mask needed.
+const bool kEnableSelfieSegmenter = false;

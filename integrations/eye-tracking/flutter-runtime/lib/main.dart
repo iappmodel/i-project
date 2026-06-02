@@ -222,7 +222,6 @@ final class _FullScreenPreview extends StatefulWidget {
 final class _FullScreenPreviewState extends State<_FullScreenPreview>
     with WidgetsBindingObserver {
   static const int _dwellReleaseMs = 200;
-  static const int _kFrameSpacingMs = 80;
   static const double _blinkCloseThreshold = BlinkDetector.EAR_CLOSED_THRESHOLD;
   static const double _blinkOpenThreshold = BlinkDetector.rawOpenThreshold;
 
@@ -345,6 +344,8 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
   int _lastFrameMs = 0;
   int _lastLogTime = 0;
   int _lastPerfSummaryMs = 0;
+  int _lastOverlayUiMs = 0;
+  int _lastVerificationIngestMs = 0;
   final FramePerfMetrics _framePerf = FramePerfMetrics();
 
   /// Observe-only: rolling pipeline stage timings for debug HUD (no processing changes).
@@ -877,7 +878,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
     _ensurePerfWindow(now);
     _framePerf.cameraInputCount++;
     _pipelinePerf.recordCameraInput(now);
-    if (now - _lastFrameMs < _kFrameSpacingMs) {
+    if (now - _lastFrameMs < kCameraFrameSpacingMs) {
       _framePerf.droppedThrottle++;
       _pipelinePerf.recordDrop(PipelineDropKind.throttle, now);
       _maybeLogPerfSummary(now);
@@ -911,6 +912,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
         budgetMs: kNativeProcessBudgetMs,
       )) {
         _frameCoordinator.droppedAdaptiveSkip++;
+        _framePerf.droppedAdaptiveSkip++;
         return;
       }
       final fresh = await _processFace(image);
@@ -982,18 +984,27 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
           zone: _currentZone ?? 'CENTER',
           confidence: 0,
         );
-        final verificationDirty = _feedVerificationStability(
+        var verificationDirty = false;
+        if (_shouldIngestVerificationStability(
           nowMs: now,
           blinkDetected: false,
           validFrame: false,
-        );
+        )) {
+          verificationDirty = _feedVerificationStability(
+            nowMs: now,
+            blinkDetected: false,
+            validFrame: false,
+          );
+        }
         _feedProofSession(
           nowMs: now,
           validFrame: false,
           blinkDetected: false,
           likelyFake: false,
         );
-        if (verificationDirty && mounted) setState(() {});
+        if (verificationDirty && mounted && _shouldRefreshOverlayUi(now)) {
+          setState(() {});
+        }
         postprocessSw.stop();
         dartPostMs = postprocessSw.elapsedMicroseconds / 1000.0;
         _emitPipelinePerfSample(
@@ -1338,16 +1349,22 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
       var nextCount = intent.nextCount;
       zoneOverlayDirty |= intent.dirty;
 
-      zoneOverlayDirty |= _feedVerificationStability(
+      if (_shouldIngestVerificationStability(
         nowMs: now,
-        zone: isValid ? (_currentZone ?? _zoneFromGaze(smoothGazeX)) : null,
-        gazeX: isValid ? smoothGazeX : driftGaze.rawX,
-        normalizedGazeX: norm.normalizedGazeX,
-        meanEar: ear,
         blinkDetected: nextBlinking,
         validFrame: isValid,
-        dwellReady: _dwellSatisfiedForStint,
-      );
+      )) {
+        zoneOverlayDirty |= _feedVerificationStability(
+          nowMs: now,
+          zone: isValid ? (_currentZone ?? _zoneFromGaze(smoothGazeX)) : null,
+          gazeX: isValid ? smoothGazeX : driftGaze.rawX,
+          normalizedGazeX: norm.normalizedGazeX,
+          meanEar: ear,
+          blinkDetected: nextBlinking,
+          validFrame: isValid,
+          dwellReady: _dwellSatisfiedForStint,
+        );
+      }
       _feedProofSession(
         nowMs: now,
         validFrame: isValid,
@@ -1356,6 +1373,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
       );
 
       _updateFrameUi(
+        nowMs: now,
         zoneOverlayDirty: zoneOverlayDirty,
         validGaze: isValid,
         nextBlinking: nextBlinking,
@@ -1420,7 +1438,9 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
       ),
     );
     _pipelinePerfSnapshot = snap;
-    if (mounted && kShowPerfHud) setState(() {});
+    if (mounted && kShowPerfHud && _shouldRefreshOverlayUi(timestampMs)) {
+      setState(() {});
+    }
   }
 
   Future<VisionFrame?> _processFace(CameraImage image) async {
@@ -2253,7 +2273,29 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
     return (nextCount: nextCount, dirty: zoneOverlayDirty);
   }
 
+  bool _shouldRefreshOverlayUi(int nowMs) {
+    if (nowMs - _lastOverlayUiMs >= kOverlayRefreshIntervalMs) {
+      _lastOverlayUiMs = nowMs;
+      return true;
+    }
+    return false;
+  }
+
+  bool _shouldIngestVerificationStability({
+    required int nowMs,
+    required bool blinkDetected,
+    required bool validFrame,
+  }) {
+    if (blinkDetected || !validFrame) return true;
+    if (nowMs - _lastVerificationIngestMs >= kOverlayRefreshIntervalMs) {
+      _lastVerificationIngestMs = nowMs;
+      return true;
+    }
+    return false;
+  }
+
   void _updateFrameUi({
+    required int nowMs,
     required bool zoneOverlayDirty,
     required bool validGaze,
     required bool nextBlinking,
@@ -2311,6 +2353,9 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
       _fakeNoBlink = nextFakeNoBlink;
       if (pitchBandDirty) {
         _headPitchBand = nextPitchBand;
+      }
+      if (_shouldRefreshOverlayUi(nowMs)) {
+        setState(() {});
       }
     }
   }
@@ -2381,25 +2426,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
     if (nowMs - _lastPerfSummaryMs < 1000) return;
     _lastPerfSummaryMs = nowMs;
     _ensurePerfWindow(nowMs);
-    final windowMs = (nowMs - _framePerf.windowStartMs).clamp(1, 60000);
-    final secs = windowMs / 1000.0;
-    final cameraFps = _framePerf.cameraInputCount / secs;
-    final processedFps = _framePerf.processedCount / secs;
-    final avgEncodeMs = _framePerf.encodeSamples == 0
-        ? 0.0
-        : _framePerf.encodeTotalMs / _framePerf.encodeSamples;
-    final avgChannelMs = _framePerf.channelSamples == 0
-        ? 0.0
-        : _framePerf.channelTotalMs / _framePerf.channelSamples;
-    final avgPostprocessMs = _framePerf.postprocessSamples == 0
-        ? 0.0
-        : _framePerf.postprocessTotalMs / _framePerf.postprocessSamples;
-    debugPrint(
-      '[frame_perf] fps(camera=${cameraFps.toStringAsFixed(1)}, processed=${processedFps.toStringAsFixed(1)}) '
-      'drop(throttle=${_framePerf.droppedThrottle}, busy=${_framePerf.droppedBusy}, invalid=${_framePerf.droppedInvalid}) '
-      'ms(avg encode=${avgEncodeMs.toStringAsFixed(2)}, channel=${avgChannelMs.toStringAsFixed(2)}, post=${avgPostprocessMs.toStringAsFixed(2)}) '
-      'native(last decode=${_framePerf.lastNativeDecodeMs.toStringAsFixed(2)}, process=${_framePerf.lastNativeProcessMs.toStringAsFixed(2)}, total=${_framePerf.lastNativeTotalMs.toStringAsFixed(2)})',
-    );
+    debugPrint('[frame_perf] ${_framePerf.snapshot(nowMs: nowMs).hudLine}');
     _framePerf.resetWindow(nowMs);
   }
 
@@ -2440,7 +2467,8 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
               ),
             ),
           ),
-          ValueListenableBuilder<Offset>(
+          RepaintBoundary(
+            child: ValueListenableBuilder<Offset>(
             valueListenable: _pointerNotifier,
             builder: (context, p, _) {
               return Positioned(
@@ -2464,6 +2492,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
                 ),
               );
             },
+            ),
           ),
           Positioned(
             top: 0,
@@ -2770,8 +2799,9 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(8),
-                      child: SingleChildScrollView(
-                        child: ValueListenableBuilder<int>(
+                      child: RepaintBoundary(
+                        child: SingleChildScrollView(
+                          child: ValueListenableBuilder<int>(
                           valueListenable: _blinkCountNotifier,
                           builder: (context, blinkCount, _) {
                             return Text(
@@ -2811,6 +2841,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
                               '${_verificationSnapshot.reason}\n'
                               '--- Pipeline perf (observe) ---\n'
                               '${_pipelinePerfSnapshot.hudLines}\n'
+                              '${kDebugMode ? '--- Frame backpressure ---\n${_framePerf.snapshot(nowMs: DateTime.now().millisecondsSinceEpoch).hudLine}\n' : ''}'
                               '${defaultTargetPlatform == TargetPlatform.android ? 'Long-press: head yaw only · Cal L/R/N: gaze + yaw₀.' : ''}',
                               style: const TextStyle(
                                 color: Colors.white70,
@@ -2822,6 +2853,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
                               ),
                             );
                           },
+                        ),
                         ),
                       ),
                     ),

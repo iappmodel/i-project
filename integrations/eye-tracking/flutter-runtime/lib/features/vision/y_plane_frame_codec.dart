@@ -3,6 +3,9 @@ import 'package:flutter/foundation.dart';
 
 import 'frame_codec.dart';
 import 'runtime_transport_config.dart';
+import 'y_plane_buffer_pool.dart';
+
+final YPlaneBufferPool _yPlanePool = YPlaneBufferPool();
 
 /// Map payload for `vision_channel` `processFrame` when experimental transport is on.
 ///
@@ -95,7 +98,7 @@ VisionChannelPayload _jpegPayload({
   final outH = w <= maxEdge && h <= maxEdge
       ? h
       : (h >= w ? maxEdge : (maxEdge * h / w).round());
-  final out = Uint8List(outW * outH);
+  final out = _yPlanePool.acquire(outW * outH);
   if (w <= maxEdge && h <= maxEdge) {
     if (row == w) {
       out.setRange(0, w * h, yPlane.bytes, 0);

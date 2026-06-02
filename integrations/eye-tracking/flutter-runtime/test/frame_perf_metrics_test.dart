@@ -32,6 +32,7 @@ void main() {
       expect(m.droppedThrottle, 0);
       expect(m.droppedBusy, 0);
       expect(m.droppedInvalid, 0);
+      expect(m.droppedAdaptiveSkip, 0);
       expect(m.encodeTotalMs, 0);
       expect(m.encodeSamples, 0);
       expect(m.channelTotalMs, 0);
@@ -41,6 +42,18 @@ void main() {
       expect(m.lastNativeDecodeMs, 1.1);
       expect(m.lastNativeProcessMs, 2.2);
       expect(m.lastNativeTotalMs, 3.3);
+    });
+
+    test('snapshot reports adaptive skip in hudLine', () {
+      final m = FramePerfMetrics();
+      m.resetWindow(1000);
+      m.cameraInputCount = 12;
+      m.processedCount = 8;
+      m.droppedAdaptiveSkip = 2;
+      m.lastNativeTotalMs = 44.0;
+      final line = m.snapshot(nowMs: 2000).hudLine;
+      expect(line, contains('0/0/0/2'));
+      expect(line, contains('native=44.0'));
     });
   });
 }

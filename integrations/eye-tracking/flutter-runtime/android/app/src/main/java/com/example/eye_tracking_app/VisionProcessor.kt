@@ -39,6 +39,9 @@ object VisionProcessor {
             false
         }
 
+    /** Off by default — saves ~15–25 ms/frame on mid-tier Android (POP Stage 7). */
+    private const val ENABLE_SELFIE_SEGMENTER = false
+
     /** MediaPipe Tasks image segmenter (selfie); asset from `float16/latest` on GCS. */
     private const val SEGMENTER_MODEL_ASSET = "selfie_segmenter.tflite"
 
@@ -291,7 +294,7 @@ object VisionProcessor {
                     .build()
                 landmarker = FaceLandmarker.createFromOptions(app, options)
             }
-            if (imageSegmenter == null) {
+            if (ENABLE_SELFIE_SEGMENTER && imageSegmenter == null) {
                 try {
                     val segBase = BaseOptions.builder()
                         .setModelAssetPath(SEGMENTER_MODEL_ASSET)

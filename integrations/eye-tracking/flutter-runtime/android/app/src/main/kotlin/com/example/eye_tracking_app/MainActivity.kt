@@ -72,7 +72,7 @@ class MainActivity : FlutterActivity() {
                 var decodeNs = 0L
                 var bitmap: Bitmap? = null
                 decodeNs = measureNanoTime {
-                    bitmap = y8ToArgbBitmap(yBytes, w, h, rowStride)
+                    bitmap = y8ToArgbBitmapReusable(yBytes, w, h, rowStride)
                 }
                 if (bitmap == null) {
                     val payload = HashMap<String, Any>(VisionProcessor.emptyPayload())
@@ -82,15 +82,11 @@ class MainActivity : FlutterActivity() {
                     result.success(payload)
                     return
                 }
-                try {
-                    val landmarks = HashMap<String, Any>(VisionProcessor.process(bitmap))
-                    landmarks["nativeDecodeMs"] = decodeNs / 1_000_000.0
-                    landmarks["nativeTotalMs"] =
-                        (System.nanoTime() - totalStartNs) / 1_000_000.0
-                    result.success(landmarks)
-                } finally {
-                    bitmap.recycle()
-                }
+                val landmarks = HashMap<String, Any>(VisionProcessor.process(bitmap))
+                landmarks["nativeDecodeMs"] = decodeNs / 1_000_000.0
+                landmarks["nativeTotalMs"] =
+                    (System.nanoTime() - totalStartNs) / 1_000_000.0
+                result.success(landmarks)
             }
             "jpeg" -> {
                 val bytes = map["bytes"] as? ByteArray
@@ -139,17 +135,22 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    /** Luma-only buffer → ARGB_8888 for MediaPipe (no JPEG decode). */
-    private fun y8ToArgbBitmap(
+    /** Luma-only buffer → reused ARGB bitmap for MediaPipe (no per-frame alloc). */
+    private fun y8ToArgbBitmapReusable(
         yBytes: ByteArray,
         width: Int,
         height: Int,
         rowStride: Int,
-    ): Bitmap {
-        val pixels = IntArray(width * height)
+    ): Bitmap? {
+        val pixelCount = width * height
+        var pixels = y8PixelCache
+        if (pixels == null || pixels.size < pixelCount) {
+            pixels = IntArray(pixelCount)
+            y8PixelCache = pixels
+        }
         if (rowStride == width) {
             var i = 0
-            while (i < width * height) {
+            while (i < pixelCount) {
                 val lum = yBytes[i].toInt() and 0xff
                 pixels[i] = -0x1000000 or (lum shl 16) or (lum shl 8) or lum
                 i++
@@ -168,14 +169,21 @@ class MainActivity : FlutterActivity() {
                 y++
             }
         }
-        return Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).also {
-            it.setPixels(pixels, 0, width, 0, 0, width, height)
+        var bmp = y8BitmapCache
+        if (bmp == null || bmp.isRecycled || bmp.width != width || bmp.height != height) {
+            bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+            y8BitmapCache = bmp
         }
+        bmp.setPixels(pixels, 0, width, 0, 0, width, height)
+        return bmp
     }
 
     companion object {
         private const val VISION_CHANNEL = "vision_channel"
         private const val METHOD_PROCESS_FRAME = "processFrame"
         private const val METHOD_CALIBRATE_HEAD_POSE = "calibrateHeadPose"
+
+        private var y8PixelCache: IntArray? = null
+        private var y8BitmapCache: Bitmap? = null
     }
 }
