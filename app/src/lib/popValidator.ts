@@ -9,8 +9,11 @@ export interface PopPendingHold {
   reviewStatus: string
   amount: number
   currency: 'icoin' | 'vicoin'
-  holdStatus: 'pending' | 'settled' | 'cancelled'
+  holdStatus: 'pending' | 'appeal_pending' | 'settled' | 'cancelled'
   releaseStatus: string
+  releaseEligibleAt: string | null
+  appealExpiresAt: string | null
+  reverifyUsed: boolean
   createdAt: string
   settledAt: string | null
 }
@@ -57,6 +60,11 @@ function mapHold(row: Record<string, unknown>): PopPendingHold {
     currency: row.currency === 'vicoin' ? 'vicoin' : 'icoin',
     holdStatus: (row.hold_status as PopPendingHold['holdStatus']) ?? 'pending',
     releaseStatus: String(row.release_status),
+    releaseEligibleAt: row.release_eligible_at
+      ? String(row.release_eligible_at)
+      : null,
+    appealExpiresAt: row.appeal_expires_at ? String(row.appeal_expires_at) : null,
+    reverifyUsed: row.reverify_used === true,
     createdAt: String(row.created_at),
     settledAt: row.settled_at ? String(row.settled_at) : null,
   }

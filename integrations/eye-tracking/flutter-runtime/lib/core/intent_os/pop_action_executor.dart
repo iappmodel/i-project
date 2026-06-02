@@ -83,6 +83,7 @@ final class PopActionExecutor {
     required bool likelyFake,
     required bool gazeFreshForCommit,
     required void Function() onAllowed,
+    bool fromGazeOnly = true,
   }) {
     if (!isTracking) {
       return AutonomousActionGateResult.blockedPrefilter;
@@ -128,8 +129,8 @@ final class PopActionExecutor {
         actionType: actionType,
         twinRiskScore: riskScore,
       ),
-      fromGazeOnly: true,
-      explicitConfirmationGranted: false,
+      fromGazeOnly: fromGazeOnly,
+      explicitConfirmationGranted: !fromGazeOnly,
       gazeFreshForCommit: gazeFreshForCommit,
       userTrust: autonomyLevel,
       fixationState: fixationState,
@@ -152,6 +153,41 @@ final class PopActionExecutor {
       _recordCommit(nowMs);
     }
     return gate;
+  }
+
+  /// Touch/tap zone targets — same gates as gaze but not gaze-only (Stage 8 parity).
+  AutonomousActionGateResult tryZoneSelectFromTouch({
+    required String zone,
+    required int nowMs,
+    required bool isTracking,
+    required bool calibrationBusy,
+    required bool visionError,
+    required bool userIsDistracted,
+    required double autonomyLevel,
+    required double stabilityVariance,
+    required double riskScore,
+    required bool likelyFake,
+    required void Function() onAllowed,
+  }) {
+    return tryZoneSelect(
+      zone: zone,
+      confidence: 0.92,
+      fixationState: FixationState.fixation,
+      dwellProgress: 1.0,
+      dwellMs: 1200,
+      nowMs: nowMs,
+      isTracking: isTracking,
+      calibrationBusy: calibrationBusy,
+      visionError: visionError,
+      userIsDistracted: userIsDistracted,
+      autonomyLevel: autonomyLevel,
+      stabilityVariance: stabilityVariance,
+      riskScore: riskScore,
+      likelyFake: likelyFake,
+      gazeFreshForCommit: true,
+      onAllowed: onAllowed,
+      fromGazeOnly: false,
+    );
   }
 
   void reset() {

@@ -9,6 +9,9 @@ import 'package:flutter/services.dart';
 import 'calibration/calibration_profile_store.dart';
 import 'calibration/calibration_recalibration.dart';
 import 'features/calibration/calibration_phase.dart';
+import 'features/onboarding/calibration_wizard.dart';
+import 'features/onboarding/pop_consent_store.dart';
+import 'features/onboarding/pop_onboarding_overlay.dart';
 import 'features/camera/camera_session_controller.dart';
 import 'features/vision/frame_codec.dart';
 import 'features/vision/frame_perf_metrics.dart';
@@ -56,6 +59,8 @@ import 'core/intent_os/intent_influence_pipeline.dart';
 import 'core/intent_os/intent_predictor.dart';
 import 'core/intent_os/kernel_evaluation_input.dart';
 import 'core/intent_os/action_risk_policy.dart';
+import 'core/intent_os/action_history.dart';
+import 'core/intent_os/autonomous_action.dart';
 import 'core/intent_os/pop_action_executor.dart';
 import 'core/pop/frame_coordinator.dart';
 import 'core/pop/pop_runtime_config.dart';
@@ -245,6 +250,10 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
 
   /// Unified zone/action executor — manual dwell+blink commits pass same gates as autonomous path.
   final PopActionExecutor _popActionExecutor = PopActionExecutor();
+  final ActionHistory _committedActionHistory = ActionHistory();
+  PopConsentStore _popConsentStore = PopConsentStore.inMemory();
+  CalibrationWizardStep _wizardStep = CalibrationWizardStep.consent;
+  bool _safeModeEnabled = kDefaultEmergencyKillSwitch;
 
   final PopFrameCoordinator _frameCoordinator = PopFrameCoordinator();
 
@@ -554,13 +563,16 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
   void _refreshCalibrationStateMachine() {
     if (_isCalibrationReady) {
       _setCalibrationPhase(CalibrationPhase.ready);
+      _syncWizardStep();
       return;
     }
     if (_openEarCalibrating) {
       _setCalibrationPhase(CalibrationPhase.samplingOpenEar);
+      _syncWizardStep();
       return;
     }
     _setCalibrationPhase(CalibrationPhase.idle);
+    _syncWizardStep();
   }
 
   void _beginLeftCalibration() {
@@ -604,6 +616,17 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
       unawaited(widget.cameraSession.startStream(_onCameraImage));
     });
     unawaited(_initCalibrationStore());
+    unawaited(_initPopOnboarding());
+  }
+
+  Future<void> _initPopOnboarding() async {
+    final consent = await PopConsentStore.open();
+    if (!mounted) return;
+    _popConsentStore = consent;
+    _safeModeEnabled = kDefaultEmergencyKillSwitch;
+    _autonomousExecution.emergencyKillSwitch = _safeModeEnabled;
+    _syncWizardStep();
+    setState(() {});
   }
 
   Future<void> _initCalibrationStore() async {
@@ -617,6 +640,57 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
       _gazeMeasuredRight = profile.longTermGaze.rightBound;
     }
     setState(() => _calibrationStore = store);
+    _syncWizardStep();
+  }
+
+  bool get _onboardingComplete =>
+      _wizardStep == CalibrationWizardStep.complete;
+
+  void _syncWizardStep() {
+    final next = calibrationWizardStepFromSamples(
+      consentAccepted: _popConsentStore.consentAccepted,
+      wizardMarkedComplete: _popConsentStore.wizardCompleted,
+      gazeYaw: GazeYawCalibrationSamples(
+        gazeMeasuredLeft: _gazeMeasuredLeft,
+        gazeMeasuredRight: _gazeMeasuredRight,
+        neutralHeadYaw: _neutralHeadYaw,
+      ),
+      leftOpenEar: _leftOpenEar,
+      rightOpenEar: _rightOpenEar,
+    );
+    if (next == _wizardStep) return;
+    _wizardStep = next;
+    if (next == CalibrationWizardStep.complete &&
+        !_popConsentStore.wizardCompleted) {
+      unawaited(_popConsentStore.markWizardCompleted());
+    }
+    _applyWizardCaptureForStep(next);
+  }
+
+  void _applyWizardCaptureForStep(CalibrationWizardStep step) {
+    final kind = calibrationWizardCaptureKind(step);
+    if (kind == CalibrationBeginCaptureKind.leftGaze) {
+      _beginLeftCalibration();
+    } else if (kind == CalibrationBeginCaptureKind.rightGaze) {
+      _beginRightCalibration();
+    } else if (kind == CalibrationBeginCaptureKind.neutralHeadYaw) {
+      _requestNeutralYawAndSample();
+    } else if (calibrationWizardNeedsOpenEar(step) && !_openEarCalibrating) {
+      _startOpenEarCalibration();
+    }
+  }
+
+  Future<void> _onAcceptPopConsent() async {
+    await _popConsentStore.acceptConsent();
+    if (!mounted) return;
+    setState(() {
+      _wizardStep = CalibrationWizardStep.lookLeft;
+    });
+    _applyWizardCaptureForStep(CalibrationWizardStep.lookLeft);
+  }
+
+  void _onWizardDismissComplete() {
+    setState(() => _wizardStep = CalibrationWizardStep.complete);
   }
 
   Future<void> _persistCalibrationProfile({bool foldLongTerm = false}) async {
@@ -832,7 +906,70 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
     );
     unawaited(_persistCalibrationProfile());
     debugPrint('SELECTED: $zone');
+    _committedActionHistory.record(
+      AutonomousAction(
+        type: UIActionType.openZone,
+        targetZone: zone,
+        confidence: kMinGovernanceConfidence,
+        riskScore: 0,
+        predictedLatency: 50,
+      ),
+    );
     return true;
+  }
+
+  void _undoLastCommittedAction() {
+    final entries = _committedActionHistory.entries;
+    if (entries.isEmpty) {
+      setState(() {
+        _displaySelectedZone = '';
+        _selectedAnnouncedForStint = false;
+        _debugNotifier.value = _debugNotifier.value.copyWith(selected: '');
+      });
+      return;
+    }
+    final last = entries.last;
+    _committedActionHistory.undoLast();
+    if (last.type == UIActionType.openZone) {
+      setState(() {
+        _displaySelectedZone = '';
+        _selectedAnnouncedForStint = false;
+        _debugNotifier.value = _debugNotifier.value.copyWith(selected: '');
+      });
+    }
+  }
+
+  /// Touch parity for zone pills (Stage 8).
+  void _requestZoneSelectFromTouch(String zone) {
+    if (!_onboardingComplete) return;
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    _requestZoneSelectFromTouchAt(zone, nowMs: nowMs);
+  }
+
+  bool _requestZoneSelectFromTouchAt(
+    String zone, {
+    required int nowMs,
+  }) {
+    var applied = false;
+    final gate = _popActionExecutor.tryZoneSelectFromTouch(
+      zone: zone,
+      nowMs: nowMs,
+      isTracking: _isTrackingState,
+      calibrationBusy: _isCalibrationBusy,
+      visionError: _visionChannelError,
+      userIsDistracted: _userEngagementState == UserEngagementState.zoningOut,
+      autonomyLevel: _autonomyLevel,
+      stabilityVariance: _pipeline.varianceX(),
+      riskScore: 0.0,
+      likelyFake: _likelyFake,
+      onAllowed: () {
+        applied = _applyZoneSelectSideEffects(zone);
+      },
+    );
+    if (gate != AutonomousActionGateResult.allowed) {
+      debugPrint('ZONE_TOUCH_BLOCKED: $zone gate=${gate.name}');
+    }
+    return applied;
   }
 
   /// Zone select through [PopActionExecutor] safety chain (Stage 3 keystone).
@@ -842,6 +979,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
     required bool likelyFake,
     required int nowMs,
   }) {
+    if (!_onboardingComplete) return false;
     var applied = false;
     final gate = _popActionExecutor.tryZoneSelect(
       zone: zone,
@@ -2518,6 +2656,9 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
                           compact: true,
                           showSelectionLabel: false,
                           influenceListenable: _influenceNotifier,
+                          onZoneTapped: _onboardingComplete
+                              ? _requestZoneSelectFromTouch
+                              : null,
                         );
                       },
                     );
@@ -2566,6 +2707,25 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
                           'Cal EAR',
                           style: TextStyle(color: Colors.white70, fontSize: 13),
                         ),
+                      ),
+                      SwitchListTile(
+                        title: const Text(
+                          'Safe mode',
+                          style: TextStyle(color: Colors.white70, fontSize: 12),
+                        ),
+                        subtitle: const Text(
+                          'Blocks autonomous gaze actions',
+                          style: TextStyle(color: Colors.white54, fontSize: 10),
+                        ),
+                        value: _safeModeEnabled,
+                        onChanged: (v) {
+                          setState(() {
+                            _safeModeEnabled = v;
+                            _autonomousExecution.emergencyKillSwitch = v;
+                          });
+                        },
+                        contentPadding: EdgeInsets.zero,
+                        dense: true,
                       ),
                       const Divider(height: 8, color: Colors.white24),
                       TextButton(
@@ -2663,14 +2823,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
               bottom: 160,
               child: SafeArea(
                 child: TextButton(
-                  onPressed: () {
-                    setState(() {
-                      _displaySelectedZone = '';
-                      _selectedAnnouncedForStint = false;
-                      _debugNotifier.value =
-                          _debugNotifier.value.copyWith(selected: '');
-                    });
-                  },
+                  onPressed: _undoLastCommittedAction,
                   child: const Text(
                     'Undo zone select',
                     style: TextStyle(color: Colors.white70, fontSize: 13),
@@ -2862,6 +3015,12 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
               ),
             ),
           ),
+          if (calibrationWizardBlocksInteraction(_wizardStep))
+            PopOnboardingOverlay(
+              step: _wizardStep,
+              onAcceptConsent: () => unawaited(_onAcceptPopConsent()),
+              onDismissComplete: _onWizardDismissComplete,
+            ),
           ValueListenableBuilder<KernelTelemetry?>(
             valueListenable: _attentionKernel.telemetryNotifier,
             builder: (context, t, _) {

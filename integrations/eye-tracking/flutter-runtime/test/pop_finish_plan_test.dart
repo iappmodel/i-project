@@ -6,6 +6,7 @@ import '../lib/core/intent_os/pop_action_executor.dart';
 import '../lib/core/intent_os/ui_action_type.dart';
 import '../lib/gaze_coordinate_space.dart';
 import '../lib/core/signal_stale_policy.dart';
+import '../lib/features/onboarding/calibration_wizard.dart';
 
 void main() {
   group('Stage 2 deletion manifest', () {
@@ -112,6 +113,19 @@ void main() {
     test('blocks high-risk action types from gaze-only path', () {
       expect(PopActionExecutor.isHighRiskFromGazeOnly(UIActionType.longPress), isTrue);
       expect(PopActionExecutor.isHighRiskFromGazeOnly(UIActionType.openZone), isFalse);
+    });
+  });
+
+  group('Stage 8 UX', () {
+    test('wizard blocks interaction until complete', () {
+      expect(
+        calibrationWizardBlocksInteraction(CalibrationWizardStep.consent),
+        isTrue,
+      );
+      expect(
+        calibrationWizardBlocksInteraction(CalibrationWizardStep.complete),
+        isFalse,
+      );
     });
   });
 }

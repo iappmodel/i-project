@@ -3,6 +3,7 @@ import { Button } from '../components/Button'
 import { EloCompanionCard } from '../components/EloCompanionCard'
 import { TabScreenLayout } from '../components/TabScreenLayout'
 import { formatCoinLabel } from '../lib/format'
+import { PendingRewardExplainer } from '../components/PendingRewardExplainer'
 import { useDemo } from '../state/useDemo'
 
 function actDot(kind: string) {
@@ -42,7 +43,9 @@ export function WalletScreen() {
   })
 
   const visible = showAll ? transactions : transactions.slice(0, 5)
-  const pendingHolds = popHolds.filter((h) => h.holdStatus === 'pending')
+  const pendingHolds = popHolds.filter(
+    (h) => h.holdStatus === 'pending' || h.holdStatus === 'appeal_pending',
+  )
 
   return (
     <TabScreenLayout
@@ -146,11 +149,14 @@ export function WalletScreen() {
       </div>
 
       {walletBackend === 'live' && pendingHolds.length > 0 ? (
-        <p className="profile-trust-card__hint" style={{ marginBottom: 10, fontSize: 12 }}>
-          Rewards earned locally are validating on the POP server. Pending holds move to available
-          {formatCoinLabel('icoin')} after review (approved or partial). Tap Settle when your session
-          shows approved — fraud or weak attention may reduce or delay payout.
-        </p>
+        <PendingRewardExplainer
+          hold={pendingHolds[0]!}
+          onReverify={
+            pendingHolds[0]?.holdStatus === 'appeal_pending'
+              ? () => setScreen('watch-verify')
+              : undefined
+          }
+        />
       ) : null}
 
       {walletBackend === 'live' && pendingHolds.length > 0 ? (

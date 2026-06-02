@@ -23,6 +23,7 @@ class GazeZoneButtons extends StatelessWidget {
     this.compact = false,
     this.showSelectionLabel = true,
     this.influenceListenable,
+    this.onZoneTapped,
   });
 
   /// Current gaze band ([getGazeZone] on normalized gaze), or null when unavailable.
@@ -45,6 +46,9 @@ class GazeZoneButtons extends StatelessWidget {
 
   /// Optional: rebuilds targets when [IntentInfluence] updates (hitbox + opacity for predicted zone).
   final ValueListenable<IntentInfluence?>? influenceListenable;
+
+  /// Touch parity: tap zone pill → same commit path as dwell+blink (Stage 8).
+  final void Function(String zone)? onZoneTapped;
 
   /// Distance from the bottom edge to the selection banner (matches typical FAB clearance).
   static const double selectionBannerBottom = 80;
@@ -136,7 +140,7 @@ class GazeZoneButtons extends StatelessWidget {
         ? opacityFromWeight(weight)
         : (zoneOpacity[label] ?? 1.0).clamp(0.0, 1.0);
 
-    return AnimatedSlide(
+    final pill = AnimatedSlide(
       duration: const Duration(milliseconds: 220),
       curve: Curves.easeOutCubic,
       offset: Offset(offset.dx / 120.0, offset.dy / 120.0),
@@ -165,6 +169,13 @@ class GazeZoneButtons extends StatelessWidget {
           ),
         ),
       ),
+    );
+    final tap = onZoneTapped;
+    if (tap == null) return pill;
+    return GestureDetector(
+      onTap: () => tap(label),
+      behavior: HitTestBehavior.opaque,
+      child: pill,
     );
   }
 }
