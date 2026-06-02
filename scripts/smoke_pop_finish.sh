@@ -12,6 +12,7 @@ required=(
   "$FLUTTER/lib/core/intent_os/pop_action_executor.dart"
   "$FLUTTER/lib/gaze_coordinate_space.dart"
   "$FLUTTER/lib/core/signal_stale_policy.dart"
+  "$FLUTTER/lib/replay/pop_replay_driver.dart"
   "$FLUTTER/POP_FINISH_DELETION_MANIFEST.md"
   "$FLUTTER/POP_PRIVACY_BOUNDARIES.md"
   "$APP/src/lib/popFeatureFlags.ts"
@@ -51,7 +52,9 @@ flutter test \
   test/bypass_paths_test.dart \
   test/pop_finish_plan_test.dart \
   test/pop_action_executor_test.dart \
-  test/governance_kernel_test.dart
+  test/governance_kernel_test.dart \
+  test/pop_replay_harness_test.dart \
+  test/high_risk_action_lane_test.dart
 
 echo ""
 echo "PASS: POP finish smoke"
