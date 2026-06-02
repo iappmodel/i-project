@@ -7,7 +7,17 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
----
+## 2026-06-02 — POP Android MVP v1 (Stages 1–9 complete)
+
+### Delivered
+- **Stages 1–9** on `main`: replay harness → safety → gaze unify → server settlement → calibration → perf → UX → ship gate (`d7a6d0d`).
+- **Ship gate** — `./scripts/smoke_pop_ship_gate.sh` (Flutter 277+ tests, pop-core validator/backend, app vitest, PP-000001 golden, privacy + RLS contracts).
+- **Release** — `docs/POP_ANDROID_MVP_RELEASE.md`, git tag `pop-android-mvp-v1`.
+
+### Verification
+```bash
+./scripts/smoke_pop_ship_gate.sh
+```
 
 ---
 

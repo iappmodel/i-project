@@ -60,4 +60,6 @@ flutter test \
   test/pop_stage9_ship_gate_test.dart
 
 echo ""
+echo ""
+echo "For full Android MVP gate run: ./scripts/smoke_pop_ship_gate.sh"
 echo "PASS: POP finish smoke"

@@ -313,18 +313,22 @@ flowchart LR
 
 ---
 
-## POP finish plan (2026-05-30, PR #2)
+## POP finish plan — Android MVP v1 ✅ (2026-06-02, tag `pop-android-mvp-v1`)
 
-| Item | Status |
-|------|--------|
-| Dead/duplicate Flutter cleanup | ✅ Stage 1 manifest |
-| Unified zone commit path | ✅ `PopActionExecutor` |
-| Calibrated gaze + stale frames | ✅ `gaze_coordinate_space`, `signal_stale_policy` |
-| Y-plane transport + release landmarks | ✅ `runtime_transport_config`, `VisionProcessor.kt` |
-| Session evidence → proof packet | ✅ `demoContext`, `demoProofPacket` |
-| POP feature flags + kill switch | ✅ `popFeatureFlags.ts` |
-| Flutter POP tests | ✅ `pop_finish_plan_test`, `pop_action_executor_test` |
-| CI Supabase smoke gate | ✅ requires `supabase` CLI + Docker |
+| Stage | Item | Status |
+|-------|------|--------|
+| 1 | Deterministic replay harness | ✅ `pop_replay_driver`, fixtures |
+| 2 | Dead/duplicate Flutter cleanup | ✅ `POP_FINISH_DELETION_MANIFEST.md` |
+| 3 | Safety (CRITICAL-1, high-risk lane) | ✅ `pop_action_executor`, governance honesty |
+| 4 | Unified gaze space | ✅ `gaze_coordinate_space`, native-smoothed pipeline |
+| 5 | Server settlement + appeal holds | ✅ migration `20260602120000`, validator sessions |
+| 6 | Adaptive calibration persist | ✅ `CalibrationProfileStore`, recalibration UX |
+| 7 | Performance (Y8, 5 Hz HUD) | ✅ buffer pool, `frame_perf_metrics` |
+| 8 | UX (consent wizard, undo, explainer) | ✅ onboarding overlay, `PendingRewardExplainer` |
+| 9 | Ship gate | ✅ `smoke_pop_ship_gate.sh`, `pop_privacy_gate` |
+| — | Release note | ✅ `docs/POP_ANDROID_MVP_RELEASE.md` |
+| — | POP feature flags + kill switch | ✅ `popFeatureFlags.ts`, `getPopRolloutStatus()` |
+| — | CI Supabase smoke (optional) | ✅ `smoke_pop_wallet_loop_supabase.sh` + Docker |
 
 ---
 
