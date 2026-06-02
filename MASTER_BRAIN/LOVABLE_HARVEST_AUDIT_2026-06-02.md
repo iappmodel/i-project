@@ -339,10 +339,10 @@ live_streams, live_stream_comments, error_logs, feature_flags, app_versions
 
 ### Epic H2 — Live feed & social (2–3 weeks)
 
-| # | Feature | Source | Target |
-|---|---------|--------|--------|
-| H2.1 | Personalized feed | `get-personalized-feed`, `usePersonalizedFeed` | `ImmersiveFeedScreen` media queue |
-| H2.2 | Interaction tracking | `track-interaction`, `useFeedInteraction` | Like/share/save + rail counts |
+| # | Feature | Source | Target | Status |
+|---|---------|--------|--------|--------|
+| H2.1 | Personalized feed | `get-personalized-feed`, `usePersonalizedFeed` | `ImmersiveFeedScreen` media queue | **Done** (2026-06-02) |
+| H2.2 | Interaction tracking | `track-interaction`, `useFeedInteraction` | Like/share/save + rail counts | **Done** (2026-06-02) |
 | H2.3 | Comments | `CommentsPanel`, `useComments` | MESSAGE sheet thread |
 | H2.4 | Follow / OUT-PROFILE | `useFollow`, `PublicProfile` | `OutProfileChip` + profile sheet |
 | H2.5 | Saved vault | `saved_content`, `SavedVideosGallery` | `SavedScreen` + Supabase |

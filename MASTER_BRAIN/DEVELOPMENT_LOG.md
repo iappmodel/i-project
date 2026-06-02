@@ -25,8 +25,13 @@ Chronological record of archaeology, promotion, and implementation work.
 - **`ImmersiveWalletSheet`** — Convert + Withdraw CTAs → `convert` / `withdraw-preview`
 - **`applyTransferBalances`** on `demoContext`
 
+### Epic H2 started (2026-06-02)
+- **`get-personalized-feed`** + **`track-interaction`** edge fns ported
+- **`feed.service.ts`**, **`useImmersiveFeed`**, **`useFeedInteraction`**
+- **`ImmersiveFeedScreen`** — swipe ↑↓ next/prev clip, lane dots, live feed + demo fallback, view/like/share tracking
+
 ### Next
-- H1.2 transaction history · H1.3 payout parity · **H2** live feed (`get-personalized-feed`, `track-interaction`)
+- H1.2 transaction history · H1.3 payout parity · H2.3 comments thread
 
 ---
 

@@ -54,6 +54,23 @@ if ! grep -q "immersive-glass-sheet" "$APP/src/styles/gesture-buttons.css"; then
   echo "FAIL: glass sheet CSS missing" >&2
   exit 1
 fi
+for f in get-personalized-feed/index.ts track-interaction/index.ts; do
+  [[ -f "$APP/supabase/functions/$f" ]] || {
+    echo "FAIL: missing supabase/functions/$f" >&2
+    exit 1
+  }
+done
+[[ -f "$APP/src/services/feed.service.ts" ]] || { echo "FAIL: feed.service.ts missing" >&2; exit 1; }
+[[ -f "$APP/src/hooks/useImmersiveFeed.ts" ]] || { echo "FAIL: useImmersiveFeed.ts missing" >&2; exit 1; }
+[[ -f "$APP/src/hooks/useFeedInteraction.ts" ]] || { echo "FAIL: useFeedInteraction.ts missing" >&2; exit 1; }
+if ! grep -q "useImmersiveFeed" "$APP/src/screens/ImmersiveFeedScreen.tsx"; then
+  echo "FAIL: ImmersiveFeed must use useImmersiveFeed" >&2
+  exit 1
+fi
+if ! grep -q "immersive-feed__swipe" "$APP/src/screens/ImmersiveFeedScreen.tsx"; then
+  echo "FAIL: immersive feed swipe layer missing" >&2
+  exit 1
+fi
 
 cd "$APP"
 npm run typecheck --silent

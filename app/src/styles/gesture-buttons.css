@@ -26,6 +26,40 @@
   background-color: #0a1520;
   background-size: cover;
   background-position: center;
+  transition: opacity 0.35s ease;
+}
+
+.immersive-feed__swipe {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  touch-action: none;
+}
+
+.immersive-feed__lane-dots {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  pointer-events: none;
+}
+
+.immersive-feed__lane-dots i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.28);
+  display: block;
+}
+
+.immersive-feed__lane-dots i.on {
+  background: #fff;
+  height: 12px;
+  border-radius: 4px;
 }
 
 .immersive-feed__scrim-top {

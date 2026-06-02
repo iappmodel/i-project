@@ -390,6 +390,7 @@ flowchart LR
 |----------|------|
 | Lovable feature match + harvest backlog | `LOVABLE_HARVEST_AUDIT_2026-06-02.md` (branch `feature/lovable-harvest`) |
 | Lovable H1.1 convert (`transfer-coins`) | `app/supabase/functions/transfer-coins`, `app/src/services/transferCoins.ts`, `ConvertScreen` |
+| Lovable H2 feed (`get-personalized-feed`, `track-interaction`) | `app/supabase/functions/*`, `feed.service.ts`, `useImmersiveFeed`, `ImmersiveFeedScreen` |
 | Organism overview | `ORGANISM_STATUS.md` |
 | What is Seal Proof? | `TRUST_SYSTEM/SEAL_PROOF.md` |
 | Elo vs POP | `ENTITIES/ELO.md`, `RELATIONSHIPS/Elo_POP.md` |
