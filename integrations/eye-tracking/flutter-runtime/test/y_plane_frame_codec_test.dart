@@ -7,8 +7,8 @@ import 'package:eye_tracking_app/features/vision/y_plane_frame_codec.dart';
 
 void main() {
   group('runtime transport config', () {
-    test('useExperimentalYPlaneTransport defaults false', () {
-      expect(useExperimentalYPlaneTransport, isFalse);
+    test('useExperimentalYPlaneTransport defaults true (promoted transport)', () {
+      expect(useExperimentalYPlaneTransport, isTrue);
     });
 
     test('kExperimentalYPlaneMaxEdge is 512', () {

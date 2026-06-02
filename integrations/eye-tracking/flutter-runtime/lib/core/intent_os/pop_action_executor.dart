@@ -84,14 +84,17 @@ final class PopActionExecutor {
       return AutonomousActionGateResult.blockedGovernance;
     }
 
-    final governanceConfidence = confidence >= kMinGovernanceConfidence
+    // Feeds ONLY the autonomy-scaled prefilter (ActionPipelineKernel). The real
+    // confidence is carried on ActionContext below so governance/safety and the audit
+    // trail see the true value, not a floored constant (CRITICAL-1 honesty fix).
+    final prefilterConfidence = confidence >= kMinGovernanceConfidence
         ? confidence
         : kMinGovernanceConfidence;
 
     final prefilter = KernelEvaluationInput(
       type: actionType,
       targetZone: zone,
-      confidence: governanceConfidence,
+      confidence: prefilterConfidence,
       timestamp: nowMs,
       dwellMs: dwellMs,
       autonomyLevel: autonomyLevel,
@@ -105,7 +108,10 @@ final class PopActionExecutor {
     final ctx = ActionContext(
       actionType: actionType,
       target: zone,
-      confidence: governanceConfidence,
+      confidence: confidence,
+      // Low-risk reversible zone select: governance honestly checks the real
+      // confidence against the explicit zone-commit floor (not the generic 0.85).
+      governanceMinConfidence: kMinZoneCommitConfidence,
       riskScore: riskScore,
       userTrust: autonomyLevel,
       fixationState: fixationState,

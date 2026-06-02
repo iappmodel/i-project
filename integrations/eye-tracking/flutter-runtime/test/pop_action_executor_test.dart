@@ -6,6 +6,39 @@ import '../lib/gaze_fixation.dart';
 
 void main() {
   group('PopActionExecutor', () {
+    test('governance/audit see the real confidence, not a floored constant', () {
+      // CRITICAL-1 regression: previously the real confidence was floored to
+      // kMinGovernanceConfidence (0.86) before reaching governance and the audit
+      // trail, masking the true signal. It must now flow through unchanged.
+      double? auditedConfidence;
+      final kernel = AutonomousExecutionKernel()
+        ..auditSink = (_, confidence, __, ___) => auditedConfidence = confidence;
+      final executor = PopActionExecutor(kernel: kernel);
+
+      var called = false;
+      final gate = executor.tryZoneSelect(
+        zone: 'CENTER',
+        confidence: 0.70,
+        fixationState: FixationState.fixation,
+        dwellProgress: 1.0,
+        dwellMs: 1200,
+        nowMs: 9000,
+        isTracking: true,
+        calibrationBusy: false,
+        visionError: false,
+        userIsDistracted: false,
+        autonomyLevel: 0.9,
+        stabilityVariance: 0.01,
+        riskScore: 0.0,
+        likelyFake: false,
+        onAllowed: () => called = true,
+      );
+
+      expect(gate, AutonomousActionGateResult.allowed);
+      expect(called, isTrue);
+      expect(auditedConfidence, closeTo(0.70, 1e-9));
+    });
+
     test('blocks likelyFake anti-spoof signal', () {
       final executor = PopActionExecutor();
       var called = false;

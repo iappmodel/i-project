@@ -18,6 +18,7 @@ final class ActionContext {
     required this.timestampMs,
     required this.autonomyLevel,
     required this.stabilityVariance,
+    this.governanceMinConfidence = 0.85,
   });
 
   /// Optional caller convention for “no prior action” (e.g. logging). [GovernanceKernel]
@@ -48,4 +49,12 @@ final class ActionContext {
 
   /// Gaze pipeline stability (e.g. [GazePipeline.varianceX]) for audit / downstream policy.
   final double stabilityVariance;
+
+  /// Confidence floor [GovernanceKernel] enforces against the real [confidence].
+  ///
+  /// Defaults to 0.85 (autonomous / high-risk path). Low-risk reversible control
+  /// (manual gaze zone select) sets this to the explicit zone-commit floor
+  /// (`kMinZoneCommitConfidence`) so governance honestly checks the true confidence
+  /// instead of being neutralized by a floored value.
+  final double governanceMinConfidence;
 }
