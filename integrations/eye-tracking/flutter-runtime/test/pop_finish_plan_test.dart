@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 
 import '../lib/core/intent_os/pop_action_executor.dart';
@@ -6,6 +8,29 @@ import '../lib/gaze_coordinate_space.dart';
 import '../lib/core/signal_stale_policy.dart';
 
 void main() {
+  group('Stage 2 deletion manifest', () {
+    final removedPaths = [
+      'core/stability/smoothing.dart',
+      'lib/vision/gaze_filter.dart',
+      'lib/core/perception/frame_processor.dart',
+      'lib/core/intent_os/intent_os.dart',
+      'lib/core/intent_os/action_executor.dart',
+      'lib/gaze_models.dart',
+      'lib/human_state.dart',
+    ];
+
+    for (final path in removedPaths) {
+      test('$path must not exist', () {
+        expect(File(path).existsSync(), isFalse);
+      });
+    }
+
+    test('ui_preloader survivors remain', () {
+      expect(File('lib/ui_preloader.dart').existsSync(), isTrue);
+      expect(File('lib/core/events/ui_preloader.dart').existsSync(), isTrue);
+    });
+  });
+
   group('gaze_coordinate_space', () {
     test('uses calibrated bounds when available', () {
       expect(

@@ -2,7 +2,7 @@
 
 **Branch:** `pop/finish-plan-implementation`  
 **Date:** 2026-05-29  
-**Status:** Approved for Stage 1 execution
+**Status:** Stage 2 executed (2026-06-02) — misplaced `core/`, dead `lib/vision/`, ML-Kit `perception/`, legacy intent_os stubs removed
 
 ## Frozen (do NOT delete)
 
