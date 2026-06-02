@@ -66,7 +66,7 @@ flowchart LR
 | `./scripts/smoke_pop_finish.sh` | POP finish keystone files + Flutter regression tests |
 | `./scripts/smoke_investor_explainers.sh` | Investor explainer index + presenter deck + 18 HTML walkthroughs + app UI simulator |
 | `./scripts/smoke_app_ui_simulator.sh` | Integrated Picture 2 touch simulator file + index link + wiring markers |
-| `./scripts/open_investor_presenter.sh` | Open consolidated 18-slide presenter deck in browser |
+| `./scripts/open_investor_presenter.sh` | Open consolidated 19-slide presenter deck in browser |
 | `./scripts/open_app_ui_simulator.sh` | Open integrated touch simulator in browser |
 | `./scripts/smoke_open_investor_presenter.sh` | Presenter open script + deck file check (CI-safe) |
 | `./scripts/smoke_vision_proof_bridge.sh` | Vision → proof packet hints (Phase 34) |

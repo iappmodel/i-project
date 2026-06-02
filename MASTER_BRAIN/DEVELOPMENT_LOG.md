@@ -11,6 +11,17 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-30 — Presenter title slide (deck intro)
+
+### Delivered
+- **Title slide** — `investor_presenter_title.html` (5-scene intro: thesis, three loops, Picture 2 shell, 18-walkthrough series framing).
+- **Presenter deck slide 1** — before Feed; smoke checks title file; deck now **19 slides** (intro + 18 walkthroughs).
+
+### Verification
+- `./scripts/smoke_investor_explainers.sh`
+
+---
+
 ## 2026-05-30 — Boost triple-tap gesture explainer
 
 ### Delivered

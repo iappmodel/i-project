@@ -53,6 +53,9 @@ echo "OK index links (18 walkthroughs)"
 
 deck="$DIR/investor_presenter_deck.html"
 grep -q 'href="investor_presenter_deck.html"' "$index" || { echo "FAIL: index must link to presenter deck" >&2; exit 1; }
+grep -q 'investor_presenter_title.html' "$deck" || { echo "FAIL: presenter deck must include title slide" >&2; exit 1; }
+[[ -f "$DIR/investor_presenter_title.html" ]] || { echo "FAIL: missing investor_presenter_title.html" >&2; exit 1; }
+echo "OK presenter title slide"
 for name in "${required[@]}"; do
   [[ "$name" == "investor_explainer_index.html" ]] && continue
   [[ "$name" == "investor_presenter_deck.html" ]] && continue
