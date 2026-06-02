@@ -1,10 +1,11 @@
 import 'dart:convert';
 
+import '../gaze_coordinate_space.dart' show hasUserGazeCalibration;
 import '../gaze_normalize.dart';
 
-/// Local-only adaptive calibration profile (MVP scaffold).
+/// Local-only adaptive calibration profile (Stage 6).
 ///
-/// Observe-only: not wired into zone math or verification yet.
+/// Drives zone bounds + drift correction; persisted via [CalibrationProfileStore].
 /// See docs/technical/ADAPTIVE_CALIBRATION_SYSTEM.md.
 final class GazeThresholds {
   const GazeThresholds({
@@ -226,7 +227,44 @@ final class AdaptiveCalibrationProfile {
     );
   }
 
-  /// Observe one frame — stub; increments counters only. No threshold mutation yet.
+  static const double sessionEmaAlpha = 0.15;
+  static const double longTermEmaAlpha = 0.05;
+  static const double minGazeLrConfidenceForZone = 0.5;
+  static const double recalibrationQualityThreshold = 0.45;
+  static const double recalibrationConfidenceThreshold = 0.35;
+
+  /// Bounds for [resolveZoneFromGaze]: manual lab capture wins, else learned profile.
+  ({double? left, double? right}) zoneMeasuredBounds({
+    double? manualLeft,
+    double? manualRight,
+  }) {
+    if (hasUserGazeCalibration(manualLeft, manualRight)) {
+      return (left: manualLeft, right: manualRight);
+    }
+    final eg = effectiveGaze;
+    if (confidence.gazeLeftRight >= minGazeLrConfidenceForZone &&
+        eg.leftBound != null &&
+        eg.rightBound != null &&
+        eg.rightBound! > eg.leftBound!) {
+      return (left: eg.leftBound, right: eg.rightBound);
+    }
+    return (left: null, right: null);
+  }
+
+  /// Soft prompt when tracking quality or profile confidence degrades.
+  bool needsRecalibration({required double pipelineQuality}) {
+    if (pipelineQuality < recalibrationQualityThreshold &&
+        sessionSampleCount >= 20) {
+      return true;
+    }
+    if (confidence.overall < recalibrationConfidenceThreshold &&
+        (longTermGaze.leftBound != null || labeledZoneSelectCount >= 2)) {
+      return true;
+    }
+    return false;
+  }
+
+  /// Observe one stable frame (neutral center learning when not blinking).
   AdaptiveCalibrationProfile observeFrame({
     required double? gazeX,
     required double? leftEar,
@@ -236,27 +274,102 @@ final class AdaptiveCalibrationProfile {
     required bool isBlinking,
     required bool likelyFake,
     required int timestampMs,
+    String? currentZoneBand,
   }) {
-    if (likelyFake || gazeX == null) return this;
-    return copyWith(
+    if (likelyFake || gazeX == null || !gazeX.isFinite || isBlinking) {
+      return this;
+    }
+
+    var next = copyWith(
       sessionSampleCount: sessionSampleCount + 1,
       updatedAtMs: timestampMs,
     );
+
+    if (currentZoneBand == 'CENTER' && headStable) {
+      final sg = next.sessionGaze;
+      next = next.copyWith(
+        sessionGaze: sg.copyWith(
+          centerNeutral: _emaUpdate(sg.centerNeutral, gazeX, sessionEmaAlpha),
+        ),
+      );
+    }
+
+    if (leftEar != null &&
+        rightEar != null &&
+        leftEar.isFinite &&
+        rightEar.isFinite &&
+        !isBlinking) {
+      final se = next.sessionEar;
+      next = next.copyWith(
+        sessionEar: se.copyWith(
+          leftOpen: _emaUpdate(se.leftOpen, leftEar, sessionEmaAlpha),
+          rightOpen: _emaUpdate(se.rightOpen, rightEar, sessionEmaAlpha),
+        ),
+      );
+    }
+
+    if (headYawRaw != null && headStable) {
+      next = next.copyWith(
+        neutralHeadYaw: _emaUpdate(neutralHeadYaw, headYawRaw, sessionEmaAlpha),
+      );
+    }
+
+    return next.recomputeConfidence();
   }
 
-  /// Observe confirmed zone selection — stub for passive L/R learning.
+  /// Observe confirmed zone selection — passive L/R bound learning.
   AdaptiveCalibrationProfile observeZoneSelection({
     required String zone,
     required double gazeX,
     required int timestampMs,
   }) {
-    return copyWith(
+    if (!gazeX.isFinite) return this;
+
+    var sg = sessionGaze;
+    switch (zone) {
+      case 'LEFT':
+        sg = sg.copyWith(
+          leftBound: _expandMin(sg.leftBound, gazeX, sessionEmaAlpha),
+        );
+      case 'RIGHT':
+        sg = sg.copyWith(
+          rightBound: _expandMax(sg.rightBound, gazeX, sessionEmaAlpha),
+        );
+      case 'CENTER':
+        sg = sg.copyWith(
+          centerNeutral: _emaUpdate(sg.centerNeutral, gazeX, sessionEmaAlpha),
+        );
+    }
+
+    var next = copyWith(
+      sessionGaze: sg,
       labeledZoneSelectCount: labeledZoneSelectCount + 1,
       updatedAtMs: timestampMs,
     );
+    next = next._applyDriftFromZoneMismatch(zone: zone, gazeX: gazeX);
+    return next.recomputeConfidence();
   }
 
-  /// Observe completed blink — stub for closure-depth learning.
+  /// Sync lab Cal L/R captures into session gaze bounds.
+  AdaptiveCalibrationProfile applyManualCapture({
+    double? left,
+    double? right,
+    int? timestampMs,
+  }) {
+    var sg = sessionGaze;
+    if (left != null && left.isFinite) {
+      sg = sg.copyWith(leftBound: left);
+    }
+    if (right != null && right.isFinite) {
+      sg = sg.copyWith(rightBound: right);
+    }
+    return copyWith(
+      sessionGaze: sg,
+      updatedAtMs: timestampMs ?? DateTime.now().millisecondsSinceEpoch,
+    ).recomputeConfidence();
+  }
+
+  /// Observe completed blink — closure depth counter (EAR thresholds via OpenEarCalibrator).
   AdaptiveCalibrationProfile observeBlink({
     required double? meanEarAtClose,
     required int timestampMs,
@@ -265,7 +378,92 @@ final class AdaptiveCalibrationProfile {
     return copyWith(
       registeredBlinkCount: registeredBlinkCount + 1,
       updatedAtMs: timestampMs,
+    ).recomputeConfidence();
+  }
+
+  /// Fold session rolling state into long-term profile (on persist / background).
+  AdaptiveCalibrationProfile foldSessionToLongTerm() {
+    final lg = longTermGaze;
+    final sg = sessionGaze;
+    return copyWith(
+      longTermGaze: GazeThresholds(
+        leftBound: _emaUpdate(lg.leftBound, sg.leftBound, longTermEmaAlpha),
+        centerNeutral:
+            _emaUpdate(lg.centerNeutral, sg.centerNeutral, longTermEmaAlpha),
+        rightBound: _emaUpdate(lg.rightBound, sg.rightBound, longTermEmaAlpha),
+        deadband: sg.deadband,
+      ),
+      longTermEar: EarBaseline(
+        leftOpen: _emaUpdate(longTermEar.leftOpen, sessionEar.leftOpen, longTermEmaAlpha),
+        rightOpen:
+            _emaUpdate(longTermEar.rightOpen, sessionEar.rightOpen, longTermEmaAlpha),
+        closeFraction: sessionEar.closeFraction,
+        openFraction: sessionEar.openFraction,
+      ),
     );
+  }
+
+  /// Clear session counters; keep long-term persisted bounds.
+  AdaptiveCalibrationProfile resetSession() {
+    return copyWith(
+      sessionGaze: const GazeThresholds(),
+      sessionEar: const EarBaseline(),
+      sessionSampleCount: 0,
+      labeledZoneSelectCount: 0,
+      registeredBlinkCount: 0,
+      driftCorrectionX: 0,
+      updatedAtMs: DateTime.now().millisecondsSinceEpoch,
+    ).recomputeConfidence();
+  }
+
+  static double _emaUpdate(double? prior, double? sample, double alpha) {
+    if (sample == null || !sample.isFinite) return prior ?? sample ?? 0;
+    if (prior == null || !prior.isFinite) return sample;
+    return prior * (1 - alpha) + sample * alpha;
+  }
+
+  static double _expandMin(double? prior, double sample, double alpha) {
+    if (prior == null || !prior.isFinite) return sample;
+    final target = sample < prior ? sample : prior;
+    return prior * (1 - alpha) + target * alpha;
+  }
+
+  static double _expandMax(double? prior, double sample, double alpha) {
+    if (prior == null || !prior.isFinite) return sample;
+    final target = sample > prior ? sample : prior;
+    return prior * (1 - alpha) + target * alpha;
+  }
+
+  AdaptiveCalibrationProfile _applyDriftFromZoneMismatch({
+    required String zone,
+    required double gazeX,
+  }) {
+    final bounds = zoneMeasuredBounds();
+    if (bounds.left == null || bounds.right == null) return this;
+
+    final normalized = normalizeGazeX(
+      gazeX - gazeXCalibrationOffset,
+      bounds.left,
+      bounds.right,
+    );
+    if (normalized == null) return this;
+
+    double expected = 0.5;
+    switch (zone) {
+      case 'LEFT':
+        expected = 0.15;
+      case 'RIGHT':
+        expected = 0.85;
+      case 'CENTER':
+        expected = 0.5;
+    }
+
+    final error = normalized - expected;
+    if (error.abs() < 0.12) return this;
+
+    const step = 0.008;
+    final nextDrift = (driftCorrectionX - error * step).clamp(-0.05, 0.05);
+    return copyWith(driftCorrectionX: nextDrift);
   }
 
   /// Recompute confidence from counters — placeholder heuristic until device tuning.

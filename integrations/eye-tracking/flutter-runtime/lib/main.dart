@@ -6,6 +6,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'calibration/calibration_profile_store.dart';
+import 'calibration/calibration_recalibration.dart';
 import 'features/calibration/calibration_phase.dart';
 import 'features/camera/camera_session_controller.dart';
 import 'features/vision/frame_codec.dart';
@@ -306,12 +308,19 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
         zoneDwellMs: _zoneDwellMs,
       );
 
-  String _zoneFromGaze(double gazeX) => resolveZoneFromGaze(
-        pipelineSmoothedX: gazeX,
-        measuredLeft: _gazeMeasuredLeft,
-        measuredRight: _gazeMeasuredRight,
-        sessionSamples: _gazeSessionSamples,
-      );
+  String _zoneFromGaze(double gazeX) {
+    final bounds = _calibrationStore.profile.zoneMeasuredBounds(
+      manualLeft: _gazeMeasuredLeft,
+      manualRight: _gazeMeasuredRight,
+    );
+    return resolveZoneFromGaze(
+      pipelineSmoothedX: gazeX,
+      measuredLeft: bounds.left,
+      measuredRight: bounds.right,
+      sessionSamples: _gazeSessionSamples,
+      driftCorrectionX: _calibrationStore.profile.driftCorrectionX,
+    );
+  }
 
   /// Kernel [KernelEvaluationInput.autonomyLevel]: \([0,1]\) from [BehaviorProfile.userTrustScore].
   double get _autonomyLevel =>
@@ -475,6 +484,12 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
   /// Frames with valid gaze this session; drives [effectiveGazeCalibrationBounds] (reset on hard face loss).
   int _gazeSessionSamples = 0;
 
+  CalibrationProfileStore _calibrationStore =
+      CalibrationProfileStore.inMemory();
+  bool _recalibrationRecommended = false;
+  bool _recalibrationDismissed = false;
+  int _calibrationPersistCounter = 0;
+
   /// Raw head yaw from native (`headYawRaw`) when user captured neutral (same instant as Android neutral).
   double? _neutralHeadYaw;
 
@@ -587,6 +602,27 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
       setState(() => _previewScale = 1.0);
       unawaited(widget.cameraSession.startStream(_onCameraImage));
     });
+    unawaited(_initCalibrationStore());
+  }
+
+  Future<void> _initCalibrationStore() async {
+    final store = await CalibrationProfileStore.open();
+    if (!mounted) return;
+    final profile = store.profile;
+    if (_gazeMeasuredLeft == null && profile.longTermGaze.leftBound != null) {
+      _gazeMeasuredLeft = profile.longTermGaze.leftBound;
+    }
+    if (_gazeMeasuredRight == null && profile.longTermGaze.rightBound != null) {
+      _gazeMeasuredRight = profile.longTermGaze.rightBound;
+    }
+    setState(() => _calibrationStore = store);
+  }
+
+  Future<void> _persistCalibrationProfile({bool foldLongTerm = false}) async {
+    _calibrationPersistCounter++;
+    if (foldLongTerm || _calibrationPersistCounter % 5 == 0) {
+      await _calibrationStore.save(foldLongTerm: foldLongTerm);
+    }
   }
 
   @override
@@ -617,6 +653,7 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
     _debugNotifier.dispose();
     _blinkCountNotifier.dispose();
     uiPreloader.warmHint.dispose();
+    unawaited(_calibrationStore.save(foldLongTerm: true));
     super.dispose();
   }
 
@@ -785,6 +822,14 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
         _evolutionSignalBuffer.signalsFor(zone),
       );
     }
+    _calibrationStore.replace(
+      _calibrationStore.profile.observeZoneSelection(
+        zone: zone,
+        gazeX: smoothGazeX,
+        timestampMs: DateTime.now().millisecondsSinceEpoch,
+      ),
+    );
+    unawaited(_persistCalibrationProfile());
     debugPrint('SELECTED: $zone');
     return true;
   }
@@ -919,6 +964,8 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
         _pipelinePerf.reset();
         _pipelinePerfSnapshot = PipelinePerformanceSnapshot.empty;
         _gazeSessionSamples = 0;
+        _calibrationStore.replace(_calibrationStore.profile.resetSession());
+        _recalibrationRecommended = false;
         _popActionExecutor.reset();
         _frameCoordinator.reset();
         _lostFacePaused = true;
@@ -1081,6 +1128,28 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
         final gazeX = pipelineGaze.dx;
         smoothGazeX = gazeX;
         smoothGazeY = pipelineGaze.dy;
+
+        if (!_likelyFake) {
+          _calibrationStore.replace(
+            _calibrationStore.profile.observeFrame(
+              gazeX: smoothGazeX,
+              leftEar: face.leftEar,
+              rightEar: face.rightEar,
+              headYawRaw: face.headYawRaw,
+              headStable: face.headStable == true,
+              isBlinking: _isBlinking,
+              likelyFake: _likelyFake,
+              timestampMs: now,
+              currentZoneBand: _currentZone,
+            ),
+          );
+          final recommend = _calibrationStore.profile.needsRecalibration(
+            pipelineQuality: result.quality ?? 0,
+          );
+          if (recommend != _recalibrationRecommended && mounted) {
+            setState(() => _recalibrationRecommended = recommend);
+          }
+        }
 
         final frameZone = _displaySelectedZone.isNotEmpty
             ? _displaySelectedZone
@@ -1463,6 +1532,15 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
       calibrationDirty = true;
       debugPrint('Gaze max (look-right) captured: $gazeX');
       _refreshCalibrationStateMachine();
+    }
+    if (calibrationDirty) {
+      _calibrationStore.replace(
+        _calibrationStore.profile.applyManualCapture(
+          left: _gazeMeasuredLeft,
+          right: _gazeMeasuredRight,
+        ),
+      );
+      unawaited(_persistCalibrationProfile(foldLongTerm: true));
     }
     final headYawRaw = face.headYawRaw;
     if (shouldApplyNeutralHeadYawSample(
@@ -2586,6 +2664,53 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
                     strokeWidth: 3,
                     backgroundColor: Colors.white24,
                     color: Colors.white70,
+                  ),
+                ),
+              ),
+            ),
+          if (shouldShowRecalibrationPrompt(
+            recommended: _recalibrationRecommended,
+            calibrationBusy: _isCalibrationBusy,
+            dismissedForSession: _recalibrationDismissed,
+          ))
+            Positioned(
+              left: 16,
+              right: 16,
+              top: 72,
+              child: SafeArea(
+                child: Material(
+                  color: Colors.transparent,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Colors.orange.withValues(alpha: 0.85),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              kRecalibrationPromptMessage,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                height: 1.25,
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close, color: Colors.white),
+                            onPressed: () => setState(
+                              () => _recalibrationDismissed = true,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),

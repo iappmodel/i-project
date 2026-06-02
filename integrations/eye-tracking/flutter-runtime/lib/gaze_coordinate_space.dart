@@ -78,35 +78,13 @@ double? normalizedGazeFromPipeline({
   );
 }
 
-/// Resolves UI zone from [GazeSample] in [GazeCoordinateSpace.pipelineSmoothed] or [nativeRaw].
-///
-/// Uses [normalizeGazeX] + [getGazeZone] when calibration bounds exist; otherwise [getZone]
-/// on offset-adjusted gaze (matches legacy deadband before L/R capture).
-String resolveZoneFromGazeSample(
-  GazeSample sample, {
-  double? measuredLeft,
-  double? measuredRight,
-  int sessionSamples = 0,
-}) {
-  assert(
-    sample.space == GazeCoordinateSpace.pipelineSmoothed ||
-        sample.space == GazeCoordinateSpace.nativeRaw,
-    'zone resolution expects pipeline or native horizontal gaze',
-  );
-  return resolveZoneFromGaze(
-    pipelineSmoothedX: sample.x,
-    measuredLeft: measuredLeft,
-    measuredRight: measuredRight,
-    sessionSamples: sessionSamples,
-  );
-}
-
 /// Resolves UI zone label from pipeline-smoothed gaze and optional L/R calibration.
 String resolveZoneFromGaze({
   required double pipelineSmoothedX,
   double? measuredLeft,
   double? measuredRight,
   int sessionSamples = 0,
+  double driftCorrectionX = 0,
 }) {
   if (!pipelineSmoothedX.isFinite) return 'CENTER';
 
@@ -119,12 +97,35 @@ String resolveZoneFromGaze({
       usePopulationFallback: true,
     );
     if (normalized != null) {
-      return getGazeZone(normalized.clamp(0.0, 1.0));
+      final corrected =
+          (normalized + driftCorrectionX).clamp(0.0, 1.0);
+      return getGazeZone(corrected);
     }
   }
 
   final offset = pipelineSmoothedX - gazeXCalibrationOffset;
   return getZone(offset);
+}
+
+String resolveZoneFromGazeSample(
+  GazeSample sample, {
+  double? measuredLeft,
+  double? measuredRight,
+  int sessionSamples = 0,
+  double driftCorrectionX = 0,
+}) {
+  assert(
+    sample.space == GazeCoordinateSpace.pipelineSmoothed ||
+        sample.space == GazeCoordinateSpace.nativeRaw,
+    'zone resolution expects pipeline or native horizontal gaze',
+  );
+  return resolveZoneFromGaze(
+    pipelineSmoothedX: sample.x,
+    measuredLeft: measuredLeft,
+    measuredRight: measuredRight,
+    sessionSamples: sessionSamples,
+    driftCorrectionX: driftCorrectionX,
+  );
 }
 
 /// Normalized screen pointer X in \([0,1]\) from pipeline-smoothed gaze (HUD pointer baseline).
