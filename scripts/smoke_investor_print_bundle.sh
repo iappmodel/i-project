@@ -18,6 +18,11 @@ grep -q 'investor_print.css' "$BUNDLE" || { echo "FAIL: bundle must link print c
 grep -q 'window.print' "$BUNDLE" || { echo "FAIL: bundle must expose print action" >&2; exit 1; }
 grep -q 'REWARD pill' "$BUNDLE" || { echo "FAIL: bundle must catalog walkthroughs" >&2; exit 1; }
 grep -q 'POP' "$BUNDLE" || { echo "FAIL: bundle must include POP section" >&2; exit 1; }
+grep -q 'pop-v2-complete' "$BUNDLE" || { echo "FAIL: bundle must reference POP v2 tag" >&2; exit 1; }
+
+POP_EXPLAINER="$ROOT/06_feed_earning_loops/pop_feature_investor_explainer.html"
+grep -q 'pop-v2-complete' "$POP_EXPLAINER" || { echo "FAIL: POP explainer must reference v2 tag" >&2; exit 1; }
+grep -q 'POP_V2_RELEASE' "$POP_EXPLAINER" || { echo "FAIL: POP explainer must link v2 release doc" >&2; exit 1; }
 
 INDEX="$ROOT/06_feed_earning_loops/investor_explainer_index.html"
 grep -q 'investor_print_bundle.html' "$INDEX" || { echo "FAIL: index must link print bundle" >&2; exit 1; }

@@ -395,10 +395,11 @@ html, body { min-height: 100vh; background: var(--page-bg); font-family: Arial, 
         <div class="block-title">Feature status</div>
         <div class="roadmap">
           <div class="road-item"><strong>Demo</strong> — animated UX, mocked verification flow, ProofLayerScreen narrative</div>
-          <div class="road-item"><strong>MVP</strong> — Flutter VSL, validate-attention Edge Function, pending-first wallet, Seal Proof local</div>
-          <div class="road-item"><strong>Production</strong> — full POPS backend ingestion, fraud scoring, trust tiers, advertiser reporting</div>
+          <div class="road-item"><strong>MVP v1</strong> — tag <code>pop-android-mvp-v1</code>: Flutter runtime Stages 0–9, Android <code>vision_channel</code>, appeal holds, ship gate</div>
+          <div class="road-item"><strong>v2 shipped</strong> — tag <code>pop-v2-complete</code>: trust tiers (t0/t1/t2), Supabase-primary settlement path, iOS vision parity, external/OS hard gate (off by default)</div>
+          <div class="road-item"><strong>Production</strong> — full automated POPS reviewer, advertiser reporting, Play policy for optional OS control</div>
         </div>
-        <p class="status-note">Proof Packet → POPS → pending wallet: schema shipped; full wiring in progress.</p>
+        <p class="status-note">Canonical: <code>docs/POP_V2_RELEASE.md</code> · verify <code>./scripts/smoke_pop_ship_gate.sh</code></p>
       </div>
     </div>
   </div>

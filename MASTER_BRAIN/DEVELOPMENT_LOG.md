@@ -7,6 +7,20 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-06-02 — Investor explainers: POP v2 status copy
+
+### Delivered
+- **POP explainer + print bundle + index** — roadmap-honest v2 shipped (`pop-v2-complete`, trust tiers, iOS, Supabase path).
+- **Smoke** — `smoke_investor_print_bundle.sh` asserts v2 tag + `POP_V2_RELEASE` reference.
+
+### Verification
+```bash
+./scripts/smoke_investor_explainers.sh
+./scripts/open_investor_print_bundle.sh
+```
+
+---
+
 ## 2026-06-02 — POP v2 release tag (`pop-v2-complete`)
 
 ### Delivered
