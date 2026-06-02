@@ -22,6 +22,8 @@ final class VisionFrame {
     required this.fakePerfectStability,
     required this.fakeNoBlink,
     required this.faceConfidence,
+    this.isBlinking = false,
+    this.blinkCount = 0,
     this.nativeDecodeMs,
     this.nativeProcessMs,
     this.nativeTotalMs,
@@ -52,6 +54,13 @@ final class VisionFrame {
   /// Android segmentation: fraction of category-mask pixels for person (`1`); `0.0` if missing or invalid.
   /// Raw `-1` (no mask) is clamped to `0.0` when parsing.
   final double faceConfidence;
+
+  /// Native [VisionProcessor] blink gate (EAR); zone commit still uses [BlinkDetector].
+  final bool isBlinking;
+
+  /// Cumulative blinks since face lock (native counter).
+  final int blinkCount;
+
   final double? nativeDecodeMs;
   final double? nativeProcessMs;
   final double? nativeTotalMs;
@@ -81,6 +90,8 @@ final class VisionFrame {
         (raw['faceConfidence'] as num?)?.toDouble() ?? 0.0;
     final safeConfidence =
         rawFaceConfidence < 0 ? 0.0 : rawFaceConfidence;
+    final isBlinking = raw['isBlinking'] == true;
+    final blinkCount = (raw['blinkCount'] as num?)?.toInt() ?? 0;
     final nativeDecodeMs = (raw['nativeDecodeMs'] as num?)?.toDouble();
     final nativeProcessMs = (raw['nativeProcessMs'] as num?)?.toDouble();
     final nativeTotalMs = (raw['nativeTotalMs'] as num?)?.toDouble();
@@ -103,6 +114,8 @@ final class VisionFrame {
       fakePerfectStability: fakePerfectStability,
       fakeNoBlink: fakeNoBlink,
       faceConfidence: safeConfidence,
+      isBlinking: isBlinking,
+      blinkCount: blinkCount,
       nativeDecodeMs: nativeDecodeMs,
       nativeProcessMs: nativeProcessMs,
       nativeTotalMs: nativeTotalMs,

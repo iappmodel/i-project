@@ -121,13 +121,6 @@ class GazePipeline {
     stagedX = headCompensated.$1;
     stagedY = headCompensated.$2;
 
-    stagedX = applyDeadZone(stagedX, kGazeDeadZoneThreshold);
-    stagedY = applyDeadZone(stagedY, kGazeDeadZoneThreshold);
-
-    final velocityFiltered = _velocityFilter(stagedX, stagedY, now);
-    stagedX = velocityFiltered.$1;
-    stagedY = velocityFiltered.$2;
-
     if (!blink) {
       _preBlinkX = stagedX;
       _preBlinkY = stagedY;
@@ -136,14 +129,23 @@ class GazePipeline {
       stagedY = _preBlinkY;
     }
 
-    final ema = filter.update(stagedX, stagedY, alpha: filterAlpha);
     late double outX;
     late double outY;
     if (kNativePreSmoothed) {
-      final clamped = _clampOutput(ema.$1, ema.$2);
+      // Native VisionProcessor already applied dead zone + EMA — passthrough + variance telemetry.
+      filter.update(stagedX, stagedY, alpha: filterAlpha);
+      final clamped = _clampOutput(stagedX, stagedY);
       outX = clamped.$1;
       outY = clamped.$2;
     } else {
+      stagedX = applyDeadZone(stagedX, kGazeDeadZoneThreshold);
+      stagedY = applyDeadZone(stagedY, kGazeDeadZoneThreshold);
+
+      final velocityFiltered = _velocityFilter(stagedX, stagedY, now);
+      stagedX = velocityFiltered.$1;
+      stagedY = velocityFiltered.$2;
+
+      final ema = filter.update(stagedX, stagedY, alpha: filterAlpha);
       final temporal = _temporalSmooth(ema.$1, ema.$2, now);
       final clamped = _clampOutput(temporal.$1, temporal.$2);
       outX = clamped.$1;

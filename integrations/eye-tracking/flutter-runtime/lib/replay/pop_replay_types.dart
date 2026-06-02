@@ -28,6 +28,7 @@ final class PopReplayConfig {
   const PopReplayConfig({
     this.measuredLeft,
     this.measuredRight,
+    this.sessionSamples = 200,
     this.zoneDwellMs = 1200,
     this.dwellReleaseMs = 200,
     this.avgDwellMs = 1200,
@@ -35,6 +36,8 @@ final class PopReplayConfig {
 
   final double? measuredLeft;
   final double? measuredRight;
+  /// Passed to [resolveZoneFromGaze] for [effectiveGazeCalibrationBounds] weighting.
+  final int sessionSamples;
   final double zoneDwellMs;
   final int dwellReleaseMs;
   final double avgDwellMs;

@@ -34,18 +34,64 @@ void main() {
   group('gaze_coordinate_space', () {
     test('uses calibrated bounds when available', () {
       expect(
-        resolveZoneFromGaze(rawGazeX: -0.5, measuredLeft: -0.8, measuredRight: 0.8),
+        resolveZoneFromGaze(
+          pipelineSmoothedX: -0.5,
+          measuredLeft: -0.8,
+          measuredRight: 0.8,
+          sessionSamples: 200,
+        ),
         'LEFT',
       );
       expect(
-        resolveZoneFromGaze(rawGazeX: 0.5, measuredLeft: -0.8, measuredRight: 0.8),
+        resolveZoneFromGaze(
+          pipelineSmoothedX: 0.5,
+          measuredLeft: -0.8,
+          measuredRight: 0.8,
+          sessionSamples: 200,
+        ),
         'RIGHT',
       );
     });
 
-    test('falls back to raw deadband without calibration', () {
-      expect(resolveZoneFromGaze(rawGazeX: -0.2, measuredLeft: null, measuredRight: null), 'LEFT');
-      expect(resolveZoneFromGaze(rawGazeX: 0.0, measuredLeft: null, measuredRight: null), 'CENTER');
+    test('falls back to offset deadband without calibration', () {
+      expect(
+        resolveZoneFromGaze(
+          pipelineSmoothedX: -0.2,
+          measuredLeft: null,
+          measuredRight: null,
+        ),
+        'LEFT',
+      );
+      expect(
+        resolveZoneFromGaze(
+          pipelineSmoothedX: 0.0,
+          measuredLeft: null,
+          measuredRight: null,
+        ),
+        'CENTER',
+      );
+    });
+
+    test('GazeSample pipeline path matches resolveZoneFromGaze', () {
+      const sample = GazeSample(
+        x: -0.35,
+        y: 0,
+        space: GazeCoordinateSpace.pipelineSmoothed,
+      );
+      expect(
+        resolveZoneFromGazeSample(
+          sample,
+          measuredLeft: -0.4,
+          measuredRight: 0.4,
+          sessionSamples: 200,
+        ),
+        resolveZoneFromGaze(
+          pipelineSmoothedX: -0.35,
+          measuredLeft: -0.4,
+          measuredRight: 0.4,
+          sessionSamples: 200,
+        ),
+      );
     });
   });
 

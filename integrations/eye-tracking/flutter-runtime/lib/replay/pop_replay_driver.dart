@@ -105,9 +105,10 @@ final class PopReplayDriver {
 
       final smoothX = tick.result.x!;
       final zone = resolveZoneFromGaze(
-        rawGazeX: smoothX,
+        pipelineSmoothedX: smoothX,
         measuredLeft: _config.measuredLeft,
         measuredRight: _config.measuredRight,
+        sessionSamples: _config.sessionSamples,
       );
       lastZone = zone;
 

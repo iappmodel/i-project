@@ -66,6 +66,16 @@ void main() {
       expect(frame.nativeTotalMs, closeTo(17.0, 1e-9));
     });
 
+    test('parses native blink fields from VisionProcessor map', () {
+      final frame = VisionFrame.fromMap(
+        _validRaw()
+          ..['isBlinking'] = true
+          ..['blinkCount'] = 3,
+      );
+      expect(frame.isBlinking, isTrue);
+      expect(frame.blinkCount, 3);
+    });
+
     test('hasFace is false when landmarks is empty list', () {
       final frame = VisionFrame.fromMap(_validRaw(landmarks: []));
       expect(frame.hasFace, isFalse);

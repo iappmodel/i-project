@@ -307,9 +307,10 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
       );
 
   String _zoneFromGaze(double gazeX) => resolveZoneFromGaze(
-        rawGazeX: gazeX,
+        pipelineSmoothedX: gazeX,
         measuredLeft: _gazeMeasuredLeft,
         measuredRight: _gazeMeasuredRight,
+        sessionSamples: _gazeSessionSamples,
       );
 
   /// Kernel [KernelEvaluationInput.autonomyLevel]: \([0,1]\) from [BehaviorProfile.userTrustScore].
@@ -1474,16 +1475,12 @@ final class _FullScreenPreviewState extends State<_FullScreenPreview>
       debugPrint('Neutral yaw captured: $headYawRaw');
       _refreshCalibrationStateMachine();
     }
-    final bounds = effectiveGazeCalibrationBounds(
-      measuredLeft: _gazeMeasuredLeft,
-      measuredRight: _gazeMeasuredRight,
-      sessionSamples: _gazeSessionSamples,
-    );
     final normalizedGazeX = gazeX != null
-        ? normalizeGazeX(
-            gazeX - gazeXCalibrationOffset,
-            bounds.left,
-            bounds.right,
+        ? normalizedGazeFromPipeline(
+            pipelineSmoothedX: gazeX,
+            measuredLeft: _gazeMeasuredLeft,
+            measuredRight: _gazeMeasuredRight,
+            sessionSamples: _gazeSessionSamples,
           )
         : null;
     return (
