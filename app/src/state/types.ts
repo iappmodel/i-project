@@ -141,6 +141,8 @@ export interface DemoContextValue extends DemoState {
   authError: string | null
   signInDemo: () => Promise<void>
   signOutDemo: () => Promise<void>
+  /** Apply balances after transfer-coins (live or demo) */
+  applyTransferBalances: (icoin: number, vicoin: number) => void
   proofEventsConnected: boolean
   eloStatusLine: string
   lastProofEvent: ProofSealedEvent | null

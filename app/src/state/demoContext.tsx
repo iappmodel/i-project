@@ -406,6 +406,14 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     [liveWallet, authUserId],
   )
 
+  const applyTransferBalances = useCallback((icoin: number, vicoin: number) => {
+    setState((prev) => ({
+      ...prev,
+      iCoins: Math.max(0, icoin),
+      aCoins: Math.max(0, vicoin),
+    }))
+  }, [])
+
   const canCollectReward = canIssueAttentionReward(state.attentionSession)
   const canRedeemReward = canIssueAttentionReward(state.attentionSession)
 
@@ -448,6 +456,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       authError: supabaseAuth.authError,
       signInDemo: supabaseAuth.signInDemo,
       signOutDemo: supabaseAuth.signOut,
+      applyTransferBalances,
       proofEventsConnected: proofEvents.connected,
       eloStatusLine: proofEvents.eloStatusLine,
       lastProofEvent: proofEvents.lastEvent,
@@ -464,6 +473,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       proofEvents.eloStatusLine,
       proofEvents.lastEvent,
       settlePopHoldWithAuth,
+      applyTransferBalances,
       navigateTo,
       setActiveTab,
       startPresenterTour,

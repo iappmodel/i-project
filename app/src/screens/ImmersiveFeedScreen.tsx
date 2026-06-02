@@ -221,6 +221,16 @@ export function ImmersiveFeedScreen() {
           <ImmersiveWalletSheet
             open={walletSheetOpen}
             onClose={() => setWalletSheetOpen(false)}
+            onConvert={() => {
+              setWalletSheetOpen(false)
+              setActiveTab('wallet')
+              setScreen('convert')
+            }}
+            onWithdraw={() => {
+              setWalletSheetOpen(false)
+              setActiveTab('wallet')
+              setScreen('withdraw-preview')
+            }}
             onOpenFull={() => {
               setWalletSheetOpen(false)
               setActiveTab('wallet')

@@ -329,9 +329,9 @@ live_streams, live_stream_comments, error_logs, feature_flags, app_versions
 
 ### Epic H1 — Wallet & money movement (2–3 weeks)
 
-| # | Feature | Source (archive) | Target (app/) |
-|---|---------|------------------|---------------|
-| H1.1 | Vicoin↔Icoin convert | `transfer-coins`, `rewards.service` | `ConvertScreen` + `ImmersiveWalletSheet` |
+| # | Feature | Source (archive) | Target (app/) | Status |
+|---|---------|------------------|---------------|--------|
+| H1.1 | Vicoin↔Icoin convert | `transfer-coins`, `rewards.service` | `ConvertScreen` + `ImmersiveWalletSheet` | **Done** (2026-06-02) |
 | H1.2 | Transaction history | `transactions`, `useTransactions` | Wallet sheet list |
 | H1.3 | Payout methods | `request-payout`, `PayoutHistory` | `WithdrawPreviewScreen` glass |
 | H1.4 | Issue-reward parity | `issue-reward` diff | `app/supabase/functions/issue-reward` |

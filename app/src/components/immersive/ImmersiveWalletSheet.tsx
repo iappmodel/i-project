@@ -7,9 +7,17 @@ type Props = {
   open: boolean
   onClose: () => void
   onOpenFull?: () => void
+  onConvert?: () => void
+  onWithdraw?: () => void
 }
 
-export function ImmersiveWalletSheet({ open, onClose, onOpenFull }: Props) {
+export function ImmersiveWalletSheet({
+  open,
+  onClose,
+  onOpenFull,
+  onConvert,
+  onWithdraw,
+}: Props) {
   const {
     iCoins,
     iCoinsPending,
@@ -52,6 +60,16 @@ export function ImmersiveWalletSheet({ open, onClose, onOpenFull }: Props) {
         </div>
       </div>
       <div className="immersive-glass-sheet__actions">
+        {onConvert ? (
+          <Button variant="secondary" onClick={onConvert}>
+            Convert
+          </Button>
+        ) : null}
+        {onWithdraw ? (
+          <Button variant="secondary" onClick={onWithdraw}>
+            Withdraw
+          </Button>
+        ) : null}
         <Button variant="secondary" onClick={() => jumpEarn()}>
           Earn more
         </Button>

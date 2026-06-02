@@ -18,8 +18,15 @@ Chronological record of archaeology, promotion, and implementation work.
 - **`MASTER_BRAIN/LOVABLE_HARVEST_AUDIT_2026-06-02.md`** — 24-domain match matrix (A/B/C/D), edge-fn delta (43 vs 9), 70-table migration map, UI cheatsheet, epics H1–H9.
 - Cross-links in `WIRING_STATUS.md` knowledge map.
 
+### Epic H1.1 started (2026-06-02)
+- **`transfer-coins`** edge fn ported from `eye-earn-sparkle-archive` → `app/supabase/functions/transfer-coins/`
+- **`app/src/services/transferCoins.ts`** — live invoke + demo fallback (10:1 vicoin↔icoin)
+- **`ConvertScreen`** — wired to edge/demo; clearing gates; product mode hides `SourceEvidence`
+- **`ImmersiveWalletSheet`** — Convert + Withdraw CTAs → `convert` / `withdraw-preview`
+- **`applyTransferBalances`** on `demoContext`
+
 ### Next
-- Owner picks epic: **H1** (wallet/convert) or **H2** (live feed) on `feature/lovable-harvest`.
+- H1.2 transaction history · H1.3 payout parity · **H2** live feed (`get-personalized-feed`, `track-interaction`)
 
 ---
 
