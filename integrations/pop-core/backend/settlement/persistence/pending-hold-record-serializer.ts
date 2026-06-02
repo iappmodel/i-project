@@ -1,5 +1,9 @@
 import type { ProofReviewStatus } from "../../types/proof-packet-v0.types.js";
-import type { PendingHoldRecord, PendingHoldReviewAudit } from "../pending-hold.js";
+import {
+  normalizePendingHoldRecord,
+  type PendingHoldRecord,
+  type PendingHoldReviewAudit
+} from "../pending-hold.js";
 import type { SettlementAmountBreakdown } from "../settlement-amount.types.js";
 
 export const PENDING_HOLD_RECORD_STORAGE_VERSION = 1 as const;
@@ -15,10 +19,13 @@ export interface PendingHoldStoredRecordV1 {
   artifactId?: string | null;
   amount: number | null;
   amountBreakdown: SettlementAmountBreakdown | null;
-  status: "pending";
-  releaseStatus: "not_released";
+  status: PendingHoldRecord["status"];
+  releaseStatus: PendingHoldRecord["releaseStatus"];
   createdAt: string;
   reviewAudit: PendingHoldReviewAudit;
+  releaseEligibleAt?: string | null;
+  appealExpiresAt?: string | null;
+  reverifyUsed?: boolean;
 }
 
 export class PendingHoldRecordStorageError extends Error {
@@ -29,12 +36,6 @@ export class PendingHoldRecordStorageError extends Error {
 }
 
 export function toStoredRecord(record: PendingHoldRecord): PendingHoldStoredRecordV1 {
-  if (record.releaseStatus !== "not_released") {
-    throw new PendingHoldRecordStorageError(
-      `Unsupported releaseStatus for storage v1: ${record.releaseStatus}`
-    );
-  }
-
   assertAmountConsistency(record.amount, record.amountBreakdown);
 
   return {
@@ -49,9 +50,12 @@ export function toStoredRecord(record: PendingHoldRecord): PendingHoldStoredReco
     amount: record.amount,
     amountBreakdown: record.amountBreakdown,
     status: record.status,
-    releaseStatus: "not_released",
+    releaseStatus: record.releaseStatus,
     createdAt: record.createdAt,
-    reviewAudit: record.reviewAudit
+    reviewAudit: record.reviewAudit,
+    releaseEligibleAt: record.releaseEligibleAt ?? null,
+    appealExpiresAt: record.appealExpiresAt ?? null,
+    reverifyUsed: record.reverifyUsed ?? false
   };
 }
 
@@ -129,12 +133,15 @@ export function fromStoredRecord(stored: unknown): PendingHoldRecord {
   }
 
   const status = assertStringField(stored, "status");
-  if (status !== "pending") {
+  if (status !== "pending" && status !== "appeal_pending") {
     throw new PendingHoldRecordStorageError(`Unsupported status: ${status}`);
   }
 
   const releaseStatus = assertStringField(stored, "releaseStatus");
-  if (releaseStatus !== "not_released") {
+  if (
+    releaseStatus !== "not_released" &&
+    releaseStatus !== "release_blocked"
+  ) {
     throw new PendingHoldRecordStorageError(`Unsupported releaseStatus: ${releaseStatus}`);
   }
 
@@ -158,7 +165,7 @@ export function fromStoredRecord(stored: unknown): PendingHoldRecord {
 
   assertAmountConsistency(amount, amountBreakdown);
 
-  return {
+  return normalizePendingHoldRecord({
     sessionId: assertStringField(stored, "sessionId"),
     userId: stored.userId === undefined ? undefined : (stored.userId as string | null),
     localUserRef: assertStringField(stored, "localUserRef"),
@@ -168,9 +175,19 @@ export function fromStoredRecord(stored: unknown): PendingHoldRecord {
     artifactId: stored.artifactId === undefined ? undefined : (stored.artifactId as string | null),
     amount,
     amountBreakdown,
-    status: "pending",
-    releaseStatus: "not_released",
+    status: status as PendingHoldRecord["status"],
+    releaseStatus: releaseStatus as PendingHoldRecord["releaseStatus"],
     createdAt: assertStringField(stored, "createdAt"),
-    reviewAudit: parseReviewAudit(stored.reviewAudit)
-  };
+    reviewAudit: parseReviewAudit(stored.reviewAudit),
+    releaseEligibleAt:
+      stored.releaseEligibleAt === undefined
+        ? undefined
+        : (stored.releaseEligibleAt as string | null),
+    appealExpiresAt:
+      stored.appealExpiresAt === undefined
+        ? undefined
+        : (stored.appealExpiresAt as string | null),
+    reverifyUsed:
+      stored.reverifyUsed === undefined ? undefined : Boolean(stored.reverifyUsed)
+  });
 }

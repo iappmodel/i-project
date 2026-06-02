@@ -130,6 +130,11 @@ export {
   createPendingHoldFromReview,
   type CreatePendingHoldOptions
 } from "./settlement/pending-hold-service.js";
+export {
+  createAppealHoldFromReview,
+  APPEAL_PLACEHOLDER_AMOUNT_MINOR,
+  type AppealHoldOptions
+} from "./settlement/appeal-hold-service.js";
 
 export {
   PENDING_HOLD_RELEASE_ELIGIBILITY_REASON,

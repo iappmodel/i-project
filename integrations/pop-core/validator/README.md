@@ -24,7 +24,17 @@ Minimal HTTP service that accepts `ProofPacketV0`, runs POP review + pending hol
 - **`pending`** (default): review + pending hold
 - **`full`**: runs `runPopValueFlow` through in-memory wallet credit (dev)
 
-When `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` are set, pending holds are inserted into `pop_pending_holds`.
+When `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` are set, pending holds are inserted into `pop_pending_holds` and `pops_sessions` is upserted on validate.
+
+### Server settlement policy (env)
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `POP_RELEASE_DELAY_SECONDS` | `0` | Delay before `release_eligible_at` on approved/partial holds |
+| `POP_SERVER_AUTO_SETTLE` | `false` | When `true` + Supabase, validator may call `settle_pop_pending_hold` after release window |
+| `POP_APPEAL_EXPIRY_DAYS` | `7` | Appeal window for `pending`/`escalated` reviews (appeal hold, not auto-pay) |
+
+Client `VITE_AUTO_SETTLE` is demo-only; production settlement is server-gated.
 
 **Without Supabase/Docker:** holds are stored in JSON files under `POP_VALIDATOR_DATA_DIR` and served via the same list/get endpoints (`source: "local"`).
 
@@ -66,7 +76,7 @@ npm start
 
 ## Supabase migration
 
-Apply `app/supabase/migrations/20260525220000_pop_pending_holds.sql` via:
+Apply `app/supabase/migrations/20260525220000_pop_pending_holds.sql` and `20260602120000_pop_settlement_v2.sql` via:
 
 ```bash
 cd app/supabase && supabase db reset

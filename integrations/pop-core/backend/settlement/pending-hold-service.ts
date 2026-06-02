@@ -19,6 +19,7 @@ export interface CreatePendingHoldOptions {
   createdAt?: string;
   store?: PendingHoldStore;
   offerTermsProvider?: OfferSettlementTermsProvider;
+  releaseEligibleAt?: string | null;
 }
 
 export function createPendingHoldFromReview(
@@ -85,7 +86,9 @@ export function createPendingHoldFromReview(
     status: "pending",
     releaseStatus: "not_released",
     createdAt: options?.createdAt ?? new Date().toISOString(),
-    reviewAudit: toReviewAudit(record)
+    reviewAudit: toReviewAudit(record),
+    releaseEligibleAt: options?.releaseEligibleAt ?? null,
+    reverifyUsed: false
   };
 
   return {

@@ -23,13 +23,19 @@ export interface PopPendingHoldRow {
   review_status: string;
   amount: number;
   currency: LedgerCurrency;
-  hold_status: "pending";
+  hold_status: "pending" | "appeal_pending";
   release_status: string;
   ledger_ref_id: string;
+  release_eligible_at?: string | null;
+  appeal_expires_at?: string | null;
+  reverify_used?: boolean;
+  trust_tier_at_hold?: string | null;
 }
 
 export function pendingHoldToRow(hold: PendingHoldRecord): PopPendingHoldRow {
   const currency = mapPopCurrencyToLedger(hold.amountBreakdown?.currency);
+  const holdStatus =
+    hold.status === "appeal_pending" ? "appeal_pending" : "pending";
 
   return {
     session_id: hold.sessionId,
@@ -41,9 +47,13 @@ export function pendingHoldToRow(hold: PendingHoldRecord): PopPendingHoldRow {
     review_status: hold.reviewAudit.reviewStatus,
     amount: hold.amount ?? 0,
     currency,
-    hold_status: "pending",
+    hold_status: holdStatus,
     release_status: hold.releaseStatus,
-    ledger_ref_id: `pop_hold_${hold.sessionId}`
+    ledger_ref_id: `pop_hold_${hold.sessionId}`,
+    release_eligible_at: hold.releaseEligibleAt ?? null,
+    appeal_expires_at: hold.appealExpiresAt ?? null,
+    reverify_used: hold.reverifyUsed ?? false,
+    trust_tier_at_hold: "t0_new"
   };
 }
 

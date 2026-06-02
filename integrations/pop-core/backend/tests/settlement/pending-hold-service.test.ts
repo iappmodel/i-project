@@ -59,6 +59,9 @@ describe("createPendingHoldFromReview", () => {
         amountBreakdown: approvedAmountBreakdown,
         status: "pending",
         releaseStatus: "not_released",
+        releaseEligibleAt: null,
+        appealExpiresAt: null,
+        reverifyUsed: false,
         createdAt,
         reviewAudit: {
           sessionId: record.sessionId,

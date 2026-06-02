@@ -4,6 +4,7 @@ import {
   JsonFileProofReviewStore,
   JsonFilePendingHoldStore,
   createPendingHoldFromReview,
+  createAppealHoldFromReview,
   createDefaultPopValueFlowStores,
   runPopValueFlow,
   type PopValueFlowResult
@@ -11,7 +12,14 @@ import {
 
 import type { SupabaseSettlementClient } from "./supabase-settlement-client.js";
 import { mapPopCurrencyToLedger } from "./supabase-settlement.js";
-import { syncPendingHoldToSupabase, type SettlementSyncResult } from "./settle-handler.js";
+import { syncPendingHoldToSupabase, settleHoldViaSupabase, type SettlementSyncResult } from "./settle-handler.js";
+import {
+  readServerSettlementPolicy,
+  computeReleaseEligibleAt,
+  computeAppealExpiresAt,
+  canServerAutoSettleNow
+} from "./settlement-policy.js";
+import { syncPopsSessionToSupabase, type PopsSessionSyncResult } from "./pops-session-sync.js";
 
 export const VALIDATOR_VERSION = "POP_VALIDATOR_STUB_V1" as const;
 
@@ -40,6 +48,10 @@ export interface PendingValidateResponse {
   holdOutcome: "created" | "existing" | "skipped";
   hold: PendingHoldSummary | null;
   skipReason?: string;
+  appealHold?: boolean;
+  releaseEligibleAt?: string | null;
+  popsSession?: PopsSessionSyncResult;
+  autoSettle?: { attempted: boolean; code?: string };
   supabase?: SettlementSyncResult;
 }
 
@@ -123,6 +135,7 @@ export async function validateProofPacket(
     };
   }
 
+  const policy = readServerSettlementPolicy();
   const reviewService = new ProofReviewService(stores.reviewStore);
   const existing = reviewService.getReviewBySessionId(body.packet.sessionId);
   const reviewRecord =
@@ -132,15 +145,82 @@ export async function validateProofPacket(
       submittedAt
     });
 
-  const holdResult = createPendingHoldFromReview(reviewRecord, {
+  const releaseEligibleAt = computeReleaseEligibleAt(
+    submittedAt,
+    reviewRecord.status,
+    policy
+  );
+
+  let holdResult = createPendingHoldFromReview(reviewRecord, {
     store: stores.holdStore,
-    createdAt: submittedAt
+    createdAt: submittedAt,
+    releaseEligibleAt
   });
 
+  let appealHold = false;
+  if (
+    holdResult.outcome === "skipped" &&
+    holdResult.skipReason === "review_not_settlement_eligible"
+  ) {
+    const appealExpiresAt = computeAppealExpiresAt(submittedAt, policy);
+    holdResult = createAppealHoldFromReview(reviewRecord, {
+      store: stores.holdStore,
+      createdAt: submittedAt,
+      appealExpiresAt
+    });
+    appealHold = holdResult.outcome === "created" || holdResult.outcome === "existing";
+
+    if (supabase?.isEnabled && holdResult.outcome === "created") {
+      try {
+        await supabase.recordFraudEvent({
+          session_id: reviewRecord.sessionId,
+          user_id: reviewRecord.userId ?? null,
+          local_user_ref: reviewRecord.localUserRef,
+          review_status: reviewRecord.status,
+          action_taken: "appeal_hold_created",
+          created_at: submittedAt
+        });
+      } catch {
+        // Non-fatal: appeal hold still persisted locally / via hold sync.
+      }
+    }
+  }
+
   const hold = holdResult.hold;
+  const popsSession = supabase
+    ? await syncPopsSessionToSupabase(body.packet, reviewRecord, supabase)
+    : undefined;
+
   const supabaseSync = supabase
     ? await syncPendingHoldToSupabase(hold, supabase)
     : undefined;
+
+  let autoSettle: PendingValidateResponse["autoSettle"];
+  if (
+    policy.serverAutoSettle &&
+    supabase?.isEnabled &&
+    hold &&
+    hold.status === "pending" &&
+    reviewRecord.userId &&
+    canServerAutoSettleNow(reviewRecord.status, releaseEligibleAt)
+  ) {
+    try {
+      const settlement = await settleHoldViaSupabase(
+        hold.sessionId,
+        reviewRecord.userId,
+        supabase
+      );
+      autoSettle = {
+        attempted: true,
+        code: String(settlement.settlement.code ?? "settled")
+      };
+    } catch (error) {
+      autoSettle = {
+        attempted: true,
+        code: error instanceof Error ? error.message : "auto_settle_failed"
+      };
+    }
+  }
 
   return {
     validatorVersion: VALIDATOR_VERSION,
@@ -151,6 +231,10 @@ export async function validateProofPacket(
     holdOutcome: holdResult.outcome,
     hold: hold ? summarizeHold(hold) : null,
     skipReason: holdResult.skipReason,
+    appealHold,
+    releaseEligibleAt,
+    popsSession,
+    autoSettle,
     supabase: supabaseSync
   };
 }

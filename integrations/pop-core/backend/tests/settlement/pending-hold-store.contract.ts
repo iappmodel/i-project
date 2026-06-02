@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { createPendingHoldFromReview } from "../../settlement/pending-hold-service.js";
-import { toReviewAudit, type PendingHoldRecord } from "../../settlement/pending-hold.js";
+import {
+  normalizePendingHoldRecord,
+  toReviewAudit,
+  type PendingHoldRecord
+} from "../../settlement/pending-hold.js";
 import {
   DEFAULT_FIXTURE_BASE_REWARD_MINOR,
   DEFAULT_FIXTURE_OFFER_ID
@@ -46,6 +50,9 @@ export function buildPendingHoldRecord(
     amountBreakdown,
     status: "pending",
     releaseStatus: "not_released",
+    releaseEligibleAt: null,
+    appealExpiresAt: null,
+    reverifyUsed: false,
     createdAt,
     reviewAudit: toReviewAudit(reviewRecord),
     ...overrides
@@ -59,9 +66,9 @@ export function runPendingHoldStoreContract(
   describe(name, () => {
     it("saves and retrieves a record by sessionId", () => {
       const store = createStore();
-      const record = buildPendingHoldRecord();
+      const record = normalizePendingHoldRecord(buildPendingHoldRecord());
 
-      expect(store.save(record)).toBe(record);
+      expect(store.save(record)).toEqual(record);
       expect(store.getBySessionId(record.sessionId)).toEqual(record);
     });
 

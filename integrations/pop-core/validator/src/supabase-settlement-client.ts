@@ -7,6 +7,7 @@ import {
   readSupabaseSettlementConfig,
   type SupabaseSettlementConfig
 } from "./supabase-settlement.js";
+import type { PopsSessionRow } from "./pops-session-sync.js";
 
 export interface SupabaseSettlementClient {
   isEnabled: boolean;
@@ -17,6 +18,8 @@ export interface SupabaseSettlementClient {
   ): Promise<Record<string, unknown>>;
   getPendingHold(sessionId: string): Promise<Record<string, unknown> | null>;
   listPendingHolds(localUserRef: string): Promise<Record<string, unknown>[]>;
+  upsertPopsSession(row: PopsSessionRow): Promise<{ outcome: "created" | "existing" }>;
+  recordFraudEvent(event: Record<string, unknown>): Promise<void>;
 }
 
 function createSupabaseClient(config: SupabaseSettlementConfig): SupabaseClient {
@@ -42,7 +45,11 @@ export function createSupabaseSettlementClient(
       },
       async listPendingHolds() {
         return [];
-      }
+      },
+      async upsertPopsSession() {
+        return { outcome: "existing" as const };
+      },
+      async recordFraudEvent() {}
     };
   }
 
@@ -110,6 +117,32 @@ export function createSupabaseSettlementClient(
       }
 
       return (data ?? []) as Record<string, unknown>[];
+    },
+
+    async upsertPopsSession(row: PopsSessionRow) {
+      const { data: existing } = await client
+        .from("pops_sessions")
+        .select("session_id")
+        .eq("session_id", row.session_id)
+        .maybeSingle();
+
+      if (existing) {
+        return { outcome: "existing" as const };
+      }
+
+      const { error } = await client.from("pops_sessions").insert(row);
+      if (error) {
+        throw new Error(`pops_sessions insert failed: ${error.message}`);
+      }
+
+      return { outcome: "created" as const };
+    },
+
+    async recordFraudEvent(event: Record<string, unknown>) {
+      const { error } = await client.from("pop_fraud_events").insert(event);
+      if (error) {
+        throw new Error(`pop_fraud_events insert failed: ${error.message}`);
+      }
     }
   };
 }

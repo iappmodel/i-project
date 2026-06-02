@@ -5,6 +5,13 @@ import { join } from "node:path";
 import { describe, expect, it, afterEach } from "vitest";
 
 import {
+  POPS_REWARD_ELIGIBILITY,
+  ProofReviewStateMachine,
+  lifecycleEventFromDecision,
+  popsDecisionToProofReview,
+  projectProofPacketReview
+} from "@pop-core/backend";
+import {
   createValidatorStores,
   validateProofPacket
 } from "../src/validate-handler.js";
@@ -39,6 +46,56 @@ describe("validateProofPacket", () => {
     expect(result.hold?.currency).toBe("icoin");
     expect(result.hold?.status).toBe("pending");
     expect(result.supabase?.enabled).toBe(false);
+  });
+
+  it("pending mode creates appeal hold for escalated review", async () => {
+    dataDir = mkdtempSync(join(tmpdir(), "pop-validator-"));
+    const stores = createValidatorStores(dataDir);
+    const packet = structuredClone(pp000001) as typeof pp000001;
+    packet.sessionId = "sess_appeal_escalated_hold";
+
+    const projection = projectProofPacketReview(packet);
+    const decision = {
+      ...projection.decision,
+      rewardEligibility: POPS_REWARD_ELIGIBILITY.HELD_FOR_REVIEW
+    };
+    const review = popsDecisionToProofReview(decision);
+    const lifecycleEvent = lifecycleEventFromDecision(decision);
+    const transition = ProofReviewStateMachine.transition("pending", lifecycleEvent);
+
+    stores.reviewStore.save({
+      sessionId: packet.sessionId,
+      userId: packet.userId,
+      localUserRef: packet.localUserRef,
+      contentId: packet.contentId,
+      offerId: packet.offerId,
+      packetId: null,
+      artifactId: "PP-ESCALATED",
+      submittedAt: "2026-06-02T12:00:00.000Z",
+      reviewedAt: review.reviewedAt!,
+      status: transition.to,
+      originalPacket: packet,
+      projectedPacket: { ...packet, review },
+      batch: projection.batch,
+      scoring: projection.scoring,
+      decision,
+      review,
+      lifecycleEvents: [lifecycleEvent]
+    });
+
+    const result = await validateProofPacket(
+      { packet, mode: "pending", artifactId: "PP-ESCALATED" },
+      { stores, supabase: createSupabaseSettlementClient(null) }
+    );
+
+    expect(result.mode).toBe("pending");
+    if (result.mode !== "pending") return;
+
+    expect(result.reviewStatus).toBe("escalated");
+    expect(result.appealHold).toBe(true);
+    expect(result.holdOutcome).toBe("created");
+    expect(result.hold?.status).toBe("appeal_pending");
+    expect(result.hold?.releaseStatus).toBe("release_blocked");
   });
 
   it("is idempotent on rerun for same sessionId", async () => {

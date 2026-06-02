@@ -1,4 +1,4 @@
-import type { PendingHoldRecord } from "./pending-hold.js";
+import { normalizePendingHoldRecord, type PendingHoldRecord } from "./pending-hold.js";
 
 export interface PendingHoldStore {
   save(record: PendingHoldRecord): PendingHoldRecord;
@@ -23,8 +23,9 @@ export class InMemoryPendingHoldStore implements PendingHoldStore {
       throw new PendingHoldConflictError(record.sessionId);
     }
 
-    this.bySessionId.set(record.sessionId, record);
-    return record;
+    const normalized = normalizePendingHoldRecord(record);
+    this.bySessionId.set(record.sessionId, normalized);
+    return normalized;
   }
 
   getBySessionId(sessionId: string): PendingHoldRecord | null {

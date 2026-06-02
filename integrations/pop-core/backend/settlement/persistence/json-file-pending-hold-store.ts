@@ -10,7 +10,7 @@ import {
   PendingHoldConflictError,
   type PendingHoldStore
 } from "../pending-hold-store.js";
-import type { PendingHoldRecord } from "../pending-hold.js";
+import { normalizePendingHoldRecord, type PendingHoldRecord } from "../pending-hold.js";
 import {
   fromStoredRecord,
   PendingHoldRecordStorageError,
@@ -84,10 +84,11 @@ export class JsonFilePendingHoldStore implements PendingHoldStore {
       throw new PendingHoldConflictError(record.sessionId);
     }
 
-    const stored = toStoredRecord(record);
+    const normalized = normalizePendingHoldRecord(record);
+    const stored = toStoredRecord(normalized);
     writeJsonAtomically(recordPath, stored);
 
-    return record;
+    return normalized;
   }
 
   getBySessionId(sessionId: string): PendingHoldRecord | null {
