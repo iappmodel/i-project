@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] — Investor Print Bundle</title>
+<link rel="stylesheet" href="investor_print.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --heading: #333; --text: #555; --text-secondary: #777; --text-light: #999; --border: #ddd;
+}
+body { font-family: Arial, Helvetica, sans-serif; color: var(--text); background: #fff; line-height: 1.5; }
+.doc { max-width: 720px; margin: 0 auto; padding: 48px 36px 64px; }
+
+.cover-block { text-align: center; padding: 80px 0 64px; margin-bottom: 48px; border-bottom: 1px solid var(--border); }
+.cover-block .brand { font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 16px; }
+.cover-block h1 { font-size: 32px; font-weight: 400; color: var(--heading); margin-bottom: 12px; line-height: 1.2; }
+.cover-block .sub { font-size: 15px; color: var(--text-secondary); max-width: 480px; margin: 0 auto 24px; }
+.cover-block .meta { font-size: 11px; color: var(--text-light); }
+
+.instructions {
+  padding: 16px 18px; border: 1px solid var(--border); border-radius: 8px;
+  background: #fafafa; margin-bottom: 40px; font-size: 13px;
+}
+.instructions strong { color: var(--heading); }
+
+.section-block { margin-bottom: 36px; }
+.section-block h2 {
+  font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-light); font-weight: 400; margin-bottom: 16px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--border);
+}
+
+.feature { margin-bottom: 22px; padding-bottom: 18px; border-bottom: 1px solid #eee; }
+.feature:last-child { border-bottom: none; }
+.feature h3 { font-size: 17px; font-weight: 400; color: var(--heading); margin-bottom: 4px; }
+.feature .zone { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-light); margin-bottom: 6px; }
+.feature .thesis { font-size: 13px; color: var(--text-secondary); font-style: italic; margin-bottom: 8px; }
+.feature ul { margin: 0 0 8px 16px; font-size: 12px; }
+.feature li { margin-bottom: 4px; }
+.feature .file { font-family: 'SF Mono', Menlo, Consolas, monospace; font-size: 10px; color: var(--text-light); }
+.feature .status { font-size: 11px; color: var(--text-light); font-style: italic; margin-top: 6px; }
+
+.toc { margin-bottom: 40px; }
+.toc-row { display: flex; justify-content: space-between; font-size: 12px; padding: 5px 0; border-bottom: 1px dotted #eee; }
+.toc-row span:first-child { color: var(--heading); }
+
+.order-list { font-size: 12px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 32px; }
+
+.footer {
+  margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--border);
+  font-size: 10px; color: var(--text-light); line-height: 1.6;
+}
+</style>
+</head>
+<body>
+<div class="print-toolbar no-print">
+  <button type="button" onclick="window.print()">Save as PDF</button>
+  <a href="investor_explainer_index.html">Index</a>
+  <a href="investor_presenter_deck.html">Presenter</a>
+</div>
+
+<div class="doc">
+  <header class="cover-block avoid-break">
+    <div class="brand">[ i ] Platform</div>
+    <h1>Investor Feature Catalog</h1>
+    <p class="sub">Print-ready summary of all Picture 2 walkthroughs — Attention Wallet and Media Marketplace.</p>
+    <p class="meta">18 animated HTML walkthroughs · May 2026 · 06_feed_earning_loops/</p>
+  </header>
+
+  <div class="instructions no-print avoid-break">
+    <strong>Export to PDF:</strong> Click <em>Save as PDF</em> above, or press Cmd/Ctrl+P and choose Save as PDF.
+    Animated demos remain in the HTML files; this catalog is the static investor handout.
+  </div>
+
+  <section class="section-block avoid-break">
+    <h2>Product framing</h2>
+    <p style="font-size:13px;margin-bottom:12px">[ i ] is an Attention Wallet and Media Marketplace. The immersive feed (Picture 2) is the default product shell — full-bleed media, glass overlays, five-tab dock. Copy in the HTML series is roadmap-honest where MVP differs from vision.</p>
+    <p class="order-list"><strong>Suggested presenter order:</strong> Title → Feed → Loop 1 → TIMER → REWARD → Promo → Like → Save → Boost → Hold Love → OUT-PROFILE → MESSAGE → SHARE → CONTROLS → Wallet → ELO → Create → Profile → POP</p>
+  </section>
+
+  <section class="section-block avoid-break">
+    <h2>Table of contents</h2>
+    <div class="toc">
+      <div class="toc-row"><span>Loop 1 spine</span><span>2</span></div>
+      <div class="toc-row"><span>Earn and reward</span><span>5</span></div>
+      <div class="toc-row"><span>Action rail</span><span>3</span></div>
+      <div class="toc-row"><span>Shell overlays</span><span>2</span></div>
+      <div class="toc-row"><span>Center membrane</span><span>1</span></div>
+      <div class="toc-row"><span>5-tab dock</span><span>5</span></div>
+      <div class="toc-row"><span>System layer</span><span>1</span></div>
+    </div>
+  </section>
+
+  <section class="section-block">
+    <h2>Loop 1 spine</h2>
+
+    <article class="feature avoid-break">
+      <div class="zone">Integrated · touch model</div>
+      <h3>App UI Simulator</h3>
+      <p class="thesis">Responsive Picture 2 model — every visible control resolves to a simulated product response.</p>
+      <ul>
+        <li>Touch-first demo without React or backend.</li>
+        <li>Complements animated explainers for live walkthroughs.</li>
+      </ul>
+      <p class="file">app_ui_simulator.html</p>
+      <p class="status">Shipped: standalone HTML simulator with index link.</p>
+    </article>
+
+    <article class="feature avoid-break">
+      <div class="zone">Capstone · MVP flow</div>
+      <h3>Loop 1</h3>
+      <p class="thesis">Watch → Verify → Reward → Wallet in one animated spine.</p>
+      <ul>
+        <li>Ties feature explainers to MVP_CANONICAL_FLOW.</li>
+        <li>Seven-scene phone loop; panel sync with hover pause.</li>
+      </ul>
+      <p class="file">loop1_spine_explainer.html</p>
+      <p class="status">Shipped: capstone explainer for the series.</p>
+    </article>
+  </section>
+
+  <section class="section-block">
+    <h2>Earn and reward</h2>
+
+    <article class="feature avoid-break">
+      <div class="zone">Top-right · Loop 1 core</div>
+      <h3>REWARD pill</h3>
+      <p class="thesis">Offer arc → review → wallet credit on sponsored media.</p>
+      <ul>
+        <li>Primary earn affordance; states: idle, review, validating, settled.</li>
+        <li>Coin debits via Edge Functions when live; demo path when not.</li>
+      </ul>
+      <p class="file">reward_feature_explainer.html</p>
+      <p class="status">Shipped: core Loop 1 earn UI on immersive feed.</p>
+    </article>
+
+    <article class="feature avoid-break">
+      <div class="zone">Action rail · tap</div>
+      <h3>Like · Tap</h3>
+      <p class="thesis">Single tap toggles like — no wallet debit.</p>
+      <ul>
+        <li>Default Like/Love preset: tap = like.</li>
+        <li>Persists to content_likes when live backend + auth.</li>
+      </ul>
+      <p class="file">like_tap_explainer.html</p>
+      <p class="status">Shipped: useContentLike + local demo toggle.</p>
+    </article>
+
+    <article class="feature avoid-break">
+      <div class="zone">Action rail · double tap</div>
+      <h3>Save · Double-Tap</h3>
+      <p class="thesis">Double-tap saves clip to Loop 2 return layer.</p>
+      <ul>
+        <li>Retention without wallet friction.</li>
+        <li>Loop 2 scaffold: savedLoop localStorage + Saved screen.</li>
+      </ul>
+      <p class="file">save_double_tap_explainer.html</p>
+      <p class="status">MVP immersive: toast; full vault wiring roadmap-honest.</p>
+    </article>
+
+    <article class="feature avoid-break">
+      <div class="zone">Action rail · triple tap</div>
+      <h3>Boost · Triple-Tap</h3>
+      <p class="thesis">Triple-tap fires Boost — future vCoin reach amplification.</p>
+      <ul>
+        <li>Completes heart preset quartet with tap / save / hold.</li>
+        <li>Vision: bCoin/vCoin utility spend for content promotion.</li>
+      </ul>
+      <p class="file">boost_triple_tap_explainer.html</p>
+      <p class="status">MVP: demo toast only; FEATURE_BIBLE Promote path TBD.</p>
+    </article>
+
+    <article class="feature avoid-break">
+      <div class="zone">Action rail · hold</div>
+      <h3>Hold Love → Creator offer</h3>
+      <p class="thesis">Long-press opens creator tip/offer with wallet settlement.</p>
+      <ul>
+        <li>Hold ≥500ms arms cross; swipe tips v/i; review sheet on release.</li>
+        <li>Distinct from tap like and REWARD pill earn path.</li>
+      </ul>
+      <p class="file">love_hold_creator_offer_explainer.html</p>
+      <p class="status">Shipped: offer session + tip-creator edge fn when live.</p>
+    </article>
+  </section>
+
+  <section class="section-block">
+    <h2>Action rail</h2>
+
+    <article class="feature avoid-break">
+      <div class="zone">Rail · compose</div>
+      <h3>MESSAGE</h3>
+      <p class="thesis">Tap → compose sheet → context chip → inbox thread.</p>
+      <ul>
+        <li>Direct creator relationship layer on immersive media.</li>
+        <li>Roadmap-honest where MESSAGE preset differs from live wiring.</li>
+      </ul>
+      <p class="file">message_button_explainer.html</p>
+    </article>
+
+    <article class="feature avoid-break">
+      <div class="zone">Rail · distribution</div>
+      <h3>SHARE</h3>
+      <p class="thesis">Destinations, attribution, referral earn — attention as distribution.</p>
+      <ul>
+        <li>Share sheet with tracking hooks for marketplace loops.</li>
+      </ul>
+      <p class="file">share_button_explainer.html</p>
+    </article>
+
+    <article class="feature avoid-break">
+      <div class="zone">Rail · personalization</div>
+      <h3>CONTROLS</h3>
+      <p class="thesis">Hold 1s → gesture builder → rebind → persist locally.</p>
+      <ul>
+        <li>User-composable gestures per USER_GESTURE_BUTTONS canon.</li>
+        <li>Shipped in MVP: GestureButtonBuilderSheet + localStorage.</li>
+      </ul>
+      <p class="file">controls_button_explainer.html</p>
+      <p class="status">Shipped: builder + settings sheets in app.</p>
+    </article>
+  </section>
+
+  <section class="section-block">
+    <h2>Shell overlays</h2>
+
+    <article class="feature avoid-break">
+      <div class="zone">Top · session progress</div>
+      <h3>TIMER line</h3>
+      <p class="thesis">2px full-width progress — playback on organic, earn window on sponsored.</p>
+      <ul>
+        <li>Skip pauses timer; ties to session verification window.</li>
+      </ul>
+      <p class="file">timer_line_explainer.html</p>
+    </article>
+
+    <article class="feature avoid-break">
+      <div class="zone">Bottom-left · creator chip</div>
+      <h3>OUT-PROFILE</h3>
+      <p class="thesis">Creator on current media — distinct from ELO and In-Profile.</p>
+      <ul>
+        <li>Tap routes to sponsored offer or creator feed.</li>
+        <li>outProfileEngine.ts drives chip content.</li>
+      </ul>
+      <p class="file">out_profile_explainer.html</p>
+    </article>
+  </section>
+
+  <section class="section-block">
+    <h2>Center membrane</h2>
+
+    <article class="feature avoid-break">
+      <div class="zone">Center · companion</div>
+      <h3>ELO presence</h3>
+      <p class="thesis">Voice evoke → rail-to-center manifest → doctrine runtime + speech pulse.</p>
+      <ul>
+        <li>User companion membrane — not the creator chip.</li>
+        <li>Panel mic, elo-reply runtime, optional voice-out TTS.</li>
+      </ul>
+      <p class="file">elo_presence_explainer.html</p>
+      <p class="status">Shipped: ELO presence layer in app + smoke script.</p>
+    </article>
+  </section>
+
+  <section class="section-block">
+    <h2>5-tab dock</h2>
+
+    <article class="feature avoid-break">
+      <div class="zone">Tab 1 · product entry</div>
+      <h3>Feed</h3>
+      <p class="thesis">Default immersive home — full-bleed media, gesture rail, Loop 1 watch.</p>
+      <p class="file">feed_dock_explainer.html</p>
+    </article>
+
+    <article class="feature avoid-break">
+      <div class="zone">Tab 2 · demand side</div>
+      <h3>Promo</h3>
+      <p class="thesis">Sponsor briefs marketplace — watch, check-in, campaign tasks.</p>
+      <p class="file">promo_dock_explainer.html</p>
+    </article>
+
+    <article class="feature avoid-break">
+      <div class="zone">Tab 3 · supply side</div>
+      <h3>Create (+)</h3>
+      <p class="thesis">Studio entry — proof-ready media supply into feed loop.</p>
+      <p class="file">create_studio_explainer.html</p>
+    </article>
+
+    <article class="feature avoid-break">
+      <div class="zone">Tab 4 · economic center</div>
+      <h3>Wallet</h3>
+      <p class="thesis">Attention Wallet — dual ledger, pending → available, convert/withdraw.</p>
+      <p class="file">wallet_dock_explainer.html</p>
+    </article>
+
+    <article class="feature avoid-break">
+      <div class="zone">Tab 5 · identity</div>
+      <h3>In-Profile</h3>
+      <p class="thesis">Trust score, verification badges, settings — not OUT-PROFILE.</p>
+      <p class="file">profile_dock_explainer.html</p>
+    </article>
+  </section>
+
+  <section class="section-block">
+    <h2>System layer</h2>
+
+    <article class="feature avoid-break">
+      <div class="zone">Platform infrastructure</div>
+      <h3>POP · Attention control</h3>
+      <p class="thesis">Gaze → intent → safety gates → pending → wallet.</p>
+      <ul>
+        <li>Six-scene loop + synchronized pipeline strip in explainer.</li>
+        <li>Trust layer underneath Loop 1 earn and marketplace flows.</li>
+      </ul>
+      <p class="file">pop_feature_investor_explainer.html</p>
+    </article>
+  </section>
+
+  <footer class="footer avoid-break">
+    <p><strong>Live demos:</strong> investor_presenter_deck.html (19 slides) · investor_explainer_index.html · ./scripts/open_investor_presenter.sh</p>
+    <p><strong>Canon:</strong> IMMERSIVE_UI_DESIGN_LAW.md · USER_GESTURE_BUTTONS.md · MVP_CANONICAL_FLOW.md · i-app-economy-rules.md</p>
+    <p><strong>App:</strong> ./scripts/dev_stack.sh — product entry route immersive-feed</p>
+  </footer>
+</div>
+</body>
+</html>

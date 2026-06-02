@@ -79,6 +79,7 @@ grep -q 'custom:boost' "$boost" || { echo "FAIL: boost explainer must document c
 echo "OK boost_triple_tap_explainer content checks"
 
 "$ROOT/scripts/smoke_app_ui_simulator.sh"
+"$ROOT/scripts/smoke_investor_print_bundle.sh"
 
 echo ""
 echo "PASS: investor explainer smoke"

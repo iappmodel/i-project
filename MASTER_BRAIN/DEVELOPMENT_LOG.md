@@ -11,6 +11,17 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-05-30 — Investor print / PDF catalog bundle
+
+### Delivered
+- **Print bundle** — `investor_print_bundle.html` + `investor_print.css` (static catalog of all 18 walkthroughs; browser Print → Save as PDF).
+- **Scripts** — `./scripts/open_investor_print_bundle.sh`, `./scripts/smoke_investor_print_bundle.sh`; wired into investor explainer smoke + index link.
+
+### Verification
+- `./scripts/smoke_investor_explainers.sh`
+
+---
+
 ## 2026-05-30 — Presenter title slide (deck intro)
 
 ### Delivered

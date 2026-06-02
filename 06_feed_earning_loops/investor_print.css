@@ -1,0 +1,65 @@
+/* [ i ] investor explainer series — print / PDF export */
+@page {
+  size: letter;
+  margin: 0.65in 0.75in;
+}
+
+@media print {
+  html, body {
+    background: #fff !important;
+    color: #333 !important;
+    font-size: 10pt;
+  }
+
+  .no-print { display: none !important; }
+
+  a { color: #333 !important; text-decoration: none; }
+
+  .page-break { page-break-before: always; }
+  .avoid-break { page-break-inside: avoid; }
+
+  .feature, .section-block, .cover-block {
+    page-break-inside: avoid;
+  }
+
+  .section-block { page-break-before: always; }
+  .section-block:first-of-type { page-break-before: auto; }
+
+  .cover-block {
+    min-height: auto;
+    padding-top: 1.5in;
+    page-break-after: always;
+  }
+
+  .toc-row a::after {
+    content: leader('.') target-counter(attr(href url), page);
+  }
+}
+
+@media screen {
+  .print-toolbar {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 100;
+    display: flex;
+    gap: 8px;
+  }
+  .print-toolbar button, .print-toolbar a {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #fff;
+    color: #555;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .print-toolbar button:hover, .print-toolbar a:hover {
+    border-color: #999;
+    color: #333;
+  }
+}

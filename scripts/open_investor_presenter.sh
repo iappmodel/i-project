@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Open the consolidated investor presenter deck (18 explainers, auto-advance).
+# Open the consolidated investor presenter deck (19 slides: intro + 18 explainers).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
