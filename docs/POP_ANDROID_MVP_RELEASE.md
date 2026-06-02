@@ -39,7 +39,7 @@ cd integrations/eye-tracking/flutter-runtime && flutter test
 - **Transport:** Y8 plane (JPEG fallback)
 - **Settlement:** Server-side; `VITE_AUTO_SETTLE` is demo-only
 - **pending / escalated:** Hold-with-expiry + one re-verify (not silent drop)
-- **External OS control:** Off (`kEnableExternalOsControl = false`)
+- **External OS control:** Off — hard gate in `external_os_control_policy.dart` (`docs/POP_EXTERNAL_OS_CONTROL.md`)
 
 ## Env flags (React shell)
 
@@ -59,7 +59,7 @@ cd integrations/eye-tracking/flutter-runtime && flutter test
 
 - Durable Supabase-backed pop-core stores (production path)
 - iOS `vision_channel` parity — see `docs/POP_IOS_VISION_PARITY.md` (shipped v2)
-- External/OS control behind hard flag + Play policy review
+- External/OS: shipped v2 hard gate; Play policy review before enabling flag in production
 
 ## Canonical docs
 

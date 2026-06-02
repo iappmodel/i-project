@@ -27,8 +27,13 @@ const double kMinZoneCommitConfidence = 0.65;
 /// Minimum confidence passed to governance for manual zone select.
 const double kMinGovernanceConfidence = 0.86;
 
-/// External/OS remote control (AccessibilityService, etc.) — off for Android MVP.
-const bool kEnableExternalOsControl = false;
+/// External/OS remote control (AccessibilityService, deep links, payments) — off for MVP.
+///
+/// Override only for internal QA: `--dart-define=POP_ENABLE_EXTERNAL_OS_CONTROL=true`
+const bool kEnableExternalOsControl = bool.fromEnvironment(
+  'POP_ENABLE_EXTERNAL_OS_CONTROL',
+  defaultValue: false,
+);
 
 /// HUD + verification stability overlay refresh cap (~5 Hz).
 const int kOverlayRefreshIntervalMs = 200;

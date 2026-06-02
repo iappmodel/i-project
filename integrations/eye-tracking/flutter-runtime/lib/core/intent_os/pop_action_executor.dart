@@ -190,6 +190,82 @@ final class PopActionExecutor {
     );
   }
 
+  /// Agent / JSON logical actions (e.g. `open_external`) — gated by [blocksExternalOsControl].
+  AutonomousActionGateResult tryLogicalAction({
+    required String logicalActionName,
+    required String target,
+    required double confidence,
+    required int nowMs,
+    required bool isTracking,
+    required bool calibrationBusy,
+    required bool visionError,
+    required bool userIsDistracted,
+    required double autonomyLevel,
+    required double stabilityVariance,
+    required double riskScore,
+    required bool likelyFake,
+    required bool gazeFreshForCommit,
+    required void Function() onAllowed,
+    bool fromGazeOnly = true,
+    bool explicitConfirmationGranted = false,
+  }) {
+    if (!isTracking) {
+      return AutonomousActionGateResult.blockedPrefilter;
+    }
+    if (kBlockOnLikelyFake && likelyFake) {
+      return AutonomousActionGateResult.blockedPrefilter;
+    }
+
+    const actionType = UIActionType.tap;
+    final prefilter = KernelEvaluationInput(
+      type: actionType,
+      targetZone: target,
+      confidence: confidence,
+      timestamp: nowMs,
+      dwellMs: 1200,
+      autonomyLevel: autonomyLevel,
+      system: SystemState(
+        calibrationActive: calibrationBusy,
+        errorState: visionError,
+        userIsDistracted: userIsDistracted,
+      ),
+    );
+
+    final ctx = ActionContext(
+      actionType: actionType,
+      target: target,
+      confidence: confidence,
+      riskScore: effectiveActionRisk(
+        actionType: actionType,
+        twinRiskScore: riskScore,
+      ),
+      fromGazeOnly: fromGazeOnly,
+      explicitConfirmationGranted: explicitConfirmationGranted,
+      gazeFreshForCommit: gazeFreshForCommit,
+      logicalActionName: logicalActionName,
+      userTrust: autonomyLevel,
+      fixationState: FixationState.fixation,
+      dwellProgress: 1.0,
+      dwellMs: 1200,
+      timeSinceLastActionMs: _timeSinceLastCommitMs(nowMs),
+      recentActionsLast1s: _recentCommitsLast1s(nowMs),
+      isReversible: false,
+      timestampMs: nowMs,
+      autonomyLevel: autonomyLevel,
+      stabilityVariance: stabilityVariance,
+    );
+
+    var allowed = false;
+    final gate = _kernel.tryExecute(prefilter, ctx, () {
+      onAllowed();
+      allowed = true;
+    });
+    if (allowed) {
+      _recordCommit(nowMs);
+    }
+    return gate;
+  }
+
   void reset() {
     _lastCommitMs = null;
     _commitWindowMs.clear();

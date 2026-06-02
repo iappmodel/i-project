@@ -7,6 +7,20 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-06-02 — POP v2 external/OS control hard gate
+
+### Delivered
+- **`external_os_control_policy.dart`** — blocks OS/deep-link/payment logical actions when `kEnableExternalOsControl` is false (default).
+- **`blockedExternalOs`** gate + `PopActionExecutor.tryLogicalAction` for agent paths.
+- **Docs** — `docs/POP_EXTERNAL_OS_CONTROL.md`; ship gate test.
+
+### Verification
+```bash
+cd integrations/eye-tracking/flutter-runtime && flutter test test/external_os_control_policy_test.dart
+```
+
+---
+
 ## 2026-06-02 — POP v2 iOS vision_channel parity
 
 ### Delivered

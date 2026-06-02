@@ -22,6 +22,7 @@ final class ActionContext {
     this.fromGazeOnly = true,
     this.explicitConfirmationGranted = false,
     this.gazeFreshForCommit = true,
+    this.logicalActionName,
   });
 
   /// Optional caller convention for “no prior action” (e.g. logging). [GovernanceKernel]
@@ -69,4 +70,7 @@ final class ActionContext {
 
   /// False during face-hold when gaze is older than [kMaxGazeFreshnessDuringHoldMs].
   final bool gazeFreshForCommit;
+
+  /// Agent/JSON action name when not represented by [UIActionType] alone (e.g. `open_external`).
+  final String? logicalActionName;
 }

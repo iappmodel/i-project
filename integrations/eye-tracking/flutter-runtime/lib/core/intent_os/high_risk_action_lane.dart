@@ -1,6 +1,6 @@
-import '../pop/pop_runtime_config.dart';
 import 'action_context.dart';
 import 'action_risk_policy.dart';
+import 'external_os_control_policy.dart';
 import 'risk_tier.dart';
 import 'ui_action_type.dart';
 
@@ -31,9 +31,8 @@ final class HighRiskActionLane {
         !ctx.explicitConfirmationGranted) {
       return true;
     }
-    if (kEnableExternalOsControl) {
-      // Future: allow external/OS actions only after explicit confirmation.
-      return false;
+    if (blocksExternalOsControl(ctx)) {
+      return true;
     }
     return false;
   }

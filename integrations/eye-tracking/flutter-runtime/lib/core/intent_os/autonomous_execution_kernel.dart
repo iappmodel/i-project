@@ -5,6 +5,7 @@ import 'action_decision.dart';
 import 'action_pipeline_kernel.dart';
 import 'governance_kernel.dart';
 import 'kernel_evaluation_input.dart';
+import 'external_os_control_policy.dart';
 import 'high_risk_action_lane.dart';
 import 'safety_kernel.dart';
 import 'ui_action_type.dart';
@@ -20,6 +21,9 @@ enum AutonomousActionGateResult {
 
   /// Reserved; twin risk is carried on [ActionContext.riskScore] and decided inside kernels.
   blockedSandbox,
+
+  /// External/OS-capable action blocked ([kEnableExternalOsControl] off or no confirmation).
+  blockedExternalOs,
 }
 
 /// Single runtime entry for autonomous side effects: prefilter → governance → safety → [execute].
@@ -82,6 +86,14 @@ final class AutonomousExecutionKernel {
     if (pipeline.evaluateSafety(prefilterInput) != ActionDecision.allow) {
       audit(AutonomousActionGateResult.blockedPrefilter, blockedGate: 'ActionPipelineKernel');
       return AutonomousActionGateResult.blockedPrefilter;
+    }
+    final externalBlock = evaluateExternalOsControl(ctx);
+    if (externalBlock != ExternalOsBlockReason.none) {
+      audit(
+        AutonomousActionGateResult.blockedExternalOs,
+        blockedGate: 'ExternalOsControl:${externalBlock.name}',
+      );
+      return AutonomousActionGateResult.blockedExternalOs;
     }
     if (highRiskLane.blocks(ctx)) {
       audit(AutonomousActionGateResult.blockedHighRisk, blockedGate: 'HighRiskActionLane');
