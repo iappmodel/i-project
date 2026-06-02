@@ -3,18 +3,29 @@ import {
   ProofReviewService,
   JsonFileProofReviewStore,
   JsonFilePendingHoldStore,
+  InMemoryPendingHoldStore,
   createPendingHoldFromReview,
   createAppealHoldFromReview,
   createDefaultPopValueFlowStores,
   runPopValueFlow,
   resolveTrustTier,
   type PopValueFlowResult,
-  type PopTrustTier
+  type PopTrustTier,
+  type PendingHoldStore
 } from "@pop-core/backend";
 
 import type { SupabaseSettlementClient } from "./supabase-settlement-client.js";
 import { mapPopCurrencyToLedger } from "./supabase-settlement.js";
-import { syncPendingHoldToSupabase, settleHoldViaSupabase, type SettlementSyncResult } from "./settle-handler.js";
+import {
+  settleHoldViaSupabase,
+  type SettlementSyncResult
+} from "./settle-handler.js";
+import { persistPendingHold } from "./pending-hold-persist.js";
+import {
+  readSettlementStoreMode,
+  useInMemoryHoldStore,
+  type SettlementStoreMode
+} from "./settlement-store-mode.js";
 import {
   readServerSettlementPolicy,
   computeReleaseEligibleAt,
@@ -55,7 +66,8 @@ export interface PendingValidateResponse {
   trustTierAtHold?: PopTrustTier;
   popsSession?: PopsSessionSyncResult;
   autoSettle?: { attempted: boolean; code?: string };
-  supabase?: SettlementSyncResult;
+  settlementStore?: SettlementStoreMode;
+  supabase?: SettlementSyncResult & { storeMode?: SettlementStoreMode };
 }
 
 export interface FullValidateResponse {
@@ -74,7 +86,7 @@ export type ValidateResponse = PendingValidateResponse | FullValidateResponse;
 
 export interface ValidatorStores {
   reviewStore: JsonFileProofReviewStore;
-  holdStore: JsonFilePendingHoldStore;
+  holdStore: PendingHoldStore;
 }
 
 export interface ValidateOptions {
@@ -82,14 +94,21 @@ export interface ValidateOptions {
   supabase?: SupabaseSettlementClient;
 }
 
-export function createValidatorStores(dataDir: string): ValidatorStores {
+export function createValidatorStores(
+  dataDir: string,
+  settlementMode?: SettlementStoreMode
+): ValidatorStores {
+  const holdStore = useInMemoryHoldStore(settlementMode ?? "local-json")
+    ? new InMemoryPendingHoldStore()
+    : new JsonFilePendingHoldStore({
+        baseDir: `${dataDir}/pending-holds`
+      });
+
   return {
     reviewStore: new JsonFileProofReviewStore({
       baseDir: `${dataDir}/proof-reviews`
     }),
-    holdStore: new JsonFilePendingHoldStore({
-      baseDir: `${dataDir}/pending-holds`
-    })
+    holdStore
   };
 }
 
@@ -107,6 +126,9 @@ export async function validateProofPacket(
   options: ValidateOptions
 ): Promise<ValidateResponse> {
   const { stores, supabase } = options;
+  const settlementStore = supabase
+    ? readSettlementStoreMode(supabase)
+    : ("local-json" as SettlementStoreMode);
   const mode: ValidateMode = body.mode ?? "pending";
   const submittedAt = body.submittedAt ?? new Date().toISOString();
 
@@ -122,7 +144,7 @@ export async function validateProofPacket(
     });
 
     const supabaseSync = supabase
-      ? await syncPendingHoldToSupabase(result.hold, supabase)
+      ? await persistPendingHold(result.hold, supabase, settlementStore)
       : undefined;
 
     return {
@@ -201,7 +223,7 @@ export async function validateProofPacket(
     : undefined;
 
   const supabaseSync = supabase
-    ? await syncPendingHoldToSupabase(hold, supabase)
+    ? await persistPendingHold(hold, supabase, settlementStore)
     : undefined;
 
   let autoSettle: PendingValidateResponse["autoSettle"];
@@ -245,6 +267,7 @@ export async function validateProofPacket(
     trustTierAtHold,
     popsSession,
     autoSettle,
+    settlementStore,
     supabase: supabaseSync
   };
 }

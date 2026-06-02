@@ -15,6 +15,7 @@ import {
 } from "./hold-query.js";
 import type { SettleHoldRequestBody } from "./settle-handler.js";
 import { readSupabaseSettlementConfig } from "./supabase-settlement.js";
+import { readSettlementStoreMode } from "./settlement-store-mode.js";
 import { applyCors } from "./cors.js";
 import {
   broadcastProofSealed,
@@ -27,8 +28,9 @@ const DATA_DIR = process.env.POP_VALIDATOR_DATA_DIR ?? "./data/validator";
 
 mkdirSync(DATA_DIR, { recursive: true });
 
-const stores = createValidatorStores(DATA_DIR);
 const supabase = createSupabaseSettlementClient();
+const settlementMode = readSettlementStoreMode(supabase);
+const stores = createValidatorStores(DATA_DIR, settlementMode);
 
 async function readJsonBody(req: IncomingMessage): Promise<unknown> {
   const chunks: Buffer[] = [];
@@ -71,7 +73,8 @@ const server = createServer(async (req, res) => {
         supabase: supabaseConfig
           ? { enabled: true, url: supabaseConfig.url }
           : { enabled: false },
-        settlement: supabaseConfig ? "supabase" : "local-json"
+        settlement: supabaseConfig ? "supabase" : "local-json",
+        settlementPrimary: settlementMode
       });
       return;
     }
@@ -199,6 +202,7 @@ server.listen(PORT, () => {
   console.log(`  GET  /v1/proof-events/stream`);
   console.log(`  GET  /health`);
   console.log(`  data: ${DATA_DIR}`);
+  console.log(`  settlementPrimary: ${settlementMode}`);
   console.log(
     supabase.isEnabled
       ? "  settlement: supabase"

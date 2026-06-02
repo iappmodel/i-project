@@ -7,6 +7,21 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-06-02 — POP v2 durable Supabase settlement primary
+
+### Delivered
+- **`POP_SETTLEMENT_PRIMARY=supabase`** — mandatory hold upsert on validate; failures surface as 500 (no silent skip).
+- **`POP_SETTLEMENT_SKIP_LOCAL_JSON`** — optional in-memory hold store when Supabase is primary.
+- **Health + validate** — `settlementPrimary` / `settlementStore` in responses.
+- **Docs** — `docs/POP_DURABLE_SETTLEMENT.md`; row mapper for Supabase read path.
+
+### Verification
+```bash
+cd integrations/pop-core/validator && npm test
+```
+
+---
+
 ## 2026-06-02 — POP v2 trust tiers (release delay + auto-settle gating)
 
 ### Delivered

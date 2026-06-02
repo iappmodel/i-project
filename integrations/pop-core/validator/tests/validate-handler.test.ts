@@ -46,6 +46,7 @@ describe("validateProofPacket", () => {
     expect(result.hold?.currency).toBe("icoin");
     expect(result.hold?.status).toBe("pending");
     expect(result.supabase?.enabled).toBe(false);
+    expect(result.settlementStore).toBe("local-json");
   });
 
   it("pending mode creates appeal hold for escalated review", async () => {
