@@ -1,6 +1,6 @@
 # [ i ] Wiring Status
 
-**Updated:** 2026-05-30  
+**Updated:** 2026-06-02  
 **Workspace:** `i_project_migration_archive`
 
 One-page truth for what's wired vs mocked.
@@ -388,6 +388,7 @@ flowchart LR
 
 | Question | Read |
 |----------|------|
+| Lovable feature match + harvest backlog | `LOVABLE_HARVEST_AUDIT_2026-06-02.md` (branch `feature/lovable-harvest`) |
 | Organism overview | `ORGANISM_STATUS.md` |
 | What is Seal Proof? | `TRUST_SYSTEM/SEAL_PROOF.md` |
 | Elo vs POP | `ENTITIES/ELO.md`, `RELATIONSHIPS/Elo_POP.md` |

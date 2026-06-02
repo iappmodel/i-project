@@ -7,6 +7,22 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-06-02 — Lovable harvest branch (`feature/lovable-harvest`)
+
+### Branch policy
+- **`main`** — stable baseline (Loop 1 MVP, immersive glass, POP v2, investor explainers). No Lovable harvest merges until reviewed.
+- **`feature/lovable-harvest`** — all Lovable feature-matching audit docs and harvested implementations land here first.
+- **Read-only reference** — `~/Desktop/IVAULT/i-project-rescue/github-source-repos/eye-earn-sparkle-archive` (Lovable superset; do not mutate for harvest — copy/port into `app/` on the feature branch).
+
+### Delivered
+- **`MASTER_BRAIN/LOVABLE_HARVEST_AUDIT_2026-06-02.md`** — 24-domain match matrix (A/B/C/D), edge-fn delta (43 vs 9), 70-table migration map, UI cheatsheet, epics H1–H9.
+- Cross-links in `WIRING_STATUS.md` knowledge map.
+
+### Next
+- Owner picks epic: **H1** (wallet/convert) or **H2** (live feed) on `feature/lovable-harvest`.
+
+---
+
 ## 2026-06-02 — Investor explainers: POP v2 status copy
 
 ### Delivered
