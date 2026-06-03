@@ -50,9 +50,8 @@ export SUPABASE_SERVICE_ROLE_KEY="${SERVICE_ROLE_KEY:?}"
 echo ""
 echo "== Starting POP validator =="
 cd "$ROOT/integrations/pop-core/validator"
-nohup npm start >>"$PID_DIR/validator.log" 2>&1 &
+nohup node --import tsx src/server.ts >>"$PID_DIR/validator.log" 2>&1 &
 echo $! >"$VALIDATOR_PID"
-disown -h %1 2>/dev/null || true
 
 for _ in $(seq 1 30); do
   curl -sf http://127.0.0.1:8787/health >/dev/null 2>&1 && break
@@ -89,9 +88,8 @@ grep -q '^VITE_APP_BASE_URL=' "$ENV_LOCAL" 2>/dev/null || echo "VITE_APP_BASE_UR
 "$ROOT/scripts/enable_stripe_live_env.sh" 2>/dev/null || true
 
 cd "$ROOT/app"
-nohup npm run dev >>"$PID_DIR/app.log" 2>&1 &
+nohup ./node_modules/.bin/vite --host 127.0.0.1 >>"$PID_DIR/app.log" 2>&1 &
 echo $! >"$APP_PID"
-disown -h %1 2>/dev/null || true
 
 for _ in $(seq 1 30); do
   curl -sf http://localhost:5173/ >/dev/null 2>&1 && break
