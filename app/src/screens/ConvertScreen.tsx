@@ -21,6 +21,7 @@ export function ConvertScreen() {
     appMode,
     setScreen,
     applyTransferBalances,
+    prependTransactions,
   } = useDemo()
 
   const [direction, setDirection] = useState<TransferDirection>('vicoin_to_icoin')
@@ -91,6 +92,19 @@ export function ConvertScreen() {
 
     setLastReceived(result.target_received)
     applyTransferBalances(result.new_icoin_balance, result.new_vicoin_balance)
+    const spentLabel =
+      direction === 'vicoin_to_icoin'
+        ? `${result.source_spent} v → ${result.target_received} i`
+        : `${result.source_spent} i → ${result.target_received} v`
+    prependTransactions([
+      {
+        id: `tx-convert-${result.transfer_id ?? Date.now()}`,
+        source: 'Convert',
+        timeLabel: 'Just now',
+        amountDisplay: spentLabel,
+        kind: 'positive',
+      },
+    ])
     setPhase('clearing')
   }
 

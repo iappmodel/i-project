@@ -63,6 +63,12 @@ done
 [[ -f "$APP/src/services/feed.service.ts" ]] || { echo "FAIL: feed.service.ts missing" >&2; exit 1; }
 [[ -f "$APP/src/hooks/useImmersiveFeed.ts" ]] || { echo "FAIL: useImmersiveFeed.ts missing" >&2; exit 1; }
 [[ -f "$APP/src/hooks/useFeedInteraction.ts" ]] || { echo "FAIL: useFeedInteraction.ts missing" >&2; exit 1; }
+[[ -f "$APP/src/services/transactions.service.ts" ]] || { echo "FAIL: transactions.service.ts missing" >&2; exit 1; }
+[[ -f "$APP/src/hooks/useWalletTransactions.ts" ]] || { echo "FAIL: useWalletTransactions.ts missing" >&2; exit 1; }
+if ! grep -q "immersive-glass-sheet__tx-list" "$APP/src/components/immersive/ImmersiveWalletSheet.tsx"; then
+  echo "FAIL: wallet sheet activity list missing" >&2
+  exit 1
+fi
 if ! grep -q "useImmersiveFeed" "$APP/src/screens/ImmersiveFeedScreen.tsx"; then
   echo "FAIL: ImmersiveFeed must use useImmersiveFeed" >&2
   exit 1

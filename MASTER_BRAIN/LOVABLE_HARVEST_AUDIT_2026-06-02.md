@@ -332,7 +332,7 @@ live_streams, live_stream_comments, error_logs, feature_flags, app_versions
 | # | Feature | Source (archive) | Target (app/) | Status |
 |---|---------|------------------|---------------|--------|
 | H1.1 | Vicoin↔Icoin convert | `transfer-coins`, `rewards.service` | `ConvertScreen` + `ImmersiveWalletSheet` | **Done** (2026-06-02) |
-| H1.2 | Transaction history | `transactions`, `useTransactions` | Wallet sheet list |
+| H1.2 | Transaction history | `transactions`, `useTransactions` | Wallet sheet list | **Done** (2026-06-02) |
 | H1.3 | Payout methods | `request-payout`, `PayoutHistory` | `WithdrawPreviewScreen` glass |
 | H1.4 | Issue-reward parity | `issue-reward` diff | `app/supabase/functions/issue-reward` |
 | H1.5 | Security/abuse | `security.service`, `abuse_logs` | `security.service.ts` + reward edges |

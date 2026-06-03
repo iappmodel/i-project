@@ -1,6 +1,8 @@
+import { useEffect } from 'react'
 import { Button } from '../Button'
 import { ImmersiveGlassSheet } from './ImmersiveGlassSheet'
 import { formatCoinLabel } from '../../lib/gestureButtons/offerService'
+import { useWalletTransactions } from '../../hooks/useWalletTransactions'
 import { useDemo } from '../../state/useDemo'
 
 type Props = {
@@ -9,6 +11,12 @@ type Props = {
   onOpenFull?: () => void
   onConvert?: () => void
   onWithdraw?: () => void
+}
+
+function actDot(kind: string) {
+  if (kind === 'positive') return 'var(--icoin-primary)'
+  if (kind === 'negative') return 'var(--accent-rose)'
+  return 'var(--accent-amber)'
 }
 
 export function ImmersiveWalletSheet({
@@ -30,6 +38,16 @@ export function ImmersiveWalletSheet({
     eloStatusLine,
     jumpEarn,
   } = useDemo()
+
+  const { items, loading, refresh, isLive } = useWalletTransactions({
+    limit: 12,
+    enabled: open,
+  })
+  const recent = items.slice(0, 5)
+
+  useEffect(() => {
+    if (open) void refresh()
+  }, [open, refresh])
 
   return (
     <ImmersiveGlassSheet open={open} title="Wallet" onClose={onClose}>
@@ -59,6 +77,29 @@ export function ImmersiveWalletSheet({
           ) : null}
         </div>
       </div>
+
+      <div className="immersive-glass-sheet__section">
+        <div className="immersive-glass-sheet__section-head">
+          <span className="immersive-glass-sheet__label">Activity</span>
+          {isLive ? <span className="immersive-glass-sheet__sub mono">live</span> : null}
+        </div>
+        {loading && recent.length === 0 ? (
+          <p className="immersive-glass-sheet__hint mono">Loading…</p>
+        ) : null}
+        <ul className="immersive-glass-sheet__tx-list">
+          {recent.map((tx) => (
+            <li key={tx.id} className={`immersive-glass-sheet__tx immersive-glass-sheet__tx--${tx.kind}`}>
+              <span className="immersive-glass-sheet__tx-dot" style={{ background: actDot(tx.kind) }} />
+              <span className="immersive-glass-sheet__tx-body">
+                <span className="immersive-glass-sheet__tx-source">{tx.source}</span>
+                <span className="immersive-glass-sheet__tx-time mono">{tx.timeLabel}</span>
+              </span>
+              <span className="immersive-glass-sheet__tx-amt mono">{tx.amountDisplay}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
       <div className="immersive-glass-sheet__actions">
         {onConvert ? (
           <Button variant="secondary" onClick={onConvert}>

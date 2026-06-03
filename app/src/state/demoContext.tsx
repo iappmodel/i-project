@@ -414,6 +414,14 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     }))
   }, [])
 
+  const prependTransactions = useCallback((txs: Transaction[]) => {
+    if (!txs.length) return
+    setState((prev) => ({
+      ...prev,
+      transactions: [...txs, ...prev.transactions],
+    }))
+  }, [])
+
   const canCollectReward = canIssueAttentionReward(state.attentionSession)
   const canRedeemReward = canIssueAttentionReward(state.attentionSession)
 
@@ -457,6 +465,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       signInDemo: supabaseAuth.signInDemo,
       signOutDemo: supabaseAuth.signOut,
       applyTransferBalances,
+      prependTransactions,
       proofEventsConnected: proofEvents.connected,
       eloStatusLine: proofEvents.eloStatusLine,
       lastProofEvent: proofEvents.lastEvent,
@@ -474,6 +483,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       proofEvents.lastEvent,
       settlePopHoldWithAuth,
       applyTransferBalances,
+      prependTransactions,
       navigateTo,
       setActiveTab,
       startPresenterTour,

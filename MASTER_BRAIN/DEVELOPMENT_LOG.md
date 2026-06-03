@@ -30,8 +30,13 @@ Chronological record of archaeology, promotion, and implementation work.
 - **`feed.service.ts`**, **`useImmersiveFeed`**, **`useFeedInteraction`**
 - **`ImmersiveFeedScreen`** — swipe ↑↓ next/prev clip, lane dots, live feed + demo fallback, view/like/share tracking
 
+### Epic H1.2 (2026-06-02)
+- **`transactions.service.ts`** + **`useWalletTransactions`** — live Supabase `transactions` table or demo fallback
+- **`ImmersiveWalletSheet`** — Activity list (5 recent rows) + refresh on open
+- Convert success **`prependTransactions`** for demo ledger continuity
+
 ### Next
-- H1.2 transaction history · H1.3 payout parity · H2.3 comments thread
+- H1.3 payout parity · H2.3 comments thread
 
 ---
 
