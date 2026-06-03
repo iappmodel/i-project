@@ -10,7 +10,7 @@ type Props = {
 const IMMERSIVE_SCREENS: DemoScreenId[] = ['immersive-feed', 'immersive-promo', 'watch-verify']
 
 export function AppShell({ children }: Props) {
-  const { appMode, currentScreen } = useDemo()
+  const { appMode, currentScreen, investorPreview } = useDemo()
   const hideTitlebar =
     appMode === 'product' && IMMERSIVE_SCREENS.includes(currentScreen)
 
@@ -19,6 +19,11 @@ export function AppShell({ children }: Props) {
       className={`app-shell ${hideTitlebar ? 'app-shell--immersive' : ''}`}
       data-ui-surface={hideTitlebar ? 'immersive' : 'legacy'}
     >
+      {investorPreview && appMode === 'product' ? (
+        <div className="investor-preview-banner" role="status">
+          Investor preview · mock gaze unless Seal Proof on device · Tier 1 a/i/v/e/o
+        </div>
+      ) : null}
       {hideTitlebar ? null : (
         <header className="app-shell__titlebar">
           <p className="app-shell__kicker">

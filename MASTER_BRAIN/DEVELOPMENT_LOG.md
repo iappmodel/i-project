@@ -7,6 +7,27 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-06-03 — Investor build (full checklist)
+
+### Branch
+- **`feature/investor-build`** — verifiable Phase A–C pack + B1 product path.
+
+### Delivered
+- **`docs/investor/`** — README, LOI template, compliance, use-of-funds, ownership, technical disclose, objection/intro logs, metrics CSV, device runbook.
+- **Smokes** — `smoke_investor_readiness.sh` (master), `smoke_investor_phase_a.sh`, `smoke_investor_b1.sh`, `smoke_investor_phase_c.sh`, `smoke_open_app_ui_simulator.sh`.
+- **Launchers** — `run_investor_demo.sh`, `run_investor_device_demo.sh`.
+- **App B1** — Nike hero feed, `?investor=1` / `VITE_INVESTOR_DEMO`, investor preview banner, `startInvestorB1Tour`, live pending-first `RewardReveal` copy.
+- **POP** — `demo-1-watch` + `immersive-demo-rafaelo-sunset-watch` settlement terms.
+- **Materials** — thesis + revenue links; presenter slide 20 (simulator); `investor_pipeline_slide.html`.
+
+### Verification
+```bash
+./scripts/smoke_investor_readiness.sh --product --spine
+cd app && npm run typecheck
+```
+
+---
+
 ## 2026-06-03 — Investor readiness checklist
 
 ### Delivered

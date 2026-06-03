@@ -710,6 +710,29 @@ button.pressable-card {
 }
 
 .presenter-link,
+.investor-preview-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  padding: 6px 12px;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(7, 7, 9, 0.72);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  pointer-events: none;
+}
+
+.splash-presenter-link--secondary {
+  margin-top: 6px;
+  color: var(--text-muted, #888);
+  font-size: 11px;
+}
+
 .splash-presenter-link {
   appearance: none;
   background: none;

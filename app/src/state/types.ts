@@ -88,6 +88,8 @@ export interface ProofLayerStatus {
 export interface DemoState {
   currentScreen: DemoScreenId
   appMode: AppMode
+  /** Investor preview banner + B1 tour (URL ?investor=1 or VITE_INVESTOR_DEMO) */
+  investorPreview: boolean
   activeTab: ProductTabId
   walletBalance: number
   pendingBalance: number
@@ -115,6 +117,7 @@ export interface DemoContextValue extends DemoState {
   setScreen: (s: DemoScreenId) => void
   setActiveTab: (tab: ProductTabId) => void
   startPresenterTour: () => void
+  startInvestorB1Tour: () => void
   exitPresenter: () => void
   enterProduct: () => void
   resetDemo: () => void

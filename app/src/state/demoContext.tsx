@@ -67,9 +67,15 @@ function withScreen(prev: DemoState, screen: DemoScreenId): DemoState {
   return next
 }
 
+function investorPreviewFromEnv(): boolean {
+  const env = import.meta.env.VITE_INVESTOR_DEMO
+  return env === 'true' || env === '1'
+}
+
 const defaultState = (): DemoState => ({
   currentScreen: 'splash',
   appMode: 'product',
+  investorPreview: investorPreviewFromEnv(),
   activeTab: 'feed',
   walletBalance: WALLET_INITIAL.walletBalanceUsd,
   pendingBalance: WALLET_INITIAL.pendingBalance,
@@ -134,6 +140,14 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     setState((prev) => liveWallet.applyHoldSync(prev, liveWallet.popHolds))
   }, [liveWallet.popHolds, liveWallet.applyHoldSync, liveWallet.walletBackend])
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('investor') === '1') {
+      setState((prev) => ({ ...prev, investorPreview: true }))
+    }
+  }, [])
+
   const setActiveTab = useCallback((tab: ProductTabId) => {
     setState((prev) => ({
       ...prev,
@@ -147,8 +161,22 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     setState((prev) => ({
       ...prev,
       appMode: 'presenter',
+      investorPreview: false,
       currentScreen: 'splash',
       activeTab: 'feed',
+    }))
+  }, [])
+
+  const startInvestorB1Tour = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      appMode: 'product',
+      investorPreview: true,
+      activeTab: 'feed',
+      currentScreen: 'immersive-feed',
+      selectedOffer: DEFAULT_SPONSORED_OFFER,
+      attentionSession: null,
+      verificationStatus: 'idle',
     }))
   }, [])
 
@@ -446,6 +474,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       setScreen: navigateTo,
       setActiveTab,
       startPresenterTour,
+      startInvestorB1Tour,
       exitPresenter,
       enterProduct,
       resetDemo,
@@ -497,6 +526,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       navigateTo,
       setActiveTab,
       startPresenterTour,
+      startInvestorB1Tour,
       exitPresenter,
       enterProduct,
       resetDemo,

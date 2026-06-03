@@ -65,6 +65,11 @@ for name in "${required[@]}"; do
   fi
 done
 echo "OK presenter deck references all walkthroughs"
+grep -q 'app_ui_simulator.html' "$deck" || {
+  echo "FAIL: presenter deck must include app_ui_simulator slide" >&2
+  exit 1
+}
+echo "OK presenter deck includes touch simulator"
 
 elo="$DIR/elo_presence_explainer.html"
 grep -q 'eloManifestEnter' "$elo" || { echo "FAIL: elo explainer must show rail-to-center manifest" >&2; exit 1; }

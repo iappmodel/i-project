@@ -26,6 +26,8 @@ grep -q 'POP_V2_RELEASE' "$POP_EXPLAINER" || { echo "FAIL: POP explainer must li
 
 INDEX="$ROOT/06_feed_earning_loops/investor_explainer_index.html"
 grep -q 'investor_print_bundle.html' "$INDEX" || { echo "FAIL: index must link print bundle" >&2; exit 1; }
+grep -q 'REVENUE_MODEL' "$BUNDLE" || { echo "FAIL: print bundle must link revenue model" >&2; exit 1; }
+grep -qi 'verified attention' "$BUNDLE" || { echo "FAIL: print bundle must include thesis" >&2; exit 1; }
 
 bash -n "$SCRIPT"
 echo "PASS: investor print bundle smoke"

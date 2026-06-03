@@ -3,7 +3,7 @@ import { SourceEvidence } from '../components/SourceEvidence'
 import { useDemo } from '../state/useDemo'
 
 export function SplashScreen() {
-  const { appMode, enterProduct, setScreen, startPresenterTour } = useDemo()
+  const { appMode, enterProduct, setScreen, startInvestorB1Tour, startPresenterTour } = useDemo()
 
   const handleEnter = () => {
     if (appMode === 'presenter') {
@@ -27,9 +27,18 @@ export function SplashScreen() {
         </p>
       </button>
       {appMode === 'product' ? (
-        <button type="button" className="splash-presenter-link" onClick={() => startPresenterTour()}>
-          Investor presenter walkthrough
-        </button>
+        <>
+          <button type="button" className="splash-presenter-link" onClick={() => startInvestorB1Tour()}>
+            Run 90s investor demo
+          </button>
+          <button
+            type="button"
+            className="splash-presenter-link splash-presenter-link--secondary"
+            onClick={() => startPresenterTour()}
+          >
+            Legacy presenter walkthrough
+          </button>
+        </>
       ) : null}
       {appMode === 'presenter' ? (
         <SourceEvidence

@@ -64,9 +64,16 @@ flowchart LR
 | `./scripts/smoke_organism_spine.sh` | Full spine (local + optional Supabase) |
 | `./scripts/smoke_elo_presence.sh` | ELO presence module files + app build |
 | `./scripts/smoke_pop_finish.sh` | POP finish keystone files + Flutter regression tests |
+| `./scripts/smoke_investor_readiness.sh` | Master investor gate (Phase A; flags `--product` `--spine` `--phase-c`) |
+| `./scripts/smoke_investor_phase_a.sh` | Materials + `docs/investor/` pack + explainers chain |
+| `./scripts/smoke_investor_b1.sh` | B1 app gates (Nike feed hero, pending copy, investor banner) |
+| `./scripts/smoke_investor_phase_c.sh` | Phase C foundation (production readiness + optional Supabase) |
+| `./scripts/run_investor_demo.sh` | `dev_stack` + open `?investor=1` |
+| `./scripts/run_investor_device_demo.sh` | Device URLs + Android prep smokes |
 | `./scripts/smoke_investor_explainers.sh` | Investor explainer index + presenter deck + 18 HTML walkthroughs + app UI simulator |
 | `./scripts/smoke_app_ui_simulator.sh` | Integrated Picture 2 touch simulator file + index link + wiring markers |
-| `./scripts/open_investor_presenter.sh` | Open consolidated 19-slide presenter deck in browser |
+| `./scripts/smoke_open_app_ui_simulator.sh` | Simulator open script CI check |
+| `./scripts/open_investor_presenter.sh` | Open consolidated 20-slide presenter deck in browser |
 | `./scripts/open_investor_print_bundle.sh` | Open print catalog for browser Save as PDF export |
 | `./scripts/open_app_ui_simulator.sh` | Open integrated touch simulator in browser |
 | `./scripts/smoke_open_investor_presenter.sh` | Presenter open script + deck file check (CI-safe) |

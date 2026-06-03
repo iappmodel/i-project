@@ -7,10 +7,22 @@ import { formatCoinLabel, formatIcoinsAmount } from '../lib/format'
 import { useDemo } from '../state/useDemo'
 
 export function RewardRevealScreen() {
-  const { selectedOffer, finishRewardToWallet, canRedeemReward, attentionSession, proofSubmitting, walletSyncing } = useDemo()
+  const {
+    selectedOffer,
+    finishRewardToWallet,
+    canRedeemReward,
+    attentionSession,
+    proofSubmitting,
+    walletSyncing,
+    walletBackend,
+  } = useDemo()
   const offer = selectedOffer ?? DEFAULT_SPONSORED_OFFER
   const refLine = useMemo(() => 'i·2f9b·7m4k', [])
   const dwell = offer.watchDuration ?? '4:30'
+  const isLive = walletBackend === 'live'
+  const rewardStatusLabel = isLive
+    ? `${formatCoinLabel('icoin')} pending validation · settling via POP`
+    : `${formatCoinLabel('icoin')} credited to your wallet`
 
   return (
     <PhoneFrame variant="void">
@@ -18,7 +30,7 @@ export function RewardRevealScreen() {
         <div className="unlock-label-prot">new coin unlocked</div>
         <div className="reward-center-prot">
           <div className="reward-amount-prot mono">+{offer.rewardICoins.toFixed(2)}</div>
-          <div className="reward-label-prot">{formatCoinLabel('icoin')} credited to your wallet</div>
+          <div className="reward-label-prot">{rewardStatusLabel}</div>
           <div className="reward-breakdown-prot">
             <div className="rb-row-prot">
               <span className="rb-l-prot">Source</span>

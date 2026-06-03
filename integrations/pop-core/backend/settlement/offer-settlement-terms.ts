@@ -20,10 +20,24 @@ export const DEFAULT_FIXTURE_OFFER_SETTLEMENT_TERMS: OfferSettlementTerms = {
   currency: SETTLEMENT_CURRENCY_V1
 };
 
+const DEMO_FEED_OFFER_TERMS: OfferSettlementTerms[] = [
+  {
+    offerId: "demo-1-watch",
+    baseRewardMinor: 1200,
+    currency: SETTLEMENT_CURRENCY_V1
+  },
+  {
+    offerId: "immersive-demo-rafaelo-sunset-watch",
+    baseRewardMinor: 1200,
+    currency: SETTLEMENT_CURRENCY_V1
+  }
+];
+
 export class InMemoryOfferSettlementTermsProvider implements OfferSettlementTermsProvider {
   constructor(
     private readonly termsByOfferId: Record<string, OfferSettlementTerms> = {
-      [DEFAULT_FIXTURE_OFFER_ID]: DEFAULT_FIXTURE_OFFER_SETTLEMENT_TERMS
+      [DEFAULT_FIXTURE_OFFER_ID]: DEFAULT_FIXTURE_OFFER_SETTLEMENT_TERMS,
+      ...Object.fromEntries(DEMO_FEED_OFFER_TERMS.map((t) => [t.offerId, t]))
     }
   ) {}
 
