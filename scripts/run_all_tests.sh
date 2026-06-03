@@ -99,12 +99,8 @@ echo "== Blink remote lite smoke (Phase 42) =="
 "$ROOT/scripts/smoke_blink_remote_lite.sh"
 
 echo ""
-echo "== Investor explainer smoke =="
-"$ROOT/scripts/smoke_investor_explainers.sh"
-
-echo ""
-echo "== Open investor presenter smoke =="
-"$ROOT/scripts/smoke_open_investor_presenter.sh"
+echo "== Investor readiness smoke (Phase A) =="
+"$ROOT/scripts/smoke_investor_readiness.sh"
 
 echo ""
 echo "== ELO presence smoke =="

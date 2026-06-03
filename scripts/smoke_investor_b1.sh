@@ -44,6 +44,13 @@ grep -q 'demo-1-watch' "$TERMS" || {
   exit 1
 }
 
+ADR="$ROOT/MASTER_BRAIN/DECISIONS/CURRENCY_NAMING_ADR.md"
+[[ -f "$ADR" ]] || { echo "FAIL: missing CURRENCY_NAMING_ADR.md" >&2; exit 1; }
+grep -q 'a/i/v/e/o' "$ADR" || grep -q 'a/i/v/e/o' "$ROOT/docs/investor/TECHNICAL_DISCLOSE.md" || {
+  echo "FAIL: currency ADR or TECHNICAL_DISCLOSE must document Tier 1 a/i/v/e/o" >&2
+  exit 1
+}
+
 if curl -sf http://127.0.0.1:8787/health >/dev/null 2>&1; then
   echo "OK validator health (live B1 rehearsal available)"
 else
