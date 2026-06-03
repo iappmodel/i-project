@@ -6,6 +6,8 @@
 
 **Validation note:** Rewards may be shown as **pending validation** after the watch session before final settlement (provisional earn → review → approved/rejected). Eye-tracking is one proof signal among many; see [`docs/technical/POPS_MULTI_SIGNAL_VALIDATION_ARCHITECTURE.md`](technical/POPS_MULTI_SIGNAL_VALIDATION_ARCHITECTURE.md).
 
+**Fundraising timing:** When to start discovery vs checks — [`INVESTOR_READINESS_CHECKLIST.md`](INVESTOR_READINESS_CHECKLIST.md).
+
 ---
 
 ## How to run the demo today

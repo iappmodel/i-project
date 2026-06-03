@@ -7,6 +7,14 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-06-03 — Investor readiness checklist
+
+### Delivered
+- **`docs/INVESTOR_READINESS_CHECKLIST.md`** — Phase A/B/C gates, pre-meeting smokes, honest disclose table, meeting modes.
+- Cross-link from `docs/MVP_CANONICAL_FLOW.md`.
+
+---
+
 ## 2026-06-02 — Lovable harvest branch (`feature/lovable-harvest`)
 
 ### Branch policy
