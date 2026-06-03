@@ -35,8 +35,12 @@ Chronological record of archaeology, promotion, and implementation work.
 - **`ImmersiveWalletSheet`** — Activity list (5 recent rows) + refresh on open
 - Convert success **`prependTransactions`** for demo ledger continuity
 
+### Epic H1.3 (2026-06-02)
+- **`payout.service.ts`** + **`usePayout`** — 2% fee parity with `request-payout` edge; live invoke + demo fallback
+- **`WithdrawPreviewScreen`** — bank/PayPal/crypto methods, confirm → edge or demo, ledger prepend, live payout history snippet
+
 ### Next
-- H1.3 payout parity · H2.3 comments thread
+- H2.3 comments thread · H2.4 follow/saved vault
 
 ---
 

@@ -69,6 +69,12 @@ if ! grep -q "immersive-glass-sheet__tx-list" "$APP/src/components/immersive/Imm
   echo "FAIL: wallet sheet activity list missing" >&2
   exit 1
 fi
+[[ -f "$APP/src/services/payout.service.ts" ]] || { echo "FAIL: payout.service.ts missing" >&2; exit 1; }
+[[ -f "$APP/src/hooks/usePayout.ts" ]] || { echo "FAIL: usePayout.ts missing" >&2; exit 1; }
+if ! grep -q "request-payout" "$APP/src/screens/WithdrawPreviewScreen.tsx"; then
+  echo "FAIL: withdraw screen not wired to payout" >&2
+  exit 1
+fi
 if ! grep -q "useImmersiveFeed" "$APP/src/screens/ImmersiveFeedScreen.tsx"; then
   echo "FAIL: ImmersiveFeed must use useImmersiveFeed" >&2
   exit 1

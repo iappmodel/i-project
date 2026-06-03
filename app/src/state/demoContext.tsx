@@ -414,6 +414,14 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     }))
   }, [])
 
+  const applyIcoinBalance = useCallback((icoin: number) => {
+    setState((prev) => ({
+      ...prev,
+      iCoins: Math.max(0, icoin),
+      walletBalance: Math.max(0, icoin) * 0.01,
+    }))
+  }, [])
+
   const prependTransactions = useCallback((txs: Transaction[]) => {
     if (!txs.length) return
     setState((prev) => ({
@@ -465,6 +473,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       signInDemo: supabaseAuth.signInDemo,
       signOutDemo: supabaseAuth.signOut,
       applyTransferBalances,
+      applyIcoinBalance,
       prependTransactions,
       proofEventsConnected: proofEvents.connected,
       eloStatusLine: proofEvents.eloStatusLine,
@@ -483,6 +492,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       proofEvents.lastEvent,
       settlePopHoldWithAuth,
       applyTransferBalances,
+      applyIcoinBalance,
       prependTransactions,
       navigateTo,
       setActiveTab,

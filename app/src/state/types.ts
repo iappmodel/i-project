@@ -143,6 +143,8 @@ export interface DemoContextValue extends DemoState {
   signOutDemo: () => Promise<void>
   /** Apply balances after transfer-coins (live or demo) */
   applyTransferBalances: (icoin: number, vicoin: number) => void
+  /** Apply icoin balance after payout (live or demo) */
+  applyIcoinBalance: (icoin: number) => void
   /** Prepend ledger rows (convert, rewards, etc.) */
   prependTransactions: (txs: Transaction[]) => void
   proofEventsConnected: boolean
