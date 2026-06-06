@@ -26,4 +26,13 @@ describe('popFeatureFlags', () => {
     expect(typeof flags.autoSettle).toBe('boolean')
     expect(typeof flags.liveWallet).toBe('boolean')
   })
+
+  it('popDemoLite surfaces in rollout status when env set', () => {
+    vi.stubEnv('VITE_POP_DEMO_LITE', '1')
+    const flags = getPopFeatureFlags()
+    const status = getPopRolloutStatus(flags)
+    expect(flags.popDemoLite).toBe(true)
+    expect(status.demoLiteSimulation).toBe(true)
+    vi.unstubAllEnvs()
+  })
 })

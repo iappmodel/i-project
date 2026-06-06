@@ -4,6 +4,8 @@ import { VisionProvider } from './contexts/VisionContext'
 import { VisionStreamProvider } from './contexts/VisionStreamContext'
 import { VisionTargetOverlay } from './components/VisionTargetOverlay'
 import { GestureComboMatcherHost } from './components/GestureComboMatcherHost'
+import { PopDemoLiteBanner } from './components/PopDemoLiteBanner'
+import { PopDemoLiteHost } from './components/PopDemoLiteHost'
 import { AccessibilityProvider } from './contexts/AccessibilityContext'
 import { DemoProvider } from './state/demoContext'
 import { EloSessionScope } from './components/elo/EloSessionScope'
@@ -66,6 +68,8 @@ export default function App() {
             <VisionProvider>
               <VisionTargetOverlay />
               <GestureComboMatcherHost />
+              <PopDemoLiteHost />
+              <PopDemoLiteBanner />
               <AppShell>
                 <ScreenRouter />
               </AppShell>

@@ -12,6 +12,8 @@ export interface PopFeatureFlags {
   popKillSwitch: boolean
   /** Beta cohort label for rollout tracking. */
   betaCohort: string | null
+  /** POP Demo Lite — multi-signal simulation (not production authority). */
+  popDemoLite: boolean
 }
 
 function envFlag(name: string, defaultValue = false): boolean {
@@ -28,6 +30,7 @@ export function getPopFeatureFlags(): PopFeatureFlags {
     telemetry: envFlag('VITE_POP_TELEMETRY', import.meta.env.DEV),
     popKillSwitch: envFlag('VITE_POP_KILL_SWITCH'),
     betaCohort: import.meta.env.VITE_POP_BETA_COHORT?.trim() || null,
+    popDemoLite: envFlag('VITE_POP_DEMO_LITE'),
   }
 }
 
@@ -51,6 +54,7 @@ export function getPopRolloutStatus(flags: PopFeatureFlags = getPopFeatureFlags(
   flutterProductionRuntime: boolean
   webVisionAuthority: boolean
   mvpShipReady: boolean
+  demoLiteSimulation: boolean
 } {
   return {
     betaCohort: flags.betaCohort,
@@ -61,6 +65,7 @@ export function getPopRolloutStatus(flags: PopFeatureFlags = getPopFeatureFlags(
     flutterProductionRuntime: isPopProductionRuntimeFlutter(),
     webVisionAuthority: false,
     mvpShipReady: isPopMvpShipReady(flags),
+    demoLiteSimulation: flags.popDemoLite,
   }
 }
 

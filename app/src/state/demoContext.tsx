@@ -16,6 +16,7 @@ import {
   recordAttentionSample,
 } from './attentionSession'
 import { getPopFeatureFlags, emitPopTelemetry } from '../lib/popFeatureFlags'
+import { isPopDemoLiteEnabled, popDemoLiteStore } from '../lib/popDemoLite'
 import { useDeepLinkProofSession } from './useDeepLinkProofSession'
 import { useLiveWalletSync } from './useLiveWalletSync'
 import { useProofEvents, type ProofSealedEvent } from './useProofEvents'
@@ -232,9 +233,13 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   const acceptConsentAndBeginSession = useCallback(() => {
     setState((prev) => {
       const offerId = prev.selectedOffer?.id ?? DEFAULT_SPONSORED_OFFER.id
+      const attentionSession = createAttentionSession(offerId)
+      if (isPopDemoLiteEnabled()) {
+        popDemoLiteStore.reset(attentionSession.id)
+      }
       return {
         ...prev,
-        attentionSession: createAttentionSession(offerId),
+        attentionSession,
         verificationStatus: 'watching',
         currentScreen: 'watch-verify',
         activeTab: 'earn',
@@ -385,7 +390,15 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       void (async () => {
         setState((inner) => ({ ...inner, proofSubmitting: true }))
         try {
-          const packet = buildDemoProofPacket({ session, offer })
+          const sessionAcs =
+            session.acsScore ?? computeSessionAttentionScore(session)
+          const packet = buildDemoProofPacket({
+            session,
+            offer,
+            demoLiteTelemetry: isPopDemoLiteEnabled()
+              ? popDemoLiteStore.getTelemetry(sessionAcs, session.id)
+              : null,
+          })
           emitPopTelemetry('proof_submitted', {
             sessionId: session.id,
             acsScore: session.acsScore,

@@ -50,6 +50,7 @@ if [[ -d "$APP/node_modules" ]] || [[ -f "$APP/package-lock.json" ]]; then
     src/lib/pp000001Golden.test.ts \
     src/lib/popRlsContract.test.ts \
     src/lib/demoProofPacket.test.ts \
+    src/lib/popDemoLite/fusion.test.ts \
     src/lib/pendingRewardExplainer.test.ts 2>&1 | tail -8)
 fi
 

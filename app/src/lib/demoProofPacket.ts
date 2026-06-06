@@ -9,6 +9,7 @@ import {
 import { isWebVisionEnabled } from './visionEngine'
 import { DEMO_LOCAL_USER_REF, resolveValidatorOfferId } from './settlementConfig'
 import { sanitizeEyeTrackingForProof } from './popPrivacyGate'
+import type { PopDemoLiteTelemetry } from './popDemoLite/types'
 
 export interface ProofPacketV0Json {
   packetVersion: '0'
@@ -51,18 +52,30 @@ function scoreFromAttention(acsScore: number): {
 }
 
 /** Build proof packet from session attention evidence (not a static golden fixture). */
+function demoLiteChannelNote(telemetry: PopDemoLiteTelemetry): string {
+  const channels: string[] = []
+  if (telemetry.channelHints.eyes) channels.push('eyes')
+  if (telemetry.channelHints.gesture) channels.push('gesture')
+  if (telemetry.channelHints.voice) channels.push('voice')
+  return channels.length > 0 ? channels.join('+') : 'none'
+}
+
 export function buildDemoProofPacket(input: {
   session: AttentionSession
   offer: Offer
   visionHints?: VisionProofHints | null
+  demoLiteTelemetry?: PopDemoLiteTelemetry | null
 }): ProofPacketV0Json {
   const visionHints = input.visionHints ?? (isWebVisionEnabled() ? getVisionProofHints() : null)
-  const acsScore = computeSessionAttentionScore(input.session)
+  const sessionAcsScore = computeSessionAttentionScore(input.session)
+  const demoLite = input.demoLiteTelemetry ?? null
+  const acsScore = demoLite?.fusionAttentionScore ?? sessionAcsScore
   const layerScores = scoreFromAttention(acsScore)
-  const runtimeVersion =
+  const runtimeBase =
     visionHints?.source === 'web-vision'
       ? 'app/web-vision-session@pop-finish'
       : 'app/session-evidence@pop-finish'
+  const runtimeVersion = demoLite ? `${runtimeBase}@pop-demo-lite` : runtimeBase
   const startedAt = new Date(input.session.createdAt).toISOString()
   const endedAt = new Date(input.session.validatedAt ?? Date.now()).toISOString()
   const durationMs = Math.max(
@@ -102,7 +115,9 @@ export function buildDemoProofPacket(input: {
       perception: {
         score: layerScores.perception,
         confidence: Math.min(1, sampleCount / 10),
-        notes: `acsScore=${acsScore}`,
+        notes: demoLite
+          ? `acsScore=${acsScore};sessionAcs=${sessionAcsScore};demoLite=${demoLiteChannelNote(demoLite)};gazeRatio=${demoLite.gazeEngagedRatio.toFixed(2)};gestures=${demoLite.gestureTriggers.length}`
+          : `acsScore=${acsScore}`,
       },
       signalIntegrity: {
         score: likelyFake ? 0.35 : layerScores.signalIntegrity,
@@ -165,7 +180,7 @@ export function buildDemoProofPacket(input: {
       ),
     ),
     interaction: {
-      taps: 2,
+      taps: demoLite ? Math.max(2, demoLite.gestureTriggers.length) : 2,
       scrolls: 0,
       playbackStarted: true,
       playbackCompleted: true,
