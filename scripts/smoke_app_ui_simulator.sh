@@ -36,6 +36,11 @@ required_markers=(
   'function boostClip'
   'Triple tap resolved'
   'immersive-sunset.svg'
+  'POP Demo Lite'
+  'parsePopDemoLiteVoice'
+  'computeFusionAttentionScore'
+  'id="voiceToggle"'
+  'emitPopLiteProofPacket'
 )
 
 for marker in "${required_markers[@]}"; do

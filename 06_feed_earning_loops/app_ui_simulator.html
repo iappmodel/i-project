@@ -183,6 +183,27 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .log-entry.info { border-color: var(--cyan); }
 .home-indicator { position: absolute; left: 50%; bottom: 5px; transform: translateX(-50%); width: 96px; height: 4px; border-radius: 999px; background: rgba(255,255,255,0.24); z-index: 12; }
 .hidden { display: none !important; }
+.pop-demo-lite-banner {
+  position: absolute; top: 18px; left: 50%; transform: translateX(-50%); z-index: 11;
+  max-width: 92%; padding: 5px 12px; border-radius: 999px;
+  background: rgba(7,7,9,0.45); border: 1px solid rgba(255,255,255,0.18);
+  backdrop-filter: blur(10px); color: rgba(240,237,232,0.9);
+  font-size: 9px; font-weight: 600; letter-spacing: 0.03em; text-align: center;
+  pointer-events: none;
+}
+.gaze-dot-sim {
+  position: absolute; width: 14px; height: 14px; border-radius: 50%; z-index: 3;
+  border: 1px solid rgba(103,232,249,0.65); background: rgba(103,232,249,0.22);
+  box-shadow: 0 0 14px rgba(103,232,249,0.35);
+  transform: translate(-50%, -50%); pointer-events: none; opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.gaze-dot-sim.show { opacity: 1; }
+.voice-pill {
+  margin-top: 10px; font-size: 11px; padding: 7px 12px; border-radius: 999px;
+  border: 1px solid rgba(0,0,0,0.1); background: #f7f7f8; color: #4b4c55;
+}
+.voice-pill.on { border-color: rgba(74,222,128,0.45); color: #166534; background: rgba(74,222,128,0.12); }
 @media (max-width: 880px) {
   .page { grid-template-columns: 1fr; padding: 18px; align-items: start; }
   .side { grid-template-rows: auto; }
@@ -207,6 +228,8 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
         <div class="scrim-top"></div>
         <div class="scrim-bottom"></div>
         <div class="timer" aria-label="Watch progress"><span id="timerFill"></span></div>
+        <div class="pop-demo-lite-banner" id="popDemoLiteBanner">POP Demo Lite — simulation, not payout authority</div>
+        <div class="gaze-dot-sim" id="gazeDot" aria-hidden="true"></div>
 
         <button class="reward" id="rewardBtn" type="button" aria-label="Open reward state">50ic</button>
 
@@ -312,6 +335,8 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
       <h1>[ i ] simulator</h1>
       <p class="title">Integrated responsive UI model</p>
       <p>Every visible control resolves to a real simulated response: rail gestures (tap like · double save · triple boost · hold offer), REWARD review, Watch Verify Earn, Wallet, Promo, Studio, Profile, Out-Profile, ELO, share, message, and configurable controls.</p>
+      <p style="margin-top:10px;font-size:13px;color:var(--muted);">POP Demo Lite: move the mouse over the phone for gaze samples; enable voice for wallet/watch/like commands. Fusion score appears after Watch &amp; earn completes.</p>
+      <button type="button" class="voice-pill" id="voiceToggle" aria-pressed="false">Voice commands: off</button>
     </section>
     <section class="state-card" aria-label="Simulator state">
       <h2>Live app state</h2>
@@ -347,8 +372,100 @@ const state = {
     double: 'Save',
     up: 'Tip vCoin',
     down: 'Tip iCoin'
+  },
+  popLite: {
+    gazeSamples: 0,
+    gazeEngaged: 0,
+    gestures: 0,
+    voiceCommand: null,
+    fusionScore: null,
+    sessionAcs: 72
   }
 };
+
+const POP_LITE_VOICE_PATTERNS = [
+  { re: /\b(open|show|my)\s+wallet\b/i, command: 'open_wallet' },
+  { re: /\b(start|begin)\s+watch\b|\bwatch\s+now\b|\bplay\s+video\b/i, command: 'start_watch' },
+  { re: /\blike\s+this\b|\bthumbs?\s+up\b/i, command: 'like' },
+  { re: /\b(open|go\s+to)\s+feed\b/i, command: 'open_feed' },
+  { re: /\bopen\s+promo\b|\bpromo(tion)?\b/i, command: 'open_promo' },
+  { re: /\bsave\s+this\b|\bbookmark\b/i, command: 'save' }
+];
+
+function parsePopDemoLiteVoice(transcript) {
+  const text = String(transcript || '').trim();
+  if (!text) return null;
+  for (const { re, command } of POP_LITE_VOICE_PATTERNS) {
+    if (re.test(text)) return command;
+  }
+  return null;
+}
+
+function computeFusionAttentionScore(acsScore, input) {
+  const gazePart = input.gazeEngagedRatio * 30;
+  const gesturePart = Math.min(25, input.gestureCount * 5);
+  const voicePart = input.voiceCommand ? 15 : 0;
+  const multi = (gesturePart + gazePart + voicePart) / 3;
+  const fused = acsScore * 0.55 + multi * 0.45;
+  return Math.round(Math.max(0, Math.min(100, fused)));
+}
+
+function popLiteGazeEngagedRatio() {
+  if (!state.popLite.gazeSamples) return 0;
+  return state.popLite.gazeEngaged / state.popLite.gazeSamples;
+}
+
+function recordPopLiteGaze(engaged) {
+  state.popLite.gazeSamples += 1;
+  if (engaged) state.popLite.gazeEngaged += 1;
+}
+
+function recordPopLiteGesture(label) {
+  state.popLite.gestures += 1;
+  addLog('POP Demo Lite gesture: ' + label + '.', 'info');
+}
+
+function resetPopLiteSession() {
+  state.popLite.gazeSamples = 0;
+  state.popLite.gazeEngaged = 0;
+  state.popLite.gestures = 0;
+  state.popLite.voiceCommand = null;
+  state.popLite.fusionScore = null;
+}
+
+function emitPopLiteProofPacket() {
+  const gazeEngagedRatio = popLiteGazeEngagedRatio();
+  const fusionScore = computeFusionAttentionScore(state.popLite.sessionAcs, {
+    gazeEngagedRatio,
+    gestureCount: state.popLite.gestures,
+    voiceCommand: state.popLite.voiceCommand
+  });
+  state.popLite.fusionScore = fusionScore;
+  const channels = [];
+  if (state.popLite.gazeSamples) channels.push('eyes');
+  if (state.popLite.gestures) channels.push('gesture');
+  if (state.popLite.voiceCommand) channels.push('voice');
+  const channelNote = channels.length ? channels.join('+') : 'none';
+  addLog(
+    'POP Demo Lite packet: fusion=' + fusionScore +
+    '; sessionAcs=' + state.popLite.sessionAcs +
+    '; demoLite=' + channelNote +
+    '; review=pending (simulation).',
+    'good'
+  );
+}
+
+function dispatchPopLiteVoice(command, transcript) {
+  state.popLite.voiceCommand = command;
+  addLog('POP Demo Lite voice: "' + transcript.trim() + '" → ' + command + '.', 'info');
+  if (command === 'open_wallet') showMode('wallet');
+  else if (command === 'start_watch') runWatch();
+  else if (command === 'open_feed') showMode('feed');
+  else if (command === 'open_promo') showMode('promo');
+  else if (command === 'like') toggleLike();
+  else if (command === 'save') saveClip();
+  render();
+}
 
 const els = {
   screen: $('#screen'),
@@ -366,7 +483,9 @@ const els = {
   rewardTitle: $('#rewardTitle'),
   rewardCopy: $('#rewardCopy'),
   offerSlider: $('#offerSlider'),
-  elo: $('#eloBtn')
+  elo: $('#eloBtn'),
+  gazeDot: $('#gazeDot'),
+  voiceToggle: $('#voiceToggle')
 };
 
 let toastTimer;
@@ -433,7 +552,15 @@ function render() {
     ['Offer', state.offerStatus + ' / ' + state.offerAmount + state.offerCoin],
     ['Watch state', state.watch],
     ['ELO', state.elo],
-    ['Trust', state.trust + '%']
+    ['Trust', state.trust + '%'],
+    ['POP Lite channels', (() => {
+      const c = [];
+      if (state.popLite.gazeSamples) c.push('eyes');
+      if (state.popLite.gestures) c.push('gesture');
+      if (state.popLite.voiceCommand) c.push('voice');
+      return c.length ? c.join('+') : 'idle';
+    })()],
+    ['POP Lite fusion', state.popLite.fusionScore == null ? '—' : state.popLite.fusionScore + ' / 100']
   ].map(([k, v]) => `<div class="state-line"><span>${k}</span><b>${v}</b></div>`).join('');
 }
 
@@ -448,6 +575,7 @@ function popHeart() {
 }
 
 function toggleLike() {
+  recordPopLiteGesture('tap_like');
   state.liked = !state.liked;
   state.likeCount += state.liked ? 1 : -1;
   if (state.liked) popHeart();
@@ -457,6 +585,7 @@ function toggleLike() {
 }
 
 function saveClip() {
+  recordPopLiteGesture('double_save');
   state.saved = true;
   toast('Saved to Loop 2 vault');
   addLog('Double tap resolved: clip saved for retention path.', 'good');
@@ -464,6 +593,7 @@ function saveClip() {
 }
 
 function boostClip() {
+  recordPopLiteGesture('triple_boost');
   state.boosted = true;
   toast('Boost (demo) — reach amplify roadmap');
   addLog('Triple tap resolved: custom:boost demo stub (vCoin settlement roadmap).', 'good');
@@ -484,9 +614,11 @@ function startOffer(coin) {
 function runWatch() {
   clearInterval(watchTimer);
   closeSheets();
+  resetPopLiteSession();
   state.tab = 'feed';
   state.watch = 'watching';
   state.timer = 0;
+  state.popLite.sessionAcs = 70 + Math.round(state.timer / 5);
   toast('Watch session started');
   addLog('Watch & earn resolved: timer + verification gates started.', 'info');
   render();
@@ -498,6 +630,8 @@ function runWatch() {
       state.watch = 'verified';
       state.pending += 12;
       state.offerStatus = 'idle';
+      state.popLite.sessionAcs = 88;
+      emitPopLiteProofPacket();
       toast('Verified attention: +12ic pending');
       addLog('Verify resolved: reward moved to pending wallet.', 'good');
     }
@@ -672,7 +806,105 @@ document.addEventListener('click', (e) => {
   }
 });
 
+let popLiteRecognition = null;
+let voiceEnabled = false;
+
+function getSpeechRecognitionCtor() {
+  return window.SpeechRecognition || window.webkitSpeechRecognition || null;
+}
+
+function stopPopLiteVoice() {
+  if (!popLiteRecognition) return;
+  popLiteRecognition.onresult = null;
+  popLiteRecognition.onerror = null;
+  popLiteRecognition.onend = null;
+  popLiteRecognition.abort();
+  popLiteRecognition = null;
+  voiceEnabled = false;
+  els.voiceToggle.classList.remove('on');
+  els.voiceToggle.setAttribute('aria-pressed', 'false');
+  els.voiceToggle.textContent = 'Voice commands: off';
+}
+
+function startPopLiteVoice() {
+  const Ctor = getSpeechRecognitionCtor();
+  if (!Ctor) {
+    toast('Speech API unavailable in this browser');
+    addLog('POP Demo Lite voice: Web Speech API not supported.', 'warn');
+    return;
+  }
+  stopPopLiteVoice();
+  const recognition = new Ctor();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.lang = 'en-US';
+  recognition.onresult = (event) => {
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      if (!event.results[i].isFinal) continue;
+      const transcript = event.results[i][0].transcript;
+      const command = parsePopDemoLiteVoice(transcript);
+      if (command) dispatchPopLiteVoice(command, transcript);
+    }
+  };
+  recognition.onerror = (event) => {
+    if (event.error !== 'aborted' && event.error !== 'no-speech') {
+      addLog('POP Demo Lite voice error: ' + event.error + '.', 'warn');
+    }
+  };
+  recognition.onend = () => {
+    if (voiceEnabled && popLiteRecognition) {
+      try { recognition.start(); } catch (_) { /* mic restart */ }
+    }
+  };
+  try {
+    recognition.start();
+    popLiteRecognition = recognition;
+    voiceEnabled = true;
+    els.voiceToggle.classList.add('on');
+    els.voiceToggle.setAttribute('aria-pressed', 'true');
+    els.voiceToggle.textContent = 'Voice commands: listening';
+    addLog('POP Demo Lite voice: listening for wallet / watch / like / feed / promo.', 'good');
+  } catch (err) {
+    toast('Microphone unavailable');
+    addLog('POP Demo Lite voice: mic unavailable.', 'warn');
+  }
+}
+
+els.voiceToggle.addEventListener('click', () => {
+  if (voiceEnabled) stopPopLiteVoice();
+  else startPopLiteVoice();
+  render();
+});
+
+let lastGazeSampleAt = 0;
+els.screen.addEventListener('pointermove', (e) => {
+  const rect = els.screen.getBoundingClientRect();
+  const inside =
+    e.clientX >= rect.left && e.clientX <= rect.right &&
+    e.clientY >= rect.top && e.clientY <= rect.bottom;
+  if (!inside) {
+    els.gazeDot.classList.remove('show');
+    return;
+  }
+  const x = ((e.clientX - rect.left) / rect.width) * 100;
+  const y = ((e.clientY - rect.top) / rect.height) * 100;
+  els.gazeDot.style.left = x + '%';
+  els.gazeDot.style.top = y + '%';
+  els.gazeDot.classList.add('show');
+  const now = Date.now();
+  if (now - lastGazeSampleAt >= 500) {
+    lastGazeSampleAt = now;
+    recordPopLiteGaze(true);
+  }
+});
+
+els.screen.addEventListener('pointerleave', () => {
+  els.gazeDot.classList.remove('show');
+  recordPopLiteGaze(false);
+});
+
 addLog('Simulator ready: every button resolves to a simulated app function.', 'good');
+addLog('POP Demo Lite active: mouse-as-gaze + optional voice commands.', 'info');
 render();
 </script>
 </body>
