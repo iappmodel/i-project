@@ -5,6 +5,62 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-06-11 — Tier 3 owner gates linked + wired
+
+### Delivered
+- **`MASTER_BRAIN/OWNER_GATES_INDEX.md`** — hub for 5 production gates (Stripe, Supabase cloud, validator TLS, store signing, KYC/legal)
+- **`.env.production.owner.example`** — single owner secrets template
+- **Scripts:** `wire_owner_gates.sh`, `smoke_owner_gates.sh`, `enable_{supabase_cloud,validator_tls,store_signing,kyc}_env.sh`, `promote_kyc_edge.sh`
+- **KYC:** `app/src/services/kyc.service.ts`, `app/supabase/functions/kyc-review/`, `docs/technical/KYC_LEGAL_GATE.md`
+- **Store:** `docs/technical/STORE_SIGNING_RUNBOOK.md`
+- **App:** `app/src/lib/ownerGates.ts` — withdraw screen gate summary
+
+### Owner workflow
+```bash
+cp .env.production.owner.example .env.production.owner
+./scripts/wire_owner_gates.sh
+./scripts/smoke_owner_gates.sh
+```
+
+---
+
+## 2026-06-12 — Abacus AI build prompt pack
+
+### Delivered
+- **`MASTER_BRAIN/ABACUS_AI_BUILD_PROMPT.md`** — full copy-paste Abacus command (product law, UI, economy, 12+ screens, mock data).
+- **`MASTER_BRAIN/ABACUS_AI_BUILD_PROMPT_SHORT.md`** — ~2K-word version for character limits.
+- **`MASTER_BRAIN/ABACUS_AI_BUILD_PROMPT_PHASES.md`** — phased prompts 0–8 (scaffold → feed → Loop 1 → wallet → gestures → ELO → promo → presenter).
+- **`COMPOSER_GO_MENU.md`** — external build index cross-link.
+
+### Usage
+Paste full or short prompt into Abacus Create App. Incremental: Phase 0 → 3 + 7 for minimum investor demo.
+
+---
+
+## 2026-06-11 — GO workflow: H1.4 verify, H1.5 abuse, Loop-1 edge wiring
+
+### Delivered
+- **`MASTER_BRAIN/COMPOSER_GO_MENU.md`** — daily `GO` commands, model tiers, parallel rules, env flags.
+- **H1.4** — `issue-reward` + `_shared` helpers byte-identical to Lovable archive; `deno test index.test.ts` 22/22 pass (`--no-check`; 6 pre-existing TS errors unchanged).
+- **H1.5** — full `app/src/services/security.service.ts` port (fingerprint, device registry, `validateRewardAttempt`, `logAbuse` → `abuse_logs`); server-side abuse already in `validate-attention`.
+- **Loop-1 edge wiring** — `getRewardPath()` (`VITE_REWARD_PATH=pop|edge|auto`); `attentionValidation.ts`, `rewardIssuance.ts`, `rewardContentMap.ts`; `demoContext.finishRewardToWallet` branches edge vs POP vs mock.
+
+### Reward path split (default `auto`)
+- Native/Capacitor → POP (`submitProofPacket`)
+- Web + Supabase auth + live wallet → edge (`validate-attention` → `issue-reward`)
+- No live validator → mock instant credit
+
+### Verification
+```bash
+cd app/supabase/functions/issue-reward && deno test index.test.ts --no-check
+./scripts/smoke_organism_spine.sh
+cd app && npm run typecheck
+```
+
+### Docs
+- `LOVABLE_HARVEST_AUDIT_2026-06-02.md` — H1.4, H1.5 marked **Done**
+- `COMPOSER_GO_MENU.md` — spine phases H1.4–Loop-1 **Done**; next P0: `GO H2.3`
+
 ---
 
 ## 2026-06-03 — Investor build (full checklist)
