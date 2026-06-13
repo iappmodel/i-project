@@ -40,6 +40,9 @@ if ! grep -q "immersive-promo" "$APP/src/styles/gesture-buttons.css"; then
   echo "FAIL: promo CSS missing" >&2
   exit 1
 fi
+[[ -f "$APP/src/components/immersive/ImmersivePromoReviewSheet.tsx" ]] || { echo "FAIL: promo review sheet missing" >&2; exit 1; }
+[[ -f "$APP/src/components/immersive/ImmersivePromoMapSheet.tsx" ]] || { echo "FAIL: promo map sheet missing" >&2; exit 1; }
+grep -q "ImmersivePromoMapSheetBody" "$APP/src/screens/ImmersivePromoScreen.tsx" || { echo "FAIL: map sheet not wired" >&2; exit 1; }
 
 cd "$APP"
 npm run typecheck --silent

@@ -83,6 +83,11 @@ if ! grep -q "immersive-feed__swipe" "$APP/src/screens/ImmersiveFeedScreen.tsx";
   echo "FAIL: immersive feed swipe layer missing" >&2
   exit 1
 fi
+[[ -f "$APP/src/components/immersive/StoriesRing.tsx" ]] || { echo "FAIL: StoriesRing missing" >&2; exit 1; }
+[[ -f "$APP/src/components/immersive/TopicFilterBar.tsx" ]] || { echo "FAIL: TopicFilterBar missing" >&2; exit 1; }
+[[ -f "$APP/src/components/immersive/ImmersiveMessagesSheet.tsx" ]] || { echo "FAIL: ImmersiveMessagesSheet missing" >&2; exit 1; }
+grep -q "immersive-create" "$APP/src/App.tsx" || { echo "FAIL: immersive-create route missing" >&2; exit 1; }
+grep -q "immersive-feed__video" "$APP/src/styles/gesture-buttons.css" || { echo "FAIL: feed video CSS missing" >&2; exit 1; }
 
 cd "$APP"
 npm run typecheck --silent

@@ -13,6 +13,14 @@ import { ImmersiveWalletSheet } from '../components/immersive/ImmersiveWalletShe
 import { ImmersiveProfileSheet } from '../components/immersive/ImmersiveProfileSheet'
 import { ImmersiveTaskCenterSheet } from '../components/immersive/ImmersiveTaskCenterSheet'
 import { ImmersiveCommentsSheet } from '../components/immersive/ImmersiveCommentsSheet'
+import { ImmersiveMessagesSheet } from '../components/immersive/ImmersiveMessagesSheet'
+import { ImmersiveAchievementSheet } from '../components/immersive/ImmersiveAchievementSheet'
+import { ImmersiveSpinSheet } from '../components/immersive/ImmersiveSpinSheet'
+import { ImmersiveLeaderboardSheet } from '../components/immersive/ImmersiveLeaderboardSheet'
+import { ImmersivePaySheet } from '../components/immersive/ImmersivePaySheet'
+import { StoriesRing } from '../components/immersive/StoriesRing'
+import { TopicFilterBar, type TopicId } from '../components/immersive/TopicFilterBar'
+import { CheckInStreakPill } from '../components/immersive/QuickCheckInSheet'
 import { feedItemToMedia } from '../data/immersiveFeedContext'
 import { formatCoinLabel } from '../lib/gestureButtons/offerService'
 import { resolveOutProfileCreator, outProfileTapAction } from '../lib/outProfileEngine'
@@ -22,6 +30,8 @@ import { useFollow } from '../hooks/useFollow'
 import { useImmersiveFeed } from '../hooks/useImmersiveFeed'
 import { useOfferSession } from '../hooks/useOfferSession'
 import { useSavedContent } from '../hooks/useSavedContent'
+import { useStories } from '../hooks/useStories'
+import { useCheckInStatus } from '../hooks/useCheckInStatus'
 import { useDemo } from '../state/useDemo'
 
 const SUNSET_BG = '/media/immersive-sunset.svg'
@@ -40,15 +50,34 @@ export function ImmersiveFeedScreen() {
 
   const feed = useImmersiveFeed(true)
   const media = useMemo(() => feedItemToMedia(feed.current), [feed.current])
+  const { stories } = useStories()
+  const checkIn = useCheckInStatus()
 
   const [toast, setToast] = useState<string | null>(null)
   const [walletSheetOpen, setWalletSheetOpen] = useState(false)
   const [profileSheetOpen, setProfileSheetOpen] = useState(false)
   const [taskSheetOpen, setTaskSheetOpen] = useState(false)
   const [commentsOpen, setCommentsOpen] = useState(false)
+  const [messagesOpen, setMessagesOpen] = useState(false)
+  const [achievementOpen, setAchievementOpen] = useState(false)
+  const [spinOpen, setSpinOpen] = useState(false)
+  const [leaderboardOpen, setLeaderboardOpen] = useState(false)
+  const [paySheetOpen, setPaySheetOpen] = useState(false)
+  const [topics, setTopics] = useState<TopicId[]>(['For You'])
   const [timerPct] = useState(38)
   const [bgSrc, setBgSrc] = useState(SUNSET_BG)
+  const [videoSrc, setVideoSrc] = useState<string | null>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
   const swipeRef = useRef<{ x: number; y: number; t: number } | null>(null)
+
+  const flash = useCallback((msg: string) => {
+    setToast(msg)
+    window.setTimeout(() => setToast(null), 2200)
+  }, [])
+
+  const toggleTopic = useCallback((id: TopicId) => {
+    setTopics((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
+  }, [])
 
   const outCreator = resolveOutProfileCreator({
     id: media.creatorId,
@@ -82,14 +111,9 @@ export function ImmersiveFeedScreen() {
       contentId: media.contentId,
       category: feed.current.category,
       tags: feed.current.tags,
-      initialLikeCount: media.initialLikeCount,
+      initialLikeCount: feed.current.initialLikeCount,
       trackEnabled,
     })
-
-  const flash = useCallback((msg: string) => {
-    setToast(msg)
-    window.setTimeout(() => setToast(null), 2200)
-  }, [])
 
   const follow = useFollow({
     creatorId: media.creatorId,
@@ -116,7 +140,7 @@ export function ImmersiveFeedScreen() {
       title: feed.current.title,
       source: media.creatorName,
       thumbnail: feed.current.thumbnail,
-      type: feed.current.category === 'sponsored' ? 'promo' : 'video',
+      type: 'video',
     })
     flash('Saved')
   }, [feed.current, flash, media, saved])
@@ -151,6 +175,8 @@ export function ImmersiveFeedScreen() {
 
   useEffect(() => {
     const thumb = feed.current.thumbnail || feed.current.videoSrc
+    const vid = feed.current.videoSrc
+    setVideoSrc(vid ?? null)
     if (!thumb) {
       setBgSrc(SUNSET_BG)
       return
@@ -176,6 +202,7 @@ export function ImmersiveFeedScreen() {
       const detail = (e as CustomEvent<{ command?: string }>).detail
       if (detail?.command === 'like') void toggleLike()
       if (detail?.command === 'comment') setCommentsOpen(true)
+      if (detail?.command === 'message') setMessagesOpen(true)
       if (detail?.command === 'follow') void handleFollowToggle()
       if (detail?.command === 'share') {
         void trackShare()
@@ -240,11 +267,25 @@ export function ImmersiveFeedScreen() {
     <PhoneFrame>
       <div className="phone-screen phone-screen--immersive">
         <div className="immersive-feed" style={{ overscrollBehavior: 'none' }}>
-          <div
-            className="immersive-feed__media"
-            style={{ backgroundImage: `url(${bgSrc})` }}
-            aria-hidden
-          />
+          {videoSrc ? (
+            <video
+              ref={videoRef}
+              className="immersive-feed__video"
+              src={videoSrc}
+              poster={bgSrc}
+              playsInline
+              muted
+              loop
+              autoPlay
+              aria-hidden
+            />
+          ) : (
+            <div
+              className="immersive-feed__media"
+              style={{ backgroundImage: `url(${bgSrc})` }}
+              aria-hidden
+            />
+          )}
           <div
             className="immersive-feed__swipe"
             onPointerDown={onSwipePointerDown}
@@ -252,6 +293,10 @@ export function ImmersiveFeedScreen() {
             onPointerCancel={() => { swipeRef.current = null }}
             aria-label="Swipe for next clip; tap to watch"
           />
+          <div className="immersive-feed__stories-wrap">
+            <StoriesRing stories={stories} onSelect={(id) => flash(`Story ${id}`)} />
+          </div>
+          <TopicFilterBar active={topics} onToggle={toggleTopic} />
           <div className="immersive-feed__lane-dots" aria-hidden>
             {feed.items.slice(0, 8).map((item, i) => (
               <i key={item.id} className={i === feed.index % 8 ? 'on' : ''} />
@@ -290,6 +335,7 @@ export function ImmersiveFeedScreen() {
             followLoading={follow.loading || follow.toggling}
             onFollowToggle={handleFollowToggle}
           />
+          <CheckInStreakPill streakDays={checkIn.streakDays} />
 
           <button
             type="button"
@@ -336,7 +382,10 @@ export function ImmersiveFeedScreen() {
               setActiveTab('earn')
               setScreen('immersive-promo')
             }}
-            onCreate={() => flash('Create · Studio (coming soon)')}
+            onCreate={() => {
+              setActiveTab('profile')
+              setScreen('immersive-create')
+            }}
             onWallet={() => setWalletSheetOpen(true)}
             onProfile={() => setProfileSheetOpen(true)}
           />
@@ -344,6 +393,10 @@ export function ImmersiveFeedScreen() {
           <ImmersiveWalletSheet
             open={walletSheetOpen}
             onClose={() => setWalletSheetOpen(false)}
+            onPay={() => {
+              setWalletSheetOpen(false)
+              setPaySheetOpen(true)
+            }}
             onConvert={() => {
               setWalletSheetOpen(false)
               setActiveTab('wallet')
@@ -363,9 +416,26 @@ export function ImmersiveFeedScreen() {
           <ImmersiveProfileSheet
             open={profileSheetOpen}
             onClose={() => setProfileSheetOpen(false)}
+            streakDays={checkIn.streakDays}
             onOpenTasks={() => {
               setProfileSheetOpen(false)
               setTaskSheetOpen(true)
+            }}
+            onOpenAchievements={() => {
+              setProfileSheetOpen(false)
+              setAchievementOpen(true)
+            }}
+            onOpenSpin={() => {
+              setProfileSheetOpen(false)
+              setSpinOpen(true)
+            }}
+            onOpenLeaderboard={() => {
+              setProfileSheetOpen(false)
+              setLeaderboardOpen(true)
+            }}
+            onOpenMessages={() => {
+              setProfileSheetOpen(false)
+              setMessagesOpen(true)
             }}
             onOpenFull={() => {
               setProfileSheetOpen(false)
@@ -382,17 +452,13 @@ export function ImmersiveFeedScreen() {
                 : undefined
             }
           />
-          <ImmersiveTaskCenterSheet
-            open={taskSheetOpen}
-            onClose={() => setTaskSheetOpen(false)}
-            onToast={flash}
-          />
-          <ImmersiveCommentsSheet
-            open={commentsOpen}
-            contentId={media.contentId}
-            onClose={() => setCommentsOpen(false)}
-            onToast={flash}
-          />
+          <ImmersiveTaskCenterSheet open={taskSheetOpen} onClose={() => setTaskSheetOpen(false)} onToast={flash} />
+          <ImmersiveCommentsSheet open={commentsOpen} contentId={media.contentId} onClose={() => setCommentsOpen(false)} onToast={flash} />
+          <ImmersiveMessagesSheet open={messagesOpen} onClose={() => setMessagesOpen(false)} />
+          <ImmersiveAchievementSheet open={achievementOpen} onClose={() => setAchievementOpen(false)} />
+          <ImmersiveSpinSheet open={spinOpen} onClose={() => setSpinOpen(false)} onToast={flash} />
+          <ImmersiveLeaderboardSheet open={leaderboardOpen} onClose={() => setLeaderboardOpen(false)} />
+          <ImmersivePaySheet open={paySheetOpen} onClose={() => setPaySheetOpen(false)} onToast={flash} />
 
           <div className="immersive-home-indicator" aria-hidden />
         </div>

@@ -1934,3 +1934,131 @@
   cursor: pointer;
   padding: 0;
 }
+
+/* GO marathon — video layer, stories, topics, promo, pay, social */
+.immersive-feed__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.immersive-feed__stories-wrap {
+  position: absolute;
+  top: 3.25rem;
+  left: 12px;
+  right: 12px;
+  z-index: 12;
+}
+
+.stories-ring {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.stories-ring__bubble {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  background: none;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.stories-ring__avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  border: 2px solid var(--accent-cyan);
+  background: var(--glass-bg);
+}
+
+.stories-ring__bubble--seen .stories-ring__avatar {
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.stories-ring__name {
+  font-size: 9px;
+  opacity: 0.75;
+}
+
+.topic-filter {
+  position: absolute;
+  top: 6.5rem;
+  left: 0;
+  right: 0;
+  z-index: 12;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 0 12px 6px;
+}
+
+.topic-filter__pill {
+  border: var(--glass-border);
+  background: var(--glass-bg);
+  color: rgba(255, 255, 255, 0.7);
+  border-radius: var(--radius-pill);
+  padding: 5px 10px;
+  font-size: 10px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.topic-filter__pill--on {
+  color: #fff;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+}
+
+.checkin-streak-pill {
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 140, 60, 0.2);
+  color: rgba(255, 200, 120, 0.95);
+}
+
+.promo-review-sheet__stars { display: flex; gap: 6px; margin-bottom: 10px; }
+.promo-review-sheet__star { border: none; background: none; font-size: 22px; color: rgba(255,255,255,0.35); cursor: pointer; }
+.promo-review-sheet__star--on { color: #fbbf24; }
+.promo-review-sheet__input { width: 100%; border-radius: 12px; border: var(--glass-border); background: rgba(255,255,255,0.06); color: #fff; padding: 8px; margin-bottom: 10px; }
+
+.checkin-sheet__streak { margin: 8px 0; }
+.checkin-sheet__promo { font-weight: 600; }
+
+.promo-map-list { list-style: none; margin: 0; padding: 0; }
+.promo-map-list__item { padding: 10px; border-bottom: 0.5px solid rgba(255,255,255,0.1); display: grid; gap: 2px; }
+.promo-map-list__dist { font-size: 10px; opacity: 0.6; }
+
+.immersive-promo-card-wrap { display: grid; gap: 6px; }
+.immersive-promo-card__checkin { font-size: 11px; border: none; background: rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 8px; cursor: pointer; }
+.immersive-promo__route-link { margin-top: 8px; border: none; background: none; color: rgba(255,255,255,0.55); font-size: 11px; text-decoration: underline; cursor: pointer; }
+
+.pay-sheet__modes { display: flex; gap: 8px; margin-bottom: 12px; }
+.pay-sheet__mode { padding: 6px 10px; border-radius: 8px; background: var(--glass-bg); font-size: 11px; }
+.pay-sheet__label { display: grid; gap: 4px; font-size: 11px; margin-bottom: 8px; }
+.pay-sheet__select, .pay-sheet__input { border-radius: 8px; border: var(--glass-border); background: rgba(255,255,255,0.06); color: #fff; padding: 8px; }
+
+.messages-sheet__list, .achievement-sheet__list, .leaderboard-sheet__list, .route-sheet__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.messages-sheet__item, .achievement-sheet__item, .leaderboard-sheet__item, .route-sheet__item { padding: 10px; border-radius: 12px; background: var(--glass-bg); border: var(--glass-border); }
+.spin-sheet__wheel { width: 120px; height: 120px; margin: 12px auto; border-radius: 50%; display: grid; place-items: center; font-size: 32px; background: var(--glass-bg-strong); border: var(--glass-border); }
+
+.immersive-create { padding: 48px 16px 88px; min-height: 100%; background: #070709; }
+.immersive-create__file { display: none; }
+.immersive-create__preview, .immersive-create__placeholder { margin-top: 12px; border-radius: 12px; overflow: hidden; min-height: 120px; background: var(--glass-bg); }
+.immersive-create__media { width: 100%; max-height: 240px; object-fit: cover; }
+
+.studio-timeline { margin: 16px 0; padding: 12px; border-radius: 12px; background: var(--glass-bg); }
+.studio-timeline__track { height: 8px; background: rgba(255,255,255,0.1); border-radius: 999px; overflow: hidden; margin-bottom: 12px; }
+.studio-timeline__fill { display: block; height: 100%; background: var(--accent-cyan); }

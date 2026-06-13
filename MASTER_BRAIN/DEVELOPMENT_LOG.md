@@ -5,6 +5,27 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-06-13 — GO marathon (M1–M17 complete)
+
+### Delivered
+- **M1** — `ImmersivePromoReviewSheet` + `pendingPromoReview` after reward reveal
+- **M2** — `verify-checkin` edge, `checkin.service`, `QuickCheckInSheet`, streak pill
+- **M3** — `get-mapbox-token` edge, `ImmersivePromoMapSheet` demo list fallback
+- **M4–M6** — Achievements, daily spin, referrals (`manage-referral`), leaderboard sheets
+- **M7–M8** — `StoriesRing`, `ImmersiveMessagesSheet` + demo stores
+- **M9–M10** — `merchantCheckout` types/mockResolver, 8 checkout edges, `ImmersivePaySheet`
+- **M11–M12** — `ImmersiveCreateScreen`, `ImmersiveStudioScreen`
+- **M13** — Full-bleed `<video>` on feed + topic/stories chrome
+- **M14** — Presenter blink remote gate on `VisionControlPanel`
+- **M15** — `.github/PULL_REQUEST_TEMPLATE/harvest.md`
+- **M16–M17** — Route builder sheet, `TopicFilterBar`
+- **Infra** — `marathon_queue.json`, `marathon_shift.sh`, `MARATHON_AGENT_PROMPT.md`
+
+### Verification
+All marathon final smokes PASS (see `.marathon-shift/MORNING_BRIEF.md`).
+
+---
+
 ## 2026-06-13 — GO overnight serial lane (H2.4–H3.1 + design-tokens)
 
 ### Delivered

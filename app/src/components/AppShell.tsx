@@ -7,7 +7,7 @@ type Props = {
 }
 
 /** Screens that use Picture 2 immersive chrome — no desktop titlebar. */
-const IMMERSIVE_SCREENS: DemoScreenId[] = ['immersive-feed', 'immersive-promo', 'watch-verify']
+const IMMERSIVE_SCREENS: DemoScreenId[] = ['immersive-feed', 'immersive-promo', 'immersive-create', 'watch-verify']
 
 export function AppShell({ children }: Props) {
   const { appMode, currentScreen } = useDemo()

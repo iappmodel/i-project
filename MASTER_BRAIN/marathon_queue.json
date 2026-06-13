@@ -1,0 +1,320 @@
+{
+  "version": 1,
+  "created": "2026-06-13",
+  "description": "GO marathon \u2014 largest single-command harvest wave (17 serial nodes)",
+  "depth_policy": {
+    "mvp_slice": {
+      "label": "GO marathon (default)",
+      "hours_estimate": "1-3 agent sessions",
+      "definition": "Smoke-green wiring + demo fallbacks + thin glass sheets. Checklist done; not archive parity.",
+      "status": "shipped"
+    },
+    "full_harvest": {
+      "label": "GO marathon depth <node>",
+      "hours_estimate": "50-80+ agent-hours total",
+      "definition": "Port eye-earn-sparkle-archive at full LOC (e.g. MerchantCheckoutSheet 2k+, DiscoveryMap 1.4k+, Studio 21 components).",
+      "next_recommended": ["GO marathon depth M9", "GO marathon depth M10"]
+    }
+  },
+  "branch": "feature/lovable-harvest",
+  "max_hours": 80,
+  "commit_when_done": false,
+  "law": [
+    "MASTER_BRAIN/CANONICAL/IMMERSIVE_UI_DESIGN_LAW.md",
+    "MASTER_BRAIN/CANONICAL/i_SOURCE_OF_TRUTH.md"
+  ],
+  "hard_stops": [
+    "demoContext.tsx reward paths (unless node explicitly says)",
+    "issue-reward / validate-attention / ledger migrations",
+    "Stripe live / .env.production.owner / production cutover",
+    "H6.3 generate-* edges (OpenAI keys)",
+    "H7.3 OAuth social connect",
+    "H4.3 live send-coin-gift",
+    "Force push / hard reset / skip hooks"
+  ],
+  "serial_lane": [
+    {
+      "id": "M1",
+      "command": "GO marathon M1",
+      "title": "H2.6 post-watch promo review sheet",
+      "wave": 1,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_promo.sh"
+      ],
+      "harvest": [
+        "PromotionDetails submit review UX"
+      ],
+      "status": "done"
+    },
+    {
+      "id": "M2",
+      "command": "GO marathon M2",
+      "title": "H3.2 verify-checkin + streak",
+      "wave": 1,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_promo_checkin.sh"
+      ],
+      "harvest": [
+        "verify-checkin edge",
+        "CheckInStreak",
+        "useCheckInStatus"
+      ],
+      "status": "done"
+    },
+    {
+      "id": "M3",
+      "command": "GO marathon M3",
+      "title": "H3.3 discovery map demo tier",
+      "wave": 1,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_promo.sh"
+      ],
+      "harvest": [
+        "get-mapbox-token",
+        "DiscoveryMap demo fallback"
+      ],
+      "status": "done"
+    },
+    {
+      "id": "M4",
+      "command": "GO marathon M4",
+      "title": "H5.2 achievements + daily spin",
+      "wave": 2,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_shell.sh"
+      ],
+      "harvest": [
+        "AchievementCenter",
+        "DailySpinWheel"
+      ],
+      "status": "done"
+    },
+    {
+      "id": "M5",
+      "command": "GO marathon M5",
+      "title": "H5.3 referrals",
+      "wave": 2,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "manage-referral",
+        "ReferralPanel"
+      ],
+      "status": "done"
+    },
+    {
+      "id": "M6",
+      "command": "GO marathon M6",
+      "title": "H5.4 leaderboard",
+      "wave": 2,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "Leaderboard"
+      ],
+      "status": "done"
+    },
+    {
+      "id": "M7",
+      "command": "GO marathon M7",
+      "title": "H7.2 stories ring",
+      "wave": 3,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_shell.sh"
+      ],
+      "harvest": [
+        "stories/*",
+        "useStories"
+      ],
+      "status": "done"
+    },
+    {
+      "id": "M8",
+      "command": "GO marathon M8",
+      "title": "H7.1 DM threads",
+      "wave": 3,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_shell.sh"
+      ],
+      "harvest": [
+        "conversation.service",
+        "MessagesScreen"
+      ],
+      "status": "done"
+    },
+    {
+      "id": "M9",
+      "command": "GO marathon M9",
+      "title": "H4.1 merchant-checkout edges (8)",
+      "wave": 4,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "cd app/supabase/functions/_shared && deno test --no-check merchant_checkout.test.ts"
+      ],
+      "harvest": [
+        "merchantCheckout types/mockResolver",
+        "merchant-checkout-*"
+      ],
+      "status": "done"
+    },
+    {
+      "id": "M10",
+      "command": "GO marathon M10",
+      "title": "H4.2 Pay glass sheet",
+      "wave": 4,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_merchant_pay.sh"
+      ],
+      "harvest": [
+        "MerchantCheckoutSheet"
+      ],
+      "status": "done"
+    },
+    {
+      "id": "M11",
+      "command": "GO marathon M11",
+      "title": "H6.1 Create + upload",
+      "wave": 5,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_shell.sh"
+      ],
+      "harvest": [
+        "Create.tsx",
+        "mediaUpload.service"
+      ],
+      "status": "done"
+    },
+    {
+      "id": "M12",
+      "command": "GO marathon M12",
+      "title": "H6.2 Studio timeline",
+      "wave": 5,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "Studio.tsx",
+        "studio/*"
+      ],
+      "status": "done"
+    },
+    {
+      "id": "M13",
+      "command": "GO marathon M13",
+      "title": "design-video-media",
+      "wave": 6,
+      "exit_smoke": [
+        "./scripts/smoke_immersive_shell.sh",
+        "./scripts/smoke_gesture_buttons.sh"
+      ],
+      "harvest": [
+        "IMMERSIVE_UI_DESIGN_LAW video layer"
+      ],
+      "status": "done"
+    },
+    {
+      "id": "M14",
+      "command": "GO marathon M14",
+      "title": "H8.2 blink remote presenter",
+      "wave": 6,
+      "exit_smoke": [
+        "./scripts/smoke_blink_remote_lite.sh"
+      ],
+      "harvest": [
+        "BlinkRemoteControl presenter gate"
+      ],
+      "status": "done"
+    },
+    {
+      "id": "M15",
+      "command": "GO marathon M15",
+      "title": "H0 PR checklist template",
+      "wave": 6,
+      "exit_smoke": [
+        "test -f .github/PULL_REQUEST_TEMPLATE/harvest.md"
+      ],
+      "harvest": [
+        "LOVABLE_HARVEST_AUDIT PR hygiene"
+      ],
+      "status": "done"
+    },
+    {
+      "id": "M16",
+      "command": "GO marathon M16",
+      "title": "H3.4 route builder stretch",
+      "wave": 7,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "RouteBuilder",
+        "usePromoRoute"
+      ],
+      "status": "done"
+    },
+    {
+      "id": "M17",
+      "command": "GO marathon M17",
+      "title": "Topic filter pill stub",
+      "wave": 7,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_shell.sh"
+      ],
+      "harvest": [
+        "FEATURE_BIBLE topic filter bar"
+      ],
+      "status": "done"
+    }
+  ],
+  "parallel_lane": [
+    {
+      "id": "P1",
+      "node": "M4",
+      "title": "DailySpinWheel CSS",
+      "worktree_hint": "marathon-p1-spin"
+    },
+    {
+      "id": "P2",
+      "node": "M7",
+      "title": "Stories ring CSS",
+      "worktree_hint": "marathon-p2-stories"
+    },
+    {
+      "id": "P3",
+      "node": "M12",
+      "title": "Studio components",
+      "worktree_hint": "marathon-p3-studio"
+    },
+    {
+      "id": "P4",
+      "node": "M10",
+      "title": "Pay sheet CSS",
+      "worktree_hint": "marathon-p4-pay"
+    }
+  ],
+  "baseline_smokes": [
+    "cd app && npm run typecheck",
+    "./scripts/smoke_immersive_shell.sh",
+    "./scripts/smoke_organism_spine.sh"
+  ],
+  "final_smokes": [
+    "cd app && npm run typecheck",
+    "./scripts/smoke_immersive_shell.sh",
+    "./scripts/smoke_immersive_promo.sh",
+    "./scripts/smoke_promo_checkin.sh",
+    "./scripts/smoke_merchant_pay.sh",
+    "./scripts/smoke_organism_spine.sh",
+    "./scripts/smoke_production_readiness.sh"
+  ]
+}

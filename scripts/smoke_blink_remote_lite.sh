@@ -64,6 +64,10 @@ if ! grep -q "VITE_VISION_ENGINE" "$APP/src/lib/visionEngine.ts"; then
   echo "FAIL: visionEngine must read VITE_VISION_ENGINE flag" >&2
   exit 1
 fi
+if ! grep -q "appMode" "$APP/src/components/VisionControlPanel.tsx"; then
+  echo "FAIL: VisionControlPanel must gate presenter blink remote" >&2
+  exit 1
+fi
 
 cd "$APP"
 npm run typecheck --silent

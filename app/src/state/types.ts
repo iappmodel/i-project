@@ -13,6 +13,8 @@ export type DemoScreenId =
   | 'feed'
   | 'immersive-feed'
   | 'immersive-promo'
+  | 'immersive-create'
+  | 'immersive-studio'
   | 'earn'
   | 'profile'
   | 'offer-detail'

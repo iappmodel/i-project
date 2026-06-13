@@ -6,6 +6,7 @@ import { VisionTargetPresetPicker } from './VisionTargetPresetPicker'
 import { VisionTargetEditor } from './VisionTargetEditor'
 import { VisionBlinkRemoteLite } from './VisionBlinkRemoteLite'
 import { loadVisionCalibration } from '../lib/visionCalibration/profile'
+import { useDemo } from '../state/useDemo'
 
 type Props = {
   lastRemoteGesture: string | null
@@ -13,6 +14,7 @@ type Props = {
 }
 
 export function VisionControlPanel({ lastRemoteGesture, lastTargetAction }: Props) {
+  const { appMode } = useDemo()
   const [open, setOpen] = useState(false)
   const calibration = loadVisionCalibration()
 
@@ -44,6 +46,9 @@ export function VisionControlPanel({ lastRemoteGesture, lastTargetAction }: Prop
           <VisionRemoteSettingsCard className="" />
           <VisionTargetPresetPicker className="" />
           <VisionTargetEditor className="" />
+          {appMode === 'presenter' ? (
+            <p className="profile-trust-card__hint mono">Presenter · full blink remote enabled</p>
+          ) : null}
           <VisionBlinkRemoteLite />
         </div>
       ) : null}

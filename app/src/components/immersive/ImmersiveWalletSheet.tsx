@@ -11,6 +11,7 @@ type Props = {
   onOpenFull?: () => void
   onConvert?: () => void
   onWithdraw?: () => void
+  onPay?: () => void
 }
 
 function actDot(kind: string) {
@@ -25,6 +26,7 @@ export function ImmersiveWalletSheet({
   onOpenFull,
   onConvert,
   onWithdraw,
+  onPay,
 }: Props) {
   const {
     iCoins,
@@ -101,6 +103,11 @@ export function ImmersiveWalletSheet({
       </div>
 
       <div className="immersive-glass-sheet__actions">
+        {onPay ? (
+          <Button variant="secondary" onClick={onPay}>
+            Pay
+          </Button>
+        ) : null}
         {onConvert ? (
           <Button variant="secondary" onClick={onConvert}>
             Convert

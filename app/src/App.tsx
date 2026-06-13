@@ -16,6 +16,8 @@ import { EarnScreen } from './screens/EarnScreen'
 import { FeedScreen } from './screens/FeedScreen'
 import { ImmersiveFeedScreen } from './screens/ImmersiveFeedScreen'
 import { ImmersivePromoScreen } from './screens/ImmersivePromoScreen'
+import { ImmersiveCreateScreen } from './screens/ImmersiveCreateScreen'
+import { ImmersiveStudioScreen } from './screens/ImmersiveStudioScreen'
 import { ProfileScreen } from './screens/ProfileScreen'
 import { ConsentCameraGateScreen } from './screens/ConsentCameraGateScreen'
 import { OfferDetailScreen } from './screens/OfferDetailScreen'
@@ -37,6 +39,8 @@ function ScreenRouter() {
     feed: <FeedScreen />,
     'immersive-feed': <ImmersiveFeedScreen />,
     'immersive-promo': <ImmersivePromoScreen />,
+    'immersive-create': <ImmersiveCreateScreen />,
+    'immersive-studio': <ImmersiveStudioScreen />,
     earn: <EarnScreen />,
     profile: <ProfileScreen />,
     'offer-detail': <OfferDetailScreen />,

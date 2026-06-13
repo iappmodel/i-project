@@ -1,0 +1,28 @@
+{
+  "started_at": "2026-06-13T10:00:00.000000+00:00",
+  "finished_at": "2026-06-13T12:00:00.000000+00:00",
+  "branch": "feature/lovable-harvest",
+  "mode": "GO marathon complete",
+  "serial_lane": [
+    {"id": "M1", "command": "GO marathon M1", "title": "H2.6 post-watch promo review sheet", "status": "done"},
+    {"id": "M2", "command": "GO marathon M2", "title": "H3.2 verify-checkin + streak", "status": "done"},
+    {"id": "M3", "command": "GO marathon M3", "title": "H3.3 discovery map demo tier", "status": "done"},
+    {"id": "M4", "command": "GO marathon M4", "title": "H5.2 achievements + daily spin", "status": "done"},
+    {"id": "M5", "command": "GO marathon M5", "title": "H5.3 referrals", "status": "done"},
+    {"id": "M6", "command": "GO marathon M6", "title": "H5.4 leaderboard", "status": "done"},
+    {"id": "M7", "command": "GO marathon M7", "title": "H7.2 stories ring", "status": "done"},
+    {"id": "M8", "command": "GO marathon M8", "title": "H7.1 DM threads", "status": "done"},
+    {"id": "M9", "command": "GO marathon M9", "title": "H4.1 merchant-checkout edges (8)", "status": "done"},
+    {"id": "M10", "command": "GO marathon M10", "title": "H4.2 Pay glass sheet", "status": "done"},
+    {"id": "M11", "command": "GO marathon M11", "title": "H6.1 Create + upload", "status": "done"},
+    {"id": "M12", "command": "GO marathon M12", "title": "H6.2 Studio timeline", "status": "done"},
+    {"id": "M13", "command": "GO marathon M13", "title": "design-video-media", "status": "done"},
+    {"id": "M14", "command": "GO marathon M14", "title": "H8.2 blink remote presenter", "status": "done"},
+    {"id": "M15", "command": "GO marathon M15", "title": "H0 PR checklist template", "status": "done"},
+    {"id": "M16", "command": "GO marathon M16", "title": "H3.4 route builder stretch", "status": "done"},
+    {"id": "M17", "command": "GO marathon M17", "title": "Topic filter pill stub", "status": "done"}
+  ],
+  "current": null,
+  "completed_count": 17,
+  "final_smokes": "PASS"
+}

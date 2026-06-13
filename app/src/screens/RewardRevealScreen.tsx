@@ -1,9 +1,10 @@
-import { useMemo } from 'react'
+import { useMemo, useEffect } from 'react'
 import { Button } from '../components/Button'
 import { PhoneFrame } from '../components/PhoneFrame'
 import { SourceEvidence } from '../components/SourceEvidence'
 import { DEFAULT_SPONSORED_OFFER } from '../data/demoData'
 import { formatCoinLabel, formatIcoinsAmount } from '../lib/format'
+import { setPendingPromoReview } from '../lib/pendingPromoReview'
 import { useDemo } from '../state/useDemo'
 
 export function RewardRevealScreen() {
@@ -11,6 +12,10 @@ export function RewardRevealScreen() {
   const offer = selectedOffer ?? DEFAULT_SPONSORED_OFFER
   const refLine = useMemo(() => 'i·2f9b·7m4k', [])
   const dwell = offer.watchDuration ?? '4:30'
+
+  useEffect(() => {
+    if (offer.id) setPendingPromoReview(offer.id)
+  }, [offer.id])
 
   return (
     <PhoneFrame variant="void">

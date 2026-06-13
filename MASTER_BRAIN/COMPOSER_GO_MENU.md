@@ -29,11 +29,24 @@ Every `GO` command implies:
 
 | GO command | Branch | Model | Exit | Notes |
 |------------|--------|-------|------|-------|
-| `GO overnight` | `feature/lovable-harvest` | C | serial queue + final smokes | **Armed** — run `./scripts/overnight_shift.sh` first |
+| `GO overnight` | `feature/lovable-harvest` | C | serial queue + final smokes | Prior queue complete |
 | `GO overnight resume` | same | C | continue from `.overnight-shift/state.json` | After context reset |
 
-**Queue:** [`OVERNIGHT_SHIFT.md`](OVERNIGHT_SHIFT.md) · [`overnight_queue.json`](overnight_queue.json)  
-**Parallel Cloud Agents:** [`OVERNIGHT_CLOUD_AGENT_PROMPTS.md`](OVERNIGHT_CLOUD_AGENT_PROMPTS.md)
+**Queue:** [`OVERNIGHT_SHIFT.md`](OVERNIGHT_SHIFT.md) · [`overnight_queue.json`](overnight_queue.json)
+
+---
+
+## GO Marathon (largest single command)
+
+| GO command | Branch | Model | Exit | Notes |
+|------------|--------|-------|------|-------|
+| `GO marathon` | `feature/lovable-harvest` | C | M1–M17 serial + final smokes | **MVP slice Done** — not full harvest |
+| `GO marathon resume` | same | C | `.marathon-shift/state.json` | After context reset |
+| `GO marathon depth M9` | harvest | S | `deno test` + full checkout edges | **Next** — archive parity |
+| `GO marathon depth M10` | harvest | S | `smoke_merchant_pay.sh` + 2k LOC pay sheet | After M9 |
+
+**Depth:** `GO marathon` = ~1–3 sessions, smoke MVP + demo fallbacks. `GO marathon depth *` = 50–80h full Lovable harvest per [`marathon_queue.json`](marathon_queue.json) `depth_policy`.  
+**Queue:** [`marathon_queue.json`](marathon_queue.json) · [`MARATHON_AGENT_PROMPT.md`](MARATHON_AGENT_PROMPT.md) · [`MARATHON_CLOUD_PROMPTS.md`](MARATHON_CLOUD_PROMPTS.md)
 
 ---
 
@@ -56,7 +69,7 @@ Every `GO` command implies:
 
 | GO command | Branch | Exit | Status |
 |------------|--------|------|--------|
-| `GO H0 PR checklist` | `feature/lovable-harvest` | Template in harvest PR description | Open |
+| `GO H0 PR checklist` | `feature/lovable-harvest` | Template in harvest PR description | **Done** |
 
 ---
 
@@ -90,9 +103,9 @@ Every `GO` command implies:
 | GO command | Branch | Model | Exit | Owner gate |
 |------------|--------|-------|------|------------|
 | `GO H3.1` | harvest | C | `get-nearby-promotions` | — | **Done** |
-| `GO H3.2` | harvest | C | `verify-checkin` + streak UI | — |
-| `GO H3.3` | harvest | C | Map sheet smoke | **Mapbox token** |
-| `GO H3.4` | harvest | C | Route builder (optional) | — |
+| `GO H3.2` | harvest | C | `verify-checkin` + streak UI | — | **Done** |
+| `GO H3.3` | harvest | C | Map sheet smoke | **Mapbox token** | **Done** (demo tier) |
+| `GO H3.4` | harvest | C | Route builder (optional) | — | **Done** |
 
 ---
 
@@ -100,8 +113,8 @@ Every `GO` command implies:
 
 | GO command | Branch | Model | Exit | Owner gate |
 |------------|--------|-------|------|------------|
-| `GO H4.1` | harvest | C | 8 `merchant-checkout-*` edges | — |
-| `GO H4.2` | harvest | C | Pay glass sheet | — |
+| `GO H4.1` | harvest | C | 8 `merchant-checkout-*` edges | — | **Done** |
+| `GO H4.2` | harvest | C | Pay glass sheet | — | **Done** |
 | `GO H4.3` | harvest | C | `send-coin-gift` | Stripe for live charge |
 
 ---
@@ -111,9 +124,9 @@ Every `GO` command implies:
 | GO command | Branch | Model | Exit | Parallel OK |
 |------------|--------|-------|------|-------------|
 | `GO H5.1` | harvest | C | TaskCenter sheet | Yes (Cloud Agent) | **Done** |
-| `GO H5.2` | harvest | C | Achievements + spin | Yes |
-| `GO H5.3` | harvest | C | Referrals panel | Yes |
-| `GO H5.4` | harvest | C | Leaderboard | Yes |
+| `GO H5.2` | harvest | C | Achievements + spin | Yes | **Done** |
+| `GO H5.3` | harvest | C | Referrals panel | Yes | **Done** |
+| `GO H5.4` | harvest | C | Leaderboard | Yes | **Done** |
 
 ---
 
@@ -121,8 +134,8 @@ Every `GO` command implies:
 
 | GO command | Branch | Model | Exit | Owner gate |
 |------------|--------|-------|------|------------|
-| `GO H6.1` | harvest | C | Upload + Create flow | Storage bucket |
-| `GO H6.2` | harvest | S | Timeline glass screen | — |
+| `GO H6.1` | harvest | C | Upload + Create flow | Storage bucket | **Done** (demo) |
+| `GO H6.2` | harvest | S | Timeline glass screen | — | **Done** (demo) |
 | `GO H6.3` | harvest | C | 6 `generate-*` edges | **OpenAI keys** |
 | `GO H6.4` | harvest | C | `analyze-video` | — |
 
@@ -132,8 +145,8 @@ Every `GO` command implies:
 
 | GO command | Branch | Model | Exit | Owner gate |
 |------------|--------|-------|------|------------|
-| `GO H7.1` | harvest | C | DM threads | — |
-| `GO H7.2` | harvest | C | Stories ring | — |
+| `GO H7.1` | harvest | C | DM threads | — | **Done** |
+| `GO H7.2` | harvest | C | Stories ring | — | **Done** |
 | `GO H7.3` | harvest | C | Social connect | **OAuth apps** |
 | `GO H7.4` | harvest | C | Go Live (optional) | — |
 
@@ -144,7 +157,7 @@ Every `GO` command implies:
 | GO command | Branch | Model | Exit | Parallel OK |
 |------------|--------|-------|------|-------------|
 | `GO H8.1` | harvest | C | Calibration wizard | Yes | **done 2026-06-13** |
-| `GO H8.2` | harvest | C | Full blink remote (presenter flag) | Yes |
+| `GO H8.2` | harvest | C | Full blink remote (presenter flag) | Yes | **Done** |
 | `GO H8.3` | harvest | D | Tobii bridge — **skip** | — |
 
 ---
@@ -174,7 +187,7 @@ Every `GO` command implies:
 | GO command | Branch | Model | Exit | Parallel OK |
 |------------|--------|-------|------|-------------|
 | `GO design-tokens` | `main` | C | `smoke_gesture_buttons.sh` | Yes | **Done** |
-| `GO design-video-media` | `main` | C | `smoke_immersive_shell.sh` | Yes |
+| `GO design-video-media` | `main` | C | `smoke_immersive_shell.sh` | Yes | **Done** |
 
 ---
 
@@ -257,7 +270,7 @@ Exit: <smoke commands>
 
 **Owner gates:** [`OWNER_GATES_INDEX.md`](OWNER_GATES_INDEX.md) — `cp .env.production.owner.example .env.production.owner` → `GO wire owner gates`
 
-**Start here:** `GO H3.2` → `GO H3.3` (or `GO wire owner gates` when secrets ready)
+**Start here:** Owner gates when ready · or next wave beyond marathon (H6.3 AI, H7.3 OAuth, production cutover)
 
 ---
 
