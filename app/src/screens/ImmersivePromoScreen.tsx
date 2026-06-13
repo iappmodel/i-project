@@ -6,6 +6,7 @@ import {
 import { PhoneFrame } from '../components/PhoneFrame'
 import { ImmersiveGlassSheet } from '../components/immersive/ImmersiveGlassSheet'
 import { ImmersiveWalletSheet } from '../components/immersive/ImmersiveWalletSheet'
+import { ImmersivePaySheet } from '../components/immersive/ImmersivePaySheet'
 import { ImmersiveProfileSheet } from '../components/immersive/ImmersiveProfileSheet'
 import { ImmersiveTaskCenterSheet } from '../components/immersive/ImmersiveTaskCenterSheet'
 import { ImmersivePromoReviewSheet } from '../components/immersive/ImmersivePromoReviewSheet'
@@ -69,6 +70,7 @@ export function ImmersivePromoScreen() {
   const { setScreen, setActiveTab, activeTab, beginImmersiveWatch } = useDemo()
   const checkIn = useCheckInStatus()
   const [walletSheetOpen, setWalletSheetOpen] = useState(false)
+  const [paySheetOpen, setPaySheetOpen] = useState(false)
   const [profileSheetOpen, setProfileSheetOpen] = useState(false)
   const [taskSheetOpen, setTaskSheetOpen] = useState(false)
   const [reviewOpen, setReviewOpen] = useState(false)
@@ -170,7 +172,8 @@ export function ImmersivePromoScreen() {
             onProfile={() => setProfileSheetOpen(true)}
           />
 
-          <ImmersiveWalletSheet open={walletSheetOpen} onClose={() => setWalletSheetOpen(false)} onPay={() => { setWalletSheetOpen(false); flash('Pay sheet on feed wallet') }} onOpenFull={() => { setWalletSheetOpen(false); setActiveTab('wallet'); setScreen('wallet') }} />
+          <ImmersiveWalletSheet open={walletSheetOpen} onClose={() => setWalletSheetOpen(false)} onPay={() => { setWalletSheetOpen(false); setPaySheetOpen(true) }} onOpenFull={() => { setWalletSheetOpen(false); setActiveTab('wallet'); setScreen('wallet') }} />
+          <ImmersivePaySheet open={paySheetOpen} onClose={() => setPaySheetOpen(false)} onToast={flash} />
           <ImmersiveProfileSheet open={profileSheetOpen} onClose={() => setProfileSheetOpen(false)} streakDays={checkIn.streakDays} onOpenTasks={() => { setProfileSheetOpen(false); setTaskSheetOpen(true) }} onOpenFull={() => { setProfileSheetOpen(false); setActiveTab('profile'); setScreen('profile') }} onOpenVision={isWebVisionEnabled() ? () => { setProfileSheetOpen(false); setScreen('profile') } : undefined} />
           <ImmersiveTaskCenterSheet open={taskSheetOpen} onClose={() => setTaskSheetOpen(false)} onToast={flash} />
           <ImmersivePromoReviewSheet open={reviewOpen} promotionId={reviewPromoId} promotionTitle={reviewTitle} onClose={() => setReviewOpen(false)} onToast={flash} />

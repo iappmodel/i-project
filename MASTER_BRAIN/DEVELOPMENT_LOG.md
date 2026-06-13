@@ -5,6 +5,18 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-06-13 — GO marathon depth M9 + M10 (merchant pay full harvest)
+
+### Delivered
+- **M9 depth** — Full `merchantCheckout.service` (resolve → patchDraft → confirm → tip + preferences/events/funnel); `useMerchantCheckoutPreferences`; 8 `merchant-checkout-*` edges verified; `deno test` 7/7 on `_shared/merchant_checkout.test.ts`
+- **M10 depth** — Archive `MerchantCheckoutSheet.tsx` (~2260 LOC) ported with glass shims (`merchant-checkout-shims.tsx`, `merchant-checkout.css`); `ImmersivePaySheet` wraps full funnel (NFC/QR/link entry, amount → auth → receipt → post-pay tip); `lucide-react` added for icons
+- **Smoke** — `smoke_merchant_pay.sh` extended for depth checks (8 edges, funnel screens, LOC floor)
+
+### Verification
+`npm run typecheck` PASS · `smoke_merchant_pay.sh` PASS · `deno test --no-check merchant_checkout.test.ts` 7/7
+
+---
+
 ## 2026-06-13 — GO marathon (M1–M17 complete)
 
 ### Delivered

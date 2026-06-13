@@ -4,6 +4,7 @@ import './index.css'
 import './prototypes.css'
 import './design-system.css'
 import './styles/gesture-buttons.css'
+import './styles/merchant-checkout.css'
 import './styles/elo-presence.css'
 import App from './App.tsx'
 

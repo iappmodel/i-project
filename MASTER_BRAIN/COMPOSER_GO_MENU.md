@@ -42,8 +42,8 @@ Every `GO` command implies:
 |------------|--------|-------|------|-------|
 | `GO marathon` | `feature/lovable-harvest` | C | M1–M17 serial + final smokes | **MVP slice Done** — not full harvest |
 | `GO marathon resume` | same | C | `.marathon-shift/state.json` | After context reset |
-| `GO marathon depth M9` | harvest | S | `deno test` + full checkout edges | **Next** — archive parity |
-| `GO marathon depth M10` | harvest | S | `smoke_merchant_pay.sh` + 2k LOC pay sheet | After M9 |
+| `GO marathon depth M9` | harvest | S | `deno test` + full checkout edges | **Done** — service + 8 edges |
+| `GO marathon depth M10` | harvest | S | `smoke_merchant_pay.sh` + 2k LOC pay sheet | **Done** — full funnel sheet |
 
 **Depth:** `GO marathon` = ~1–3 sessions, smoke MVP + demo fallbacks. `GO marathon depth *` = 50–80h full Lovable harvest per [`marathon_queue.json`](marathon_queue.json) `depth_policy`.  
 **Queue:** [`marathon_queue.json`](marathon_queue.json) · [`MARATHON_AGENT_PROMPT.md`](MARATHON_AGENT_PROMPT.md) · [`MARATHON_CLOUD_PROMPTS.md`](MARATHON_CLOUD_PROMPTS.md)

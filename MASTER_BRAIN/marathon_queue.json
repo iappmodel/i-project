@@ -13,7 +13,7 @@
       "label": "GO marathon depth <node>",
       "hours_estimate": "50-80+ agent-hours total",
       "definition": "Port eye-earn-sparkle-archive at full LOC (e.g. MerchantCheckoutSheet 2k+, DiscoveryMap 1.4k+, Studio 21 components).",
-      "next_recommended": ["GO marathon depth M9", "GO marathon depth M10"]
+      "next_recommended": []
     }
   },
   "branch": "feature/lovable-harvest",
@@ -163,7 +163,9 @@
         "merchantCheckout types/mockResolver",
         "merchant-checkout-*"
       ],
-      "status": "done"
+      "status": "done",
+      "depth_status": "full_harvest",
+      "depth_notes": "merchantCheckout.service resolve/draft/confirm/tip + 8 edges; deno 7/7"
     },
     {
       "id": "M10",
@@ -177,7 +179,9 @@
       "harvest": [
         "MerchantCheckoutSheet"
       ],
-      "status": "done"
+      "status": "done",
+      "depth_status": "full_harvest",
+      "depth_notes": "MerchantCheckoutSheet ~2260 LOC port + ImmersivePaySheet wrapper + merchant-checkout.css"
     },
     {
       "id": "M11",
