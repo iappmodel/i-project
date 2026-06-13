@@ -11,13 +11,17 @@ import { OfferReviewSheet } from '../components/gestureButtons/OfferReviewSheet'
 import { PhoneFrame } from '../components/PhoneFrame'
 import { ImmersiveWalletSheet } from '../components/immersive/ImmersiveWalletSheet'
 import { ImmersiveProfileSheet } from '../components/immersive/ImmersiveProfileSheet'
+import { ImmersiveTaskCenterSheet } from '../components/immersive/ImmersiveTaskCenterSheet'
+import { ImmersiveCommentsSheet } from '../components/immersive/ImmersiveCommentsSheet'
 import { feedItemToMedia } from '../data/immersiveFeedContext'
 import { formatCoinLabel } from '../lib/gestureButtons/offerService'
 import { resolveOutProfileCreator, outProfileTapAction } from '../lib/outProfileEngine'
 import { isWebVisionEnabled } from '../lib/visionEngine'
 import { useFeedInteraction } from '../hooks/useFeedInteraction'
+import { useFollow } from '../hooks/useFollow'
 import { useImmersiveFeed } from '../hooks/useImmersiveFeed'
 import { useOfferSession } from '../hooks/useOfferSession'
+import { useSavedContent } from '../hooks/useSavedContent'
 import { useDemo } from '../state/useDemo'
 
 const SUNSET_BG = '/media/immersive-sunset.svg'
@@ -40,6 +44,8 @@ export function ImmersiveFeedScreen() {
   const [toast, setToast] = useState<string | null>(null)
   const [walletSheetOpen, setWalletSheetOpen] = useState(false)
   const [profileSheetOpen, setProfileSheetOpen] = useState(false)
+  const [taskSheetOpen, setTaskSheetOpen] = useState(false)
+  const [commentsOpen, setCommentsOpen] = useState(false)
   const [timerPct] = useState(38)
   const [bgSrc, setBgSrc] = useState(SUNSET_BG)
   const swipeRef = useRef<{ x: number; y: number; t: number } | null>(null)
@@ -84,6 +90,36 @@ export function ImmersiveFeedScreen() {
     setToast(msg)
     window.setTimeout(() => setToast(null), 2200)
   }, [])
+
+  const follow = useFollow({
+    creatorId: media.creatorId,
+    onToggle: (_id, next) => flash(next ? 'Following' : 'Unfollowed'),
+  })
+
+  const handleFollowToggle = useCallback(() => {
+    if (follow.needsAuth) {
+      flash('Sign in to follow creators')
+      return
+    }
+    void follow.toggleFollow()
+  }, [follow, flash])
+
+  const saved = useSavedContent()
+
+  const handleSaveCurrent = useCallback(async () => {
+    if (saved.isSaved(media.contentId)) {
+      await saved.remove(media.contentId)
+      flash('Removed from saved')
+      return
+    }
+    await saved.save(media.contentId, {
+      title: feed.current.title,
+      source: media.creatorName,
+      thumbnail: feed.current.thumbnail,
+      type: feed.current.category === 'sponsored' ? 'promo' : 'video',
+    })
+    flash('Saved')
+  }, [feed.current, flash, media, saved])
 
   const offerSession = useOfferSession({
     contentId: media.contentId,
@@ -139,7 +175,8 @@ export function ImmersiveFeedScreen() {
     const handler = (e: Event) => {
       const detail = (e as CustomEvent<{ command?: string }>).detail
       if (detail?.command === 'like') void toggleLike()
-      if (detail?.command === 'comment') flash('Comments (vision)')
+      if (detail?.command === 'comment') setCommentsOpen(true)
+      if (detail?.command === 'follow') void handleFollowToggle()
       if (detail?.command === 'share') {
         void trackShare()
         flash('Shared')
@@ -147,7 +184,7 @@ export function ImmersiveFeedScreen() {
     }
     window.addEventListener('screenTargetAction', handler)
     return () => window.removeEventListener('screenTargetAction', handler)
-  }, [toggleLike, trackShare, flash])
+  }, [toggleLike, trackShare, flash, handleFollowToggle])
 
   const onSwipePointerDown = useCallback((e: React.PointerEvent) => {
     swipeRef.current = { x: e.clientX, y: e.clientY, t: Date.now() }
@@ -248,6 +285,10 @@ export function ImmersiveFeedScreen() {
             location={media.creatorLocation}
             avatarInitials={media.creatorAvatarInitials}
             onPress={handleOutProfileTap}
+            showFollow
+            isFollowing={follow.isFollowing}
+            followLoading={follow.loading || follow.toggling}
+            onFollowToggle={handleFollowToggle}
           />
 
           <button
@@ -261,6 +302,8 @@ export function ImmersiveFeedScreen() {
           <MediaActionRail
             onOfferReview={offerSession.openReview}
             onActionMessage={flash}
+            onOpenComments={() => setCommentsOpen(true)}
+            onSave={() => void handleSaveCurrent()}
             liked={liked}
             likeCount={likeCount}
             onLikeToggle={handleLikeToggle}
@@ -320,6 +363,10 @@ export function ImmersiveFeedScreen() {
           <ImmersiveProfileSheet
             open={profileSheetOpen}
             onClose={() => setProfileSheetOpen(false)}
+            onOpenTasks={() => {
+              setProfileSheetOpen(false)
+              setTaskSheetOpen(true)
+            }}
             onOpenFull={() => {
               setProfileSheetOpen(false)
               setActiveTab('profile')
@@ -334,6 +381,17 @@ export function ImmersiveFeedScreen() {
                   }
                 : undefined
             }
+          />
+          <ImmersiveTaskCenterSheet
+            open={taskSheetOpen}
+            onClose={() => setTaskSheetOpen(false)}
+            onToast={flash}
+          />
+          <ImmersiveCommentsSheet
+            open={commentsOpen}
+            contentId={media.contentId}
+            onClose={() => setCommentsOpen(false)}
+            onToast={flash}
           />
 
           <div className="immersive-home-indicator" aria-hidden />

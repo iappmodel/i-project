@@ -8,9 +8,10 @@ type Props = {
   onClose: () => void
   onOpenFull?: () => void
   onOpenVision?: () => void
+  onOpenTasks?: () => void
 }
 
-export function ImmersiveProfileSheet({ open, onClose, onOpenFull, onOpenVision }: Props) {
+export function ImmersiveProfileSheet({ open, onClose, onOpenFull, onOpenVision, onOpenTasks }: Props) {
   const { authUserEmail, supabaseAuthEnabled, isNativeShell, nativePlatform, startPresenterTour } =
     useDemo()
   const webVision = isWebVisionEnabled()
@@ -26,6 +27,11 @@ export function ImmersiveProfileSheet({ open, onClose, onOpenFull, onOpenVision 
         <p className="immersive-glass-sheet__hint mono">Capacitor · {nativePlatform}</p>
       ) : null}
       <div className="immersive-glass-sheet__actions">
+        {onOpenTasks ? (
+          <Button variant="secondary" onClick={onOpenTasks}>
+            Tasks & rewards
+          </Button>
+        ) : null}
         {webVision && onOpenVision ? (
           <Button variant="secondary" onClick={onOpenVision}>
             Vision controls

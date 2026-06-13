@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "created": "2026-06-11",
+  "description": "Overnight autonomous queue — serial main lane + optional parallel Cloud Agents",
+  "branch": "feature/lovable-harvest",
+  "max_hours": 8,
+  "commit_when_done": false,
+  "law": [
+    "MASTER_BRAIN/CANONICAL/IMMERSIVE_UI_DESIGN_LAW.md",
+    "MASTER_BRAIN/CANONICAL/i_SOURCE_OF_TRUTH.md"
+  ],
+  "hard_stops": [
+    "demoContext.tsx reward paths (unless GO id explicitly says)",
+    "issue-reward / validate-attention / ledger migrations",
+    "Stripe live keys / .env.production.owner secrets",
+    "Owner-gated production cutover",
+    "Force push / hard reset / skip hooks"
+  ],
+  "serial_lane": [
+    {
+      "id": "H2.4",
+      "command": "GO H2.4",
+      "title": "OutProfileChip + follow",
+      "branch": "feature/lovable-harvest",
+      "exit_smoke": ["cd app && npm run typecheck", "./scripts/smoke_immersive_shell.sh"],
+      "harvest": ["eye-earn-sparkle-archive: useFollow, OutProfile, user_follows"],
+      "status": "done"
+    },
+    {
+      "id": "H2.5",
+      "command": "GO H2.5",
+      "title": "SavedScreen + Supabase sync",
+      "branch": "feature/lovable-harvest",
+      "exit_smoke": ["cd app && npm run typecheck", "./scripts/smoke_immersive_shell.sh"],
+      "harvest": ["eye-earn-sparkle-archive: SavedScreen, saved_content"],
+      "status": "done"
+    },
+    {
+      "id": "H2.6",
+      "command": "GO H2.6",
+      "title": "submit-promotion-review",
+      "branch": "feature/lovable-harvest",
+      "exit_smoke": ["cd app && npm run typecheck", "./scripts/smoke_immersive_promo.sh"],
+      "harvest": ["eye-earn-sparkle-archive: submit-promotion-review edge"],
+      "status": "done"
+    },
+    {
+      "id": "H3.1",
+      "command": "GO H3.1",
+      "title": "get-nearby-promotions client",
+      "branch": "feature/lovable-harvest",
+      "exit_smoke": ["cd app && npm run typecheck", "./scripts/smoke_immersive_promo.sh"],
+      "harvest": ["eye-earn-sparkle-archive: get-nearby-promotions"],
+      "status": "done"
+    },
+    {
+      "id": "design-tokens",
+      "command": "GO design-tokens",
+      "title": "CSS vars + glass token polish",
+      "branch": "feature/lovable-harvest",
+      "exit_smoke": ["cd app && npm run typecheck", "./scripts/smoke_immersive_shell.sh"],
+      "harvest": ["FEATURE_BIBLE §01"],
+      "status": "done"
+    }
+  ],
+  "parallel_lane": [
+    {
+      "id": "H5.1",
+      "command": "GO H5.1",
+      "title": "TaskCenter sheet (gamification)",
+      "branch": "feature/lovable-harvest",
+      "worktree_hint": "overnight-h51",
+      "exit_smoke": ["cd app && npm run typecheck"],
+      "note": "Launch as Cursor Cloud/Background Agent — isolated from serial lane",
+      "status": "done"
+    },
+    {
+      "id": "H8.1",
+      "command": "GO H8.1",
+      "title": "Calibration wizard behind VITE_VISION_ENGINE",
+      "branch": "feature/lovable-harvest",
+      "worktree_hint": "overnight-h81",
+      "exit_smoke": ["cd app && npm run typecheck", "./scripts/smoke_blink_remote_lite.sh"],
+      "note": "UnifiedVisionCalibrationWizard on Profile behind VITE_VISION_ENGINE (default off)",
+      "status": "done",
+      "completed": "2026-06-13"
+    }
+  ],
+  "baseline_smokes": [
+    "./scripts/smoke_immersive_shell.sh",
+    "cd app && npm run typecheck"
+  ],
+  "final_smokes": [
+    "./scripts/smoke_organism_spine.sh",
+    "./scripts/smoke_production_readiness.sh"
+  ]
+}

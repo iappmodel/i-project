@@ -369,7 +369,7 @@ live_streams, live_stream_comments, error_logs, feature_flags, app_versions
 
 | # | Feature | Source | Target |
 |---|---------|--------|--------|
-| H5.1 | Tasks + XP | `sync-user-tasks`, `update-task-progress`, `TaskCenter` | Profile/Rewards hub sheet |
+| H5.1 | Tasks + XP | `sync-user-tasks`, `update-task-progress`, `TaskCenter` | Profile/Rewards hub sheet | **Done** |
 | H5.2 | Achievements + spin | `AchievementCenter`, `DailySpinWheel` | Glass modals |
 | H5.3 | Referrals | `manage-referral`, `ReferralPanel` | Profile sheet |
 | H5.4 | Leaderboard | `Leaderboard` | Promo or profile tab |

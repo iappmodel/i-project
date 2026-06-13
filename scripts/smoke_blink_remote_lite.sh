@@ -48,6 +48,22 @@ fi
   echo "FAIL: GestureComboBuilderSheet.tsx missing" >&2
   exit 1
 }
+[[ -f "$APP/src/components/UnifiedVisionCalibrationWizard.tsx" ]] || {
+  echo "FAIL: UnifiedVisionCalibrationWizard.tsx missing" >&2
+  exit 1
+}
+if ! grep -q "UnifiedVisionCalibrationWizard" "$APP/src/components/VisionCalibrationHost.tsx"; then
+  echo "FAIL: VisionCalibrationHost must mount UnifiedVisionCalibrationWizard" >&2
+  exit 1
+fi
+if ! grep -q "isWebVisionEnabled" "$APP/src/components/VisionCalibrationHost.tsx"; then
+  echo "FAIL: calibration host must gate on VITE_VISION_ENGINE" >&2
+  exit 1
+fi
+if ! grep -q "VITE_VISION_ENGINE" "$APP/src/lib/visionEngine.ts"; then
+  echo "FAIL: visionEngine must read VITE_VISION_ENGINE flag" >&2
+  exit 1
+fi
 
 cd "$APP"
 npm run typecheck --silent

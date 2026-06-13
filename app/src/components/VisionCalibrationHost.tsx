@@ -1,8 +1,12 @@
 import { useRef, useState } from 'react'
-import { VisionCalibrationWizard } from './VisionCalibrationWizard'
+import { UnifiedVisionCalibrationWizard } from './UnifiedVisionCalibrationWizard'
 import { Button } from './Button'
 import { isWebVisionEnabled, useWebVisionEngine } from '../lib/visionEngine'
-import { loadVisionCalibration } from '../lib/visionCalibration/profile'
+import {
+  loadVisionCalibration,
+  saveVisionCalibration,
+  type VisionCalibrationProfile,
+} from '../lib/visionCalibration/profile'
 
 type Props = {
   className?: string
@@ -11,11 +15,16 @@ type Props = {
 export function VisionCalibrationHost({ className }: Props) {
   const enabled = isWebVisionEnabled()
   const [open, setOpen] = useState(false)
+  const [calibration, setCalibration] = useState<VisionCalibrationProfile>(() => loadVisionCalibration())
   const videoRef = useRef<HTMLVideoElement>(null)
   const vision = useWebVisionEngine(enabled && open, videoRef, { calibrationMode: true })
-  const calibration = loadVisionCalibration()
 
   if (!enabled) return null
+
+  const handleSave = (next: VisionCalibrationProfile) => {
+    saveVisionCalibration(next)
+    setCalibration(next)
+  }
 
   return (
     <section className={className ?? 'profile-section'}>
@@ -29,12 +38,15 @@ export function VisionCalibrationHost({ className }: Props) {
         {calibration.isCalibrated ? 'Recalibrate gaze' : 'Calibrate gaze'}
       </Button>
       <video ref={videoRef} playsInline muted autoPlay style={{ display: 'none' }} />
-      <VisionCalibrationWizard
+      <UnifiedVisionCalibrationWizard
         isOpen={open}
         onClose={() => setOpen(false)}
-        gazePosition={vision.gazePosition}
+        rawGazePosition={vision.gazePosition}
         hasFace={vision.hasFace}
         livenessScore={vision.livenessScore}
+        livenessStable={vision.livenessStable}
+        calibration={calibration}
+        onSave={handleSave}
       />
     </section>
   )

@@ -1,58 +1,53 @@
-import { useMemo, useState } from 'react'
+import { useEffect } from 'react'
 import { BackRow } from '../components/BackRow'
-import { Button } from '../components/Button'
 import { PhoneFrame } from '../components/PhoneFrame'
-import { SourceEvidence } from '../components/SourceEvidence'
-import { readSavedLoopItems, removeLoopItem } from '../lib/savedLoop'
+import { useSavedContent } from '../hooks/useSavedContent'
 import { useDemo } from '../state/useDemo'
 
 export function SavedScreen() {
   const { setScreen } = useDemo()
-  const [items, setItems] = useState(() => readSavedLoopItems())
+  const { items, loading, remove, isDemo, reload } = useSavedContent()
 
-  const empty = useMemo(() => items.length === 0, [items.length])
+  useEffect(() => {
+    void reload()
+  }, [reload])
 
   return (
     <PhoneFrame scroll>
-      <BackRow label="Feed" onBack={() => setScreen('feed')} />
+      <BackRow label="Feed" onBack={() => setScreen('immersive-feed')} />
       <h1 className="screen-title">Saved</h1>
-      <p className="screen-sub">Loop 2 scaffold · Browse → Save → Return</p>
+      <p className="screen-sub">
+        Loop 2 · {isDemo ? 'local demo vault' : 'synced to your account'}
+      </p>
 
-      {empty ? (
-        <p className="mono-muted" style={{ marginTop: 16 }}>
-          No saved items yet. Save one from Feed.
+      {loading ? <p className="immersive-glass-sheet__hint mono">Loading…</p> : null}
+
+      {!loading && items.length === 0 ? (
+        <p className="immersive-glass-sheet__hint" style={{ marginTop: 16 }}>
+          No saved items yet. Tap Save on the immersive feed.
         </p>
-      ) : (
-        <div style={{ marginTop: 12, display: 'grid', gap: 10 }}>
-          {items.map((item) => (
-            <article key={item.id} className="eco-card neu-surface">
-              <header className="eco-hdr">
-                <span>{item.source}</span>
-                <strong className="mono">{new Date(item.savedAt).toLocaleDateString()}</strong>
-              </header>
-              <p className="eco-body">{item.title}</p>
-              <button
-                type="button"
-                className="sec-link-wu"
-                onClick={() => setItems(removeLoopItem(item.id))}
-                style={{ marginTop: 6 }}
-              >
+      ) : null}
+
+      <ul className="saved-sheet__list">
+        {items.map((item) => (
+          <li key={item.id} className="saved-sheet__card">
+            {item.thumbnail ? (
+              <img src={item.thumbnail} alt="" className="saved-sheet__thumb" />
+            ) : (
+              <div className="saved-sheet__thumb saved-sheet__thumb--placeholder" />
+            )}
+            <div className="saved-sheet__body">
+              <p className="saved-sheet__title">{item.title}</p>
+              <p className="saved-sheet__meta mono">
+                {item.source} · {new Date(item.savedAt).toLocaleDateString()}
+              </p>
+              <button type="button" className="saved-sheet__remove" onClick={() => void remove(item.id)}>
                 Remove
               </button>
-            </article>
-          ))}
-        </div>
-      )}
-
-      <Button style={{ marginTop: 16 }} onClick={() => setScreen('feed')}>
-        Back to feed
-      </Button>
-      <SourceEvidence
-        paths={[
-          '06_feed_earning_loops/iapp_feed_screen.html',
-          'MASTER_BRAIN/ORGANISM_STATUS.md',
-        ]}
-      />
+            </div>
+          </li>
+        ))}
+      </ul>
     </PhoneFrame>
   )
 }

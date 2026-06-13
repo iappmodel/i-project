@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   ImmersiveBottomNav,
   immersiveTabFromProduct,
@@ -6,12 +6,14 @@ import {
 import { PhoneFrame } from '../components/PhoneFrame'
 import { ImmersiveWalletSheet } from '../components/immersive/ImmersiveWalletSheet'
 import { ImmersiveProfileSheet } from '../components/immersive/ImmersiveProfileSheet'
+import { ImmersiveTaskCenterSheet } from '../components/immersive/ImmersiveTaskCenterSheet'
 import {
   PROMO_MARKETPLACE_OFFERS,
   promoKindLabel,
   type PromoOffer,
 } from '../data/promoOffers'
 import { formatCoinLabel } from '../lib/gestureButtons/offerService'
+import { fetchNearbyPromotions, mapNearbyToPromoOffer } from '../services/promo.service'
 import { isWebVisionEnabled } from '../lib/visionEngine'
 import { useDemo } from '../state/useDemo'
 
@@ -52,8 +54,30 @@ export function ImmersivePromoScreen() {
   const { setScreen, setActiveTab, activeTab, beginImmersiveWatch } = useDemo()
   const [walletSheetOpen, setWalletSheetOpen] = useState(false)
   const [profileSheetOpen, setProfileSheetOpen] = useState(false)
+  const [taskSheetOpen, setTaskSheetOpen] = useState(false)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [toast, setToast] = useState<string | null>(null)
+
+  const [offers, setOffers] = useState(PROMO_MARKETPLACE_OFFERS)
+  const [liveNearby, setLiveNearby] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+    void (async () => {
+      const rows = await fetchNearbyPromotions()
+      if (cancelled || rows.length === 0) return
+      const mapped = rows.map(mapNearbyToPromoOffer)
+      setOffers((prev) => {
+        const seen = new Set(prev.map((o) => o.id))
+        const fresh = mapped.filter((o) => !seen.has(o.id))
+        return fresh.length ? [...fresh, ...prev] : prev
+      })
+      setLiveNearby(true)
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const flash = useCallback((msg: string) => {
     setToast(msg)
@@ -75,11 +99,14 @@ export function ImmersivePromoScreen() {
           <header className="immersive-promo__header">
             <p className="immersive-promo__label">Promo</p>
             <h1 className="immersive-promo__title">Sponsor briefs</h1>
-            <p className="immersive-promo__sub">Pick a campaign · watch · verify · earn</p>
+            <p className="immersive-promo__sub">
+              Pick a campaign · watch · verify · earn
+              {liveNearby ? ' · live nearby' : ''}
+            </p>
           </header>
 
           <div className="immersive-promo__list">
-            {PROMO_MARKETPLACE_OFFERS.map((offer) => (
+            {offers.map((offer) => (
               <PromoOfferCard
                 key={offer.id}
                 offer={offer}
@@ -89,7 +116,7 @@ export function ImmersivePromoScreen() {
           </div>
 
           <div className="immersive-promo__map-chip" aria-hidden>
-            Map view · local promos (coming soon)
+            {liveNearby ? 'Nearby promos loaded' : 'Map view · local promos (demo)'}
           </div>
 
           <ImmersiveBottomNav
@@ -116,6 +143,10 @@ export function ImmersivePromoScreen() {
           <ImmersiveProfileSheet
             open={profileSheetOpen}
             onClose={() => setProfileSheetOpen(false)}
+            onOpenTasks={() => {
+              setProfileSheetOpen(false)
+              setTaskSheetOpen(true)
+            }}
             onOpenFull={() => {
               setProfileSheetOpen(false)
               setActiveTab('profile')
@@ -130,6 +161,11 @@ export function ImmersivePromoScreen() {
                   }
                 : undefined
             }
+          />
+          <ImmersiveTaskCenterSheet
+            open={taskSheetOpen}
+            onClose={() => setTaskSheetOpen(false)}
+            onToast={flash}
           />
 
           {toast ? <div className="immersive-toast">{toast}</div> : null}

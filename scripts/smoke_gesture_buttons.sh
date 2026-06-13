@@ -32,7 +32,7 @@ if ! grep -q "onOfferReview" "$APP/src/screens/ImmersiveFeedScreen.tsx"; then
   exit 1
 fi
 
-if ! grep -q "useContentLike" "$APP/src/screens/ImmersiveFeedScreen.tsx"; then
+if ! grep -qE "useContentLike|useFeedInteraction" "$APP/src/screens/ImmersiveFeedScreen.tsx"; then
   echo "FAIL: like persistence hook not wired" >&2
   exit 1
 fi

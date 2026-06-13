@@ -5,6 +5,71 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-06-13 — GO overnight serial lane (H2.4–H3.1 + design-tokens)
+
+### Delivered
+- **H2.4** — `follow.service`, `useFollow`, `demoFollowStore`; `OutProfileChip` Follow pill on immersive feed
+- **H2.5** — `savedContent.service`, `useSavedContent`, glass `SavedScreen`; save from feed rail
+- **H2.6** — `submit-promotion-review` edge + `promo.service.submitPromotionReview`
+- **H3.1** — `get-nearby-promotions` edge + `ImmersivePromoScreen` live nearby merge
+- **design-tokens** — glass CSS vars in `index.css`; saved/comments sheets use tokens
+- **H2.3 restore** — `ImmersiveCommentsSheet`, `useComments`, `comments.service`, `demoCommentsStore` (regression fix)
+- **Smoke** — `smoke_gesture_buttons.sh` accepts `useFeedInteraction` wrapper
+
+### Verification
+```bash
+cd app && npm run typecheck
+./scripts/smoke_immersive_shell.sh
+./scripts/smoke_immersive_promo.sh
+./scripts/smoke_organism_spine.sh
+./scripts/smoke_production_readiness.sh
+```
+
+### Parallel lane (Cloud Agents)
+- **H5.1** TaskCenter — Done (prior session)
+- **H8.1** Calibration wizard — Done (prior session)
+
+### Not touched
+- `demoContext.tsx` reward paths, `issue-reward`, ledger migrations, owner secrets
+
+---
+
+## 2026-06-13 — GO H5.1 TaskCenter glass sheet
+
+### Delivered
+- **`ImmersiveTaskCenterSheet`** — glass rewards hub off Profile (Picture 2; no AppShell)
+- **`useTasks`** — harvest from sparkle `TaskCenter` / `user_tasks` / `task_templates`; live path via `sync-user-tasks` + `issue-reward` claim; demo localStorage fallback
+- **`demoTasksStore.ts`** — offline task seed + claim for demo mode
+- Wired **Profile → Tasks & rewards** on `ImmersiveFeedScreen` + `ImmersivePromoScreen`
+- Glass task card CSS in `gesture-buttons.css`
+
+### Verification
+```bash
+cd app && npm run typecheck
+```
+
+### Not touched (per GO scope)
+- `demoContext.tsx`, `issue-reward`, `validate-attention`, ledger migrations
+
+---
+
+## 2026-06-13 — GO H8.1 calibration wizard (lovable harvest)
+
+### Delivered
+- **`UnifiedVisionCalibrationWizard`** — promoted archive 3-step ready/track/verify flow with stability checks, hold-buffer averaging, affine + residual fit, gesture verification (blink + pinch required)
+- **`VisionCalibrationHost`** — Profile → Calibrate entry wires unified wizard; camera starts on open; saves to `app_remote_control_calibration`
+- **`VITE_VISION_ENGINE`** — flag gates entire vision panel (default off); `isWebVisionEnabled()` unchanged
+- **Smoke** — `smoke_blink_remote_lite.sh` asserts wizard + flag wiring
+
+### Verification
+```bash
+cd app && npm run typecheck
+./scripts/smoke_blink_remote_lite.sh
+```
+
+### Not touched
+- `demoContext.tsx`, POP validator, ledger migrations
+
 ---
 
 ## 2026-06-03 — Investor readiness checklist

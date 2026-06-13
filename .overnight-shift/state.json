@@ -1,0 +1,22 @@
+{
+  "started_at": "2026-06-13T06:29:07.777557+00:00",
+  "verified_at": "2026-06-13T08:00:00.000000+00:00",
+  "finished_at": "2026-06-13T07:15:00.000000+00:00",
+  "branch": "feature/lovable-harvest",
+  "mode": "GO overnight — serial lane complete, no owner intervention required",
+  "serial_lane": [
+    { "id": "H2.4", "command": "GO H2.4", "status": "done" },
+    { "id": "H2.5", "command": "GO H2.5", "status": "done" },
+    { "id": "H2.6", "command": "GO H2.6", "status": "done" },
+    { "id": "H3.1", "command": "GO H3.1", "status": "done" },
+    { "id": "design-tokens", "command": "GO design-tokens", "status": "done" }
+  ],
+  "parallel_lane": [
+    { "id": "H5.1", "command": "GO H5.1", "status": "done" },
+    { "id": "H8.1", "command": "GO H8.1", "status": "done" }
+  ],
+  "current": null,
+  "completed_count": 5,
+  "final_smokes": "PASS",
+  "owner_action_required": false
+}

@@ -10,6 +10,8 @@ import { GestureButtonSettingsSheet } from './GestureButtonSettingsSheet'
 type Props = {
   onOfferReview?: (offer: OfferSession) => void
   onActionMessage?: (message: string) => void
+  onOpenComments?: () => void
+  onSave?: () => void
   onBuilderOpen?: () => void
   liked?: boolean
   likeCount?: number
@@ -20,6 +22,8 @@ type Props = {
 export function MediaActionRail({
   onOfferReview,
   onActionMessage,
+  onOpenComments,
+  onSave,
   onBuilderOpen,
   liked,
   likeCount,
@@ -88,10 +92,15 @@ export function MediaActionRail({
               onBuilderHold: isControls ? handleBuilderHold : undefined,
               onAction: (action) => {
                 if (action.type === 'share') onActionMessage?.('Share sheet (demo)')
-                if (action.type === 'save') onActionMessage?.('Saved')
+                if (action.type === 'save') {
+                  if (onSave) onSave()
+                  else onActionMessage?.('Saved')
+                }
                 if (action.type === 'custom') {
-                  if (action.id === 'open_comments') onActionMessage?.('Comments (demo)')
-                  else if (action.id === 'boost') onActionMessage?.('Boost (demo)')
+                  if (action.id === 'open_comments') {
+                    if (onOpenComments) onOpenComments()
+                    else onActionMessage?.('Comments (demo)')
+                  } else if (action.id === 'boost') onActionMessage?.('Boost (demo)')
                   else if (action.id === 'open_controls') {
                     setBuilderOpen(true)
                     setBuilderSelectedId('controls')

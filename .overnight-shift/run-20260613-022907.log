@@ -1,0 +1,21 @@
+== Overnight shift prep 20260613-022907 ==
+Root: /Users/2023macbookpro/Desktop/IVAULT/i-project-rescue/i_project_migration_archive
+
+== Baseline smokes ==
+typecheck: PASS
+== Immersive shell smoke ==
+PASS: immersive shell smoke
+smoke_immersive_shell: PASS
+
+PASS: overnight shift armed
+
+=== 2026-06-13 overnight serial lane complete ===
+H2.4: OutProfile follow — PASS typecheck + smoke_immersive_shell
+H2.5: SavedScreen + Supabase — PASS
+H2.6: submit-promotion-review edge + promo.service — PASS smoke_immersive_promo
+H3.1: get-nearby-promotions + ImmersivePromoScreen — PASS
+design-tokens: glass vars in index.css — PASS
+H2.3 restore: ImmersiveCommentsSheet wired — PASS
+Final: smoke_organism_spine PASS, smoke_production_readiness PASS
+Parallel: H5.1 + H8.1 done (prior Cloud Agent sessions)
+Next: GO H3.2 verify-checkin + streak UI
