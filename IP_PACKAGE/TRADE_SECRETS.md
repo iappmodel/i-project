@@ -1,6 +1,6 @@
 # Trade Secrets Inventory — [ i ] Project
 
-**CONFIDENTIAL — DO NOT DISCLOSE OUTSIDE ORGANIZATION**
+**CONFIDENTIAL — [ i ] Project IP Package**
 
 | Field | Value |
 |-------|-------|
@@ -103,4 +103,4 @@
 
 ---
 
-*Review with counsel to determine patent vs trade secret strategy per asset.*
+*Review before investor distribution.*

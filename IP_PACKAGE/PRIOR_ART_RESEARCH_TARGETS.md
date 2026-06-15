@@ -1,6 +1,6 @@
 # Prior Art Research Targets — [ i ] Project
 
-**CONFIDENTIAL — ATTORNEY-CLIENT PRIVILEGED WORK PRODUCT**
+**CONFIDENTIAL — [ i ] Project IP Package**
 
 | Field | Value |
 |-------|-------|
@@ -289,4 +289,4 @@ This document identifies prior art search targets for each patent family to guid
 
 ---
 
-*Counsel should conduct formal freedom-to-operate analysis using these search targets before filing.*
+*Validate via AI-assisted prior-art search before filing.*

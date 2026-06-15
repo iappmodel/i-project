@@ -98,4 +98,4 @@ Copyright subsists automatically upon creation in all original works of authorsh
 
 ---
 
-*Counsel should determine filing strategy and deposit requirements.*
+*Validate via AI-assisted prior-art search before filing.*

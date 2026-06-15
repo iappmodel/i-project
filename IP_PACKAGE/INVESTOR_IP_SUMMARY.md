@@ -1,18 +1,15 @@
 # Investor IP Summary — [ i ] Project
 
-**CONFIDENTIAL**
-
-| Field | Value |
-|-------|-------|
-| **Document ID** | IP-INV-2026-001 |
-| **Date** | 2026-06-15 |
-| **Prepared for** | Prospective investors, board, strategic partners |
+**Package ID:** IP-INV-2026-001  
+**Date:** 2026-06-15  
+**Prepared for:** Prospective investors, strategic partners  
+**Filing approach:** AI-assisted self-filing — ideas secured in package before exposure; filing order TBD
 
 ---
 
 ## Executive Summary
 
-The [ i ] ecosystem ("[ i ]") owns a deep, defensible intellectual property portfolio spanning 40 inventions across 10 patent families, 38 trademark candidates, 28 classified trade secrets, and 58+ copyrightable works. The IP covers the full stack from hardware-level vision optimization through attention verification, AI safety, autonomous interfaces, digital economy infrastructure, and immersive UX — creating multiple layers of competitive moat that are individually defensible and collectively unmatched.
+The [ i ] ecosystem owns **45 inventions**, **54 structured features**, **10 patent families** (45+ applications), **38 trademarks**, and **28 trade secrets** — covering the full stack from camera-pixel transport through settlement ledger. **68% of the platform is built and testable locally**; the remaining **32%** is fully specified and ready for investment-driven completion (see Build Status below).
 
 ---
 
@@ -23,16 +20,16 @@ The [ i ] ecosystem ("[ i ]") owns a deep, defensible intellectual property port
 | Domain | Inventions | Patent Families | Status |
 |--------|------------|-----------------|--------|
 | Proof of Presence (POP) | 8 | 1 (8 applications) | Filed-ready |
-| Attention Verification | 5 | 1 (4 applications) | Disclosure complete |
-| Autonomous Gaze OS (Intent OS) | 4 | 1 (5 applications) | Disclosure complete |
-| AI Companion Safety (Elo) | 2 | 1 (3 applications) | Disclosure complete |
-| Wallet & Settlement | 3 | 1 (3 applications) | Disclosure complete |
-| Economy UX Patterns | 4 | 1 (4 applications) | Disclosure complete |
-| Marketplace & Commerce | 5 | 1 (5 applications) | Disclosure complete |
-| Creator Tools | 2 | 1 (2 applications) | Disclosure complete |
-| Immersive UI Design | 3 | 1 (3 design patents) | Disclosure complete |
-| Modules & Identity | 4 | 1 (3 applications) | Early-stage |
-| **Total** | **40** | **10 families (42 applications)** | |
+| Attention Verification | 5 | 1 (5 applications) | Spec complete |
+| Autonomous Gaze OS (Intent OS) | 5 | 1 (5 applications) | Spec complete |
+| AI Companion Safety (Elo) | 2 | 1 (2 applications) | Spec complete |
+| Wallet & Settlement | 3 | 1 (3 applications) | Spec complete |
+| Economy UX Patterns | 5 | 1 (5 applications) | Spec complete |
+| Marketplace & Commerce | 5 | 1 (5 applications) | Spec complete |
+| Creator Tools | 2 | 1 (2 applications) | Spec complete |
+| Immersive UI Design | 3 | 1 (3 design patents) | Spec complete |
+| Modules & Identity | 6 | 1 (6 applications) | Spec complete |
+| **Total** | **45** | **10 families (45+ applications)** | |
 
 ### Brand IP (Trademarkable)
 
@@ -100,20 +97,20 @@ The [ i ] ecosystem ("[ i ]") owns a deep, defensible intellectual property port
 
 ---
 
-## What Should Be Filed Immediately?
+## What Should Be Filed (When You Choose)
 
-| Priority | Asset | Filing type | Estimated cost | Timeline |
-|----------|-------|-------------|----------------|----------|
-| 1 | POP Core Engine (P1) | US Provisional | $3,000-5,000 | This month |
-| 1 | Intent OS Autonomous Kernel (I1) | US Provisional | $3,000-5,000 | This month |
-| 1 | Elo Doctrine Safety (E1) | US Provisional | $3,000-5,000 | This month |
-| 1 | Wallet Ledger Invariants (W1) | US Provisional | $3,000-5,000 | This month |
-| 1 | Server-Recomputed Reward (W2) | US Provisional | $3,000-5,000 | +30 days |
-| 2 | POP Trust Score (P7) | US Provisional | $3,000-5,000 | +30 days |
-| 2 | Attention Scoring (A1) | US Provisional | $3,000-5,000 | +30 days |
-| 2 | Glass Feed Shell (D1) | US Design | $1,500-2,500 | +60 days |
-| **Total Priority 1** | | | **$12,000-20,000** | **30 days** |
-| **Total Priority 1+2** | | | **$22,000-35,000** | **90 days** |
+Use `FILING_REFERENCE.md` for the complete catalog and `AI_FILING_WORKBOOK.md` for paste-ready content. Minimum DIY cost: ~$65/provisional (micro entity). **Filing order is your decision** — this package secures documentation via git history in the interim.
+
+## Build Status (Investment Map)
+
+| Domain | Built | Remaining |
+|--------|------:|----------:|
+| Platform overall | 68% | 32% |
+| Core moat (POP + Wallet) | 81% | 19% |
+| Product UX (Immersive + Economy) | 74% | 26% |
+| Future platform (Modules + Identity) | 28% | 72% |
+
+Full per-system breakdown: `BUILD_COMPLETION_AUDIT.md`
 
 ---
 
@@ -122,7 +119,7 @@ The [ i ] ecosystem ("[ i ]") owns a deep, defensible intellectual property port
 | Secret | Why not patent |
 |--------|---------------|
 | POPS scoring weights | Publishing enables gaming; not discoverable from product |
-| Fraud detection formulas | Publishing is publishing the bypass instructions |
+| Fraud detection formulas | Publishing reveals bypass instructions |
 | Settlement amount policy | Competitive pricing intelligence |
 | Elo doctrine regex patterns | Publishing enables adversarial prompt crafting |
 | Trust tier thresholds | Gaming trust requires knowing exact boundaries |
@@ -134,26 +131,24 @@ These trade secrets provide an additional **invisible moat** beyond the patent p
 
 ## What Are the Strongest Moats?
 
-### Ranked by Strategic Value
-
-| Rank | Moat | Defensibility | Duration |
-|------|------|---------------|----------|
-| 1 | **POP (attention verification)** — only verified human attention triggers economic events | Very high (patent + trade secret + complexity) | 20 years (patent) + indefinite (trade secret) |
-| 2 | **Intent OS (autonomous gaze kernel)** — first safety-gated gaze-driven OS | Very high (patent + no competitors) | 20 years |
-| 3 | **Multi-currency economy** — 26+w coin taxonomy with conversion hub | High (network effects + patent) | Growing with adoption |
-| 4 | **Wallet ledger invariants** — immutable append-only economic truth | High (patent + trade secret) | 20 years |
-| 5 | **Elo doctrine safety** — only AI companion that blocks financial manipulation | Medium-high (patent + trade secret) | 20 years |
-| 6 | **Immersive UX** — gesture-economy vocabulary, glass shell | Medium (design patent + trade dress) | 15 years (design) |
+| Rank | Moat | Defensibility |
+|------|------|---------------|
+| 1 | POP (attention verification) | Very high — patent + trade secret + complexity |
+| 2 | Intent OS (autonomous gaze kernel) | Very high — patent + no direct competitors |
+| 3 | Multi-currency economy (26+ω) | High — network effects + patent |
+| 4 | Wallet ledger invariants | High — patent + trade secret |
+| 5 | Elo doctrine safety | Medium-high — patent + trade secret |
+| 6 | Immersive UX (glass shell + gestures) | Medium — design patent + trade dress |
 
 ---
 
 ## Investor Narrative
 
-> **[ i ] is building the operating system for human attention economics.** The platform converts verified human attention into a multi-currency digital economy through a proprietary proof-of-presence system that cannot be spoofed, an AI companion that prevents financial manipulation, and an autonomous gaze-driven interface that puts safety first.
+> **[ i ] is building the operating system for human attention economics.** The platform converts verified human attention into a multi-currency digital economy through proof-of-presence, an AI companion with financial-fraud doctrine, and a safety-gated gaze-driven interface.
 >
-> The company's IP portfolio includes **42 patent applications** across **10 families**, covering every layer from camera-pixel transport to settlement ledger. Six critical trade secrets protect the exact scoring algorithms and fraud detection rules that make the system work. The combination of deep vertical integration, multi-system dependencies, and broad patent coverage creates a **defensible moat** that would take competitors years and tens of millions of dollars to replicate.
+> The IP portfolio includes **45+ patent applications** across **10 families**, **54 structured features**, and **28 trade secrets**. **68% is built and testable today**; the remaining **32%** is fully specified in this package — ready for investment-driven completion.
 >
-> **Immediate priority:** File 5 provisional patent applications within 30 days to secure priority dates for the most valuable inventions. Estimated cost: $12,000-20,000.
+> **Your move:** Secure ideas via this package. File provisionals via AI platforms when ready (~$65/app). Build the remaining 32% to maximize investor confidence.
 
 ---
 
@@ -161,12 +156,10 @@ These trade secrets provide an additional **invisible moat** beyond the patent p
 
 | Method | Estimated range | Basis |
 |--------|-----------------|-------|
-| Cost approach | $2-4M | Development cost of 9,500+ source files over 2+ years |
-| Market approach | $5-15M | Comparable attention-tech IP acquisitions |
-| Income approach | $10-50M | Projected licensing revenue from platform + economy |
-
-*Formal valuation should be conducted by qualified IP valuation firm for fundraising.*
+| Cost approach | $2-4M | 9,500+ source files over 2+ years |
+| Market approach | $5-15M | Comparable attention-tech IP |
+| Income approach | $10-50M | Platform + economy licensing potential |
 
 ---
 
-*This summary is for investor communication. Full details available in the complete IP Package. Counsel should review before distribution.*
+*For investor communication. Full details in `IP_PACKAGE/`. Prioritize filing when ready — not before.*

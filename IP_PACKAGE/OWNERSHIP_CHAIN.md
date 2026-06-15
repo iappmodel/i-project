@@ -1,6 +1,6 @@
 # Ownership Chain — [ i ] Project
 
-**CONFIDENTIAL — ATTORNEY-CLIENT PRIVILEGED WORK PRODUCT**
+**CONFIDENTIAL — [ i ] Project IP Package**
 
 | Field | Value |
 |-------|-------|

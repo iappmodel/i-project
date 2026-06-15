@@ -1,6 +1,8 @@
 # Master IP Inventory — [ i ] Project
 
-**CONFIDENTIAL — ATTORNEY-CLIENT PRIVILEGED WORK PRODUCT**
+**CONFIDENTIAL — [ i ] Project IP Package**
+
+**Filing approach:** AI-assisted self-filing — package pre-filled, filing order decided later
 
 | Field | Value |
 |-------|-------|
@@ -8,26 +10,27 @@
 | **Date** | 2026-06-15 |
 | **Scope** | Full repository (`i_project_migration_archive`) + canonical Desktop archive references |
 | **Inventor** | Marcelo Silva |
-| **Assignee (proposed)** | [ i ] Project / IVAULT — entity TBD by counsel |
+| **Assignee** | [ i ] Project / IVAULT (entity at incorporation) |
 
 ---
 
 ## Executive Summary
 
-The [ i ] ecosystem contains **40 distinct inventions** across **10 patent families**, **35+ trademark candidates**, **28 trade secret assets**, and **58+ copyrightable works**. The IP spans multimodal attention verification, AI companion safety, autonomous gaze-driven interfaces, a 26-letter virtual currency taxonomy, immersive commerce UX, and creator economy infrastructure.
+The [ i ] ecosystem contains **45 inventions**, **54 structured features**, **10 patent families**, **38 trademarks**, **28 trade secrets**, and **58+ copyright assets**. Every entry is documented as a complete system specification — ready for AI-assisted filing and investor presentation. Build progress per system: see `BUILD_COMPLETION_AUDIT.md`.
 
-**Existing IP coverage:** 4 legal documents already cover the POP patent family (8 applications, P1-P8). This inventory extends coverage to the remaining 9 families and 32+ new inventions.
+**POP family:** 8 applications fully documented in `docs/legal/`. This package adds 37 new invention disclosures plus 5 gap-fill disclosures (Blink Remote, iVatar, Wheel Mechanic, i* Modules).
 
 | Category | Count |
 |----------|-------|
-| Total inventions identified | 40 |
+| Total inventions identified | 45 |
+| Total features registered | 54 |
 | Patent candidates (utility) | 32 |
 | Patent candidates (design) | 3 |
 | Trademark candidates | 35+ |
 | Trade secrets | 28 |
 | Copyright assets (code + prototypes) | 58+ |
 | Already documented (POP family) | 8 applications |
-| New inventions requiring disclosure | 32 |
+| New invention disclosures | 37 |
 
 ---
 
@@ -235,7 +238,11 @@ The [ i ] ecosystem contains **40 distinct inventions** across **10 patent famil
 | `OWNERSHIP_CHAIN.md` | Inventorship, assignee, employment, and contribution chain |
 | `PRIOR_ART_RESEARCH_TARGETS.md` | Per-family prior art search terms and known competitors |
 | `INVESTOR_IP_SUMMARY.md` | Investor-facing IP moat narrative |
-| `FILING_PRIORITY.md` | Priority 1/2/3 ranked filing schedule |
+| `BUILD_COMPLETION_AUDIT.md` | Built % vs. investment-needed % per system |
+| `FEATURE_REGISTRY.md` | 54 structured feature specifications |
+| `AI_FILING_WORKBOOK.md` | Pre-filled fields for AI platform filing |
+| `FIGURE_INDEX.md` | 45 figure placeholders for future exhibits |
+| `FILING_REFERENCE.md` | Complete filing catalog (prioritize later) |
 | `INVENTION_DISCLOSURES/` | 40 individual invention disclosure forms |
 | `SYSTEM_DIAGRAMS/` | Architecture diagrams per patent family |
 

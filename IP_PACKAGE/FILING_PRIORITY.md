@@ -1,6 +1,6 @@
 # Filing Priority — [ i ] Project
 
-**CONFIDENTIAL — ATTORNEY-CLIENT PRIVILEGED WORK PRODUCT**
+> **Superseded by `FILING_REFERENCE.md`** — filing order is decided later. This file retained for historical value rankings only.
 
 | Field | Value |
 |-------|-------|
@@ -145,4 +145,4 @@ These are intentionally NOT filed as patents to preserve trade secret protection
 
 ---
 
-*Review with counsel to finalize filing schedule and budget allocation. Priority 1 filings should begin immediately.*
+*Review before investor distribution. Priority 1 filings should begin immediately.*

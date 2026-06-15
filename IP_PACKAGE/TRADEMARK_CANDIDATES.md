@@ -1,6 +1,6 @@
 # Trademark Candidates — [ i ] Project
 
-**CONFIDENTIAL — ATTORNEY-CLIENT PRIVILEGED WORK PRODUCT**
+**CONFIDENTIAL — [ i ] Project IP Package**
 
 | Field | Value |
 |-------|-------|
@@ -95,4 +95,4 @@
 
 ---
 
-*See FILING_PRIORITY.md for filing schedule. Counsel should conduct clearance searches before filing.*
+*See FILING_PRIORITY.md for filing schedule. Validate via AI-assisted prior-art search before filing.*
