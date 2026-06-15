@@ -1,79 +1,98 @@
-# [ i ] Project — Complete IP Package
+# [ i ] Project — Complete IP & Investment Package
 
-**Package ID:** IP-PKG-2026-001  
+**Package ID:** IP-PKG-2026-002  
 **Date:** 2026-06-15  
 **Inventor / Author:** Marcelo Silva  
-**Filing approach:** AI-assisted self-filing (no external counsel required for package preparation)
+**Filing approach:** AI-assisted self-filing  
+**Investment model:** Board-ready phased build + legal/IP budget
 
 ---
 
 ## Purpose
 
-This package is a **pre-filled, investor-ready intellectual property archive** for the [ i ] ecosystem. Every invention, feature, trademark, trade secret, and copyright asset is documented as a **structured, defensible asset** — not as a hypothesis, draft, or "in construction" note.
+Pre-filled **IP archive** + **investment sheet** for the [ i ] ecosystem. Every invention is a structured asset; every platform part has a **cost, timeline, and team-size estimate**.
 
-Use this package to:
-
-1. **Secure ideas before investor exposure** — priority dates can be established via provisional filings when you choose
-2. **Present a fortified product concept** — every system is described as a complete invention with technical depth
-3. **Minimize filing cost** — documents are paste-ready for AI filing platforms (USPTO, LegalZoom AI, PatentPC, etc.)
-4. **Track build vs. investment needs** — see `BUILD_COMPLETION_AUDIT.md` for percentage completion per system
-
-**Filing priority is decided later.** This package builds the full inventory first.
+| Use case | Start here |
+|----------|------------|
+| Board / fundraising | `BOARD_INVESTMENT_SUMMARY.md` |
+| Full investment breakdown | `INVESTMENT_SHEET.md` or `INVESTMENT_SHEET.csv` |
+| What to build first | `BUILD_PRIORITY_ROADMAP.md` |
+| Patents, trademarks, legal | `LEGAL_IP_BUDGET.md` |
+| % built per system | `BUILD_COMPLETION_AUDIT.md` |
+| IP filing (when ready) | `AI_FILING_WORKBOOK.md` |
 
 ---
 
 ## Package Contents
 
+### Investment & Build (NEW)
+
 | Document | Purpose |
 |----------|---------|
-| `MASTER_IP_INVENTORY.md` | Complete audit of all IP assets by domain |
-| `FEATURE_REGISTRY.md` | Every product feature as a structured invention spec |
-| `BUILD_COMPLETION_AUDIT.md` | Built % vs. investment-needed % per system |
-| `PATENT_CANDIDATES.md` | 38 patent candidates ranked by value |
-| `PATENT_FAMILY_MAP.md` | 10 patent families, 42+ applications |
-| `TRADEMARK_CANDIDATES.md` | 38 trademark marks with Nice classes |
-| `TRADE_SECRETS.md` | 28 classified proprietary elements |
+| `BOARD_INVESTMENT_SUMMARY.md` | One-page board ask ($1.5M–$2.4M seed) |
+| `INVESTMENT_SHEET.md` | Full cost/timeline per platform part |
+| `INVESTMENT_SHEET.csv` | Spreadsheet import (Excel / Google Sheets) |
+| `BUILD_PRIORITY_ROADMAP.md` | P0–P4 phased build order |
+| `LEGAL_IP_BUDGET.md` | Patents, trademarks, entity, compliance |
+
+### IP Inventory
+
+| Document | Purpose |
+|----------|---------|
+| `MASTER_IP_INVENTORY.md` | Complete IP audit by domain |
+| `FEATURE_REGISTRY.md` | 54 structured feature specs |
+| `BUILD_COMPLETION_AUDIT.md` | Built % vs. remaining % per system |
+| `PATENT_CANDIDATES.md` | 38 patent candidates ranked |
+| `PATENT_FAMILY_MAP.md` | 10 patent families, 45+ applications |
+| `TRADEMARK_CANDIDATES.md` | 38 trademark marks |
+| `TRADE_SECRETS.md` | 28 classified trade secrets |
 | `COPYRIGHT_ASSETS.md` | 58+ copyrightable works |
-| `OWNERSHIP_CHAIN.md` | Inventorship and assignment chain |
-| `PRIOR_ART_RESEARCH_TARGETS.md` | Per-family prior art search terms |
-| `INVESTOR_IP_SUMMARY.md` | Investor-facing IP moat narrative |
-| `FILING_REFERENCE.md` | Filing options and cost reference (prioritize later) |
-| `AI_FILING_WORKBOOK.md` | Pre-filled fields for AI platform filing |
-| `FIGURE_INDEX.md` | Figure placeholders for future visual exhibits |
-| `INVENTION_DISCLOSURES/` | 45+ individual invention disclosure forms |
-| `SYSTEM_DIAGRAMS/` | Architecture diagrams per family |
+| `OWNERSHIP_CHAIN.md` | Inventorship and assignment |
+| `PRIOR_ART_RESEARCH_TARGETS.md` | Prior art search terms |
+| `INVESTOR_IP_SUMMARY.md` | Investor IP moat narrative |
+| `FILING_REFERENCE.md` | Complete filing catalog |
+| `AI_FILING_WORKBOOK.md` | Paste-ready AI filing fields |
+| `FIGURE_INDEX.md` | 45 figure placeholders |
+| `INVENTION_DISCLOSURES/` | 45 invention disclosure forms |
+| `SYSTEM_DIAGRAMS/` | Architecture diagrams |
 
 ---
 
-## Invention Count
+## Investment at a Glance
+
+| Metric | Value |
+|--------|-------|
+| Platform built today | **68%** |
+| Remaining to 100% | **32%** (~396 person-months) |
+| Full platform cost | **$8.4M – $12.1M** |
+| Seed ask (P0+P1 demo) | **$1.5M – $2.4M** / 6–8 months |
+| Year 1 legal/IP (DIY) | **$11K – $26K** |
+| Already sunk (est.) | **$400K – $800K** equivalent |
+
+---
+
+## Board Priority (Build First)
+
+1. **P0** — Production wallet + cloud + POP hosted ($550K–$850K, 4 mo)
+2. **P1** — Investor immersive demo ($650K–$950K, +4–5 mo)
+3. **P2** — Creators + marketplace ($1.1M–$1.6M)
+4. **P3** — Platform Connect, iAM, Remote ($1.4M–$2.0M)
+5. **P4** — 14 i* modules + iVatar ($2.5M–$3.8M)
+
+Legal/IP runs **in parallel** every phase — never skip Tier A (entity + 3 patents).
+
+---
+
+## Counts
 
 | Category | Count |
 |----------|-------|
-| Total inventions documented | 45 |
-| POP family (reference) | 8 |
-| New invention disclosures | 37 |
+| Inventions documented | 45 |
+| Features registered | 54 |
 | Patent families | 10 |
 | Trademark candidates | 38 |
 | Trade secrets | 28 |
-| Copyright assets | 58+ |
 
 ---
 
-## How to Use (Self-Filing Workflow)
-
-1. **Read** `BUILD_COMPLETION_AUDIT.md` — understand what is built vs. what needs investment
-2. **Read** `INVESTOR_IP_SUMMARY.md` — prepare pitch narrative
-3. **Select inventions** to file when ready (no rush — package secures documentation date via git)
-4. **Open** `AI_FILING_WORKBOOK.md` — copy pre-filled fields into your AI filing platform
-5. **Attach** relevant `INVENTION_DISCLOSURES/INVENTION_XXX.md` as supporting specification
-6. **Add figures later** using `FIGURE_INDEX.md` as the exhibit map
-
----
-
-## Images
-
-No images are included in this package to keep the flow lightweight. `FIGURE_INDEX.md` lists every recommended figure with caption and source file — add screenshots, UI mockups, and architecture diagrams when filing.
-
----
-
-*This package supersedes attorney-oriented drafts. All content is pre-filled for Marcelo Silva as sole inventor.*
+*Filing order decided later. Build order in `BUILD_PRIORITY_ROADMAP.md`. Open `INVESTMENT_SHEET.csv` in Excel or Google Sheets for board edits.*

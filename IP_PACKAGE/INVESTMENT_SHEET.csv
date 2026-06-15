@@ -1,0 +1,17 @@
+Platform Part,Built %,Remaining %,Remaining PM,Cost Low 6dev,Cost High 6dev,Timeline 3dev,Timeline 6dev,Timeline 12dev,Priority Phase
+POP / Proof / Settlement,82,18,18,324000,432000,7-8 months,3-4 months,2-3 months,P0-P1
+Attention & Vision,73,27,22,432000,540000,8-9 months,4-5 months,2-3 months,P1
+Intent OS / Autonomous Kernel,69,31,37,648000,756000,12-14 months,6-7 months,3-4 months,P2-P3
+Elo AI Companion,69,31,22,432000,540000,8-9 months,4-5 months,2-3 months,P2-P3
+Wallet & Settlement,71,29,17,324000,432000,6-7 months,3-4 months,2 months,P0
+Attention Economy UX,71,29,15,324000,324000,6 months,3 months,1.5-2 months,P1-P2
+Marketplace & Commerce,62,38,34,648000,756000,13-15 months,6-7 months,3-4 months,P1-P2
+Creator Tools,40,60,60,1200000,1400000,23-26 months,11-13 months,6-7 months,P2
+Immersive UI Design,53,47,33,576000,672000,12-14 months,6-7 months,3-4 months,P1-P4
+Platform Modules & Identity,38,62,124,2600000,3000000,47-54 months,24-28 months,12-14 months,P3-P4
+Infrastructure & Ship,72,28,14,324000,324000,5-6 months,3 months,1.5-2 months,P0
+LEGAL IP Year 1,,,,$11345,$26000,parallel,parallel,parallel,P0-P2
+LEGAL IP Full 30mo,,,,$78595,$245750,30 months,30 months,30 months,All
+PLATFORM TOTAL,68,32,396,5900000,7900000,18-24 months 6dev,10-14 months 12dev,7-9 months 20dev,All phases
+SEED ASK P0+P1,,,,$1200000,1800000,6-8 months,4-5 months,3-4 months,Board minimum
+FULL PLATFORM,,,,$8400000,12100000,18-24 months,10-14 months,7-9 months,Series A+

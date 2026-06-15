@@ -110,7 +110,8 @@ Use `FILING_REFERENCE.md` for the complete catalog and `AI_FILING_WORKBOOK.md` f
 | Product UX (Immersive + Economy) | 74% | 26% |
 | Future platform (Modules + Identity) | 28% | 72% |
 
-Full per-system breakdown: `BUILD_COMPLETION_AUDIT.md`
+Full per-system breakdown: `BUILD_COMPLETION_AUDIT.md`  
+Investment costs & timelines: `INVESTMENT_SHEET.md` | Board one-pager: `BOARD_INVESTMENT_SUMMARY.md`
 
 ---
 

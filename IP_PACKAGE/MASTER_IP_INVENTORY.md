@@ -239,6 +239,11 @@ The [ i ] ecosystem contains **45 inventions**, **54 structured features**, **10
 | `PRIOR_ART_RESEARCH_TARGETS.md` | Per-family prior art search terms and known competitors |
 | `INVESTOR_IP_SUMMARY.md` | Investor-facing IP moat narrative |
 | `BUILD_COMPLETION_AUDIT.md` | Built % vs. investment-needed % per system |
+| `INVESTMENT_SHEET.md` | Cost + timeline per platform part (3/6/12 dev teams) |
+| `INVESTMENT_SHEET.csv` | Spreadsheet export for board edits |
+| `BUILD_PRIORITY_ROADMAP.md` | P0–P4 phased build order |
+| `LEGAL_IP_BUDGET.md` | Patents, trademarks, entity, compliance budget |
+| `BOARD_INVESTMENT_SUMMARY.md` | One-page board fundraising summary |
 | `FEATURE_REGISTRY.md` | 54 structured feature specifications |
 | `AI_FILING_WORKBOOK.md` | Pre-filled fields for AI platform filing |
 | `FIGURE_INDEX.md` | 45 figure placeholders for future exhibits |

@@ -216,6 +216,8 @@ Each system was scored against five build signals:
 
 Percentages are conservative estimates grounded in `WIRING_STATUS.md`, `FEATURE_BIBLE.md`, and direct file verification.
 
+**Investment mapping:** Each system's remaining % maps to person-months, cost, and timeline by team size in `INVESTMENT_SHEET.md`. Board build order in `BUILD_PRIORITY_ROADMAP.md`.
+
 ---
 
 *Update this audit after each major build phase. Git commit dates establish documentation timeline for IP purposes.*
