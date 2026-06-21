@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ i ] — Animated Feature Presentation · Investor Edition</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --page-bg: #ffffff;
+  --text: #6b6b6b;
+  --text-dark: #444;
+  --text-light: #999;
+  --text-muted: #b0b0b0;
+  --heading: #333;
+  --border: #e8e8e8;
+  --card-bg: #fafafa;
+  --shadow: rgba(0,0,0,0.06);
+  --glass: rgba(7,7,9,0.42);
+  --glass-border: rgba(255,255,255,0.14);
+  --mint: #4ade80;
+  --mint-glow: rgba(74,222,128,0.35);
+  --gold: #f59e0b;
+  --cyan: #00e5ff;
+  --mono: 'SF Mono', Menlo, Consolas, monospace;
+  --bg-void: #070709;
+  --text-primary: #f0ede8;
+  --text-muted-dark: #9997a0;
+}
+html, body {
+  min-height: 100vh;
+  background: var(--page-bg);
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ── Global controls bar ── */
+.global-controls {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  z-index: 1000;
+}
+.global-controls .brand {
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-light);
+}
+.global-controls .nav-btns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nav-btn {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--page-bg);
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+.nav-btn:hover { border-color: #bbb; }
+.nav-btn.active { background: var(--heading); color: #fff; border-color: var(--heading); }
+.nav-btn--voice { border-color: var(--mint); color: #4a9; }
+.nav-btn--voice.active { background: var(--mint); color: #fff; border-color: var(--mint); }
+.slide-counter {
+  font-size: 11px;
+  color: var(--text-light);
+  font-family: var(--mono);
+  min-width: 48px;
+  text-align: center;
+}
+.progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: var(--mint);
+  transition: width 0.4s ease;
+}
+
+/* ── Slide container ── */
+.slides-viewport {
+  margin-top: 56px;
+  width: 100%;
+  min-height: calc(100vh - 56px);
+  position: relative;
+}
+.slide {
+  display: none;
+  width: 100%;
+  min-height: calc(100vh - 56px);
+  padding: 48px 40px 64px;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.slide.visible {
+  display: flex;
+  opacity: 1;
+}
+
+/* ── Slide layout: three columns ── */
+.slide-inner {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) 340px minmax(200px, 1fr);
+  gap: 44px;
+  align-items: center;
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ── Left: feature explanation ── */
+.explain-left {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.feature-rank {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: -12px;
+}
+.feature-title {
+  font-size: 36px;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  color: var(--heading);
+}
+.feature-subtitle {
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.6;
+  max-width: 380px;
+}
+.feature-description {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.65;
+  max-width: 380px;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+.pros-section {
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+.pros-label {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+.pros-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pros-list li {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-dark);
+  padding-left: 14px;
+  position: relative;
+  opacity: 0;
+  transform: translateX(-8px);
+  animation: fadeInPro 0.4s ease forwards;
+}
+.pros-list li::before {
+  content: '+';
+  position: absolute;
+  left: 0;
+  color: var(--mint);
+  font-weight: 700;
+}
+@keyframes fadeInPro {
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Center: phone mockup ── */
+.phone-column {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+.phone {
+  width: 320px;
+  height: 660px;
+  border-radius: 48px;
+  background: #ececec;
+  padding: 10px;
+  box-shadow:
+    0 32px 64px rgba(0,0,0,0.10),
+    0 12px 24px rgba(0,0,0,0.06),
+    inset 0 1px 0 rgba(255,255,255,0.9);
+  position: relative;
+  transition: transform 0.5s cubic-bezier(0.32,0.72,0,1);
+}
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  border-radius: 40px;
+  overflow: hidden;
+  position: relative;
+  background: var(--bg-void);
+}
+.notch {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 108px;
+  height: 28px;
+  background: #000;
+  border-radius: 0 0 18px 18px;
+  z-index: 20;
+}
+.media-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(165deg, #1a1035 0%, #c45c26 38%, #2d1b4e 72%, #0a1520 100%);
+  z-index: 1;
+}
+.scrim-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.4), transparent);
+  z-index: 2;
+}
+.scrim-bottom {
+  position: absolute;
+  bottom: 68px;
+  left: 0;
+  right: 0;
+  height: 160px;
+  background: linear-gradient(to top, rgba(0,0,0,0.65), transparent);
+  z-index: 2;
+}
+
+/* Phone chrome elements */
+.ph-timer {
+  position: absolute;
+  top: 36px;
+  left: 14px;
+  right: 14px;
+  height: 2px;
+  background: rgba(255,255,255,0.12);
+  z-index: 8;
+  border-radius: 1px;
+}
+.ph-timer-fill {
+  height: 100%;
+  width: 38%;
+  background: rgba(255,255,255,0.5);
+  border-radius: 1px;
+  transition: width 1.2s ease, background 0.4s;
+}
+.ph-reward {
+  position: absolute;
+  top: 48px;
+  right: 16px;
+  z-index: 9;
+  padding: 5px 11px;
+  border-radius: 16px;
+  background: var(--glass);
+  border: 0.5px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: opacity 0.4s, box-shadow 0.4s, border-color 0.4s, transform 0.4s;
+}
+.ph-reward-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6ee7a0, #22c55e);
+  box-shadow: 0 0 6px rgba(74,222,128,0.4);
+}
+.ph-out-profile {
+  position: absolute;
+  left: 16px;
+  bottom: 86px;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ph-out-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  border: 1.5px solid rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.ph-out-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.ph-out-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.ph-out-loc {
+  font-size: 9px;
+  color: var(--text-muted-dark);
+}
+.ph-action-rail {
+  position: absolute;
+  right: 14px;
+  bottom: 96px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.ph-rail-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--glass);
+  border: 0.5px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s, box-shadow 0.3s, transform 0.3s, border-color 0.3s;
+}
+.ph-rail-label {
+  font-size: 7px;
+  color: rgba(255,255,255,0.45);
+  text-align: center;
+  margin-top: -6px;
+  letter-spacing: 0.04em;
+}
+.ph-elo {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  transform: translate(-50%, -50%);
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+.ph-elo-ring {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 0.5px solid rgba(0,229,255,0.3);
+  background: rgba(0,229,255,0.06);
+  box-shadow: 0 0 20px rgba(0,229,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ph-elo-inner {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 0.5px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.03);
+}
+.ph-elo-caption {
+  font-family: var(--mono);
+  font-size: 8px;
+  color: rgba(240,237,232,0.6);
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(7,7,9,0.5);
+}
+.ph-bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 68px;
+  background: rgba(245,245,245,0.96);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 8px 6px;
+  z-index: 20;
+  border-top: 0.5px solid rgba(0,0,0,0.06);
+}
+.ph-nav-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.4;
+  transition: opacity 0.3s;
+}
+.ph-nav-create {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  opacity: 1;
+}
+.ph-wallet-chip {
+  position: absolute;
+  top: 48px;
+  left: 16px;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 14px;
+  background: var(--glass);
+  border: 0.5px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  opacity: 0;
+  transition: opacity 0.4s, box-shadow 0.4s;
+}
+.ph-wallet-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--mint);
+}
+.ph-wallet-val {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-primary);
+}
+
+/* ── Floating annotation pointers ── */
+.annotation {
+  position: absolute;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+}
+.annotation.show {
+  opacity: 1;
+}
+.annotation-line {
+  width: 32px;
+  height: 1px;
+  background: rgba(255,255,255,0.35);
+}
+.annotation-text {
+  font-size: 9px;
+  font-family: var(--mono);
+  color: rgba(255,255,255,0.8);
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(0,0,0,0.55);
+  border: 0.5px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(6px);
+  white-space: nowrap;
+  max-width: 140px;
+  white-space: normal;
+  line-height: 1.4;
+}
+
+/* ── Highlight pulse on animated element ── */
+.highlight-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid var(--mint);
+  opacity: 0;
+  animation: pulseRing 1.8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 40;
+}
+@keyframes pulseRing {
+  0%, 100% { opacity: 0; transform: scale(0.9); }
+  50% { opacity: 0.7; transform: scale(1.15); }
+}
+
+/* ── Right: phase / callout ── */
+.callout-right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+}
+.callout-item {
+  padding: 14px 18px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--page-bg);
+  opacity: 0;
+  transform: translateX(10px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+  max-width: 260px;
+}
+.callout-item.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+.callout-item .ci-label {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.callout-item .ci-text {
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+  .slide-inner {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    justify-items: center;
+    text-align: center;
+  }
+  .explain-left { align-items: center; }
+  .feature-subtitle, .feature-description { max-width: 520px; }
+  .callout-right { align-items: center; }
+}
+
+/* ── Slide transitions ── */
+.slide.entering { animation: slideIn 0.55s cubic-bezier(0.32,0.72,0,1) forwards; }
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Voice indicator ── */
+.voice-indicator {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--heading);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 999;
+}
+.voice-indicator.speaking { opacity: 1; }
+.voice-indicator .bars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 18px;
+}
+.voice-indicator .bar {
+  width: 3px;
+  background: #fff;
+  border-radius: 2px;
+  animation: voiceBar 0.6s ease-in-out infinite alternate;
+}
+.voice-indicator .bar:nth-child(1) { height: 6px; animation-delay: 0s; }
+.voice-indicator .bar:nth-child(2) { height: 12px; animation-delay: 0.15s; }
+.voice-indicator .bar:nth-child(3) { height: 8px; animation-delay: 0.3s; }
+.voice-indicator .bar:nth-child(4) { height: 14px; animation-delay: 0.1s; }
+.voice-indicator .bar:nth-child(5) { height: 6px; animation-delay: 0.25s; }
+@keyframes voiceBar {
+  to { height: 16px; }
+}
+
+/* ── Keyboard hint ── */
+.key-hint {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  opacity: 0.6;
+  z-index: 999;
+}
+</style>
+</head>
+<body>
+
+<!-- Global controls -->
+<div class="global-controls">
+  <div class="brand">[ i ] Platform · Feature Presentation</div>
+  <div class="nav-btns">
+    <button class="nav-btn" id="btnPrev" aria-label="Previous">← Prev</button>
+    <span class="slide-counter" id="slideCounter">1 / 12</span>
+    <button class="nav-btn" id="btnNext" aria-label="Next">Next →</button>
+    <button class="nav-btn nav-btn--voice" id="btnVoice" aria-label="Toggle voice narration">Voice</button>
+    <button class="nav-btn" id="btnAuto" aria-label="Auto-play">Auto</button>
+  </div>
+  <div class="progress-bar" id="progressBar"></div>
+</div>
+
+<!-- Voice indicator -->
+<div class="voice-indicator" id="voiceIndicator">
+  <div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+</div>
+
+<!-- Keyboard hint -->
+<div class="key-hint">← → arrow keys · Space = voice · A = auto-play</div>
+
+<!-- Slides viewport -->
+<div class="slides-viewport" id="slidesViewport">
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 01: FEED — Product Entry -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="slide visible entering" data-slide="0" data-voice="Feed is the immersive media home. Full-bleed vertical video with glass controls. This is where attention becomes verified value. Loop 1 economics play directly on top of content. No dashboard. No card lists. Pure media immersion with invisible economics underneath.">
+  <div class="slide-inner">
+    <div class="explain-left">
+      <div class="feature-rank">01 · Most Critical · Product Entry</div>
+      <h2 class="feature-title">FEED</h2>
+      <p class="feature-subtitle">The immersive media home — full-bleed vertical video, glass overlays, gesture rail, and Loop 1 watch-to-earn running on top of content.</p>
+      <p class="feature-description">Feed is [ i ]'s front door. Unlike fintech dashboards or card-list feeds, the user's first screen is pure full-screen media. Watch sessions, reward offers, and verification all happen inside this immersive shell without ever navigating away. The feed IS the product.</p>
+      <div class="pros-section">
+        <div class="pros-label">Investor Pros</div>
+        <ul class="pros-list">
+          <li style="animation-delay:0.1s">Picture 2 immersive shell — visually differentiated from every fintech app</li>
+          <li style="animation-delay:0.2s">Loop 1 on media — watch and earn without context switch</li>
+          <li style="animation-delay:0.3s">Glass gesture rail — social + controls without visual clutter</li>
+          <li style="animation-delay:0.4s">ELO center zone — companion AI native to the experience</li>
+          <li style="animation-delay:0.5s">Server-side POP + pending-first rewards — fraud-resistant by design</li>
+          <li style="animation-delay:0.6s">TikTok familiarity with novel economics: zero learning curve, total value shift</li>
+        </ul>
+      </div>
+    </div>
+    <div class="phone-column">
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="notch"></div>
+          <div class="media-bg"></div>
+          <div class="scrim-top"></div>
+          <div class="scrim-bottom"></div>
+          <div class="ph-timer"><div class="ph-timer-fill" style="width:22%"></div></div>
+          <div class="ph-reward"><span class="ph-reward-dot"></span> 50ic</div>
+          <div class="ph-out-profile">
+            <div class="ph-out-avatar">RA</div>
+            <div class="ph-out-text"><div class="ph-out-name">RAFAELO</div><div class="ph-out-loc">Cape Town</div></div>
+          </div>
+          <div class="ph-action-rail">
+            <div class="ph-rail-btn"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 15s-6-4.5-6-8.5a4 4 0 018 0 4 4 0 018 0c0 4-6 8.5-6 8.5z" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" fill="none"/></svg></div>
+            <div class="ph-rail-label">love</div>
+            <div class="ph-rail-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h12v9H5L2 14V2z" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" fill="none"/></svg></div>
+            <div class="ph-rail-label">msg</div>
+            <div class="ph-rail-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="ph-rail-label">share</div>
+            <div class="ph-rail-btn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="3" r="1.2" fill="rgba(255,255,255,0.85)"/><circle cx="7" cy="7" r="1.2" fill="rgba(255,255,255,0.85)"/><circle cx="7" cy="11" r="1.2" fill="rgba(255,255,255,0.85)"/></svg></div>
+            <div class="ph-rail-label">ctrl</div>
+          </div>
+          <nav class="ph-bottom-nav">
+            <div class="ph-nav-icon" style="opacity:1"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 8l7-5 7 5v9H3V8z" stroke="#555" stroke-width="1.3" fill="none"/></svg></div>
+            <div class="ph-nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C6 6 3 8 3 12a6 6 0 0012 0c0-4-3-6-6-10z" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+            <div class="ph-nav-icon ph-nav-create"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 5v12M5 11h12" stroke="#666" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <div class="ph-nav-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="2" stroke="#888" stroke-width="1.3" fill="none"/><path d="M2 9h16" stroke="#888" stroke-width="1.3"/></svg></div>
+            <div class="ph-nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="#888" stroke-width="1.2" fill="none"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+          </nav>
+          <!-- Annotations for Feed -->
+          <div class="annotation show" style="top:34px;left:50%;transform:translateX(-50%)">
+            <div class="annotation-text">Timer line — session progress</div>
+          </div>
+          <div class="annotation show" style="top:46px;right:-40px">
+            <div class="annotation-text">Reward offer — 50 iCoins</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="callout-right">
+      <div class="callout-item show">
+        <div class="ci-label">Entry point</div>
+        <div class="ci-text">App boot lands on Feed — same shell for organic and sponsored content.</div>
+      </div>
+      <div class="callout-item show" style="transition-delay:0.15s">
+        <div class="ci-label">Economics layer</div>
+        <div class="ci-text">Loop 1 (Watch → Verify → Reward → Wallet) plays on top of the media — no separate earn app.</div>
+      </div>
+      <div class="callout-item show" style="transition-delay:0.3s">
+        <div class="ci-label">Design law</div>
+        <div class="ci-text">Picture 2 immersive: glass overlays, dark void, full-bleed. Never a dashboard or card grid.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 02: REWARD — Core Earn Affordance -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="slide" data-slide="1" data-voice="The Reward pill is the primary earn affordance. When sponsored media plays, a glass pill appears showing the exact coin amount on offer — before commitment. As the user watches, an engagement arc fills. On completion, the pill pulses, then moves through a 5-gate verification before settling into the wallet. Transparent. Server-verified. Non-intrusive.">
+  <div class="slide-inner">
+    <div class="explain-left">
+      <div class="feature-rank">02 · Core · Earn Affordance</div>
+      <h2 class="feature-title">REWARD</h2>
+      <p class="feature-subtitle">The primary earn mechanism — a glass pill showing coin offers, engagement arcs, and verified settlement. The moment attention becomes money.</p>
+      <p class="feature-description">When sponsored or reward-bearing media plays, the REWARD pill surfaces the exact coin amount before the user commits. No hidden thresholds. The arc fills only with genuine dwell and attention score alignment. On completion, a 5-gate server-side engine (POPS) decides full or nothing — never partial. Settlement runs via Edge Functions, not client-side.</p>
+      <div class="pros-section">
+        <div class="pros-label">Investor Pros</div>
+        <ul class="pros-list">
+          <li style="animation-delay:0.1s">Prices attention at point of consumption — familiar UX, novel economics</li>
+          <li style="animation-delay:0.2s">Transparent pre-commit offer reduces fraud disputes</li>
+          <li style="animation-delay:0.3s">Server-verified payout (POPS + Edge Functions) — no client-side inflation</li>
+          <li style="animation-delay:0.4s">30% of sponsored revenue funds viewer rewards — aligned incentives</li>
+          <li style="animation-delay:0.5s">Non-intrusive glass overlay preserves immersion completely</li>
+          <li style="animation-delay:0.6s">Maps directly to Loop 1: Watch → Verify → Reward → Wallet</li>
+        </ul>
+      </div>
+    </div>
+    <div class="phone-column">
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="notch"></div>
+          <div class="media-bg" style="background:linear-gradient(165deg,#0a1a10 0%,#0d2a2a 40%,#0a0d1a 100%)"></div>
+          <div class="scrim-top"></div>
+          <div class="scrim-bottom"></div>
+          <div class="ph-timer"><div class="ph-timer-fill" style="width:58%;background:var(--mint)"></div></div>
+          <div class="ph-reward" style="box-shadow:0 0 16px rgba(74,222,128,0.3);border-color:rgba(74,222,128,0.3)"><span class="ph-reward-dot"></span> 50ic</div>
+          <div class="highlight-ring" style="top:40px;right:8px;width:56px;height:56px"></div>
+          <div class="ph-out-profile">
+            <div class="ph-out-avatar">RA</div>
+            <div class="ph-out-text"><div class="ph-out-name">RAFAELO</div><div class="ph-out-loc">Cape Town</div></div>
+          </div>
+          <div class="ph-action-rail" style="opacity:0.4">
+            <div class="ph-rail-btn"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 15s-6-4.5-6-8.5a4 4 0 018 0 4 4 0 018 0c0 4-6 8.5-6 8.5z" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" fill="none"/></svg></div>
+            <div class="ph-rail-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h12v9H5L2 14V2z" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" fill="none"/></svg></div>
+            <div class="ph-rail-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="ph-rail-btn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="3" r="1.2" fill="rgba(255,255,255,0.85)"/><circle cx="7" cy="7" r="1.2" fill="rgba(255,255,255,0.85)"/><circle cx="7" cy="11" r="1.2" fill="rgba(255,255,255,0.85)"/></svg></div>
+          </div>
+          <nav class="ph-bottom-nav">
+            <div class="ph-nav-icon" style="opacity:1"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 8l7-5 7 5v9H3V8z" stroke="#555" stroke-width="1.3" fill="none"/></svg></div>
+            <div class="ph-nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C6 6 3 8 3 12a6 6 0 0012 0c0-4-3-6-6-10z" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+            <div class="ph-nav-icon ph-nav-create"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 5v12M5 11h12" stroke="#666" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <div class="ph-nav-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="2" stroke="#888" stroke-width="1.3" fill="none"/><path d="M2 9h16" stroke="#888" stroke-width="1.3"/></svg></div>
+            <div class="ph-nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="#888" stroke-width="1.2" fill="none"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+          </nav>
+          <div class="annotation show" style="top:52px;right:90px;flex-direction:row-reverse">
+            <div class="annotation-text">Reward pill — transparent offer before commitment</div>
+            <div class="annotation-line"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="callout-right">
+      <div class="callout-item show">
+        <div class="ci-label">6-phase lifecycle</div>
+        <div class="ci-text">Offer → Display → Accumulate → Complete → Review → Settle. Each phase animates the pill.</div>
+      </div>
+      <div class="callout-item show" style="transition-delay:0.15s">
+        <div class="ci-label">POPS engine</div>
+        <div class="ci-text">5-gate qualification: device signal, dwell, attention score, completion event, fraud check.</div>
+      </div>
+      <div class="callout-item show" style="transition-delay:0.3s">
+        <div class="ci-label">Settlement</div>
+        <div class="ci-text">On approval: pill fades, value credits pending → available per trust tier. Always server-side.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 03: POP — Proof of Presence -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="slide" data-slide="2" data-voice="Proof of Presence is the infrastructure that makes verified attention possible. Gaze tracking stays on-device. Five sequential gates — device signal, dwell threshold, attention score, completion event, and fraud check — must all pass before any coin is minted. Zero guesswork. This is the trust layer that makes the entire economy credible to advertisers.">
+  <div class="slide-inner">
+    <div class="explain-left">
+      <div class="feature-rank">03 · Infrastructure · Trust Layer</div>
+      <h2 class="feature-title">POP</h2>
+      <p class="feature-subtitle">Proof-of-Presence — the 5-gate verification engine that makes [ i ]'s attention economy credible. On-device gaze, server-side settlement, zero-knowledge privacy.</p>
+      <p class="feature-description">POP v2 is shipped. Gaze data stays on the device — only a pass/fail score travels to the server. Five sequential gates (device signal, dwell, attention score, completion, fraud check) must clear before Edge Functions mint any coin. Bots cost more than they earn. Trust tiers unlock higher conversion rates over time, rewarding genuine users.</p>
+      <div class="pros-section">
+        <div class="pros-label">Investor Pros</div>
+        <ul class="pros-list">
+          <li style="animation-delay:0.1s">Advertisers get certified attention — not estimated impressions</li>
+          <li style="animation-delay:0.2s">Privacy-first: raw gaze never transmitted, only pass/fail signal</li>
+          <li style="animation-delay:0.3s">iOS ARKit + Android MediaPipe — native on-device vision</li>
+          <li style="animation-delay:0.4s">Fraud economics inverted: gaming costs more than honest participation</li>
+          <li style="animation-delay:0.5s">Trust tiers create durable retention — users level up to unlock exits</li>
+          <li style="animation-delay:0.6s">Durable settlement: pending-first prevents instant-drain exploits</li>
+        </ul>
+      </div>
+    </div>
+    <div class="phone-column">
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="notch"></div>
+          <div class="media-bg" style="background:linear-gradient(165deg,#0a0d1a 0%,#1a1520 45%,#0a1520 100%)"></div>
+          <div class="scrim-top"></div>
+          <div class="scrim-bottom"></div>
+          <div class="ph-timer"><div class="ph-timer-fill" style="width:100%;background:var(--gold)"></div></div>
+          <div class="ph-reward" style="color:var(--gold);border-color:rgba(245,158,11,0.35)"><span class="ph-reward-dot" style="background:linear-gradient(135deg,#fbbf24,#f59e0b)"></span> 50ic · POP</div>
+          <!-- POP verification chip -->
+          <div style="position:absolute;top:80px;left:16px;right:16px;z-index:15;padding:12px;border-radius:12px;background:rgba(22,22,31,0.92);border:0.5px solid rgba(245,158,11,0.28)">
+            <div style="font-size:9px;color:var(--gold);margin-bottom:6px;letter-spacing:0.08em;text-transform:uppercase">POP Verification · 5 Gates</div>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="display:flex;align-items:center;gap:6px"><div style="width:6px;height:6px;border-radius:50%;background:var(--mint)"></div><span style="font-size:9px;color:var(--text-primary)">Device signal ✓</span></div>
+              <div style="display:flex;align-items:center;gap:6px"><div style="width:6px;height:6px;border-radius:50%;background:var(--mint)"></div><span style="font-size:9px;color:var(--text-primary)">Dwell threshold ✓</span></div>
+              <div style="display:flex;align-items:center;gap:6px"><div style="width:6px;height:6px;border-radius:50%;background:var(--mint)"></div><span style="font-size:9px;color:var(--text-primary)">Attention score ✓</span></div>
+              <div style="display:flex;align-items:center;gap:6px"><div style="width:6px;height:6px;border-radius:50%;background:var(--mint)"></div><span style="font-size:9px;color:var(--text-primary)">Completion event ✓</span></div>
+              <div style="display:flex;align-items:center;gap:6px"><div style="width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulseRing 1s ease-in-out infinite"></div><span style="font-size:9px;color:var(--gold)">Fraud check...</span></div>
+            </div>
+          </div>
+          <div class="ph-out-profile" style="opacity:0.4">
+            <div class="ph-out-avatar">RA</div>
+            <div class="ph-out-text"><div class="ph-out-name">RAFAELO</div><div class="ph-out-loc">Cape Town</div></div>
+          </div>
+          <nav class="ph-bottom-nav">
+            <div class="ph-nav-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 8l7-5 7 5v9H3V8z" stroke="#888" stroke-width="1.3" fill="none"/></svg></div>
+            <div class="ph-nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C6 6 3 8 3 12a6 6 0 0012 0c0-4-3-6-6-10z" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+            <div class="ph-nav-icon ph-nav-create"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 5v12M5 11h12" stroke="#666" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <div class="ph-nav-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="2" stroke="#888" stroke-width="1.3" fill="none"/><path d="M2 9h16" stroke="#888" stroke-width="1.3"/></svg></div>
+            <div class="ph-nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="#888" stroke-width="1.2" fill="none"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+          </nav>
+        </div>
+      </div>
+    </div>
+    <div class="callout-right">
+      <div class="callout-item show">
+        <div class="ci-label">On-device only</div>
+        <div class="ci-text">Camera data never leaves the phone. Only a composite pass/fail score is sent to the server.</div>
+      </div>
+      <div class="callout-item show" style="transition-delay:0.15s">
+        <div class="ci-label">Fraud economics</div>
+        <div class="ci-text">Bots and attention farms cost more to operate than they can extract — by design.</div>
+      </div>
+      <div class="callout-item show" style="transition-delay:0.3s">
+        <div class="ci-label">Trust tiers</div>
+        <div class="ci-text">Genuine users level up (7 tiers), unlocking higher conversion rates and faster settlement.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 04: WALLET — Economic Center -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="slide" data-slide="3" data-voice="The Attention Wallet is where verified attention becomes liquid value. Dual-ledger system: iCoins for cash value, vCoins for platform spend. Pending to available settlement. Convert, withdraw, tip, or spend. Every exit is honest — fees declared, tier-gated. This is where the loop closes.">
+  <div class="slide-inner">
+    <div class="explain-left">
+      <div class="feature-rank">04 · Economic · Value Center</div>
+      <h2 class="feature-title">WALLET</h2>
+      <p class="feature-subtitle">The Attention Wallet — dual ledger, pending → available settlement, convert/withdraw/tip/spend. Where verified seconds become spendable money.</p>
+      <p class="feature-description">Tab 4 of the 5-tab dock. iCoins carry cash value; vCoins are platform-spend tokens. Balances move from pending to available per trust tier. Three exit paths: convert (tier-multiplied), withdraw (bank/card/crypto), or spend (NFC/QR/tip). Every fee is declared upfront. No hidden deductions.</p>
+      <div class="pros-section">
+        <div class="pros-label">Investor Pros</div>
+        <ul class="pros-list">
+          <li style="animation-delay:0.1s">Dual ledger prevents inflation — separate earning and spending currencies</li>
+          <li style="animation-delay:0.2s">Pending-first settlement blocks instant-drain exploits</li>
+          <li style="animation-delay:0.3s">Trust tier gates monetize long-term engagement over quick churn</li>
+          <li style="animation-delay:0.4s">Multiple exit paths (bank, card, crypto, in-app) increase utility</li>
+          <li style="animation-delay:0.5s">Transparent fee structure builds trust — no surprise deductions</li>
+          <li style="animation-delay:0.6s">60/30/10 revenue split: creator / viewer / platform — aligned</li>
+        </ul>
+      </div>
+    </div>
+    <div class="phone-column">
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="notch"></div>
+          <div class="media-bg" style="background:linear-gradient(165deg,#0a0d1a 0%,#111520 50%,#0d1a2a 100%)"></div>
+          <!-- Wallet sheet overlay -->
+          <div style="position:absolute;bottom:68px;left:0;right:0;top:60px;z-index:12;background:rgba(14,14,20,0.95);border-radius:24px 24px 0 0;padding:20px 16px;border-top:0.5px solid rgba(255,255,255,0.1)">
+            <div style="text-align:center;margin-bottom:16px">
+              <div style="font-size:9px;color:var(--text-muted-dark);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">Attention Wallet</div>
+              <div style="font-family:var(--mono);font-size:28px;color:var(--text-primary);font-weight:300">1,247<span style="font-size:14px;opacity:0.6">ic</span></div>
+              <div style="font-size:9px;color:var(--text-muted-dark);margin-top:4px">+ 83 pending</div>
+            </div>
+            <div style="display:flex;gap:8px;margin-bottom:16px">
+              <div style="flex:1;padding:10px;border-radius:10px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.08);text-align:center">
+                <div style="font-size:8px;color:var(--text-muted-dark);margin-bottom:3px">iCoins</div>
+                <div style="font-family:var(--mono);font-size:13px;color:var(--mint)">1,247</div>
+              </div>
+              <div style="flex:1;padding:10px;border-radius:10px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.08);text-align:center">
+                <div style="font-size:8px;color:var(--text-muted-dark);margin-bottom:3px">vCoins</div>
+                <div style="font-family:var(--mono);font-size:13px;color:rgba(55,138,221,0.9)">432</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:6px;margin-bottom:14px">
+              <div style="flex:1;padding:8px;border-radius:8px;background:rgba(74,222,128,0.08);border:0.5px solid rgba(74,222,128,0.2);text-align:center;font-size:9px;color:var(--mint)">Withdraw</div>
+              <div style="flex:1;padding:8px;border-radius:8px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.1);text-align:center;font-size:9px;color:var(--text-primary)">Convert</div>
+              <div style="flex:1;padding:8px;border-radius:8px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.1);text-align:center;font-size:9px;color:var(--text-primary)">Tip</div>
+            </div>
+            <div style="font-size:8px;color:var(--text-muted-dark);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px">Recent</div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid rgba(255,255,255,0.04)"><span style="font-size:9px;color:var(--text-primary)">Nike Campaign</span><span style="font-family:var(--mono);font-size:9px;color:var(--mint)">+50ic</span></div>
+              <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid rgba(255,255,255,0.04)"><span style="font-size:9px;color:var(--text-primary)">Watch session</span><span style="font-family:var(--mono);font-size:9px;color:var(--mint)">+12ic</span></div>
+              <div style="display:flex;justify-content:space-between;padding:6px 0"><span style="font-size:9px;color:var(--text-primary)">Creator tip</span><span style="font-family:var(--mono);font-size:9px;color:rgba(245,158,11,0.8)">-25vc</span></div>
+            </div>
+          </div>
+          <nav class="ph-bottom-nav">
+            <div class="ph-nav-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 8l7-5 7 5v9H3V8z" stroke="#888" stroke-width="1.3" fill="none"/></svg></div>
+            <div class="ph-nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C6 6 3 8 3 12a6 6 0 0012 0c0-4-3-6-6-10z" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+            <div class="ph-nav-icon ph-nav-create"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 5v12M5 11h12" stroke="#666" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <div class="ph-nav-icon" style="opacity:1"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="2" stroke="#555" stroke-width="1.3" fill="none"/><path d="M2 9h16" stroke="#555" stroke-width="1.3"/></svg></div>
+            <div class="ph-nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="#888" stroke-width="1.2" fill="none"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+          </nav>
+        </div>
+      </div>
+    </div>
+    <div class="callout-right">
+      <div class="callout-item show">
+        <div class="ci-label">Dual ledger</div>
+        <div class="ci-text">iCoins = withdrawable cash value. vCoins = platform spend (tips, boosts, offers).</div>
+      </div>
+      <div class="callout-item show" style="transition-delay:0.15s">
+        <div class="ci-label">Three exits</div>
+        <div class="ci-text">Withdraw (bank/card/crypto), Convert (tier-multiplied), Spend (NFC/QR/tip).</div>
+      </div>
+      <div class="callout-item show" style="transition-delay:0.3s">
+        <div class="ci-label">Revenue model</div>
+        <div class="ci-text">60% creator, 30% viewer, 10% platform — transparent, honest, declared.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 05: ELO — AI Companion -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="slide" data-slide="4" data-voice="ELO is the AI companion presence at the center of the screen. Not a chatbot. Not an assistant. A voice-evoked membrane that manifests from the rail center. ELO surfaces relevant actions, manages the gesture interface, and builds a relationship layer between human and platform. It is the personality of the app.">
+  <div class="slide-inner">
+    <div class="explain-left">
+      <div class="feature-rank">05 · Companion · AI Presence</div>
+      <h2 class="feature-title">ELO</h2>
+      <p class="feature-subtitle">Voice-evoked AI companion — a transparent membrane at screen center. Not a chatbot. The personality layer that connects human to platform.</p>
+      <p class="feature-description">Say "ELO" and the center membrane manifests. It manages gesture configuration, surfaces contextual offers, provides speech-reactive feedback, and builds a relationship over time. Separate from OUT-PROFILE (creator identity) and IN-PROFILE (user settings). ELO is the bridge between attention and action.</p>
+      <div class="pros-section">
+        <div class="pros-label">Investor Pros</div>
+        <ul class="pros-list">
+          <li style="animation-delay:0.1s">Native AI companion — not a bolt-on chatbot feature</li>
+          <li style="animation-delay:0.2s">Voice-first interaction — hands-free accessibility</li>
+          <li style="animation-delay:0.3s">Retention through relationship — users come back for ELO</li>
+          <li style="animation-delay:0.4s">Contextual intelligence — surfaces right action at right time</li>
+          <li style="animation-delay:0.5s">Platform differentiator — no competitor has a companion layer</li>
+        </ul>
+      </div>
+    </div>
+    <div class="phone-column">
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="notch"></div>
+          <div class="media-bg" style="background:linear-gradient(165deg,#0a0d1a 0%,#0d1520 40%,#0a1a2a 100%)"></div>
+          <div class="scrim-top"></div>
+          <div class="scrim-bottom"></div>
+          <div class="ph-timer"><div class="ph-timer-fill" style="width:30%"></div></div>
+          <div class="ph-elo" style="opacity:1">
+            <div class="ph-elo-ring"><div class="ph-elo-inner"></div></div>
+            <div class="ph-elo-caption">ELO · listening</div>
+          </div>
+          <div class="highlight-ring" style="top:38%;left:50%;transform:translate(-50%,-50%);width:84px;height:84px"></div>
+          <div class="ph-out-profile" style="opacity:0.4">
+            <div class="ph-out-avatar">RA</div>
+            <div class="ph-out-text"><div class="ph-out-name">RAFAELO</div><div class="ph-out-loc">Cape Town</div></div>
+          </div>
+          <div class="ph-action-rail" style="opacity:0.35">
+            <div class="ph-rail-btn"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 15s-6-4.5-6-8.5a4 4 0 018 0 4 4 0 018 0c0 4-6 8.5-6 8.5z" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" fill="none"/></svg></div>
+            <div class="ph-rail-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h12v9H5L2 14V2z" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" fill="none"/></svg></div>
+            <div class="ph-rail-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="ph-rail-btn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="3" r="1.2" fill="rgba(255,255,255,0.85)"/><circle cx="7" cy="7" r="1.2" fill="rgba(255,255,255,0.85)"/><circle cx="7" cy="11" r="1.2" fill="rgba(255,255,255,0.85)"/></svg></div>
+          </div>
+          <nav class="ph-bottom-nav">
+            <div class="ph-nav-icon" style="opacity:1"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 8l7-5 7 5v9H3V8z" stroke="#555" stroke-width="1.3" fill="none"/></svg></div>
+            <div class="ph-nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C6 6 3 8 3 12a6 6 0 0012 0c0-4-3-6-6-10z" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+            <div class="ph-nav-icon ph-nav-create"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 5v12M5 11h12" stroke="#666" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <div class="ph-nav-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="2" stroke="#888" stroke-width="1.3" fill="none"/><path d="M2 9h16" stroke="#888" stroke-width="1.3"/></svg></div>
+            <div class="ph-nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="#888" stroke-width="1.2" fill="none"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+          </nav>
+          <div class="annotation show" style="top:52%;left:50%;transform:translate(-50%,0)">
+            <div class="annotation-text">Center membrane — voice-evoked companion</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="callout-right">
+      <div class="callout-item show">
+        <div class="ci-label">Activation</div>
+        <div class="ci-text">Voice trigger: "ELO" — manifests from center. Gesture: rail-to-center pull.</div>
+      </div>
+      <div class="callout-item show" style="transition-delay:0.15s">
+        <div class="ci-label">Relationship</div>
+        <div class="ci-text">Builds knowledge over time. Surfaces relevant offers, remembers preferences, adapts tone.</div>
+      </div>
+      <div class="callout-item show" style="transition-delay:0.3s">
+        <div class="ci-label">Distinction</div>
+        <div class="ci-text">Not OUT-PROFILE (creator). Not IN-PROFILE (settings). ELO is the platform itself speaking.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 06: PROMO — Demand Marketplace -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="slide" data-slide="5" data-voice="Promo is the demand-side marketplace. Tab 2 of the dock. Sponsor briefs, watch campaigns, check-in tasks, and survey offers — all with verification gates. Brands bid for certified attention. Users browse offers like a store. Every task has declared rewards, clear conditions, and server-verified completion. This is where advertiser dollars enter the economy.">
+  <div class="slide-inner">
+    <div class="explain-left">
+      <div class="feature-rank">06 · Marketplace · Demand Side</div>
+      <h2 class="feature-title">PROMO</h2>
+      <p class="feature-subtitle">The earn marketplace — sponsor briefs, campaign tasks, GPS check-ins, and verification-gated offers. Where advertiser dollars meet verified attention.</p>
+      <p class="feature-description">Tab 2 of the 5-tab dock. Brands post campaigns with declared rewards and conditions. Users browse like a store: watch tasks, survey tasks, GPS check-ins, action-complete tasks. Every offer shows reward amount before commitment. Completion triggers the same POP verification pipeline. Brands get certified attention reports.</p>
+      <div class="pros-section">
+        <div class="pros-label">Investor Pros</div>
+        <ul class="pros-list">
+          <li style="animation-delay:0.1s">Demand-side revenue engine — brands pay for certified reach</li>
+          <li style="animation-delay:0.2s">Transparent offer marketplace — users choose tasks voluntarily</li>
+          <li style="animation-delay:0.3s">GPS/location layer enables local commerce integration</li>
+          <li style="animation-delay:0.4s">Campaign builder gives brands self-serve access</li>
+          <li style="animation-delay:0.5s">Same POP verification — no separate trust system needed</li>
+        </ul>
+      </div>
+    </div>
+    <div class="phone-column">
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="notch"></div>
+          <div class="media-bg" style="background:linear-gradient(180deg,#0d0d14 0%,#16161f 100%)"></div>
+          <!-- Promo marketplace UI -->
+          <div style="position:absolute;top:36px;left:0;right:0;bottom:68px;z-index:10;padding:16px;overflow:hidden">
+            <div style="font-size:9px;color:var(--text-muted-dark);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;margin-top:8px">Earn Marketplace</div>
+            <div style="display:flex;gap:6px;margin-bottom:14px;overflow-x:auto">
+              <span style="font-size:8px;padding:4px 10px;border-radius:10px;background:rgba(74,222,128,0.12);border:0.5px solid rgba(74,222,128,0.3);color:var(--mint);white-space:nowrap">All</span>
+              <span style="font-size:8px;padding:4px 10px;border-radius:10px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.1);color:var(--text-primary);white-space:nowrap">Watch</span>
+              <span style="font-size:8px;padding:4px 10px;border-radius:10px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.1);color:var(--text-primary);white-space:nowrap">Survey</span>
+              <span style="font-size:8px;padding:4px 10px;border-radius:10px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.1);color:var(--text-primary);white-space:nowrap">GPS</span>
+            </div>
+            <!-- Offer cards -->
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="padding:12px;border-radius:12px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(74,222,128,0.2)">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:10px;color:var(--text-primary);font-weight:500">Nike · Focus Session</span><span style="font-family:var(--mono);font-size:10px;color:var(--mint)">50ic</span></div>
+                <div style="font-size:8px;color:var(--text-muted-dark)">Watch 30s · Eye-verified · Instant reward</div>
+              </div>
+              <div style="padding:12px;border-radius:12px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.08)">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:10px;color:var(--text-primary);font-weight:500">Adidas · Store Visit</span><span style="font-family:var(--mono);font-size:10px;color:var(--mint)">120ic</span></div>
+                <div style="font-size:8px;color:var(--text-muted-dark)">GPS check-in · 500m radius · Conditional</div>
+              </div>
+              <div style="padding:12px;border-radius:12px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.08)">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:10px;color:var(--text-primary);font-weight:500">Survey · Travel Prefs</span><span style="font-family:var(--mono);font-size:10px;color:var(--mint)">30ic</span></div>
+                <div style="font-size:8px;color:var(--text-muted-dark)">5 questions · 2 min · Instant</div>
+              </div>
+            </div>
+          </div>
+          <nav class="ph-bottom-nav">
+            <div class="ph-nav-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 8l7-5 7 5v9H3V8z" stroke="#888" stroke-width="1.3" fill="none"/></svg></div>
+            <div class="ph-nav-icon" style="opacity:1"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C6 6 3 8 3 12a6 6 0 0012 0c0-4-3-6-6-10z" stroke="#555" stroke-width="1.2" fill="none"/><circle cx="9" cy="10" r="2" fill="#555" stroke="none"/></svg></div>
+            <div class="ph-nav-icon ph-nav-create"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 5v12M5 11h12" stroke="#666" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <div class="ph-nav-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="2" stroke="#888" stroke-width="1.3" fill="none"/><path d="M2 9h16" stroke="#888" stroke-width="1.3"/></svg></div>
+            <div class="ph-nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="#888" stroke-width="1.2" fill="none"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+          </nav>
+        </div>
+      </div>
+    </div>
+    <div class="callout-right">
+      <div class="callout-item show">
+        <div class="ci-label">Offer types</div>
+        <div class="ci-text">Watch & verify, GPS check-in, survey/quiz, follow/action — all POP-gated.</div>
+      </div>
+      <div class="callout-item show" style="transition-delay:0.15s">
+        <div class="ci-label">Brand side</div>
+        <div class="ci-text">Self-serve campaign builder: upload media, set reward, configure conditions, launch.</div>
+      </div>
+      <div class="callout-item show" style="transition-delay:0.3s">
+        <div class="ci-label">Revenue</div>
+        <div class="ci-text">Brands pay per verified engagement. Not per impression — per certified attention second.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 07: LIKE / TAP — Gesture Engine -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="slide" data-slide="6" data-voice="The gesture engine is a configurable multi-tap system. Single tap: Like. Double tap: Save to vault. Triple tap: Boost. Long press: Creator offer. All on the same heart button. No wallet debit on basic interactions. The gesture rail is the social layer of the immersive shell — glass circles, configurable order, cross-mode for offers.">
+  <div class="slide-inner">
+    <div class="explain-left">
+      <div class="feature-rank">07 · Social · Engagement Layer</div>
+      <h2 class="feature-title">GESTURE RAIL</h2>
+      <p class="feature-subtitle">Configurable multi-tap system: Like (tap), Save (double-tap), Boost (triple-tap), Creator Offer (hold). One button, four actions. No wallet debit on social gestures.</p>
+      <p class="feature-description">The right-side action rail uses 40px glass circles. Each button maps to a gesture engine: single tap toggles like; double-tap saves to Loop 2 vault; triple-tap fires boost; long-press opens creator tip/offer flow. The order is user-configurable via Controls. No wallet friction on basic social interactions — only Hold Love involves pending settlement.</p>
+      <div class="pros-section">
+        <div class="pros-label">Investor Pros</div>
+        <ul class="pros-list">
+          <li style="animation-delay:0.1s">Progressive depth — simple tap is free, economic gestures require intent</li>
+          <li style="animation-delay:0.2s">Familiar TikTok interaction model — zero learning curve</li>
+          <li style="animation-delay:0.3s">Configurable: users customize their rail per Controls</li>
+          <li style="animation-delay:0.4s">Boost creates demand-side vCoin spend — user-driven promotion</li>
+          <li style="animation-delay:0.5s">Hold Love opens direct creator economy — tips, offers, subscriptions</li>
+        </ul>
+      </div>
+    </div>
+    <div class="phone-column">
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="notch"></div>
+          <div class="media-bg"></div>
+          <div class="scrim-top"></div>
+          <div class="scrim-bottom"></div>
+          <div class="ph-timer"><div class="ph-timer-fill" style="width:45%"></div></div>
+          <div class="ph-reward"><span class="ph-reward-dot"></span> 50ic</div>
+          <div class="ph-out-profile">
+            <div class="ph-out-avatar">RA</div>
+            <div class="ph-out-text"><div class="ph-out-name">RAFAELO</div><div class="ph-out-loc">Cape Town</div></div>
+          </div>
+          <div class="ph-action-rail">
+            <div class="ph-rail-btn" style="transform:scale(1.12);border-color:rgba(255,100,100,0.5);box-shadow:0 0 12px rgba(255,100,100,0.2)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 15s-6-4.5-6-8.5a4 4 0 018 0 4 4 0 018 0c0 4-6 8.5-6 8.5z" stroke="rgba(255,120,120,1)" stroke-width="1.3" fill="rgba(255,80,80,0.6)"/></svg></div>
+            <div class="ph-rail-label" style="color:rgba(255,120,120,0.8)">love</div>
+            <div class="ph-rail-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h12v9H5L2 14V2z" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" fill="none"/></svg></div>
+            <div class="ph-rail-label">msg</div>
+            <div class="ph-rail-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="ph-rail-label">share</div>
+            <div class="ph-rail-btn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="3" r="1.2" fill="rgba(255,255,255,0.85)"/><circle cx="7" cy="7" r="1.2" fill="rgba(255,255,255,0.85)"/><circle cx="7" cy="11" r="1.2" fill="rgba(255,255,255,0.85)"/></svg></div>
+            <div class="ph-rail-label">ctrl</div>
+          </div>
+          <div class="highlight-ring" style="right:6px;bottom:182px;width:52px;height:52px"></div>
+          <nav class="ph-bottom-nav">
+            <div class="ph-nav-icon" style="opacity:1"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 8l7-5 7 5v9H3V8z" stroke="#555" stroke-width="1.3" fill="none"/></svg></div>
+            <div class="ph-nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C6 6 3 8 3 12a6 6 0 0012 0c0-4-3-6-6-10z" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+            <div class="ph-nav-icon ph-nav-create"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 5v12M5 11h12" stroke="#666" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <div class="ph-nav-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="2" stroke="#888" stroke-width="1.3" fill="none"/><path d="M2 9h16" stroke="#888" stroke-width="1.3"/></svg></div>
+            <div class="ph-nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="#888" stroke-width="1.2" fill="none"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+          </nav>
+          <div class="annotation show" style="right:62px;bottom:176px;flex-direction:row-reverse">
+            <div class="annotation-text">Tap: Like · Double: Save · Triple: Boost · Hold: Offer</div>
+            <div class="annotation-line"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="callout-right">
+      <div class="callout-item show">
+        <div class="ci-label">Tap — Like</div>
+        <div class="ci-text">Single tap toggles like. No wallet debit. Pure social signal.</div>
+      </div>
+      <div class="callout-item show" style="transition-delay:0.1s">
+        <div class="ci-label">Double — Save</div>
+        <div class="ci-text">Saves clip to Loop 2 personal vault. Retention without friction.</div>
+      </div>
+      <div class="callout-item show" style="transition-delay:0.2s">
+        <div class="ci-label">Triple — Boost</div>
+        <div class="ci-text">Amplifies reach using vCoins. User-initiated paid promotion.</div>
+      </div>
+      <div class="callout-item show" style="transition-delay:0.3s">
+        <div class="ci-label">Hold — Creator Offer</div>
+        <div class="ci-text">Long-press opens tip/offer flow. Direct creator-to-viewer economy.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 08: TIMER LINE — Session Progress -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="slide" data-slide="7" data-voice="The timer line is a 2-pixel progress bar across the top of the screen. On organic content it shows playback progress. On sponsored content it becomes the earn window — filling with green as verified seconds accumulate. Skipping pauses the timer. This tiny element is the user's only indicator of time passing and value accruing.">
+  <div class="slide-inner">
+    <div class="explain-left">
+      <div class="feature-rank">08 · Shell · Session Progress</div>
+      <h2 class="feature-title">TIMER LINE</h2>
+      <p class="feature-subtitle">2px full-width progress indicator — playback on organic, earn window on sponsored. The subtle signal that time is becoming value.</p>
+      <p class="feature-description">A minimalist 2-pixel line spans the top of the immersive shell. On organic content: playback progress. On sponsored: the earn window fills with green/mint as verified attention seconds accumulate. Skip or look away — the fill pauses. This is the lightest possible affordance to communicate "your time is being valued" without breaking immersion.</p>
+      <div class="pros-section">
+        <div class="pros-label">Investor Pros</div>
+        <ul class="pros-list">
+          <li style="animation-delay:0.1s">Minimal footprint — 2px, never disrupts content consumption</li>
+          <li style="animation-delay:0.2s">Dual-mode intelligence — organic vs. sponsored behavior</li>
+          <li style="animation-delay:0.3s">Instant user comprehension — familiar progress bar metaphor</li>
+          <li style="animation-delay:0.4s">Integrates with POP — pauses when attention score drops</li>
+          <li style="animation-delay:0.5s">Drives completion rates — visible progress motivates finishing</li>
+        </ul>
+      </div>
+    </div>
+    <div class="phone-column">
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="notch"></div>
+          <div class="media-bg"></div>
+          <div class="scrim-top"></div>
+          <div class="scrim-bottom"></div>
+          <div class="ph-timer" style="height:3px;box-shadow:0 0 8px rgba(74,222,128,0.2)"><div class="ph-timer-fill" style="width:62%;background:var(--mint);box-shadow:0 0 6px rgba(74,222,128,0.4)"></div></div>
+          <div class="highlight-ring" style="top:28px;left:50%;transform:translateX(-50%);width:280px;height:20px;border-radius:10px"></div>
+          <div class="ph-reward"><span class="ph-reward-dot"></span> 50ic</div>
+          <div class="ph-out-profile">
+            <div class="ph-out-avatar">RA</div>
+            <div class="ph-out-text"><div class="ph-out-name">RAFAELO</div><div class="ph-out-loc">Cape Town</div></div>
+          </div>
+          <div class="ph-action-rail" style="opacity:0.4">
+            <div class="ph-rail-btn"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 15s-6-4.5-6-8.5a4 4 0 018 0 4 4 0 018 0c0 4-6 8.5-6 8.5z" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" fill="none"/></svg></div>
+            <div class="ph-rail-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h12v9H5L2 14V2z" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" fill="none"/></svg></div>
+            <div class="ph-rail-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="ph-rail-btn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="3" r="1.2" fill="rgba(255,255,255,0.85)"/><circle cx="7" cy="7" r="1.2" fill="rgba(255,255,255,0.85)"/><circle cx="7" cy="11" r="1.2" fill="rgba(255,255,255,0.85)"/></svg></div>
+          </div>
+          <nav class="ph-bottom-nav">
+            <div class="ph-nav-icon" style="opacity:1"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 8l7-5 7 5v9H3V8z" stroke="#555" stroke-width="1.3" fill="none"/></svg></div>
+            <div class="ph-nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C6 6 3 8 3 12a6 6 0 0012 0c0-4-3-6-6-10z" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+            <div class="ph-nav-icon ph-nav-create"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 5v12M5 11h12" stroke="#666" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <div class="ph-nav-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="2" stroke="#888" stroke-width="1.3" fill="none"/><path d="M2 9h16" stroke="#888" stroke-width="1.3"/></svg></div>
+            <div class="ph-nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="#888" stroke-width="1.2" fill="none"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+          </nav>
+          <div class="annotation show" style="top:44px;left:50%;transform:translateX(-50%)">
+            <div class="annotation-text">Earn window filling — attention accumulating</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="callout-right">
+      <div class="callout-item show">
+        <div class="ci-label">Organic mode</div>
+        <div class="ci-text">White fill = playback progress. No economic signal. Pure content.</div>
+      </div>
+      <div class="callout-item show" style="transition-delay:0.15s">
+        <div class="ci-label">Sponsored mode</div>
+        <div class="ci-text">Green/mint fill = verified attention seconds. Pauses on look-away or skip.</div>
+      </div>
+      <div class="callout-item show" style="transition-delay:0.3s">
+        <div class="ci-label">POP integration</div>
+        <div class="ci-text">Timer fill rate synced to attention score — low attention = slower fill.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 09: LOOP 1 — Complete Spine -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="slide" data-slide="8" data-voice="Loop 1 is the MVP spine. Watch verified content. Prove presence through POP gates. Receive reward into wallet. Spend, convert, or withdraw. This is the complete economic cycle in four steps. Every other feature — feed, promo, gesture rail, wallet — serves this one loop. Watch. Verify. Reward. Wallet. The attention economy in one sentence.">
+  <div class="slide-inner">
+    <div class="explain-left">
+      <div class="feature-rank">09 · Capstone · MVP Flow</div>
+      <h2 class="feature-title">LOOP 1</h2>
+      <p class="feature-subtitle">Watch → Verify → Reward → Wallet. The complete economic cycle. Every feature serves this one loop. The attention economy in four steps.</p>
+      <p class="feature-description">Loop 1 is the foundational MVP cycle. User watches content (Feed), presence is verified (POP gates), reward is earned (REWARD pill), and value settles in the Wallet. From there: spend, convert, or withdraw. Every other feature — Promo, ELO, gesture rail, timer — accelerates or supports this spine. If Loop 1 works, the economy works.</p>
+      <div class="pros-section">
+        <div class="pros-label">Investor Pros</div>
+        <ul class="pros-list">
+          <li style="animation-delay:0.1s">Complete value cycle — not a promise, a working loop</li>
+          <li style="animation-delay:0.2s">Four steps from attention to money — minimal friction</li>
+          <li style="animation-delay:0.3s">Every feature maps to a loop step — clear product architecture</li>
+          <li style="animation-delay:0.4s">MVP-shippable — the loop works before platform scales</li>
+          <li style="animation-delay:0.5s">Expandable — Loops 2 and 3 add depth without breaking the spine</li>
+        </ul>
+      </div>
+    </div>
+    <div class="phone-column">
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="notch"></div>
+          <div class="media-bg" style="background:linear-gradient(165deg,#0a0d1a 0%,#1a1520 50%,#0d1a1a 100%)"></div>
+          <!-- Loop 1 overlay diagram -->
+          <div style="position:absolute;inset:0;z-index:15;display:flex;align-items:center;justify-content:center;background:rgba(7,7,9,0.75)">
+            <div style="text-align:center;padding:20px">
+              <div style="display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:14px">
+                <span style="font-size:10px;padding:6px 12px;border-radius:10px;background:rgba(74,222,128,0.1);border:0.5px solid rgba(74,222,128,0.3);color:var(--mint)">Watch</span>
+                <span style="font-size:9px;color:var(--text-muted-dark)">→</span>
+                <span style="font-size:10px;padding:6px 12px;border-radius:10px;background:rgba(245,158,11,0.1);border:0.5px solid rgba(245,158,11,0.3);color:var(--gold)">Verify</span>
+                <span style="font-size:9px;color:var(--text-muted-dark)">→</span>
+                <span style="font-size:10px;padding:6px 12px;border-radius:10px;background:rgba(74,222,128,0.15);border:0.5px solid rgba(74,222,128,0.4);color:var(--mint)">Reward</span>
+                <span style="font-size:9px;color:var(--text-muted-dark)">→</span>
+                <span style="font-size:10px;padding:6px 12px;border-radius:10px;background:rgba(55,138,221,0.1);border:0.5px solid rgba(55,138,221,0.3);color:rgba(55,138,221,0.9)">Wallet</span>
+              </div>
+              <div style="font-size:9px;color:var(--text-muted-dark);line-height:1.6;max-width:240px;margin:0 auto">
+                Verified attention becomes coins.<br>Coins become balance.<br>Balance becomes money.<br>
+                <span style="color:var(--text-primary);margin-top:6px;display:inline-block">The loop closes — on your terms.</span>
+              </div>
+            </div>
+          </div>
+          <nav class="ph-bottom-nav">
+            <div class="ph-nav-icon" style="opacity:1"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 8l7-5 7 5v9H3V8z" stroke="#555" stroke-width="1.3" fill="none"/></svg></div>
+            <div class="ph-nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C6 6 3 8 3 12a6 6 0 0012 0c0-4-3-6-6-10z" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+            <div class="ph-nav-icon ph-nav-create"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 5v12M5 11h12" stroke="#666" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <div class="ph-nav-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="2" stroke="#888" stroke-width="1.3" fill="none"/><path d="M2 9h16" stroke="#888" stroke-width="1.3"/></svg></div>
+            <div class="ph-nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="#888" stroke-width="1.2" fill="none"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+          </nav>
+        </div>
+      </div>
+    </div>
+    <div class="callout-right">
+      <div class="callout-item show">
+        <div class="ci-label">Step 1 · Watch</div>
+        <div class="ci-text">User consumes content in Feed — organic or sponsored. Timer starts.</div>
+      </div>
+      <div class="callout-item show" style="transition-delay:0.1s">
+        <div class="ci-label">Step 2 · Verify</div>
+        <div class="ci-text">POP gates confirm attention: device, dwell, gaze, completion, fraud.</div>
+      </div>
+      <div class="callout-item show" style="transition-delay:0.2s">
+        <div class="ci-label">Step 3 · Reward</div>
+        <div class="ci-text">Pill completes, server validates, coins credited to wallet.</div>
+      </div>
+      <div class="callout-item show" style="transition-delay:0.3s">
+        <div class="ci-label">Step 4 · Wallet</div>
+        <div class="ci-text">Spend, convert, withdraw, or tip. Value is now the user's.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 10: MESSAGE + SHARE — Communication -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="slide" data-slide="9" data-voice="Message and Share complete the social layer. Message opens a compose sheet with context chip — the user writes directly to the creator from within the content. Share provides destinations and attribution tracking — when attention spreads, the referrer earns. Communication becomes distribution. Distribution becomes revenue.">
+  <div class="slide-inner">
+    <div class="explain-left">
+      <div class="feature-rank">10 · Social · Communication</div>
+      <h2 class="feature-title">MESSAGE + SHARE</h2>
+      <p class="feature-subtitle">Direct creator communication and attribution-tracked distribution. When content spreads, the sharer earns. Social gestures that generate economic activity.</p>
+      <p class="feature-description">MESSAGE: tap opens compose sheet with context chip (which content, which creator). Threads are inbox-native. SHARE: destinations include in-app, external platforms, and copy-link. Every share carries attribution — if the recipient engages, the sharer earns a referral cut. Distribution is not free labor; it is rewarded work.</p>
+      <div class="pros-section">
+        <div class="pros-label">Investor Pros</div>
+        <ul class="pros-list">
+          <li style="animation-delay:0.1s">Direct creator relationships — not mediated by algorithm alone</li>
+          <li style="animation-delay:0.2s">Attribution tracking turns sharing into an earn path</li>
+          <li style="animation-delay:0.3s">Referral economics reward organic distribution</li>
+          <li style="animation-delay:0.4s">Context-aware messaging — always knows what content initiated the thread</li>
+          <li style="animation-delay:0.5s">Network effects: sharing grows the platform through economic incentive</li>
+        </ul>
+      </div>
+    </div>
+    <div class="phone-column">
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="notch"></div>
+          <div class="media-bg"></div>
+          <div class="scrim-top"></div>
+          <div class="scrim-bottom"></div>
+          <div class="ph-timer"><div class="ph-timer-fill" style="width:40%"></div></div>
+          <div class="ph-out-profile">
+            <div class="ph-out-avatar">RA</div>
+            <div class="ph-out-text"><div class="ph-out-name">RAFAELO</div><div class="ph-out-loc">Cape Town</div></div>
+          </div>
+          <div class="ph-action-rail">
+            <div class="ph-rail-btn"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 15s-6-4.5-6-8.5a4 4 0 018 0 4 4 0 018 0c0 4-6 8.5-6 8.5z" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" fill="none"/></svg></div>
+            <div class="ph-rail-btn" style="transform:scale(1.1);border-color:rgba(255,255,255,0.35);box-shadow:0 0 10px rgba(255,255,255,0.1)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h12v9H5L2 14V2z" stroke="rgba(255,255,255,1)" stroke-width="1.2" fill="none"/></svg></div>
+            <div class="ph-rail-label" style="color:rgba(255,255,255,0.8)">msg</div>
+            <div class="ph-rail-btn" style="transform:scale(1.1);border-color:rgba(255,255,255,0.35);box-shadow:0 0 10px rgba(255,255,255,0.1)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="rgba(255,255,255,1)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="ph-rail-label" style="color:rgba(255,255,255,0.8)">share</div>
+            <div class="ph-rail-btn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="3" r="1.2" fill="rgba(255,255,255,0.85)"/><circle cx="7" cy="7" r="1.2" fill="rgba(255,255,255,0.85)"/><circle cx="7" cy="11" r="1.2" fill="rgba(255,255,255,0.85)"/></svg></div>
+          </div>
+          <nav class="ph-bottom-nav">
+            <div class="ph-nav-icon" style="opacity:1"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 8l7-5 7 5v9H3V8z" stroke="#555" stroke-width="1.3" fill="none"/></svg></div>
+            <div class="ph-nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C6 6 3 8 3 12a6 6 0 0012 0c0-4-3-6-6-10z" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+            <div class="ph-nav-icon ph-nav-create"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 5v12M5 11h12" stroke="#666" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <div class="ph-nav-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="2" stroke="#888" stroke-width="1.3" fill="none"/><path d="M2 9h16" stroke="#888" stroke-width="1.3"/></svg></div>
+            <div class="ph-nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="#888" stroke-width="1.2" fill="none"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+          </nav>
+          <div class="annotation show" style="right:62px;bottom:140px;flex-direction:row-reverse">
+            <div class="annotation-text">Message: direct creator thread<br>Share: attributed distribution</div>
+            <div class="annotation-line"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="callout-right">
+      <div class="callout-item show">
+        <div class="ci-label">Message</div>
+        <div class="ci-text">Compose → context chip → inbox thread. Direct creator relationship layer.</div>
+      </div>
+      <div class="callout-item show" style="transition-delay:0.15s">
+        <div class="ci-label">Share</div>
+        <div class="ci-text">Destinations + attribution tracking. Referral earn path — attention as distribution.</div>
+      </div>
+      <div class="callout-item show" style="transition-delay:0.3s">
+        <div class="ci-label">Economic link</div>
+        <div class="ci-text">Every share carries a referral token. If the recipient engages, the sharer earns.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 11: OUT-PROFILE + CREATE — Creator Layer -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="slide" data-slide="10" data-voice="Out-Profile is the creator chip at bottom-left — who made this content. Tap routes to their profile or sponsored offer. Create is tab 3 — the studio entry. Produce proof-ready media and export into the feed supply loop. Together they complete the supply side: creators make content, users see who made it, and the economy flows both ways.">
+  <div class="slide-inner">
+    <div class="explain-left">
+      <div class="feature-rank">11 · Supply · Creator Layer</div>
+      <h2 class="feature-title">OUT-PROFILE + CREATE</h2>
+      <p class="feature-subtitle">Creator identity on content (OUT-PROFILE chip) and the studio entry point (Create tab). Supply-side infrastructure for the attention marketplace.</p>
+      <p class="feature-description">OUT-PROFILE (bottom-left): shows creator name, avatar, location on every piece of media. Tap routes to creator feed or sponsored offer. Distinct from ELO (companion) and IN-PROFILE (user settings). CREATE (Tab 3, center + button): studio entry for producing proof-ready media — multi-layer timeline, export directly into feed supply.</p>
+      <div class="pros-section">
+        <div class="pros-label">Investor Pros</div>
+        <ul class="pros-list">
+          <li style="animation-delay:0.1s">Creator attribution always visible — builds trust and recognizability</li>
+          <li style="animation-delay:0.2s">Studio-to-feed pipeline — frictionless content supply</li>
+          <li style="animation-delay:0.3s">60% revenue share makes creator economics best-in-class</li>
+          <li style="animation-delay:0.4s">Supply-side growth: creators attract their audiences to the platform</li>
+          <li style="animation-delay:0.5s">Proof-ready export ensures all content is POP-compatible from creation</li>
+        </ul>
+      </div>
+    </div>
+    <div class="phone-column">
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="notch"></div>
+          <div class="media-bg"></div>
+          <div class="scrim-top"></div>
+          <div class="scrim-bottom"></div>
+          <div class="ph-timer"><div class="ph-timer-fill" style="width:55%"></div></div>
+          <div class="ph-reward"><span class="ph-reward-dot"></span> 50ic</div>
+          <div class="ph-out-profile" style="padding:10px 14px 10px 10px;border-radius:18px;background:var(--glass);border:0.5px solid rgba(255,255,255,0.2);backdrop-filter:blur(10px);box-shadow:0 0 12px rgba(255,255,255,0.06)">
+            <div class="ph-out-avatar">RA</div>
+            <div class="ph-out-text"><div class="ph-out-name">RAFAELO</div><div class="ph-out-loc">Cape Town · Creator</div></div>
+          </div>
+          <div class="highlight-ring" style="bottom:70px;left:6px;width:140px;height:52px;border-radius:24px"></div>
+          <div class="ph-action-rail" style="opacity:0.4">
+            <div class="ph-rail-btn"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 15s-6-4.5-6-8.5a4 4 0 018 0 4 4 0 018 0c0 4-6 8.5-6 8.5z" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" fill="none"/></svg></div>
+            <div class="ph-rail-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h12v9H5L2 14V2z" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" fill="none"/></svg></div>
+            <div class="ph-rail-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="ph-rail-btn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="3" r="1.2" fill="rgba(255,255,255,0.85)"/><circle cx="7" cy="7" r="1.2" fill="rgba(255,255,255,0.85)"/><circle cx="7" cy="11" r="1.2" fill="rgba(255,255,255,0.85)"/></svg></div>
+          </div>
+          <nav class="ph-bottom-nav">
+            <div class="ph-nav-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 8l7-5 7 5v9H3V8z" stroke="#888" stroke-width="1.3" fill="none"/></svg></div>
+            <div class="ph-nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C6 6 3 8 3 12a6 6 0 0012 0c0-4-3-6-6-10z" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+            <div class="ph-nav-icon ph-nav-create" style="box-shadow:0 2px 12px rgba(0,0,0,0.2);border:1.5px solid #555"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 5v12M5 11h12" stroke="#333" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <div class="ph-nav-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="2" stroke="#888" stroke-width="1.3" fill="none"/><path d="M2 9h16" stroke="#888" stroke-width="1.3"/></svg></div>
+            <div class="ph-nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="#888" stroke-width="1.2" fill="none"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+          </nav>
+          <div class="annotation show" style="bottom:78px;left:155px">
+            <div class="annotation-line"></div>
+            <div class="annotation-text">Creator identity chip</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="callout-right">
+      <div class="callout-item show">
+        <div class="ci-label">Out-Profile</div>
+        <div class="ci-text">Creator on current media — tap routes to their profile or offer page.</div>
+      </div>
+      <div class="callout-item show" style="transition-delay:0.15s">
+        <div class="ci-label">Create (+)</div>
+        <div class="ci-text">Studio entry — produce media, apply effects, export into feed supply loop.</div>
+      </div>
+      <div class="callout-item show" style="transition-delay:0.3s">
+        <div class="ci-label">Revenue</div>
+        <div class="ci-text">Creators earn 60% of sponsored revenue. Best-in-class split.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 12: CONTROLS + PROFILE — Personalization -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="slide" data-slide="11" data-voice="Controls lets users customize their gesture rail — hold for one second to enter the gesture builder, rebind actions, persist locally. In-Profile is tab 5 — trust score, verification badges, settings. Together they represent user sovereignty: you configure your interface, you own your identity, and your trust tier unlocks the economy.">
+  <div class="slide-inner">
+    <div class="explain-left">
+      <div class="feature-rank">12 · Identity · Personalization</div>
+      <h2 class="feature-title">CONTROLS + PROFILE</h2>
+      <p class="feature-subtitle">User sovereignty over interface and identity. Configure your gesture rail, view your trust score, manage your verification level. The platform adapts to you.</p>
+      <p class="feature-description">CONTROLS (rail button): hold 1 second to open gesture builder. Rebind tap/double/triple/hold to any action. Persist locally — your interface, your rules. IN-PROFILE (Tab 5): trust score display, verification badges, KYC status, settings. Your trust tier directly affects conversion rates and settlement speed — genuine users are rewarded with better economics.</p>
+      <div class="pros-section">
+        <div class="pros-label">Investor Pros</div>
+        <ul class="pros-list">
+          <li style="animation-delay:0.1s">User-configured interface increases satisfaction and retention</li>
+          <li style="animation-delay:0.2s">Trust score gamification — users level up to unlock better rates</li>
+          <li style="animation-delay:0.3s">KYC gates protect the economy while progressive disclosure reduces friction</li>
+          <li style="animation-delay:0.4s">Personalization data stays local — privacy-first architecture</li>
+          <li style="animation-delay:0.5s">7 trust tiers create long-term engagement hooks</li>
+        </ul>
+      </div>
+    </div>
+    <div class="phone-column">
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="notch"></div>
+          <div class="media-bg" style="background:linear-gradient(180deg,#0d0d14 0%,#16161f 100%)"></div>
+          <!-- Profile view -->
+          <div style="position:absolute;top:36px;left:0;right:0;bottom:68px;z-index:10;padding:20px 16px;overflow:hidden">
+            <div style="display:flex;flex-direction:column;align-items:center;margin-top:12px;margin-bottom:18px">
+              <div style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,0.08);border:2px solid rgba(74,222,128,0.3);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--text-primary);margin-bottom:8px">U</div>
+              <div style="font-size:12px;color:var(--text-primary);font-weight:500">Your Profile</div>
+              <div style="font-size:9px;color:var(--text-muted-dark);margin-top:2px">Trust Tier 3 · Verified</div>
+            </div>
+            <div style="display:flex;gap:8px;margin-bottom:14px">
+              <div style="flex:1;padding:10px;border-radius:10px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.08);text-align:center">
+                <div style="font-family:var(--mono);font-size:14px;color:var(--mint)">78</div>
+                <div style="font-size:8px;color:var(--text-muted-dark);margin-top:2px">Trust Score</div>
+              </div>
+              <div style="flex:1;padding:10px;border-radius:10px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.08);text-align:center">
+                <div style="font-family:var(--mono);font-size:14px;color:var(--text-primary)">142</div>
+                <div style="font-size:8px;color:var(--text-muted-dark);margin-top:2px">Sessions</div>
+              </div>
+              <div style="flex:1;padding:10px;border-radius:10px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.08);text-align:center">
+                <div style="font-family:var(--mono);font-size:14px;color:var(--gold)">12d</div>
+                <div style="font-size:8px;color:var(--text-muted-dark);margin-top:2px">Streak</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="padding:10px 12px;border-radius:8px;background:rgba(255,255,255,0.03);border:0.5px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:var(--text-primary)">Gesture Controls</span>
+                <span style="font-size:8px;color:var(--text-muted-dark)">Customized →</span>
+              </div>
+              <div style="padding:10px 12px;border-radius:8px;background:rgba(255,255,255,0.03);border:0.5px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:var(--text-primary)">Verification</span>
+                <span style="font-size:8px;color:var(--mint)">Complete ✓</span>
+              </div>
+              <div style="padding:10px 12px;border-radius:8px;background:rgba(255,255,255,0.03);border:0.5px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:var(--text-primary)">Connected Platforms</span>
+                <span style="font-size:8px;color:var(--text-muted-dark)">3 active</span>
+              </div>
+            </div>
+          </div>
+          <nav class="ph-bottom-nav">
+            <div class="ph-nav-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 8l7-5 7 5v9H3V8z" stroke="#888" stroke-width="1.3" fill="none"/></svg></div>
+            <div class="ph-nav-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C6 6 3 8 3 12a6 6 0 0012 0c0-4-3-6-6-10z" stroke="#888" stroke-width="1.2" fill="none"/></svg></div>
+            <div class="ph-nav-icon ph-nav-create"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 5v12M5 11h12" stroke="#666" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <div class="ph-nav-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="2" stroke="#888" stroke-width="1.3" fill="none"/><path d="M2 9h16" stroke="#888" stroke-width="1.3"/></svg></div>
+            <div class="ph-nav-icon" style="opacity:1"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="#555" stroke-width="1.2" fill="none"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#555" stroke-width="1.2" fill="none"/></svg></div>
+          </nav>
+        </div>
+      </div>
+    </div>
+    <div class="callout-right">
+      <div class="callout-item show">
+        <div class="ci-label">Controls</div>
+        <div class="ci-text">Hold 1s → gesture builder. Rebind tap/double/triple/hold. Persists locally.</div>
+      </div>
+      <div class="callout-item show" style="transition-delay:0.15s">
+        <div class="ci-label">Trust Score</div>
+        <div class="ci-text">0–100 composite. Higher tiers unlock better conversion rates + faster settlement.</div>
+      </div>
+      <div class="callout-item show" style="transition-delay:0.3s">
+        <div class="ci-label">Sovereignty</div>
+        <div class="ci-text">Your interface. Your identity. Your economic tier. The platform adapts to you.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end slides-viewport -->
+
+<script>
+(function() {
+  'use strict';
+
+  const slides = document.querySelectorAll('.slide');
+  const counter = document.getElementById('slideCounter');
+  const progressBar = document.getElementById('progressBar');
+  const btnPrev = document.getElementById('btnPrev');
+  const btnNext = document.getElementById('btnNext');
+  const btnVoice = document.getElementById('btnVoice');
+  const btnAuto = document.getElementById('btnAuto');
+  const voiceIndicator = document.getElementById('voiceIndicator');
+
+  let currentSlide = 0;
+  let voiceEnabled = false;
+  let autoPlay = false;
+  let autoTimer = null;
+  let speaking = false;
+
+  function updateUI() {
+    slides.forEach((s, i) => {
+      s.classList.remove('visible', 'entering');
+      if (i === currentSlide) {
+        s.classList.add('visible', 'entering');
+      }
+    });
+    counter.textContent = (currentSlide + 1) + ' / ' + slides.length;
+    progressBar.style.width = ((currentSlide + 1) / slides.length * 100) + '%';
+
+    // Animate pros list items
+    const currentProsList = slides[currentSlide].querySelectorAll('.pros-list li');
+    currentProsList.forEach((li, i) => {
+      li.style.animationDelay = (0.1 + i * 0.1) + 's';
+      li.style.animation = 'none';
+      li.offsetHeight; // reflow
+      li.style.animation = '';
+    });
+
+    // Animate callout items
+    const callouts = slides[currentSlide].querySelectorAll('.callout-item');
+    callouts.forEach((c, i) => {
+      c.classList.remove('show');
+      setTimeout(() => c.classList.add('show'), 100 + i * 150);
+    });
+
+    if (voiceEnabled) speakSlide();
+  }
+
+  function goTo(index) {
+    if (index < 0) index = slides.length - 1;
+    if (index >= slides.length) index = 0;
+    currentSlide = index;
+    updateUI();
+  }
+
+  function next() { goTo(currentSlide + 1); }
+  function prev() { goTo(currentSlide - 1); }
+
+  // Voice narration using Web Speech API
+  function speakSlide() {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+
+    const text = slides[currentSlide].getAttribute('data-voice');
+    if (!text) return;
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.88;
+    utterance.pitch = 0.7;
+    utterance.volume = 1;
+
+    // Prefer a low male voice
+    const voices = window.speechSynthesis.getVoices();
+    const preferred = voices.find(v => v.name.includes('Daniel') || v.name.includes('Alex') || v.name.includes('Male'));
+    if (preferred) utterance.voice = preferred;
+
+    utterance.onstart = () => {
+      speaking = true;
+      voiceIndicator.classList.add('speaking');
+    };
+    utterance.onend = () => {
+      speaking = false;
+      voiceIndicator.classList.remove('speaking');
+      if (autoPlay) {
+        autoTimer = setTimeout(next, 1200);
+      }
+    };
+    utterance.onerror = () => {
+      speaking = false;
+      voiceIndicator.classList.remove('speaking');
+    };
+
+    window.speechSynthesis.speak(utterance);
+  }
+
+  function toggleVoice() {
+    voiceEnabled = !voiceEnabled;
+    btnVoice.classList.toggle('active', voiceEnabled);
+    if (voiceEnabled) {
+      // Load voices
+      if (window.speechSynthesis.getVoices().length === 0) {
+        window.speechSynthesis.onvoiceschanged = () => speakSlide();
+      }
+      speakSlide();
+    } else {
+      window.speechSynthesis.cancel();
+      voiceIndicator.classList.remove('speaking');
+    }
+  }
+
+  function toggleAuto() {
+    autoPlay = !autoPlay;
+    btnAuto.classList.toggle('active', autoPlay);
+    if (autoPlay) {
+      if (!voiceEnabled) {
+        autoTimer = setTimeout(next, 8000);
+      } else if (!speaking) {
+        autoTimer = setTimeout(next, 1200);
+      }
+    } else {
+      clearTimeout(autoTimer);
+    }
+  }
+
+  // Event listeners
+  btnNext.addEventListener('click', () => { clearTimeout(autoTimer); next(); });
+  btnPrev.addEventListener('click', () => { clearTimeout(autoTimer); prev(); });
+  btnVoice.addEventListener('click', toggleVoice);
+  btnAuto.addEventListener('click', toggleAuto);
+
+  // Keyboard
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { clearTimeout(autoTimer); next(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { clearTimeout(autoTimer); prev(); }
+    else if (e.key === ' ') { e.preventDefault(); toggleVoice(); }
+    else if (e.key === 'a' || e.key === 'A') { toggleAuto(); }
+  });
+
+  // Touch swipe
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
+  document.addEventListener('touchend', (e) => {
+    const diff = e.changedTouches[0].screenX - touchStartX;
+    if (Math.abs(diff) > 60) {
+      clearTimeout(autoTimer);
+      diff < 0 ? next() : prev();
+    }
+  });
+
+  // Auto-advance without voice
+  setInterval(() => {
+    if (autoPlay && !voiceEnabled && !speaking) {
+      // Already handled by timeout
+    }
+  }, 1000);
+
+  // Initialize
+  updateUI();
+})();
+</script>
+</body>
+</html>
