@@ -5,6 +5,40 @@ Chronological record of archaeology, promotion, and implementation work.
 
 ---
 
+## 2026-06-13 — GO ultra session 1 (13/80 nodes)
+
+### Delivered
+- **Wave 0 U1–U6** — Gap scan doc, migration/`_shared` parity smokes
+- **U7** — `ImmersivePromoReviewSheet` depth + `demoPromoReviews.ts`
+- **U8** — `CheckInStreak`, `ImmersivePromoCheckInFlow`, promo screen wiring
+- **U10** — Achievement summary + segmented daily spin wheel
+- **U21–U24** — Five missing edges copied from archive (tasks, subscription, gift, interaction-health)
+
+### Verification
+`npm run typecheck` PASS · `smoke_ultra_migrations.sh` PASS · `smoke_ultra_shared.sh` PASS · `smoke_promo_checkin.sh` PASS
+
+### Resume
+**Next:** `GO ultra resume` → **U9** DiscoveryMap Mapbox port
+
+---
+
+## 2026-06-11 — GO ultra mega-tree created (80 nodes, ~334h)
+
+### Artifacts
+- **`MASTER_BRAIN/ultra_queue.json`** — U1–U80 serial lane, 11 waves, 6 parallel CSS lanes
+- **`ULTRA_AGENT_PROMPT.md`** · **`ULTRA_CLOUD_PROMPTS.md`**
+- **`scripts/ultra_shift.sh`** · **`smoke_ultra_{feed,studio,chat}.sh`**
+- **`.ultra-shift/MORNING_BRIEF.md`** — scale summary
+- **`COMPOSER_GO_MENU.md`** — `GO ultra` / `GO ultra resume` rows
+
+### Scope
+Full `eye-earn-sparkle-archive` parity beyond marathon MVP: 19 missing edges, 4 migration batches, depth revival for M1–M8/M11–M17, studio/chat/map/wallet depth, investor HTML wiring.
+
+### Arm
+`./scripts/ultra_shift.sh` → Agent chat: **`GO ultra`**
+
+---
+
 ## 2026-06-13 — GO marathon depth M9 + M10 (merchant pay full harvest)
 
 ### Delivered
@@ -83,6 +117,18 @@ cd app && npm run typecheck
 
 ### Not touched (per GO scope)
 - `demoContext.tsx`, `issue-reward`, `validate-attention`, ledger migrations
+
+---
+
+## 2026-06-13 — GO ultra U31 send-notification-email
+
+### Delivered
+- **`send-notification-email`** edge fn — inserts `notifications` row, respects `notification_preferences`, Resend email when `RESEND_API_KEY` set (stub tier when absent)
+
+### Verification
+```bash
+cd app && npm run typecheck
+```
 
 ---
 

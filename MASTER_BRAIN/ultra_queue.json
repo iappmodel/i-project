@@ -1,0 +1,1467 @@
+{
+  "version": 1,
+  "created": "2026-06-11",
+  "command": "GO ultra",
+  "description": "GO ultra \u2014 largest single-command harvest tree (80 serial nodes, full Lovable archive parity)",
+  "supersedes": "GO marathon (M1\u2013M17 MVP slice); includes all marathon depth passes + remaining 19 edges + studio/chat/map depth",
+  "depth_policy": {
+    "mvp_slice": {
+      "label": "GO marathon (prior)",
+      "hours_estimate": "1-3 agent sessions",
+      "status": "shipped"
+    },
+    "marathon_depth": {
+      "label": "GO marathon depth M9+M10",
+      "status": "shipped"
+    },
+    "ultra_harvest": {
+      "label": "GO ultra",
+      "hours_estimate": "334-374 agent-hours",
+      "node_count": 80,
+      "definition": "Full eye-earn-sparkle-archive parity: 19 missing edges, 4 migration waves, marathon depth revival U7\u2013U20, studio 21 components, DiscoveryMap, ChatScreen, wallet depth, smokes. Demo/localStorage fallback on every live path.",
+      "status": "in_progress"
+    }
+  },
+  "branch": "feature/lovable-harvest",
+  "max_hours": 320,
+  "hours_estimate_total": 334,
+  "commit_when_done": false,
+  "law": [
+    "MASTER_BRAIN/CANONICAL/IMMERSIVE_UI_DESIGN_LAW.md",
+    "MASTER_BRAIN/CANONICAL/i_SOURCE_OF_TRUTH.md",
+    "MASTER_BRAIN/ECONOMY/i-app-economy-rules.md"
+  ],
+  "hard_stops": [
+    "demoContext.tsx reward paths (unless node explicitly says)",
+    "issue-reward / validate-attention / ledger migrations (U36 = diff only, no schema break)",
+    "Stripe live / .env.production.owner / production cutover",
+    "H6.3 / U28\u2013U30 / U61\u2013U62 live OpenAI without owner keys",
+    "H7.3 / U69 live OAuth token exchange",
+    "H4.3 / U23 / U54 live send-coin-gift charges",
+    "admin-users / wallet-reconciliation on consumer routes",
+    "PageLayoutEditor / UICustomizationContext (breaks immersive zones)",
+    "Force push / hard reset / skip hooks",
+    "Do not edit .cursor/plans/*.plan.md"
+  ],
+  "waves": [
+    {
+      "wave": 0,
+      "name": "Foundation",
+      "nodes": "U1\u2013U6",
+      "theme": "Migrations + _shared merge"
+    },
+    {
+      "wave": 1,
+      "name": "Marathon depth revival",
+      "nodes": "U7\u2013U20",
+      "theme": "Full LOC for M1\u2013M8, M11\u2013M17 stubs"
+    },
+    {
+      "wave": 2,
+      "name": "Edges batch 1",
+      "nodes": "U21\u2013U30",
+      "theme": "Tasks, AI studio edges (stub)"
+    },
+    {
+      "wave": 3,
+      "name": "Edges batch 2 + spine",
+      "nodes": "U31\u2013U36",
+      "theme": "Compliance, admin defer, reward parity"
+    },
+    {
+      "wave": 4,
+      "name": "Feed & social",
+      "nodes": "U37\u2013U44",
+      "theme": "Friends, share, saved, profile"
+    },
+    {
+      "wave": 5,
+      "name": "Promo & map",
+      "nodes": "U45\u2013U50",
+      "theme": "DiscoveryMap, categories, Mapbox GL"
+    },
+    {
+      "wave": 6,
+      "name": "Wallet & money",
+      "nodes": "U51\u2013U57",
+      "theme": "Payout history, gifts, subscription"
+    },
+    {
+      "wave": 7,
+      "name": "Studio depth",
+      "nodes": "U58\u2013U65",
+      "theme": "21 studio components"
+    },
+    {
+      "wave": 8,
+      "name": "Chat & connect",
+      "nodes": "U66\u2013U71",
+      "theme": "DM threads, voice, notifications"
+    },
+    {
+      "wave": 9,
+      "name": "Vision & profile",
+      "nodes": "U72\u2013U76",
+      "theme": "Calibration, i18n, KYC stub"
+    },
+    {
+      "wave": 10,
+      "name": "Closeout",
+      "nodes": "U77\u2013U80",
+      "theme": "Smokes, investor HTML, docs"
+    }
+  ],
+  "serial_lane": [
+    {
+      "id": "U1",
+      "command": "GO ultra U1",
+      "title": "Ultra queue bootstrap + harvest gap scan",
+      "wave": 0,
+      "hours_estimate": 1,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "test -f MASTER_BRAIN/ultra_queue.json"
+      ],
+      "harvest": [
+        "LOVABLE_HARVEST_AUDIT",
+        "WIRING_STATUS"
+      ],
+      "status": "done",
+      "completed_at": "2026-06-13T07:59:02.255629+00:00",
+      "ultra_notes": "ULTRA_HARVEST_GAP_SCAN.md"
+    },
+    {
+      "id": "U2",
+      "command": "GO ultra U2",
+      "title": "Migration batch P0 \u2014 wallet/social spine tables",
+      "wave": 0,
+      "hours_estimate": 4,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "wallet_ledger",
+        "transactions",
+        "user_follows",
+        "saved_content"
+      ],
+      "status": "done",
+      "completed_at": "2026-06-13T07:59:02.255768+00:00",
+      "ultra_notes": "P0 tables verified + smoke_ultra_migrations.sh"
+    },
+    {
+      "id": "U3",
+      "command": "GO ultra U3",
+      "title": "Migration batch P1 \u2014 promo + gamification tables",
+      "wave": 0,
+      "hours_estimate": 4,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "promotion_checkins",
+        "user_tasks",
+        "achievements",
+        "referrals"
+      ],
+      "status": "done",
+      "completed_at": "2026-06-13T07:59:02.255770+00:00",
+      "ultra_notes": "P1 tables verified"
+    },
+    {
+      "id": "U4",
+      "command": "GO ultra U4",
+      "title": "Migration batch P2 \u2014 merchant checkout tables",
+      "wave": 0,
+      "hours_estimate": 3,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_merchant_pay.sh"
+      ],
+      "harvest": [
+        "merchant_checkout_sessions",
+        "merchant_checkout_events"
+      ],
+      "status": "done",
+      "completed_at": "2026-06-13T07:59:02.255771+00:00",
+      "ultra_notes": "P2 tables verified"
+    },
+    {
+      "id": "U5",
+      "command": "GO ultra U5",
+      "title": "Migration batch P3 \u2014 chat + notifications tables",
+      "wave": 0,
+      "hours_estimate": 4,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "conversations",
+        "messages",
+        "notifications"
+      ],
+      "status": "done",
+      "completed_at": "2026-06-13T07:59:02.255772+00:00",
+      "ultra_notes": "P3 tables verified"
+    },
+    {
+      "id": "U6",
+      "command": "GO ultra U6",
+      "title": "_shared archive helpers merge (idempotency + rate limits)",
+      "wave": 0,
+      "hours_estimate": 3,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_organism_spine.sh"
+      ],
+      "harvest": [
+        "eye-earn-sparkle-archive/supabase/functions/_shared"
+      ],
+      "status": "done",
+      "completed_at": "2026-06-13T07:59:02.255773+00:00",
+      "ultra_notes": "_shared parity smoke"
+    },
+    {
+      "id": "U7",
+      "command": "GO ultra U7",
+      "title": "Depth M1 \u2014 ImmersivePromoReviewSheet archive parity",
+      "wave": 1,
+      "hours_estimate": 3,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_promo.sh"
+      ],
+      "harvest": [
+        "PromotionDetails review UX"
+      ],
+      "status": "done",
+      "completed_at": "2026-06-13T07:59:02.255774+00:00",
+      "ultra_notes": "ImmersivePromoReviewSheet depth + demo reviews"
+    },
+    {
+      "id": "U8",
+      "command": "GO ultra U8",
+      "title": "Depth M2 \u2014 CheckInStreak + PromoCheckInFlow UI",
+      "wave": 1,
+      "hours_estimate": 4,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_promo_checkin.sh"
+      ],
+      "harvest": [
+        "CheckInStreak",
+        "PromoCheckInFlow"
+      ],
+      "status": "done",
+      "completed_at": "2026-06-13T07:59:02.255775+00:00",
+      "ultra_notes": "CheckInStreak + ImmersivePromoCheckInFlow"
+    },
+    {
+      "id": "U9",
+      "command": "GO ultra U9",
+      "title": "Depth M3 \u2014 DiscoveryMap Mapbox (~1.4k LOC)",
+      "wave": 1,
+      "hours_estimate": 8,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_promo.sh"
+      ],
+      "harvest": [
+        "DiscoveryMap.tsx",
+        "get-mapbox-token"
+      ],
+      "status": "pending",
+      "owner_gate": "Mapbox token"
+    },
+    {
+      "id": "U10",
+      "command": "GO ultra U10",
+      "title": "Depth M4 \u2014 AchievementCenter + DailySpinWheel full",
+      "wave": 1,
+      "hours_estimate": 5,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_shell.sh"
+      ],
+      "harvest": [
+        "AchievementCenter",
+        "DailySpinWheel"
+      ],
+      "status": "done",
+      "completed_at": "2026-06-13T07:59:02.255777+00:00",
+      "ultra_notes": "Achievement + spin wheel depth"
+    },
+    {
+      "id": "U11",
+      "command": "GO ultra U11",
+      "title": "Depth M5 \u2014 ReferralPanel QR glass full",
+      "wave": 1,
+      "hours_estimate": 3,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "ReferralPanel",
+        "manage-referral"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U12",
+      "command": "GO ultra U12",
+      "title": "Depth M6 \u2014 Leaderboard full port",
+      "wave": 1,
+      "hours_estimate": 3,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "Leaderboard"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U13",
+      "command": "GO ultra U13",
+      "title": "Depth M7 \u2014 Stories viewer + stories.service depth",
+      "wave": 1,
+      "hours_estimate": 6,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_shell.sh"
+      ],
+      "harvest": [
+        "stories/*",
+        "useStories"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U14",
+      "command": "GO ultra U14",
+      "title": "Depth M8 \u2014 ChatScreen + conversation.service full",
+      "wave": 1,
+      "hours_estimate": 8,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_shell.sh"
+      ],
+      "harvest": [
+        "MessagesScreen",
+        "ChatScreen",
+        "conversation.service"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U15",
+      "command": "GO ultra U15",
+      "title": "Depth M11 \u2014 Create.tsx + mediaUpload.service full",
+      "wave": 1,
+      "hours_estimate": 6,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_shell.sh"
+      ],
+      "harvest": [
+        "pages/Create.tsx",
+        "mediaUpload.service"
+      ],
+      "status": "pending",
+      "owner_gate": "Storage bucket"
+    },
+    {
+      "id": "U16",
+      "command": "GO ultra U16",
+      "title": "Depth M12 \u2014 Studio wave 1 (timeline, strip, upload)",
+      "wave": 1,
+      "hours_estimate": 8,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "VideoTimeline",
+        "StudioMediaStrip",
+        "StudioUploadZone"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U17",
+      "command": "GO ultra U17",
+      "title": "Depth M12 \u2014 Studio wave 2 (preview, text, blur)",
+      "wave": 1,
+      "hours_estimate": 8,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "VideoPreviewFilters",
+        "TextOverlayEditor",
+        "MediaBlurEditor"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U18",
+      "command": "GO ultra U18",
+      "title": "Depth M16 \u2014 RouteBuilder + usePromoRoute full",
+      "wave": 1,
+      "hours_estimate": 5,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_promo.sh"
+      ],
+      "harvest": [
+        "RouteBuilder",
+        "route.service"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U19",
+      "command": "GO ultra U19",
+      "title": "Depth M17 \u2014 Topic filter + friends lane stub",
+      "wave": 1,
+      "hours_estimate": 4,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_shell.sh"
+      ],
+      "harvest": [
+        "TopicFilterBar",
+        "useFriendsFeed"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U20",
+      "command": "GO ultra U20",
+      "title": "Depth M13\u2013M14 \u2014 video layer + blink remote polish",
+      "wave": 1,
+      "hours_estimate": 3,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_blink_remote_lite.sh"
+      ],
+      "harvest": [
+        "BlinkRemoteControl",
+        "IMMERSIVE_UI_DESIGN_LAW video"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U21",
+      "command": "GO ultra U21",
+      "title": "Edge \u2014 sync-user-tasks + update-task-progress",
+      "wave": 2,
+      "hours_estimate": 4,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_organism_spine.sh"
+      ],
+      "harvest": [
+        "sync-user-tasks",
+        "update-task-progress"
+      ],
+      "status": "done",
+      "completed_at": "2026-06-13T07:59:02.255779+00:00",
+      "ultra_notes": "sync-user-tasks + update-task-progress edges"
+    },
+    {
+      "id": "U22",
+      "command": "GO ultra U22",
+      "title": "Edge \u2014 check-subscription + stripe parity diff",
+      "wave": 2,
+      "hours_estimate": 3,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "check-subscription",
+        "stripe-webhook diff"
+      ],
+      "status": "done",
+      "owner_gate": "Stripe keys",
+      "completed_at": "2026-06-13T07:59:02.255780+00:00",
+      "ultra_notes": "check-subscription edge"
+    },
+    {
+      "id": "U23",
+      "command": "GO ultra U23",
+      "title": "Edge \u2014 send-coin-gift (demo tier)",
+      "wave": 2,
+      "hours_estimate": 4,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "send-coin-gift"
+      ],
+      "status": "done",
+      "hard_stop_note": "No live Stripe charge",
+      "completed_at": "2026-06-13T07:59:02.255781+00:00",
+      "ultra_notes": "send-coin-gift edge (demo)"
+    },
+    {
+      "id": "U24",
+      "command": "GO ultra U24",
+      "title": "Edge \u2014 track-interaction-health",
+      "wave": 2,
+      "hours_estimate": 2,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "track-interaction-health"
+      ],
+      "status": "done",
+      "completed_at": "2026-06-13T07:59:02.255783+00:00",
+      "ultra_notes": "track-interaction-health edge"
+    },
+    {
+      "id": "U25",
+      "command": "GO ultra U25",
+      "title": "Edge \u2014 analyze-video stub",
+      "wave": 2,
+      "hours_estimate": 3,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "analyze-video"
+      ],
+      "status": "pending",
+      "owner_gate": "OpenAI keys",
+      "hard_stop_note": "Stub only without keys"
+    },
+    {
+      "id": "U26",
+      "command": "GO ultra U26",
+      "title": "Edge \u2014 extract-media-metadata",
+      "wave": 2,
+      "hours_estimate": 3,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "extract-media-metadata"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U27",
+      "command": "GO ultra U27",
+      "title": "Edge \u2014 ai-content-analyzer stub",
+      "wave": 2,
+      "hours_estimate": 3,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "ai-content-analyzer"
+      ],
+      "status": "pending",
+      "owner_gate": "OpenAI keys",
+      "hard_stop_note": "Stub only"
+    },
+    {
+      "id": "U28",
+      "command": "GO ultra U28",
+      "title": "Edge \u2014 generate-music + generate-sfx stubs",
+      "wave": 2,
+      "hours_estimate": 4,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "generate-music",
+        "generate-sfx"
+      ],
+      "status": "pending",
+      "owner_gate": "OpenAI keys",
+      "hard_stop_note": "Stub only"
+    },
+    {
+      "id": "U29",
+      "command": "GO ultra U29",
+      "title": "Edge \u2014 generate-voiceover + generate-subtitles stubs",
+      "wave": 2,
+      "hours_estimate": 4,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "generate-voiceover",
+        "generate-subtitles"
+      ],
+      "status": "pending",
+      "owner_gate": "OpenAI keys",
+      "hard_stop_note": "Stub only"
+    },
+    {
+      "id": "U30",
+      "command": "GO ultra U30",
+      "title": "Edge \u2014 generate-text-style + generate-imoji stubs",
+      "wave": 2,
+      "hours_estimate": 4,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "generate-text-style",
+        "generate-imoji"
+      ],
+      "status": "pending",
+      "owner_gate": "OpenAI keys",
+      "hard_stop_note": "Defer heavy AI cost"
+    },
+    {
+      "id": "U31",
+      "command": "GO ultra U31",
+      "title": "Edge \u2014 send-notification-email stub",
+      "wave": 3,
+      "hours_estimate": 2,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "send-notification-email"
+      ],
+      "status": "done",
+      "completed": "2026-06-13"
+    },
+    {
+      "id": "U32",
+      "command": "GO ultra U32",
+      "title": "Edge \u2014 export-user-data compliance stub",
+      "wave": 3,
+      "hours_estimate": 3,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "export-user-data"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U33",
+      "command": "GO ultra U33",
+      "title": "Edge \u2014 kyc-review stub",
+      "wave": 3,
+      "hours_estimate": 3,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "kyc-review"
+      ],
+      "status": "pending",
+      "hard_stop_note": "Admin/KYC UI defer"
+    },
+    {
+      "id": "U34",
+      "command": "GO ultra U34",
+      "title": "Edge \u2014 admin-users (presenter guard only)",
+      "wave": 3,
+      "hours_estimate": 3,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "admin-users"
+      ],
+      "status": "pending",
+      "hard_stop_note": "Never consumer shell"
+    },
+    {
+      "id": "U35",
+      "command": "GO ultra U35",
+      "title": "Edge \u2014 wallet-reconciliation (admin defer)",
+      "wave": 3,
+      "hours_estimate": 2,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "wallet-reconciliation"
+      ],
+      "status": "pending",
+      "hard_stop_note": "Admin route only"
+    },
+    {
+      "id": "U36",
+      "command": "GO ultra U36",
+      "title": "Spine \u2014 issue-reward + validate-attention archive parity",
+      "wave": 3,
+      "hours_estimate": 6,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_organism_spine.sh"
+      ],
+      "harvest": [
+        "issue-reward diff",
+        "validate-attention diff"
+      ],
+      "status": "pending",
+      "hard_stop_note": "No ledger migration without owner"
+    },
+    {
+      "id": "U37",
+      "command": "GO ultra U37",
+      "title": "FriendsPostsFeed + friendsFeed.service",
+      "wave": 4,
+      "hours_estimate": 5,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_shell.sh"
+      ],
+      "harvest": [
+        "FriendsPostsFeed",
+        "friendsFeed.service"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U38",
+      "command": "GO ultra U38",
+      "title": "ShareSheet glass + content deep links",
+      "wave": 4,
+      "hours_estimate": 4,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_shell.sh"
+      ],
+      "harvest": [
+        "ShareSheet",
+        "/content/:id"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U39",
+      "command": "GO ultra U39",
+      "title": "CoinFlyAnimation + CoinSlideAnimation overlays",
+      "wave": 4,
+      "hours_estimate": 3,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_gesture_buttons.sh"
+      ],
+      "harvest": [
+        "CoinFlyAnimation",
+        "CoinSlideAnimation"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U40",
+      "command": "GO ultra U40",
+      "title": "SavedVideosGallery Supabase sync depth",
+      "wave": 4,
+      "hours_estimate": 4,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_shell.sh"
+      ],
+      "harvest": [
+        "SavedVideosGallery",
+        "saved_content"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U41",
+      "command": "GO ultra U41",
+      "title": "PublicProfile + ProfileByUsername glass",
+      "wave": 4,
+      "hours_estimate": 5,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_shell.sh"
+      ],
+      "harvest": [
+        "PublicProfile",
+        "ProfileByUsername"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U42",
+      "command": "GO ultra U42",
+      "title": "Favorites lane + swipe navigation grid",
+      "wave": 4,
+      "hours_estimate": 6,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_shell.sh"
+      ],
+      "harvest": [
+        "FavoritesVideosFeed",
+        "useSwipeNavigation"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U43",
+      "command": "GO ultra U43",
+      "title": "ContentReportFlow minimal (share long-press)",
+      "wave": 4,
+      "hours_estimate": 3,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "ContentReportFlow"
+      ],
+      "status": "pending",
+      "hard_stop_note": "Moderation admin defer"
+    },
+    {
+      "id": "U44",
+      "command": "GO ultra U44",
+      "title": "Personalized feed scoring UI + feed.service depth",
+      "wave": 4,
+      "hours_estimate": 4,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_shell.sh"
+      ],
+      "harvest": [
+        "usePersonalizedFeed",
+        "get-personalized-feed"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U45",
+      "command": "GO ultra U45",
+      "title": "DiscoveryMap full glass overlay port",
+      "wave": 5,
+      "hours_estimate": 8,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_promo.sh"
+      ],
+      "harvest": [
+        "DiscoveryMap.tsx"
+      ],
+      "status": "pending",
+      "owner_gate": "Mapbox token"
+    },
+    {
+      "id": "U46",
+      "command": "GO ultra U46",
+      "title": "FavoriteLocations + PromotionCategories chips",
+      "wave": 5,
+      "hours_estimate": 4,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_promo.sh"
+      ],
+      "harvest": [
+        "PromotionCategories",
+        "FavoriteLocations"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U47",
+      "command": "GO ultra U47",
+      "title": "PromoCheckInFlow + geo gate UX",
+      "wave": 5,
+      "hours_estimate": 4,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_promo_checkin.sh"
+      ],
+      "harvest": [
+        "PromoCheckInFlow"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U48",
+      "command": "GO ultra U48",
+      "title": "Promo earnings analytics sheet",
+      "wave": 5,
+      "hours_estimate": 4,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_promo.sh"
+      ],
+      "harvest": [
+        "usePromoEarningsAnalytics"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U49",
+      "command": "GO ultra U49",
+      "title": "ChallengesFeed + StreakBonuses stub",
+      "wave": 5,
+      "hours_estimate": 3,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_promo.sh"
+      ],
+      "harvest": [
+        "ChallengesFeed",
+        "StreakBonuses"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U50",
+      "command": "GO ultra U50",
+      "title": "Mapbox GL ImmersivePromoMapSheet live tier",
+      "wave": 5,
+      "hours_estimate": 6,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_promo.sh"
+      ],
+      "harvest": [
+        "ImmersivePromoMapSheet",
+        "mapbox-gl"
+      ],
+      "status": "pending",
+      "owner_gate": "Mapbox token"
+    },
+    {
+      "id": "U51",
+      "command": "GO ultra U51",
+      "title": "PayoutHistory glass wallet tab",
+      "wave": 6,
+      "hours_estimate": 4,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_shell.sh"
+      ],
+      "harvest": [
+        "PayoutHistory"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U52",
+      "command": "GO ultra U52",
+      "title": "EarningGoals + EarningBreakdownChart rows",
+      "wave": 6,
+      "hours_estimate": 4,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "EarningGoals",
+        "EarningBreakdownChart"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U53",
+      "command": "GO ultra U53",
+      "title": "WalletReadyToPayCard + CheckoutFunnelCard ports",
+      "wave": 6,
+      "hours_estimate": 3,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_merchant_pay.sh"
+      ],
+      "harvest": [
+        "WalletReadyToPayCard",
+        "CheckoutFunnelCard"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U54",
+      "command": "GO ultra U54",
+      "title": "Gift coins glass sheet (send-coin-gift UI)",
+      "wave": 6,
+      "hours_estimate": 5,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_shell.sh"
+      ],
+      "harvest": [
+        "send-coin-gift UI",
+        "TipSheet polish"
+      ],
+      "status": "pending",
+      "hard_stop_note": "Demo gift only"
+    },
+    {
+      "id": "U55",
+      "command": "GO ultra U55",
+      "title": "SubscriptionPlans + customer-portal glass",
+      "wave": 6,
+      "hours_estimate": 4,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "SubscriptionPlans",
+        "check-subscription UI"
+      ],
+      "status": "pending",
+      "owner_gate": "Stripe keys"
+    },
+    {
+      "id": "U56",
+      "command": "GO ultra U56",
+      "title": "walletReconciliation.service client stub",
+      "wave": 6,
+      "hours_estimate": 2,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "walletReconciliation.service"
+      ],
+      "status": "pending",
+      "hard_stop_note": "Admin only"
+    },
+    {
+      "id": "U57",
+      "command": "GO ultra U57",
+      "title": "security.service + abuse_logs full wire",
+      "wave": 6,
+      "hours_estimate": 5,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_organism_spine.sh"
+      ],
+      "harvest": [
+        "security.service",
+        "abuse_logs"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U58",
+      "command": "GO ultra U58",
+      "title": "VideoTimeline + StudioMediaStrip production",
+      "wave": 7,
+      "hours_estimate": 5,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "VideoTimeline",
+        "StudioMediaStrip"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U59",
+      "command": "GO ultra U59",
+      "title": "VideoPreviewFilters + ComparisonSlider",
+      "wave": 7,
+      "hours_estimate": 4,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "VideoPreviewFilters",
+        "ComparisonSlider"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U60",
+      "command": "GO ultra U60",
+      "title": "TextOverlayEditor + TextDesigner",
+      "wave": 7,
+      "hours_estimate": 5,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "TextOverlayEditor",
+        "TextDesigner"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U61",
+      "command": "GO ultra U61",
+      "title": "AIVoiceoverGenerator + AISubtitleGenerator UI",
+      "wave": 7,
+      "hours_estimate": 5,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "AIVoiceoverGenerator",
+        "AISubtitleGenerator"
+      ],
+      "status": "pending",
+      "owner_gate": "OpenAI keys",
+      "hard_stop_note": "Stub invoke"
+    },
+    {
+      "id": "U62",
+      "command": "GO ultra U62",
+      "title": "AISoundGenerator + AITextGenerator UI",
+      "wave": 7,
+      "hours_estimate": 5,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "AISoundGenerator",
+        "AITextGenerator"
+      ],
+      "status": "pending",
+      "owner_gate": "OpenAI keys",
+      "hard_stop_note": "Stub invoke"
+    },
+    {
+      "id": "U63",
+      "command": "GO ultra U63",
+      "title": "AIVideoEditor + DrawingCanvas",
+      "wave": 7,
+      "hours_estimate": 5,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "AIVideoEditor",
+        "DrawingCanvas"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U64",
+      "command": "GO ultra U64",
+      "title": "MediaBlurEditor + blurUtils + BlurPreviewPlayer",
+      "wave": 7,
+      "hours_estimate": 4,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "MediaBlurEditor",
+        "blurUtils"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U65",
+      "command": "GO ultra U65",
+      "title": "pages/Studio.tsx shell + studio index barrel",
+      "wave": 7,
+      "hours_estimate": 6,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_ultra_studio.sh"
+      ],
+      "harvest": [
+        "pages/Studio.tsx",
+        "components/studio/index"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U66",
+      "command": "GO ultra U66",
+      "title": "ChatScreen thread UI + message bubbles",
+      "wave": 8,
+      "hours_estimate": 6,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_ultra_chat.sh"
+      ],
+      "harvest": [
+        "ChatScreen"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U67",
+      "command": "GO ultra U67",
+      "title": "Voice messages + voiceMessage.service",
+      "wave": 8,
+      "hours_estimate": 5,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "voiceMessage.service",
+        "useVoiceRecorder"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U68",
+      "command": "GO ultra U68",
+      "title": "Typing indicators + message reactions",
+      "wave": 8,
+      "hours_estimate": 4,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "useTypingIndicator",
+        "message_reactions"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U69",
+      "command": "GO ultra U69",
+      "title": "SocialConnect sheet (no OAuth live)",
+      "wave": 8,
+      "hours_estimate": 5,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_shell.sh"
+      ],
+      "harvest": [
+        "SocialConnect.tsx"
+      ],
+      "status": "pending",
+      "owner_gate": "OAuth apps",
+      "hard_stop_note": "Demo connect list only"
+    },
+    {
+      "id": "U70",
+      "command": "GO ultra U70",
+      "title": "NotificationCenter glass bell sheet",
+      "wave": 8,
+      "hours_estimate": 5,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_shell.sh"
+      ],
+      "harvest": [
+        "NotificationCenter",
+        "notification.service"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U71",
+      "command": "GO ultra U71",
+      "title": "PushNotificationSettings Capacitor stub",
+      "wave": 8,
+      "hours_estimate": 2,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "PushNotificationSettings"
+      ],
+      "status": "pending",
+      "hard_stop_note": "Capacitor phase"
+    },
+    {
+      "id": "U72",
+      "command": "GO ultra U72",
+      "title": "UnifiedVisionCalibrationWizard depth port",
+      "wave": 9,
+      "hours_estimate": 6,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_gesture_buttons.sh"
+      ],
+      "harvest": [
+        "UnifiedVisionCalibrationWizard"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U73",
+      "command": "GO ultra U73",
+      "title": "TargetOverlay + TargetEditor presenter depth",
+      "wave": 9,
+      "hours_estimate": 5,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_blink_remote_lite.sh"
+      ],
+      "harvest": [
+        "TargetOverlay",
+        "TargetEditor"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U74",
+      "command": "GO ultra U74",
+      "title": "LocalizationContext 5-language stub",
+      "wave": 9,
+      "hours_estimate": 4,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "LocalizationContext",
+        "locales/*"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U75",
+      "command": "GO ultra U75",
+      "title": "AccessibilityContext + reduced motion parity",
+      "wave": 9,
+      "hours_estimate": 3,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_shell.sh"
+      ],
+      "harvest": [
+        "AccessibilityContext"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U76",
+      "command": "GO ultra U76",
+      "title": "KYC glass wizard stub + useKyc",
+      "wave": 9,
+      "hours_estimate": 5,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "useKyc",
+        "kyc_submissions UI"
+      ],
+      "status": "pending",
+      "hard_stop_note": "No live identity vendor"
+    },
+    {
+      "id": "U77",
+      "command": "GO ultra U77",
+      "title": "smoke_ultra_feed.sh + smoke_ultra_studio.sh + smoke_ultra_chat.sh",
+      "wave": 10,
+      "hours_estimate": 2,
+      "exit_smoke": [
+        "./scripts/smoke_ultra_feed.sh",
+        "./scripts/smoke_ultra_studio.sh",
+        "./scripts/smoke_ultra_chat.sh"
+      ],
+      "harvest": [
+        "scripts/smoke_ultra_*.sh"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U78",
+      "command": "GO ultra U78",
+      "title": "06_feed_earning_loops index + demo book/film wiring",
+      "wave": 10,
+      "hours_estimate": 3,
+      "exit_smoke": [
+        "test -f 06_feed_earning_loops/investor_explainer_index.html"
+      ],
+      "harvest": [
+        "i_demo_book.html",
+        "i_investor_film.html",
+        "investor_explainer_index"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U79",
+      "command": "GO ultra U79",
+      "title": "FEATURE_BIBLE + WIRING_STATUS ultra harvest update",
+      "wave": 10,
+      "hours_estimate": 2,
+      "exit_smoke": [
+        "cd app && npm run typecheck"
+      ],
+      "harvest": [
+        "FEATURE_BIBLE.md",
+        "WIRING_STATUS.md"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "U80",
+      "command": "GO ultra U80",
+      "title": "Ultra final smokes + MORNING_BRIEF closeout",
+      "wave": 10,
+      "hours_estimate": 2,
+      "exit_smoke": [
+        "cd app && npm run typecheck",
+        "./scripts/smoke_immersive_shell.sh",
+        "./scripts/smoke_immersive_promo.sh",
+        "./scripts/smoke_promo_checkin.sh",
+        "./scripts/smoke_merchant_pay.sh",
+        "./scripts/smoke_ultra_feed.sh",
+        "./scripts/smoke_ultra_studio.sh",
+        "./scripts/smoke_ultra_chat.sh",
+        "./scripts/smoke_organism_spine.sh",
+        "./scripts/smoke_production_readiness.sh"
+      ],
+      "harvest": [
+        "ultra_queue.json",
+        ".ultra-shift/MORNING_BRIEF.md"
+      ],
+      "status": "pending"
+    }
+  ],
+  "parallel_lane": [
+    {
+      "id": "PU1",
+      "nodes": "U10,U39",
+      "title": "Spin + coin-fly CSS polish",
+      "worktree_hint": "ultra-p1-growth-css"
+    },
+    {
+      "id": "PU2",
+      "nodes": "U13,U42",
+      "title": "Stories + favorites lane CSS",
+      "worktree_hint": "ultra-p2-social-css"
+    },
+    {
+      "id": "PU3",
+      "nodes": "U58\u2013U64",
+      "title": "Studio component CSS pass",
+      "worktree_hint": "ultra-p3-studio-css"
+    },
+    {
+      "id": "PU4",
+      "nodes": "U45,U50",
+      "title": "Map overlay CSS + Mapbox tokens",
+      "worktree_hint": "ultra-p4-map-css"
+    },
+    {
+      "id": "PU5",
+      "nodes": "U72,U73",
+      "title": "Vision wizard + target overlay CSS",
+      "worktree_hint": "ultra-p5-vision-css"
+    },
+    {
+      "id": "PU6",
+      "nodes": "U78",
+      "title": "Investor film/book asset polish",
+      "worktree_hint": "ultra-p6-investor-html"
+    }
+  ],
+  "baseline_smokes": [
+    "cd app && npm run typecheck",
+    "./scripts/smoke_immersive_shell.sh",
+    "./scripts/smoke_organism_spine.sh",
+    "./scripts/smoke_merchant_pay.sh"
+  ],
+  "final_smokes": [
+    "cd app && npm run typecheck",
+    "./scripts/smoke_immersive_shell.sh",
+    "./scripts/smoke_immersive_promo.sh",
+    "./scripts/smoke_promo_checkin.sh",
+    "./scripts/smoke_merchant_pay.sh",
+    "./scripts/smoke_ultra_feed.sh",
+    "./scripts/smoke_ultra_studio.sh",
+    "./scripts/smoke_ultra_chat.sh",
+    "./scripts/smoke_organism_spine.sh",
+    "./scripts/smoke_production_readiness.sh"
+  ],
+  "resume_command": "GO ultra resume",
+  "prep_script": "./scripts/ultra_shift.sh"
+}

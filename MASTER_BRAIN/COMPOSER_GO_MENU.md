@@ -36,7 +36,23 @@ Every `GO` command implies:
 
 ---
 
-## GO Marathon (largest single command)
+## GO Ultra (largest single command — 80 nodes, ~334h)
+
+| GO command | Branch | Model | Exit | Notes |
+|------------|--------|-------|------|-------|
+| `GO ultra` | `feature/lovable-harvest` | C→S | U1–U80 serial + final smokes | **In progress** 31/80 — resume U32 |
+| `GO ultra resume` | same | C | `.ultra-shift/state.json` | After context reset |
+| `GO ultra depth <Ux>` | harvest | S | Single node `exit_smoke` | Cherry-pick one ultra node |
+
+**Scale:** 80 serial nodes · 11 waves · 19 missing edge functions · marathon depth revival U7–U20 · studio 21 components · DiscoveryMap · ChatScreen · wallet depth.  
+**Prep:** `./scripts/ultra_shift.sh` then send `GO ultra` in Agent chat.  
+**Queue:** [`ultra_queue.json`](ultra_queue.json) · [`ULTRA_AGENT_PROMPT.md`](ULTRA_AGENT_PROMPT.md) · [`ULTRA_CLOUD_PROMPTS.md`](ULTRA_CLOUD_PROMPTS.md)
+
+**Supersedes:** `GO marathon` (MVP done) + `GO marathon depth M9+M10` (done). Ultra finishes everything else.
+
+---
+
+## GO Marathon (prior — 17 nodes, MVP slice)
 
 | GO command | Branch | Model | Exit | Notes |
 |------------|--------|-------|------|-------|

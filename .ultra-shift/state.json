@@ -1,0 +1,573 @@
+{
+  "command": "GO ultra",
+  "started_at": "2026-06-13T07:57:00.916401+00:00",
+  "branch": "feature/lovable-harvest",
+  "hours_estimate": 334,
+  "node_count": 80,
+  "serial_lane": [
+    {
+      "id": "U1",
+      "command": "GO ultra U1",
+      "title": "Ultra queue bootstrap + harvest gap scan",
+      "wave": 0,
+      "status": "done"
+    },
+    {
+      "id": "U2",
+      "command": "GO ultra U2",
+      "title": "Migration batch P0 \u2014 wallet/social spine tables",
+      "wave": 0,
+      "status": "done"
+    },
+    {
+      "id": "U3",
+      "command": "GO ultra U3",
+      "title": "Migration batch P1 \u2014 promo + gamification tables",
+      "wave": 0,
+      "status": "done"
+    },
+    {
+      "id": "U4",
+      "command": "GO ultra U4",
+      "title": "Migration batch P2 \u2014 merchant checkout tables",
+      "wave": 0,
+      "status": "done"
+    },
+    {
+      "id": "U5",
+      "command": "GO ultra U5",
+      "title": "Migration batch P3 \u2014 chat + notifications tables",
+      "wave": 0,
+      "status": "done"
+    },
+    {
+      "id": "U6",
+      "command": "GO ultra U6",
+      "title": "_shared archive helpers merge (idempotency + rate limits)",
+      "wave": 0,
+      "status": "done"
+    },
+    {
+      "id": "U7",
+      "command": "GO ultra U7",
+      "title": "Depth M1 \u2014 ImmersivePromoReviewSheet archive parity",
+      "wave": 1,
+      "status": "done"
+    },
+    {
+      "id": "U8",
+      "command": "GO ultra U8",
+      "title": "Depth M2 \u2014 CheckInStreak + PromoCheckInFlow UI",
+      "wave": 1,
+      "status": "done"
+    },
+    {
+      "id": "U9",
+      "command": "GO ultra U9",
+      "title": "Depth M3 \u2014 DiscoveryMap Mapbox (~1.4k LOC)",
+      "wave": 1,
+      "status": "done"
+    },
+    {
+      "id": "U10",
+      "command": "GO ultra U10",
+      "title": "Depth M4 \u2014 AchievementCenter + DailySpinWheel full",
+      "wave": 1,
+      "status": "done"
+    },
+    {
+      "id": "U11",
+      "command": "GO ultra U11",
+      "title": "Depth M5 \u2014 ReferralPanel QR glass full",
+      "wave": 1,
+      "status": "done"
+    },
+    {
+      "id": "U12",
+      "command": "GO ultra U12",
+      "title": "Depth M6 \u2014 Leaderboard full port",
+      "wave": 1,
+      "status": "done"
+    },
+    {
+      "id": "U13",
+      "command": "GO ultra U13",
+      "title": "Depth M7 \u2014 Stories viewer + stories.service depth",
+      "wave": 1,
+      "status": "done"
+    },
+    {
+      "id": "U14",
+      "command": "GO ultra U14",
+      "title": "Depth M8 \u2014 ChatScreen + conversation.service full",
+      "wave": 1,
+      "status": "done"
+    },
+    {
+      "id": "U15",
+      "command": "GO ultra U15",
+      "title": "Depth M11 \u2014 Create.tsx + mediaUpload.service full",
+      "wave": 1,
+      "status": "done"
+    },
+    {
+      "id": "U16",
+      "command": "GO ultra U16",
+      "title": "Depth M12 \u2014 Studio wave 1 (timeline, strip, upload)",
+      "wave": 1,
+      "status": "done"
+    },
+    {
+      "id": "U17",
+      "command": "GO ultra U17",
+      "title": "Depth M12 \u2014 Studio wave 2 (preview, text, blur)",
+      "wave": 1,
+      "status": "done"
+    },
+    {
+      "id": "U18",
+      "command": "GO ultra U18",
+      "title": "Depth M16 \u2014 RouteBuilder + usePromoRoute full",
+      "wave": 1,
+      "status": "done"
+    },
+    {
+      "id": "U19",
+      "command": "GO ultra U19",
+      "title": "Depth M17 \u2014 Topic filter + friends lane stub",
+      "wave": 1,
+      "status": "done"
+    },
+    {
+      "id": "U20",
+      "command": "GO ultra U20",
+      "title": "Depth M13\u2013M14 \u2014 video layer + blink remote polish",
+      "wave": 1,
+      "status": "done"
+    },
+    {
+      "id": "U21",
+      "command": "GO ultra U21",
+      "title": "Edge \u2014 sync-user-tasks + update-task-progress",
+      "wave": 2,
+      "status": "done"
+    },
+    {
+      "id": "U22",
+      "command": "GO ultra U22",
+      "title": "Edge \u2014 check-subscription + stripe parity diff",
+      "wave": 2,
+      "status": "done"
+    },
+    {
+      "id": "U23",
+      "command": "GO ultra U23",
+      "title": "Edge \u2014 send-coin-gift (demo tier)",
+      "wave": 2,
+      "status": "done"
+    },
+    {
+      "id": "U24",
+      "command": "GO ultra U24",
+      "title": "Edge \u2014 track-interaction-health",
+      "wave": 2,
+      "status": "done"
+    },
+    {
+      "id": "U25",
+      "command": "GO ultra U25",
+      "title": "Edge \u2014 analyze-video stub",
+      "wave": 2,
+      "status": "done"
+    },
+    {
+      "id": "U26",
+      "command": "GO ultra U26",
+      "title": "Edge \u2014 extract-media-metadata",
+      "wave": 2,
+      "status": "done"
+    },
+    {
+      "id": "U27",
+      "command": "GO ultra U27",
+      "title": "Edge \u2014 ai-content-analyzer stub",
+      "wave": 2,
+      "status": "done"
+    },
+    {
+      "id": "U28",
+      "command": "GO ultra U28",
+      "title": "Edge \u2014 generate-music + generate-sfx stubs",
+      "wave": 2,
+      "status": "done"
+    },
+    {
+      "id": "U29",
+      "command": "GO ultra U29",
+      "title": "Edge \u2014 generate-voiceover + generate-subtitles stubs",
+      "wave": 2,
+      "status": "done"
+    },
+    {
+      "id": "U30",
+      "command": "GO ultra U30",
+      "title": "Edge \u2014 generate-text-style + generate-imoji stubs",
+      "wave": 2,
+      "status": "done"
+    },
+    {
+      "id": "U31",
+      "command": "GO ultra U31",
+      "title": "Edge \u2014 send-notification-email stub",
+      "wave": 3,
+      "status": "done"
+    },
+    {
+      "id": "U32",
+      "command": "GO ultra U32",
+      "title": "Edge \u2014 export-user-data compliance stub",
+      "wave": 3,
+      "status": "pending"
+    },
+    {
+      "id": "U33",
+      "command": "GO ultra U33",
+      "title": "Edge \u2014 kyc-review stub",
+      "wave": 3,
+      "status": "pending"
+    },
+    {
+      "id": "U34",
+      "command": "GO ultra U34",
+      "title": "Edge \u2014 admin-users (presenter guard only)",
+      "wave": 3,
+      "status": "pending"
+    },
+    {
+      "id": "U35",
+      "command": "GO ultra U35",
+      "title": "Edge \u2014 wallet-reconciliation (admin defer)",
+      "wave": 3,
+      "status": "pending"
+    },
+    {
+      "id": "U36",
+      "command": "GO ultra U36",
+      "title": "Spine \u2014 issue-reward + validate-attention archive parity",
+      "wave": 3,
+      "status": "pending"
+    },
+    {
+      "id": "U37",
+      "command": "GO ultra U37",
+      "title": "FriendsPostsFeed + friendsFeed.service",
+      "wave": 4,
+      "status": "pending"
+    },
+    {
+      "id": "U38",
+      "command": "GO ultra U38",
+      "title": "ShareSheet glass + content deep links",
+      "wave": 4,
+      "status": "pending"
+    },
+    {
+      "id": "U39",
+      "command": "GO ultra U39",
+      "title": "CoinFlyAnimation + CoinSlideAnimation overlays",
+      "wave": 4,
+      "status": "pending"
+    },
+    {
+      "id": "U40",
+      "command": "GO ultra U40",
+      "title": "SavedVideosGallery Supabase sync depth",
+      "wave": 4,
+      "status": "pending"
+    },
+    {
+      "id": "U41",
+      "command": "GO ultra U41",
+      "title": "PublicProfile + ProfileByUsername glass",
+      "wave": 4,
+      "status": "pending"
+    },
+    {
+      "id": "U42",
+      "command": "GO ultra U42",
+      "title": "Favorites lane + swipe navigation grid",
+      "wave": 4,
+      "status": "pending"
+    },
+    {
+      "id": "U43",
+      "command": "GO ultra U43",
+      "title": "ContentReportFlow minimal (share long-press)",
+      "wave": 4,
+      "status": "pending"
+    },
+    {
+      "id": "U44",
+      "command": "GO ultra U44",
+      "title": "Personalized feed scoring UI + feed.service depth",
+      "wave": 4,
+      "status": "pending"
+    },
+    {
+      "id": "U45",
+      "command": "GO ultra U45",
+      "title": "DiscoveryMap full glass overlay port",
+      "wave": 5,
+      "status": "pending"
+    },
+    {
+      "id": "U46",
+      "command": "GO ultra U46",
+      "title": "FavoriteLocations + PromotionCategories chips",
+      "wave": 5,
+      "status": "pending"
+    },
+    {
+      "id": "U47",
+      "command": "GO ultra U47",
+      "title": "PromoCheckInFlow + geo gate UX",
+      "wave": 5,
+      "status": "pending"
+    },
+    {
+      "id": "U48",
+      "command": "GO ultra U48",
+      "title": "Promo earnings analytics sheet",
+      "wave": 5,
+      "status": "pending"
+    },
+    {
+      "id": "U49",
+      "command": "GO ultra U49",
+      "title": "ChallengesFeed + StreakBonuses stub",
+      "wave": 5,
+      "status": "pending"
+    },
+    {
+      "id": "U50",
+      "command": "GO ultra U50",
+      "title": "Mapbox GL ImmersivePromoMapSheet live tier",
+      "wave": 5,
+      "status": "pending"
+    },
+    {
+      "id": "U51",
+      "command": "GO ultra U51",
+      "title": "PayoutHistory glass wallet tab",
+      "wave": 6,
+      "status": "pending"
+    },
+    {
+      "id": "U52",
+      "command": "GO ultra U52",
+      "title": "EarningGoals + EarningBreakdownChart rows",
+      "wave": 6,
+      "status": "pending"
+    },
+    {
+      "id": "U53",
+      "command": "GO ultra U53",
+      "title": "WalletReadyToPayCard + CheckoutFunnelCard ports",
+      "wave": 6,
+      "status": "pending"
+    },
+    {
+      "id": "U54",
+      "command": "GO ultra U54",
+      "title": "Gift coins glass sheet (send-coin-gift UI)",
+      "wave": 6,
+      "status": "pending"
+    },
+    {
+      "id": "U55",
+      "command": "GO ultra U55",
+      "title": "SubscriptionPlans + customer-portal glass",
+      "wave": 6,
+      "status": "pending"
+    },
+    {
+      "id": "U56",
+      "command": "GO ultra U56",
+      "title": "walletReconciliation.service client stub",
+      "wave": 6,
+      "status": "pending"
+    },
+    {
+      "id": "U57",
+      "command": "GO ultra U57",
+      "title": "security.service + abuse_logs full wire",
+      "wave": 6,
+      "status": "pending"
+    },
+    {
+      "id": "U58",
+      "command": "GO ultra U58",
+      "title": "VideoTimeline + StudioMediaStrip production",
+      "wave": 7,
+      "status": "pending"
+    },
+    {
+      "id": "U59",
+      "command": "GO ultra U59",
+      "title": "VideoPreviewFilters + ComparisonSlider",
+      "wave": 7,
+      "status": "pending"
+    },
+    {
+      "id": "U60",
+      "command": "GO ultra U60",
+      "title": "TextOverlayEditor + TextDesigner",
+      "wave": 7,
+      "status": "pending"
+    },
+    {
+      "id": "U61",
+      "command": "GO ultra U61",
+      "title": "AIVoiceoverGenerator + AISubtitleGenerator UI",
+      "wave": 7,
+      "status": "pending"
+    },
+    {
+      "id": "U62",
+      "command": "GO ultra U62",
+      "title": "AISoundGenerator + AITextGenerator UI",
+      "wave": 7,
+      "status": "pending"
+    },
+    {
+      "id": "U63",
+      "command": "GO ultra U63",
+      "title": "AIVideoEditor + DrawingCanvas",
+      "wave": 7,
+      "status": "pending"
+    },
+    {
+      "id": "U64",
+      "command": "GO ultra U64",
+      "title": "MediaBlurEditor + blurUtils + BlurPreviewPlayer",
+      "wave": 7,
+      "status": "pending"
+    },
+    {
+      "id": "U65",
+      "command": "GO ultra U65",
+      "title": "pages/Studio.tsx shell + studio index barrel",
+      "wave": 7,
+      "status": "pending"
+    },
+    {
+      "id": "U66",
+      "command": "GO ultra U66",
+      "title": "ChatScreen thread UI + message bubbles",
+      "wave": 8,
+      "status": "pending"
+    },
+    {
+      "id": "U67",
+      "command": "GO ultra U67",
+      "title": "Voice messages + voiceMessage.service",
+      "wave": 8,
+      "status": "pending"
+    },
+    {
+      "id": "U68",
+      "command": "GO ultra U68",
+      "title": "Typing indicators + message reactions",
+      "wave": 8,
+      "status": "pending"
+    },
+    {
+      "id": "U69",
+      "command": "GO ultra U69",
+      "title": "SocialConnect sheet (no OAuth live)",
+      "wave": 8,
+      "status": "pending"
+    },
+    {
+      "id": "U70",
+      "command": "GO ultra U70",
+      "title": "NotificationCenter glass bell sheet",
+      "wave": 8,
+      "status": "pending"
+    },
+    {
+      "id": "U71",
+      "command": "GO ultra U71",
+      "title": "PushNotificationSettings Capacitor stub",
+      "wave": 8,
+      "status": "pending"
+    },
+    {
+      "id": "U72",
+      "command": "GO ultra U72",
+      "title": "UnifiedVisionCalibrationWizard depth port",
+      "wave": 9,
+      "status": "pending"
+    },
+    {
+      "id": "U73",
+      "command": "GO ultra U73",
+      "title": "TargetOverlay + TargetEditor presenter depth",
+      "wave": 9,
+      "status": "pending"
+    },
+    {
+      "id": "U74",
+      "command": "GO ultra U74",
+      "title": "LocalizationContext 5-language stub",
+      "wave": 9,
+      "status": "pending"
+    },
+    {
+      "id": "U75",
+      "command": "GO ultra U75",
+      "title": "AccessibilityContext + reduced motion parity",
+      "wave": 9,
+      "status": "pending"
+    },
+    {
+      "id": "U76",
+      "command": "GO ultra U76",
+      "title": "KYC glass wizard stub + useKyc",
+      "wave": 9,
+      "status": "pending"
+    },
+    {
+      "id": "U77",
+      "command": "GO ultra U77",
+      "title": "smoke_ultra_feed.sh + smoke_ultra_studio.sh + smoke_ultra_chat.sh",
+      "wave": 10,
+      "status": "pending"
+    },
+    {
+      "id": "U78",
+      "command": "GO ultra U78",
+      "title": "06_feed_earning_loops index + demo book/film wiring",
+      "wave": 10,
+      "status": "pending"
+    },
+    {
+      "id": "U79",
+      "command": "GO ultra U79",
+      "title": "FEATURE_BIBLE + WIRING_STATUS ultra harvest update",
+      "wave": 10,
+      "status": "pending"
+    },
+    {
+      "id": "U80",
+      "command": "GO ultra U80",
+      "title": "Ultra final smokes + MORNING_BRIEF closeout",
+      "wave": 10,
+      "status": "pending"
+    }
+  ],
+  "current": "U32",
+  "completed_count": 31,
+  "final_smokes": "pending",
+  "last_updated": "2026-06-21T03:10:07.161421+00:00"
+}
