@@ -2,1480 +2,410 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>[ i ] — Investor Presentation · Attention Wallet & Media Marketplace</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>[ i ] — Investor Pitch Deck · Animated Feature Presentation</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+:root{--a:#7c43ff;--b:#ff3eb5;--c:#34d5ff;--mint:#4ade80;--gold:#f59e0b;--bg:#020207;--text:#fff;--muted:rgba(255,255,255,.62);--dim:rgba(255,255,255,.35);--line:rgba(255,255,255,.08);--card:rgba(255,255,255,.04);--card-b:rgba(255,255,255,.08);--mono:'JetBrains Mono',monospace;--sans:'Inter',-apple-system,sans-serif;}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+body{background:radial-gradient(ellipse at 20% 20%,rgba(124,67,255,.12) 0,transparent 40%),radial-gradient(ellipse at 80% 25%,rgba(255,62,181,.08) 0,transparent 35%),radial-gradient(ellipse at 50% 85%,rgba(52,213,255,.07) 0,transparent 40%),var(--bg)}
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --void: #050508;
-  --panel: #0c0c14;
-  --card: #111119;
-  --card-border: rgba(255,255,255,0.06);
-  --text-primary: #f0ede8;
-  --text-secondary: #b8b5b0;
-  --text-muted: #6b6878;
-  --purple: #a855f7;
-  --purple-glow: rgba(168,85,247,0.4);
-  --blue: #6366f1;
-  --blue-glow: rgba(99,102,241,0.3);
-  --mint: #4ade80;
-  --mint-glow: rgba(74,222,128,0.3);
-  --gold: #f59e0b;
-  --cyan: #22d3ee;
-  --gradient-brand: linear-gradient(135deg, #a855f7 0%, #6366f1 50%, #22d3ee 100%);
-  --gradient-cosmic: radial-gradient(ellipse at 70% 30%, rgba(168,85,247,0.15) 0%, transparent 50%),
-                     radial-gradient(ellipse at 30% 70%, rgba(99,102,241,0.1) 0%, transparent 50%);
-  --mono: 'JetBrains Mono', 'SF Mono', monospace;
-  --sans: 'Inter', -apple-system, sans-serif;
-}
-html, body {
-  min-height: 100vh;
-  background: var(--void);
-  font-family: var(--sans);
-  color: var(--text-primary);
-  -webkit-font-smoothing: antialiased;
-  overflow: hidden;
-}
+canvas#particles{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.8}
+.aurora{position:fixed;inset:-30%;z-index:1;pointer-events:none;filter:blur(40px);opacity:.4;mix-blend-mode:screen}
+.aurora::before,.aurora::after{content:"";position:absolute;inset:0;background:conic-gradient(from 90deg at 50% 50%,transparent 0 20%,var(--a) 24%,transparent 34%,var(--b) 48%,transparent 58%,var(--c) 72%,transparent 82%);animation:spin 28s linear infinite}
+.aurora::after{transform:scale(.7) rotate(120deg);opacity:.5;animation-direction:reverse;animation-duration:35s}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-/* ── Canvas background particles ── */
-#particleCanvas {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
+.topbar{position:fixed;z-index:100;top:0;left:0;right:0;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(2,2,7,.7);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-dot{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,var(--a),var(--b));box-shadow:0 0 12px var(--b);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.4);opacity:1}}
+.brand-text{font-size:13px;font-weight:600;letter-spacing:.04em}
+.brand-sub{font-size:11px;color:var(--muted);margin-left:8px;letter-spacing:.02em}
+.nav-area{display:flex;align-items:center;gap:10px}
+.dots{display:flex;gap:5px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--dim);border:none;cursor:pointer;padding:0;transition:all .3s}
+.dot.on{background:var(--a);box-shadow:0 0 8px var(--a);transform:scale(1.5)}
+.counter{font-family:var(--mono);font-size:11px;color:var(--muted);min-width:36px;text-align:center}
+.tbtn{font-family:var(--sans);font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:6px 12px;border:1px solid var(--line);border-radius:4px;background:transparent;color:var(--muted);cursor:pointer;transition:all .2s}
+.tbtn:hover{border-color:rgba(255,255,255,.2);color:#fff}
+.tbtn.on{border-color:var(--a);color:var(--a);background:rgba(124,67,255,.08)}
+.tbtn.voice.on{border-color:var(--mint);color:var(--mint);background:rgba(74,222,128,.08)}
+.progress{position:fixed;bottom:0;left:0;right:0;height:3px;z-index:100;background:rgba(255,255,255,.04)}
+.pbar{height:100%;background:linear-gradient(90deg,var(--a),var(--b),var(--c));box-shadow:0 0 12px var(--b);transition:width .4s ease}
 
-/* ── Navigation bar ── */
-.nav-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 48px;
-  background: rgba(5,5,8,0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 28px;
-  z-index: 100;
-}
-.nav-brand {
-  font-size: 12px;
-  letter-spacing: 0.3em;
-  color: var(--text-muted);
-  text-transform: uppercase;
-}
-.nav-center {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.nav-dots {
-  display: flex;
-  gap: 6px;
-}
-.nav-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.15);
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  padding: 0;
-}
-.nav-dot.active {
-  background: var(--purple);
-  box-shadow: 0 0 8px var(--purple-glow);
-  transform: scale(1.4);
-}
-.nav-dot:hover { background: rgba(255,255,255,0.3); }
-.nav-counter {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--text-muted);
-}
-.nav-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.nav-btn {
-  font-family: var(--sans);
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 6px 14px;
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 4px;
-  background: transparent;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.nav-btn:hover { border-color: rgba(255,255,255,0.25); color: var(--text-primary); }
-.nav-btn.active { border-color: var(--purple); color: var(--purple); background: rgba(168,85,247,0.08); }
-.nav-btn--voice.active { border-color: var(--mint); color: var(--mint); background: rgba(74,222,128,0.08); }
-.progress-track {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: rgba(255,255,255,0.04);
-}
-.progress-fill {
-  height: 100%;
-  background: var(--gradient-brand);
-  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
-  box-shadow: 0 0 8px var(--purple-glow);
-}
+.deck{position:fixed;inset:0;margin-top:52px;z-index:10}
+.s{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:56px 64px;opacity:0;transform:scale(1.02) translateY(12px);filter:blur(4px);transition:all .7s cubic-bezier(.16,1,.3,1);pointer-events:none}
+.s.active{opacity:1;transform:scale(1) translateY(0);filter:blur(0);pointer-events:auto;z-index:2}
+.s.left{opacity:0;transform:scale(.98) translateY(-8px);filter:blur(3px)}
 
-/* ── Slides ── */
-.deck {
-  position: fixed;
-  inset: 0;
-  margin-top: 48px;
-  overflow: hidden;
-}
-.slide {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 48px 60px;
-  opacity: 0;
-  transform: translateX(40px);
-  transition: opacity 0.6s cubic-bezier(0.4,0,0.2,1), transform 0.6s cubic-bezier(0.4,0,0.2,1);
-  pointer-events: none;
-  background: var(--gradient-cosmic);
-}
-.slide.active {
-  opacity: 1;
-  transform: translateX(0);
-  pointer-events: auto;
-}
-.slide.exit-left {
-  opacity: 0;
-  transform: translateX(-40px);
-}
+/* Layouts */
+.layout-center{display:flex;flex-direction:column;align-items:center;text-align:center;gap:28px;max-width:900px}
+.layout-split{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;width:100%;max-width:1200px}
+.layout-triple{display:grid;grid-template-columns:1fr auto 1fr;gap:40px;align-items:start;width:100%;max-width:1200px}
 
-/* ── Slide 1: Splash ── */
-.splash-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 24px;
-}
-.logo-glow {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(168,85,247,0.3) 0%, transparent 70%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: logoPulse 3s ease-in-out infinite;
-}
-@keyframes logoPulse {
-  0%, 100% { box-shadow: 0 0 40px rgba(168,85,247,0.2), 0 0 80px rgba(99,102,241,0.1); }
-  50% { box-shadow: 0 0 60px rgba(168,85,247,0.35), 0 0 120px rgba(99,102,241,0.15); }
-}
-.logo-i {
-  font-size: 48px;
-  font-weight: 300;
-  background: var(--gradient-brand);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.splash-title {
-  font-size: 14px;
-  letter-spacing: 0.35em;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-}
-.splash-tagline {
-  font-size: 28px;
-  font-weight: 300;
-  color: var(--text-primary);
-  line-height: 1.3;
-}
-.splash-tagline strong {
-  background: var(--gradient-brand);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-weight: 500;
-}
-.splash-sub {
-  font-size: 15px;
-  color: var(--text-muted);
-  line-height: 1.5;
-}
-.enter-btn {
-  margin-top: 16px;
-  padding: 14px 36px;
-  border-radius: 30px;
-  background: linear-gradient(135deg, rgba(168,85,247,0.3), rgba(99,102,241,0.3));
-  border: 1px solid rgba(168,85,247,0.4);
-  color: var(--text-primary);
-  font-family: var(--sans);
-  font-size: 13px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.3s;
-  box-shadow: 0 4px 24px rgba(168,85,247,0.2);
-}
-.enter-btn:hover {
-  background: linear-gradient(135deg, rgba(168,85,247,0.5), rgba(99,102,241,0.5));
-  box-shadow: 0 8px 40px rgba(168,85,247,0.35);
-  transform: translateY(-2px);
-}
+/* Typography */
+.sl{position:absolute;top:28px;left:48px;display:flex;align-items:center;gap:14px}
+.sl-n{font-family:var(--mono);font-size:11px;color:var(--dim)}
+.sl-c{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
+h1{font-size:clamp(32px,4.5vw,52px);font-weight:700;line-height:1.1;letter-spacing:-.02em}
+h1 .gr{background:linear-gradient(135deg,var(--a),var(--b),var(--c));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+h2{font-size:24px;font-weight:600;line-height:1.2}
+.sub{font-size:16px;line-height:1.6;color:var(--muted);max-width:520px}
+.tag{font-size:13px;color:var(--a);font-weight:500;margin-top:8px}
+.bullets{list-style:none;display:flex;flex-direction:column;gap:12px}
+.bullets li{font-size:14px;color:rgba(255,255,255,.78);padding-left:22px;position:relative;line-height:1.5}
+.bullets li::before{content:'';position:absolute;left:0;top:7px;width:8px;height:8px;border-radius:50%;background:var(--a);box-shadow:0 0 6px rgba(124,67,255,.5)}
 
-/* ── Common slide layouts ── */
-.slide-header {
-  position: absolute;
-  top: 32px;
-  left: 48px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.slide-number {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--text-muted);
-}
-.slide-category {
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
+/* Cards */
+.card{padding:20px;border-radius:14px;background:var(--card);border:1px solid var(--card-b);backdrop-filter:blur(8px)}
+.stat-row{display:flex;flex-direction:column;gap:12px}
+.stat{padding:18px 22px;border-radius:12px;background:var(--card);border:1px solid var(--card-b);display:flex;align-items:center;gap:16px;opacity:0;animation:slideUp .5s ease forwards}
+.stat:nth-child(1){animation-delay:.15s}.stat:nth-child(2){animation-delay:.3s}.stat:nth-child(3){animation-delay:.45s}.stat:nth-child(4){animation-delay:.6s}
+@keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.stat-val{font-family:var(--mono);font-size:26px;font-weight:600;background:linear-gradient(135deg,var(--a),var(--c));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;min-width:80px}
+.stat-lbl{font-size:11px;color:var(--muted);line-height:1.4}
 
-.two-col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 64px;
-  align-items: center;
-  width: 100%;
-  max-width: 1200px;
-}
-.col-text { display: flex; flex-direction: column; gap: 20px; }
-.col-visual { display: flex; align-items: center; justify-content: center; }
+/* Chart */
+.chart-box{padding:24px;border-radius:14px;background:var(--card);border:1px solid var(--card-b);position:relative;height:220px;display:flex;align-items:flex-end;gap:4px;padding-top:40px}
+.chart-title{position:absolute;top:14px;left:20px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.chart-bar{flex:1;border-radius:4px 4px 0 0;background:linear-gradient(to top,var(--a),var(--b));min-width:20px;opacity:0;animation:growBar .6s ease forwards}
+.chart-bar:nth-child(1){animation-delay:.2s}.chart-bar:nth-child(2){animation-delay:.3s}.chart-bar:nth-child(3){animation-delay:.4s}.chart-bar:nth-child(4){animation-delay:.5s}.chart-bar:nth-child(5){animation-delay:.6s}.chart-bar:nth-child(6){animation-delay:.7s}.chart-bar:nth-child(7){animation-delay:.8s}
+@keyframes growBar{from{opacity:0;height:0}to{opacity:1}}
+.chart-label{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:8px;color:var(--dim);white-space:nowrap}
 
-.slide-h1 {
-  font-size: 42px;
-  font-weight: 600;
-  line-height: 1.15;
-  color: var(--text-primary);
-}
-.slide-h1 .gradient {
-  background: var(--gradient-brand);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.slide-h1 .purple { color: var(--purple); -webkit-text-fill-color: var(--purple); }
-.slide-p {
-  font-size: 16px;
-  line-height: 1.6;
-  color: var(--text-secondary);
-  max-width: 480px;
-}
-.slide-bullets {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.slide-bullets li {
-  font-size: 15px;
-  color: var(--text-secondary);
-  padding-left: 20px;
-  position: relative;
-  line-height: 1.5;
-}
-.slide-bullets li::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 8px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--purple);
-  box-shadow: 0 0 6px var(--purple-glow);
-}
-.slide-cta {
-  font-size: 14px;
-  color: var(--purple);
-  font-weight: 500;
-  margin-top: 8px;
-}
+/* Phone */
+.phone{width:260px;height:530px;border-radius:40px;background:linear-gradient(145deg,#1a1a2e,#0d0d1a);padding:8px;box-shadow:0 40px 80px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.06),inset 0 1px 0 rgba(255,255,255,.06);position:relative;flex-shrink:0}
+.phone::before{content:'';position:absolute;inset:-2px;border-radius:42px;background:linear-gradient(145deg,rgba(124,67,255,.2),rgba(255,62,181,.1),transparent);z-index:-1;opacity:.5}
+.phone-inner{width:100%;height:100%;border-radius:34px;overflow:hidden;position:relative;background:#000}
+.phone-notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:80px;height:22px;background:#000;border-radius:0 0 12px 12px;z-index:20}
+.phone-content{position:absolute;inset:0;display:flex;flex-direction:column}
+.phone-bg{position:absolute;inset:0;background:linear-gradient(165deg,#1a1035 0%,#c45c26 38%,#2d1b4e 72%,#0a1520 100%)}
+.phone-ui{position:absolute;inset:0;z-index:5}
+.phone-timer{position:absolute;top:28px;left:12px;right:12px;height:2px;background:rgba(255,255,255,.1);border-radius:1px}
+.phone-timer-fill{height:100%;border-radius:1px;background:var(--mint);box-shadow:0 0 6px rgba(74,222,128,.4);animation:fill 7s ease-in-out infinite}
+@keyframes fill{0%{width:0}80%,100%{width:80%}}
+.phone-pill{position:absolute;top:36px;right:12px;padding:4px 9px;border-radius:10px;background:rgba(7,7,9,.5);border:.5px solid rgba(74,222,128,.3);font-family:var(--mono);font-size:9px;color:var(--mint);display:flex;align-items:center;gap:4px;backdrop-filter:blur(6px)}
+.phone-pill-dot{width:5px;height:5px;border-radius:50%;background:var(--mint)}
+.phone-nav{position:absolute;bottom:0;left:0;right:0;height:48px;background:rgba(18,18,26,.95);display:flex;align-items:center;justify-content:space-around;z-index:10;border-top:.5px solid rgba(255,255,255,.04)}
+.phone-tab{font-size:7px;color:rgba(255,255,255,.3);text-align:center}.phone-tab.act{color:#fff}
 
-/* ── Stat cards ── */
-.stat-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.stat-card {
-  padding: 18px 22px;
-  border-radius: 14px;
-  background: var(--card);
-  border: 1px solid var(--card-border);
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  animation: fadeInUp 0.5s ease forwards;
-  opacity: 0;
-}
-.stat-card:nth-child(1) { animation-delay: 0.1s; }
-.stat-card:nth-child(2) { animation-delay: 0.25s; }
-.stat-card:nth-child(3) { animation-delay: 0.4s; }
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.stat-value {
-  font-family: var(--mono);
-  font-size: 28px;
-  font-weight: 600;
-  background: var(--gradient-brand);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.stat-label {
-  font-size: 12px;
-  color: var(--text-muted);
-  line-height: 1.4;
-}
+/* Loop flow */
+.flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center}
+.fstep{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 14px;border-radius:14px;background:var(--card);border:1px solid var(--card-b);min-width:100px;text-align:center;opacity:0;animation:slideUp .5s ease forwards}
+.fstep:nth-child(1){animation-delay:.2s}.fstep:nth-child(3){animation-delay:.4s}.fstep:nth-child(5){animation-delay:.6s}.fstep:nth-child(7){animation-delay:.8s}.fstep:nth-child(9){animation-delay:1s}
+.fstep-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px}
+.fstep-icon.i1{background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3)}.fstep-icon.i2{background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3)}.fstep-icon.i3{background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3)}.fstep-icon.i4{background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3)}.fstep-icon.i5{background:rgba(52,213,255,.15);border:1px solid rgba(52,213,255,.3)}
+.fstep-name{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.fstep-desc{font-size:8px;color:var(--dim);line-height:1.3}
+.farrow{font-size:16px;color:var(--dim);opacity:0;animation:slideUp .4s ease forwards}
+.farrow:nth-child(2){animation-delay:.3s}.farrow:nth-child(4){animation-delay:.5s}.farrow:nth-child(6){animation-delay:.7s}.farrow:nth-child(8){animation-delay:.9s}
 
-/* ── Phone mockup (premium) ── */
-.phone-mockup {
-  width: 280px;
-  height: 570px;
-  border-radius: 44px;
-  background: linear-gradient(145deg, #1a1a2e, #0d0d1a);
-  padding: 8px;
-  box-shadow:
-    0 40px 80px rgba(0,0,0,0.5),
-    0 0 0 1px rgba(255,255,255,0.06),
-    inset 0 1px 0 rgba(255,255,255,0.08);
-  position: relative;
-}
-.phone-mockup::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border-radius: 46px;
-  background: linear-gradient(145deg, rgba(168,85,247,0.2), rgba(99,102,241,0.1), transparent);
-  z-index: -1;
-  opacity: 0.6;
-}
-.phone-screen-inner {
-  width: 100%;
-  height: 100%;
-  border-radius: 38px;
-  overflow: hidden;
-  position: relative;
-  background: #000;
-}
-.phone-notch {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90px;
-  height: 24px;
-  background: #000;
-  border-radius: 0 0 14px 14px;
-  z-index: 20;
-}
+/* POP */
+.pop-grid{display:flex;flex-direction:column;gap:8px}
+.pop-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;background:var(--card);border:1px solid var(--card-b);opacity:0;animation:slideUp .4s ease forwards}
+.pop-item:nth-child(1){animation-delay:.15s}.pop-item:nth-child(2){animation-delay:.25s}.pop-item:nth-child(3){animation-delay:.35s}.pop-item:nth-child(4){animation-delay:.45s}.pop-item:nth-child(5){animation-delay:.55s}.pop-item:nth-child(6){animation-delay:.65s}
+.pop-dot{width:14px;height:14px;border-radius:50%;background:rgba(74,222,128,.15);border:1px solid var(--mint);display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--mint);flex-shrink:0}
+.pop-text{font-size:12px;font-weight:500}.pop-sub{font-size:9px;color:var(--dim)}
 
-/* ── Phone content layers ── */
-.phone-media {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(165deg, #1a1035 0%, #c45c26 38%, #2d1b4e 72%, #0a1520 100%);
-}
-.phone-scrim-top {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 80px;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
-  z-index: 2;
-}
-.phone-scrim-bot {
-  position: absolute;
-  bottom: 56px;
-  left: 0;
-  right: 0;
-  height: 120px;
-  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
-  z-index: 2;
-}
-.phone-timer {
-  position: absolute;
-  top: 30px;
-  left: 12px;
-  right: 12px;
-  height: 2px;
-  background: rgba(255,255,255,0.1);
-  z-index: 8;
-  border-radius: 1px;
-}
-.phone-timer-fill {
-  height: 100%;
-  width: 0;
-  background: var(--mint);
-  border-radius: 1px;
-  box-shadow: 0 0 6px var(--mint-glow);
-  animation: timerFill 8s ease-in-out infinite;
-}
-@keyframes timerFill {
-  0% { width: 0; }
-  80% { width: 85%; }
-  100% { width: 85%; }
-}
-.phone-reward {
-  position: absolute;
-  top: 40px;
-  right: 12px;
-  z-index: 9;
-  padding: 4px 10px;
-  border-radius: 12px;
-  background: rgba(7,7,9,0.5);
-  border: 0.5px solid rgba(74,222,128,0.3);
-  backdrop-filter: blur(8px);
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--mint);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  animation: rewardPulse 2s ease-in-out infinite;
-}
-@keyframes rewardPulse {
-  0%, 100% { box-shadow: 0 0 8px rgba(74,222,128,0.15); }
-  50% { box-shadow: 0 0 16px rgba(74,222,128,0.3); }
-}
-.phone-reward-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--mint);
-}
-.phone-coin-badge {
-  position: absolute;
-  top: 40px;
-  left: 12px;
-  z-index: 9;
-  padding: 4px 10px;
-  border-radius: 12px;
-  background: rgba(7,7,9,0.5);
-  border: 0.5px solid rgba(255,255,255,0.1);
-  backdrop-filter: blur(8px);
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.phone-rail {
-  position: absolute;
-  right: 10px;
-  bottom: 80px;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-.phone-rail-btn {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: rgba(7,7,9,0.45);
-  border: 0.5px solid rgba(255,255,255,0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.phone-rail-count {
-  font-size: 8px;
-  color: rgba(255,255,255,0.5);
-  margin-top: -4px;
-}
-.phone-out-profile {
-  position: absolute;
-  left: 12px;
-  bottom: 70px;
-  z-index: 8;
-}
-.phone-out-name {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-.phone-out-loc {
-  font-size: 8px;
-  color: var(--text-muted);
-}
-.phone-bottom-nav {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 56px;
-  background: rgba(20,20,30,0.95);
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding-bottom: 4px;
-  z-index: 15;
-  border-top: 0.5px solid rgba(255,255,255,0.04);
-}
-.phone-tab {
-  font-size: 8px;
-  color: rgba(255,255,255,0.35);
-  text-align: center;
-  transition: color 0.2s;
-}
-.phone-tab.active { color: var(--text-primary); }
+/* Score */
+.score-ring{width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(52,213,255,.08) 0%,transparent 70%);border:2px solid rgba(52,213,255,.2);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 0 40px rgba(52,213,255,.1);animation:glow 2.5s ease-in-out infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 40px rgba(52,213,255,.1)}50%{box-shadow:0 0 60px rgba(52,213,255,.2)}}
+.score-val{font-family:var(--mono);font-size:42px;font-weight:600}
+.score-lbl{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--c)}
 
-/* ── Feature callout lines ── */
-.callout-lines {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 30;
-}
-.callout {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  opacity: 0;
-  animation: calloutIn 0.5s ease forwards;
-}
-.callout:nth-child(1) { animation-delay: 0.6s; }
-.callout:nth-child(2) { animation-delay: 0.9s; }
-.callout:nth-child(3) { animation-delay: 1.2s; }
-.callout:nth-child(4) { animation-delay: 1.5s; }
-.callout:nth-child(5) { animation-delay: 1.8s; }
-.callout:nth-child(6) { animation-delay: 2.1s; }
-@keyframes calloutIn {
-  from { opacity: 0; transform: translateX(-6px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-.callout-line {
-  width: 28px;
-  height: 1px;
-  background: linear-gradient(90deg, var(--purple), transparent);
-}
-.callout-text {
-  font-size: 10px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  white-space: nowrap;
-}
-.callout-text.purple { color: var(--purple); }
-.callout-text.mint { color: var(--mint); }
-.callout-text.gold { color: var(--gold); }
-.callout-text.cyan { color: var(--cyan); }
+/* Wallet */
+.wcards{display:flex;gap:14px}
+.wcard{padding:20px 16px;border-radius:14px;background:var(--card);border:1px solid var(--card-b);min-width:160px;opacity:0;animation:slideUp .5s ease forwards}
+.wcard:nth-child(1){animation-delay:.2s}.wcard:nth-child(2){animation-delay:.4s}
+.wcard-t{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.wcard-v{font-family:var(--mono);font-size:24px;font-weight:500;margin-bottom:10px}
+.wcard-v.g{color:var(--mint)}.wcard-v.p{color:var(--a)}
+.wcard-list{list-style:none;display:flex;flex-direction:column;gap:4px}
+.wcard-list li{font-size:10px;color:var(--muted);padding-left:10px;position:relative}
+.wcard-list li::before{content:'+';position:absolute;left:0;color:var(--dim)}
+.wcard-btn{margin-top:10px;padding:7px 14px;border-radius:6px;border:none;font-family:var(--sans);font-size:10px;font-weight:500;cursor:pointer}
+.wcard-btn.g{background:var(--mint);color:#000}.wcard-btn.p{background:linear-gradient(135deg,var(--a),#6366f1);color:#fff}
 
-/* ── Loop flow diagram ── */
-.loop-flow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-.loop-step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  padding: 20px 16px;
-  border-radius: 16px;
-  background: var(--card);
-  border: 1px solid var(--card-border);
-  min-width: 120px;
-  text-align: center;
-  opacity: 0;
-  animation: stepIn 0.5s ease forwards;
-}
-.loop-step:nth-child(1) { animation-delay: 0.2s; }
-.loop-step:nth-child(3) { animation-delay: 0.4s; }
-.loop-step:nth-child(5) { animation-delay: 0.6s; }
-.loop-step:nth-child(7) { animation-delay: 0.8s; }
-.loop-step:nth-child(9) { animation-delay: 1.0s; }
-@keyframes stepIn {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.loop-step-num {
-  font-family: var(--mono);
-  font-size: 9px;
-  color: var(--text-muted);
-}
-.loop-step-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-}
-.loop-step-icon.watch { background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); }
-.loop-step-icon.verify { background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); }
-.loop-step-icon.qualify { background: rgba(74,222,128,0.15); border: 1px solid rgba(74,222,128,0.3); }
-.loop-step-icon.reward { background: rgba(168,85,247,0.15); border: 1px solid rgba(168,85,247,0.3); }
-.loop-step-icon.wallet { background: rgba(34,211,238,0.15); border: 1px solid rgba(34,211,238,0.3); }
-.loop-step-name {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-.loop-step-desc {
-  font-size: 9px;
-  color: var(--text-muted);
-  line-height: 1.4;
-}
-.loop-arrow {
-  font-size: 16px;
-  color: var(--text-muted);
-  opacity: 0;
-  animation: stepIn 0.4s ease forwards;
-}
-.loop-arrow:nth-child(2) { animation-delay: 0.3s; }
-.loop-arrow:nth-child(4) { animation-delay: 0.5s; }
-.loop-arrow:nth-child(6) { animation-delay: 0.7s; }
-.loop-arrow:nth-child(8) { animation-delay: 0.9s; }
+/* Ask */
+.ask-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.ask-item{padding:20px;border-radius:12px;background:var(--card);border:1px solid var(--card-b);opacity:0;animation:slideUp .5s ease forwards}
+.ask-item:nth-child(1){animation-delay:.2s}.ask-item:nth-child(2){animation-delay:.35s}.ask-item:nth-child(3){animation-delay:.5s}
+.ask-title{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--a);margin-bottom:8px;padding-bottom:8px;border-bottom:2px solid var(--a)}
+.ask-text{font-size:12px;color:var(--muted);line-height:1.55}
 
-/* ── POP verification ── */
-.pop-layers {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.pop-layer {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border-radius: 10px;
-  background: var(--card);
-  border: 1px solid var(--card-border);
-  opacity: 0;
-  animation: fadeInUp 0.4s ease forwards;
-}
-.pop-layer:nth-child(1) { animation-delay: 0.2s; }
-.pop-layer:nth-child(2) { animation-delay: 0.35s; }
-.pop-layer:nth-child(3) { animation-delay: 0.5s; }
-.pop-layer:nth-child(4) { animation-delay: 0.65s; }
-.pop-layer:nth-child(5) { animation-delay: 0.8s; }
-.pop-layer:nth-child(6) { animation-delay: 0.95s; }
-.pop-check {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: rgba(74,222,128,0.15);
-  border: 1px solid var(--mint);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 9px;
-  color: var(--mint);
-  flex-shrink: 0;
-}
-.pop-name {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-primary);
-}
-.pop-desc {
-  font-size: 10px;
-  color: var(--text-muted);
-}
+/* CTA */
+.cta-btn{padding:16px 40px;border-radius:28px;background:linear-gradient(135deg,var(--a),#6366f1);border:none;color:#fff;font-family:var(--sans);font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;box-shadow:0 8px 32px rgba(124,67,255,.35);transition:all .3s}
+.cta-btn:hover{box-shadow:0 12px 48px rgba(124,67,255,.5);transform:translateY(-2px) scale(1.02)}
 
-/* ── Score display ── */
-.score-display {
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(34,211,238,0.08) 0%, transparent 70%);
-  border: 2px solid rgba(34,211,238,0.2);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  box-shadow: 0 0 40px rgba(34,211,238,0.1);
-  animation: scoreGlow 2.5s ease-in-out infinite;
-}
-@keyframes scoreGlow {
-  0%, 100% { box-shadow: 0 0 40px rgba(34,211,238,0.1); }
-  50% { box-shadow: 0 0 60px rgba(34,211,238,0.2); }
-}
-.score-value {
-  font-family: var(--mono);
-  font-size: 48px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-.score-label {
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--cyan);
-}
+/* Voice */
+.voice-ind{position:fixed;bottom:20px;right:20px;width:40px;height:40px;border-radius:50%;background:var(--card);border:1px solid var(--card-b);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s;z-index:200}
+.voice-ind.on{opacity:1}
+.vbars{display:flex;align-items:center;gap:2px;height:14px}
+.vb{width:2px;background:var(--a);border-radius:1px;animation:vb .5s ease-in-out infinite alternate}
+.vb:nth-child(1){height:4px;animation-delay:0s}.vb:nth-child(2){height:8px;animation-delay:.1s}.vb:nth-child(3){height:6px;animation-delay:.2s}.vb:nth-child(4){height:10px;animation-delay:.15s}.vb:nth-child(5){height:4px;animation-delay:.25s}
+@keyframes vb{to{height:12px}}
 
-/* ── Wallet cards ── */
-.wallet-cards {
-  display: flex;
-  gap: 16px;
-}
-.wallet-card {
-  padding: 24px 20px;
-  border-radius: 16px;
-  background: var(--card);
-  border: 1px solid var(--card-border);
-  min-width: 180px;
-  opacity: 0;
-  animation: fadeInUp 0.5s ease forwards;
-}
-.wallet-card:nth-child(1) { animation-delay: 0.2s; }
-.wallet-card:nth-child(2) { animation-delay: 0.4s; }
-.wallet-card-title {
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-}
-.wallet-card-value {
-  font-family: var(--mono);
-  font-size: 28px;
-  font-weight: 500;
-  margin-bottom: 12px;
-}
-.wallet-card-value.icoin { color: var(--mint); }
-.wallet-card-value.vcoin { color: var(--purple); }
-.wallet-card-bullets {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.wallet-card-bullets li {
-  font-size: 11px;
-  color: var(--text-secondary);
-  padding-left: 12px;
-  position: relative;
-}
-.wallet-card-bullets li::before {
-  content: '+';
-  position: absolute;
-  left: 0;
-  color: var(--text-muted);
-}
-.wallet-card-btn {
-  margin-top: 14px;
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: none;
-  font-family: var(--sans);
-  font-size: 11px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.wallet-card-btn.mint { background: var(--mint); color: #000; }
-.wallet-card-btn.purple { background: linear-gradient(135deg, var(--purple), var(--blue)); color: #fff; }
-
-/* ── Quick actions ── */
-.quick-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 20px;
-  border-radius: 16px;
-  background: var(--card);
-  border: 1px solid var(--card-border);
-  opacity: 0;
-  animation: fadeInUp 0.5s ease 0.6s forwards;
-}
-.quick-action-title {
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 6px;
-}
-.quick-action-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.06);
-  background: rgba(255,255,255,0.02);
-  transition: background 0.2s;
-}
-.quick-action-item:hover { background: rgba(255,255,255,0.04); }
-.qa-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-}
-.qa-icon.mint { background: rgba(74,222,128,0.15); }
-.qa-icon.purple { background: rgba(168,85,247,0.15); }
-.qa-icon.gold { background: rgba(245,158,11,0.15); }
-.qa-icon.cyan { background: rgba(34,211,238,0.15); }
-.qa-text { font-size: 12px; color: var(--text-primary); }
-
-/* ── Creators & Advertisers ── */
-.dual-panel {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: 32px;
-  align-items: start;
-  width: 100%;
-  max-width: 1200px;
-}
-.panel {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.panel-title {
-  font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-.panel-title.purple { color: var(--purple); }
-.panel-title.cyan { color: var(--cyan); }
-
-/* ── Finale ── */
-.finale-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 24px;
-}
-.finale-h1 {
-  font-size: 48px;
-  font-weight: 600;
-  line-height: 1.2;
-}
-.finale-cta {
-  margin-top: 12px;
-  padding: 16px 44px;
-  border-radius: 30px;
-  background: linear-gradient(135deg, var(--purple), var(--blue));
-  border: none;
-  color: #fff;
-  font-family: var(--sans);
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  cursor: pointer;
-  box-shadow: 0 8px 32px rgba(168,85,247,0.35);
-  transition: all 0.3s;
-}
-.finale-cta:hover {
-  box-shadow: 0 12px 48px rgba(168,85,247,0.5);
-  transform: translateY(-2px) scale(1.02);
-}
-
-/* ── Voice indicator ── */
-.voice-indicator {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--card);
-  border: 1px solid var(--card-border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.3s;
-  z-index: 999;
-}
-.voice-indicator.speaking { opacity: 1; }
-.voice-bars {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  height: 16px;
-}
-.voice-bars .vb {
-  width: 2.5px;
-  background: var(--purple);
-  border-radius: 2px;
-  animation: vbar 0.5s ease-in-out infinite alternate;
-}
-.voice-bars .vb:nth-child(1) { height: 5px; animation-delay: 0s; }
-.voice-bars .vb:nth-child(2) { height: 10px; animation-delay: 0.1s; }
-.voice-bars .vb:nth-child(3) { height: 7px; animation-delay: 0.2s; }
-.voice-bars .vb:nth-child(4) { height: 12px; animation-delay: 0.15s; }
-.voice-bars .vb:nth-child(5) { height: 5px; animation-delay: 0.25s; }
-@keyframes vbar { to { height: 14px; } }
-
-/* ── Responsive ── */
-@media (max-width: 1024px) {
-  .two-col { grid-template-columns: 1fr; gap: 32px; text-align: center; }
-  .col-text { align-items: center; }
-  .dual-panel { grid-template-columns: 1fr; }
-  .slide { padding: 32px 24px; }
-  .slide-h1 { font-size: 32px; }
-}
+@media(max-width:1024px){.layout-split,.layout-triple{grid-template-columns:1fr;gap:28px;text-align:center}.ask-grid{grid-template-columns:1fr}.s{padding:32px 20px}.phone{width:200px;height:410px;border-radius:30px}}
 </style>
 </head>
 <body>
+<canvas id="particles"></canvas>
+<div class="aurora"></div>
 
-<canvas id="particleCanvas"></canvas>
-
-<!-- Navigation -->
-<nav class="nav-bar">
-  <div class="nav-brand">[ i ]</div>
-  <div class="nav-center">
-    <div class="nav-dots" id="navDots"></div>
-    <span class="nav-counter" id="navCounter">1/9</span>
+<nav class="topbar">
+  <div class="brand"><span class="brand-dot"></span><span class="brand-text">[ i ]</span><span class="brand-sub">Investor Pitch</span></div>
+  <div class="nav-area">
+    <div class="dots" id="dots"></div>
+    <span class="counter" id="cnt">1/11</span>
+    <button class="tbtn" id="bp">←</button>
+    <button class="tbtn" id="bn">→</button>
+    <button class="tbtn voice" id="bv">Voice</button>
+    <button class="tbtn" id="ba">Auto</button>
   </div>
-  <div class="nav-right">
-    <button class="nav-btn" id="btnPrev">←</button>
-    <button class="nav-btn" id="btnNext">→</button>
-    <button class="nav-btn nav-btn--voice" id="btnVoice">Voice</button>
-    <button class="nav-btn" id="btnAuto">Auto</button>
-  </div>
-  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
 </nav>
+<div class="progress"><div class="pbar" id="pb"></div></div>
+<div class="voice-ind" id="vi"><div class="vbars"><div class="vb"></div><div class="vb"></div><div class="vb"></div><div class="vb"></div><div class="vb"></div></div></div>
 
-<!-- Voice indicator -->
-<div class="voice-indicator" id="voiceInd">
-  <div class="voice-bars"><div class="vb"></div><div class="vb"></div><div class="vb"></div><div class="vb"></div><div class="vb"></div></div>
-</div>
-
-<!-- DECK -->
 <div class="deck" id="deck">
 
-<!-- ══ SLIDE 1: SPLASH ══ -->
-<section class="slide active" data-voice="Welcome to [ i ]. The Attention Wallet and Media Marketplace. Watch. Verify. Earn. Your attention has value — and for the first time, a platform returns it to you.">
-  <div class="splash-content">
-    <div class="logo-glow"><span class="logo-i">[ i ]</span></div>
-    <div class="splash-title">Attention Wallet & Media Marketplace</div>
-    <div class="splash-tagline"><strong>Watch. Verify. Earn.</strong><br>Your attention has value.</div>
-    <div class="splash-sub">The platform that turns verified human attention<br>into real, withdrawable money.</div>
-    <button class="enter-btn" onclick="nextSlide()">ENTER [ i ]</button>
+<!-- 1 SPLASH -->
+<section class="s active" data-v="Welcome to [ i ]. The Attention Wallet and Media Marketplace. Watch. Verify. Earn. Your attention has value — and for the first time in history, a platform returns it to you.">
+  <div class="layout-center">
+    <div style="width:100px;height:100px;border-radius:50%;background:radial-gradient(circle,rgba(124,67,255,.25) 0%,transparent 70%);display:flex;align-items:center;justify-content:center;animation:pulse 3s ease-in-out infinite;box-shadow:0 0 50px rgba(124,67,255,.2)"><span style="font-size:36px;font-weight:300;background:linear-gradient(135deg,var(--a),var(--b),var(--c));-webkit-background-clip:text;-webkit-text-fill-color:transparent">[ i ]</span></div>
+    <div style="font-size:12px;letter-spacing:.35em;text-transform:uppercase;color:var(--muted)">Attention Wallet & Media Marketplace</div>
+    <h1 style="font-size:32px;font-weight:400"><span class="gr">Watch. Verify. Earn.</span><br>Your attention has value.</h1>
+    <p class="sub">The first platform that turns verified human attention into real, withdrawable money.</p>
+    <button class="cta-btn" onclick="nx()">ENTER [ i ]</button>
   </div>
 </section>
 
-<!-- ══ SLIDE 2: THE PROBLEM ══ -->
-<section class="slide" data-voice="Attention is worth billions. You get nothing. Platforms profit from your eyeballs. Creators struggle to monetize. Advertisers waste 190 billion dollars on bots and fraud. And the user — the person who actually pays attention — receives zero percent. It's time to flip the system.">
-  <div class="slide-header"><span class="slide-number">2/9</span><span class="slide-category">The Problem</span></div>
-  <div class="two-col">
-    <div class="col-text">
-      <h1 class="slide-h1">Attention is<br>Worth Billions.<br><span class="gradient">You Get Nothing.</span></h1>
-      <ul class="slide-bullets">
-        <li>Platforms profit from your eyeballs</li>
-        <li>Creators struggle to monetize genuine engagement</li>
-        <li>Advertisers waste spend on bots & fraud</li>
-        <li>Users are ignored — 0% paid to the viewer</li>
-      </ul>
-      <div class="slide-cta">It's time to flip the system.</div>
+<!-- 2 PROBLEM -->
+<section class="s" data-v="Attention is worth billions. You get nothing. Two point five billion people are online daily giving away their most valuable asset. Platforms harvest 190 billion dollars in ad revenue. Advertisers waste on bots and fraud. And the user — the person who actually pays attention — receives zero percent. It's time to flip the system.">
+  <div class="sl"><span class="sl-n">2/11</span><span class="sl-c">The Problem</span></div>
+  <div class="layout-split">
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <h1>Attention is<br>Worth Billions.<br><span class="gr">You Get Nothing.</span></h1>
+      <ul class="bullets"><li>Platforms profit — you get zero</li><li>Creators struggle to monetize real engagement</li><li>Advertisers waste $190B on bots & fraud</li><li>Users are ignored — 0% paid to the viewer</li></ul>
+      <div class="tag">It's time to flip the system.</div>
     </div>
-    <div class="col-visual">
-      <div class="stat-grid">
-        <div class="stat-card"><div><div class="stat-value">2.5B+</div></div><div class="stat-label">People online daily<br>giving attention for free</div></div>
-        <div class="stat-card"><div><div class="stat-value">$190B+</div></div><div class="stat-label">Ad spend wasted<br>on bots & fraud annually</div></div>
-        <div class="stat-card"><div><div class="stat-value">0%</div></div><div class="stat-label">Paid to the user<br>for their attention</div></div>
-      </div>
+    <div class="stat-row">
+      <div class="stat"><div class="stat-val">2.5B+</div><div class="stat-lbl">People online daily<br>giving attention for free</div></div>
+      <div class="stat"><div class="stat-val">$190B+</div><div class="stat-lbl">Ad spend wasted<br>on bots & fraud annually</div></div>
+      <div class="stat"><div class="stat-val">0%</div><div class="stat-lbl">Paid to the user<br>for their attention</div></div>
     </div>
   </div>
 </section>
 
-<!-- ══ SLIDE 3: THE SOLUTION ══ -->
-<section class="slide" data-voice="We turn attention into real value. Verified human attention becomes measurable, valuable, and rewarding. Users earn iCoins for watching. Creators grow and monetize. Advertisers buy certified attention — not estimated impressions. Three sides of the marketplace, one unified economy.">
-  <div class="slide-header"><span class="slide-number">3/9</span><span class="slide-category">The Solution</span></div>
-  <div class="two-col">
-    <div class="col-text">
-      <h1 class="slide-h1">We Turn Attention<br>Into <span class="gradient">Real Value.</span></h1>
-      <p class="slide-p">Verified human attention becomes measurable, valuable, and rewarding. Three stakeholders — one aligned economy.</p>
-      <ul class="slide-bullets">
-        <li>Users earn iCoins for verified watching</li>
-        <li>Creators grow & monetize real engagement</li>
-        <li>Advertisers get certified attention — not estimates</li>
-      </ul>
-      <div class="slide-cta">The Attention Economy — powered by proof.</div>
+<!-- 3 SOLUTION -->
+<section class="s" data-v="We turn attention into real value. Verified human attention becomes measurable, valuable, and rewarding. Users earn iCoins. Creators grow and monetize. Advertisers buy certified attention — not estimated impressions. Three stakeholders. One aligned economy. The Attention Economy — powered by proof.">
+  <div class="sl"><span class="sl-n">3/11</span><span class="sl-c">The Solution</span></div>
+  <div class="layout-split">
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <h1>We Turn Attention<br>Into <span class="gr">Real Value.</span></h1>
+      <p class="sub">Verified human attention becomes measurable, valuable, and rewarding. Three stakeholders — one aligned economy.</p>
+      <ul class="bullets"><li>Users earn iCoins for verified watching</li><li>Creators get 60% revenue — best in class</li><li>Advertisers buy certified attention, not estimates</li></ul>
+      <div class="tag">The Attention Economy — powered by proof.</div>
     </div>
-    <div class="col-visual" style="flex-direction:column;gap:24px">
-      <div style="display:flex;align-items:center;gap:20px">
-        <div style="padding:14px 20px;border-radius:12px;background:var(--card);border:1px solid rgba(168,85,247,0.2);text-align:center">
-          <div style="font-size:20px;margin-bottom:4px">👤</div>
-          <div style="font-size:10px;color:var(--purple);font-weight:500;text-transform:uppercase;letter-spacing:0.08em">Users</div>
-          <div style="font-size:9px;color:var(--text-muted);margin-top:2px">Earn</div>
-        </div>
-        <div style="font-size:24px;color:var(--text-muted)">→</div>
-        <div class="logo-glow" style="width:80px;height:80px;animation:logoPulse 3s ease-in-out infinite"><span style="font-size:24px;background:var(--gradient-brand);-webkit-background-clip:text;-webkit-text-fill-color:transparent">[ i ]</span></div>
-        <div style="font-size:24px;color:var(--text-muted)">←</div>
-        <div style="padding:14px 20px;border-radius:12px;background:var(--card);border:1px solid rgba(34,211,238,0.2);text-align:center">
-          <div style="font-size:20px;margin-bottom:4px">📢</div>
-          <div style="font-size:10px;color:var(--cyan);font-weight:500;text-transform:uppercase;letter-spacing:0.08em">Advertisers</div>
-          <div style="font-size:9px;color:var(--text-muted);margin-top:2px">Buy Verified Attention</div>
-        </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:20px">
+      <div style="display:flex;align-items:center;gap:16px">
+        <div class="card" style="text-align:center;padding:16px 20px"><div style="font-size:18px;margin-bottom:4px">👤</div><div style="font-size:9px;color:var(--a);font-weight:600;text-transform:uppercase;letter-spacing:.08em">Users</div><div style="font-size:8px;color:var(--dim)">Earn iCoins</div></div>
+        <span style="color:var(--dim)">→</span>
+        <div style="width:70px;height:70px;border-radius:50%;background:radial-gradient(circle,rgba(124,67,255,.2) 0%,transparent 70%);display:flex;align-items:center;justify-content:center;border:1px solid rgba(124,67,255,.2)"><span style="font-size:16px;background:linear-gradient(135deg,var(--a),var(--c));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:600">[ i ]</span></div>
+        <span style="color:var(--dim)">←</span>
+        <div class="card" style="text-align:center;padding:16px 20px"><div style="font-size:18px;margin-bottom:4px">📢</div><div style="font-size:9px;color:var(--c);font-weight:600;text-transform:uppercase;letter-spacing:.08em">Advertisers</div><div style="font-size:8px;color:var(--dim)">Buy Verified</div></div>
       </div>
-      <div style="padding:14px 20px;border-radius:12px;background:var(--card);border:1px solid rgba(245,158,11,0.2);text-align:center">
-        <div style="font-size:20px;margin-bottom:4px">⭐</div>
-        <div style="font-size:10px;color:var(--gold);font-weight:500;text-transform:uppercase;letter-spacing:0.08em">Creators</div>
-        <div style="font-size:9px;color:var(--text-muted);margin-top:2px">Grow & Monetize</div>
-      </div>
+      <div class="card" style="text-align:center;padding:16px 20px"><div style="font-size:18px;margin-bottom:4px">⭐</div><div style="font-size:9px;color:var(--gold);font-weight:600;text-transform:uppercase;letter-spacing:.08em">Creators</div><div style="font-size:8px;color:var(--dim)">60% Revenue Share</div></div>
     </div>
   </div>
 </section>
 
-<!-- ══ SLIDE 4: HOW IT WORKS ══ -->
-<section class="slide" data-voice="Loop 1: Watch, Verify, Earn. Step 1: Discover content in the immersive feed. Step 2: Our system verifies real attention — gaze, presence, interaction. Step 3: Attention is qualified with 92% confidence. Step 4: You earn iCoins — real money. Step 5: Stored in your Attention Wallet — withdraw anytime. Your attention. Your value.">
-  <div class="slide-header"><span class="slide-number">4/9</span><span class="slide-category">How It Works</span></div>
-  <div style="display:flex;flex-direction:column;align-items:center;gap:36px;width:100%;max-width:1000px">
-    <h1 class="slide-h1" style="text-align:center">Loop 1: <span class="gradient">Watch → Verify → Earn</span></h1>
-    <div class="loop-flow">
-      <div class="loop-step">
-        <div class="loop-step-num">1.</div>
-        <div class="loop-step-icon watch">👁️</div>
-        <div class="loop-step-name">Discover</div>
-        <div class="loop-step-desc">Immersive feed<br>content plays</div>
-      </div>
-      <div class="loop-arrow">→</div>
-      <div class="loop-step">
-        <div class="loop-step-num">2.</div>
-        <div class="loop-step-icon verify">🔍</div>
-        <div class="loop-step-name">Verify</div>
-        <div class="loop-step-desc">Gaze + Presence<br>+ Interaction</div>
-      </div>
-      <div class="loop-arrow">→</div>
-      <div class="loop-step">
-        <div class="loop-step-num">3.</div>
-        <div class="loop-step-icon qualify">✓</div>
-        <div class="loop-step-name">Qualified</div>
-        <div class="loop-step-desc">Attention<br>confirmed 92%</div>
-      </div>
-      <div class="loop-arrow">→</div>
-      <div class="loop-step">
-        <div class="loop-step-num">4.</div>
-        <div class="loop-step-icon reward">💰</div>
-        <div class="loop-step-name">Reward</div>
-        <div class="loop-step-desc">+2.50 iCoins<br>credited instantly</div>
-      </div>
-      <div class="loop-arrow">→</div>
-      <div class="loop-step">
-        <div class="loop-step-num">5.</div>
-        <div class="loop-step-icon wallet">🏦</div>
-        <div class="loop-step-name">Wallet</div>
-        <div class="loop-step-desc">128.75 iCoins<br>withdraw anytime</div>
+<!-- 4 MARKET -->
+<section class="s" data-v="Market opportunity. The global attention economy is valued at over 750 billion dollars with digital advertising growing at 12 percent annually. Yet no platform has ever given the viewer a share. We are building the ledger for a trillion-dollar economy that has never had one. First-mover advantage in verified attention monetization.">
+  <div class="sl"><span class="sl-n">4/11</span><span class="sl-c">Market Opportunity</span></div>
+  <div class="layout-split">
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <h1><span class="gr">Market<br>Opportunity</span></h1>
+      <p class="sub">The global attention economy exceeds $750B. No platform has ever given the viewer a share. We're building the ledger for a trillion-dollar economy.</p>
+      <div class="stat-row">
+        <div class="stat"><div class="stat-val">$750B+</div><div class="stat-lbl">Global attention economy</div></div>
+        <div class="stat"><div class="stat-val">12%</div><div class="stat-lbl">Annual digital ad growth</div></div>
+        <div class="stat"><div class="stat-val">0</div><div class="stat-lbl">Platforms paying viewers<br>for verified attention</div></div>
       </div>
     </div>
-    <div class="slide-cta" style="font-size:18px;margin-top:12px">Your attention. Your value.</div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="chart-box">
+        <div class="chart-title">Attention Economy Growth ($B)</div>
+        <div class="chart-bar" style="height:35%"><span class="chart-label">2022</span></div>
+        <div class="chart-bar" style="height:42%"><span class="chart-label">2023</span></div>
+        <div class="chart-bar" style="height:50%"><span class="chart-label">2024</span></div>
+        <div class="chart-bar" style="height:58%"><span class="chart-label">2025</span></div>
+        <div class="chart-bar" style="height:68%"><span class="chart-label">2026</span></div>
+        <div class="chart-bar" style="height:80%"><span class="chart-label">2027</span></div>
+        <div class="chart-bar" style="height:95%"><span class="chart-label">2028</span></div>
+      </div>
+      <div class="tag" style="text-align:center">First-mover in verified attention monetization</div>
+    </div>
   </div>
 </section>
 
-<!-- ══ SLIDE 5: IMMERSIVE EXPERIENCE ══ -->
-<section class="slide" data-voice="The immersive experience. Full-screen media with invisible economics. Earn in real time while you enjoy content. The attention timer shows qualified watch time. Coin balance always visible. Live proof indicators show your attention being verified. Swipe to discover endless verified content and offers. This is TikTok — but you get paid.">
-  <div class="slide-header"><span class="slide-number">5/9</span><span class="slide-category">Immersive Experience</span></div>
-  <div class="two-col">
-    <div class="col-text">
-      <h1 class="slide-h1">Immersive<br><span class="gradient">Experience</span></h1>
-      <p class="slide-p">Full-screen media with invisible economics underneath. Watch content you love — earn while you enjoy.</p>
-      <ul class="slide-bullets">
-        <li>Earn in real time while watching</li>
-        <li>Attention timer shows qualified duration</li>
-        <li>Coin balance always visible</li>
-        <li>Live proof indicators — see verification happen</li>
-        <li>Swipe to discover endless content & offers</li>
-      </ul>
+<!-- 5 HOW IT WORKS -->
+<section class="s" data-v="Loop 1: Watch, Verify, Earn. Discover content in the immersive feed. Our system verifies real attention through gaze, presence, and interaction. Attention is qualified with 92 percent confidence. You earn iCoins instantly. Stored in your Attention Wallet. Withdraw anytime. Your attention. Your value.">
+  <div class="sl"><span class="sl-n">5/11</span><span class="sl-c">How It Works</span></div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:32px;width:100%;max-width:1000px">
+    <h1 style="text-align:center">Loop 1: <span class="gr">Watch → Verify → Earn</span></h1>
+    <div class="flow">
+      <div class="fstep"><div class="fstep-icon i1">👁️</div><div class="fstep-name">Discover</div><div class="fstep-desc">Immersive feed</div></div>
+      <div class="farrow">→</div>
+      <div class="fstep"><div class="fstep-icon i2">🔍</div><div class="fstep-name">Verify</div><div class="fstep-desc">Gaze + Presence</div></div>
+      <div class="farrow">→</div>
+      <div class="fstep"><div class="fstep-icon i3">✓</div><div class="fstep-name">Qualified</div><div class="fstep-desc">92% confidence</div></div>
+      <div class="farrow">→</div>
+      <div class="fstep"><div class="fstep-icon i4">💰</div><div class="fstep-name">Reward</div><div class="fstep-desc">+2.50 iCoins</div></div>
+      <div class="farrow">→</div>
+      <div class="fstep"><div class="fstep-icon i5">🏦</div><div class="fstep-name">Wallet</div><div class="fstep-desc">Withdraw anytime</div></div>
     </div>
-    <div class="col-visual" style="position:relative">
-      <div class="phone-mockup">
-        <div class="phone-screen-inner">
-          <div class="phone-notch"></div>
-          <div class="phone-media"></div>
-          <div class="phone-scrim-top"></div>
-          <div class="phone-scrim-bot"></div>
-          <div class="phone-timer"><div class="phone-timer-fill"></div></div>
-          <div class="phone-coin-badge"><span style="width:5px;height:5px;border-radius:50%;background:var(--mint)"></span> 12.45</div>
-          <div class="phone-reward"><span class="phone-reward-dot"></span> +2.50</div>
-          <div class="phone-rail">
-            <div class="phone-rail-btn"><svg width="14" height="14" viewBox="0 0 18 18" fill="none"><path d="M9 15s-6-4.5-6-8.5a4 4 0 018 0 4 4 0 018 0c0 4-6 8.5-6 8.5z" stroke="rgba(255,255,255,0.8)" stroke-width="1.2" fill="none"/></svg></div>
-            <div class="phone-rail-count">2.3K</div>
-            <div class="phone-rail-btn"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M2 2h12v9H5L2 14V2z" stroke="rgba(255,255,255,0.8)" stroke-width="1.1" fill="none"/></svg></div>
-            <div class="phone-rail-count">312</div>
-            <div class="phone-rail-btn"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="rgba(255,255,255,0.8)" stroke-width="1.1" stroke-linecap="round"/></svg></div>
-            <div class="phone-rail-count">490</div>
-          </div>
-          <div class="phone-out-profile"><div class="phone-out-name">@creator</div><div class="phone-out-loc">Verified · Trending</div></div>
-          <div class="phone-bottom-nav">
-            <div class="phone-tab active">Feed</div>
-            <div class="phone-tab">Promo</div>
-            <div class="phone-tab">Create</div>
-            <div class="phone-tab">Wallet</div>
-            <div class="phone-tab">Profile</div>
-          </div>
-          <!-- Callout lines -->
-          <div class="callout-lines">
-            <div class="callout" style="top:36px;left:-120px;flex-direction:row-reverse"><span class="callout-text gold">Earn in Real Time</span><div class="callout-line" style="background:linear-gradient(270deg,var(--gold),transparent)"></div></div>
-            <div class="callout" style="top:36px;right:-100px"><div class="callout-line"></div><span class="callout-text mint">Coin Balance</span></div>
-            <div class="callout" style="top:80px;left:-140px;flex-direction:row-reverse"><span class="callout-text purple">Attention Timer</span><div class="callout-line" style="background:linear-gradient(270deg,var(--purple),transparent)"></div></div>
-            <div class="callout" style="bottom:130px;right:-100px"><div class="callout-line"></div><span class="callout-text cyan">Engage</span></div>
-            <div class="callout" style="bottom:80px;left:-150px;flex-direction:row-reverse"><span class="callout-text purple">Live Proof Indicators</span><div class="callout-line" style="background:linear-gradient(270deg,var(--purple),transparent)"></div></div>
-            <div class="callout" style="bottom:60px;right:-130px"><div class="callout-line"></div><span class="callout-text mint">Swipe to Discover</span></div>
-          </div>
-        </div>
+    <div class="tag" style="font-size:18px">Your attention. Your value.</div>
+  </div>
+</section>
+
+<!-- 6 IMMERSIVE UX -->
+<section class="s" data-v="The immersive experience. Full-screen media with invisible economics. Earn in real time while you enjoy. Attention timer shows qualified watch time. Coin balance always visible. Live proof indicators. Swipe to discover. Five-tab dock: Feed, Promo, Create, Wallet, Profile. This is TikTok — but you get paid.">
+  <div class="sl"><span class="sl-n">6/11</span><span class="sl-c">Immersive Experience</span></div>
+  <div class="layout-split">
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <h1>Immersive<br><span class="gr">Experience</span></h1>
+      <p class="sub">Full-screen media with invisible economics underneath. TikTok familiarity, novel value capture.</p>
+      <ul class="bullets"><li>Earn in real time while watching content</li><li>Attention timer tracks qualified duration</li><li>Coin balance always visible — no hidden state</li><li>Live proof indicators show verification in action</li><li>5-tab dock: Feed · Promo · Create · Wallet · Profile</li></ul>
+    </div>
+    <div style="display:flex;justify-content:center">
+      <div class="phone"><div class="phone-inner"><div class="phone-notch"></div><div class="phone-bg"></div><div class="phone-ui"><div class="phone-timer"><div class="phone-timer-fill"></div></div><div class="phone-pill"><span class="phone-pill-dot"></span>+2.50</div><div style="position:absolute;top:36px;left:12px;padding:4px 8px;border-radius:8px;background:rgba(7,7,9,.5);border:.5px solid rgba(255,255,255,.1);font-family:var(--mono);font-size:8px;color:#fff;backdrop-filter:blur(6px)">12.45 ic</div><div style="position:absolute;right:10px;bottom:62px;display:flex;flex-direction:column;gap:8px;align-items:center"><div style="width:30px;height:30px;border-radius:50%;background:rgba(7,7,9,.4);border:.5px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 18 18" fill="none"><path d="M9 15s-6-4.5-6-8.5a4 4 0 018 0 4 4 0 018 0c0 4-6 8.5-6 8.5z" stroke="rgba(255,255,255,.8)" stroke-width="1.2" fill="none"/></svg></div><span style="font-size:7px;color:rgba(255,255,255,.4)">2.3K</span><div style="width:30px;height:30px;border-radius:50%;background:rgba(7,7,9,.4);border:.5px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M2 2h12v9H5L2 14V2z" stroke="rgba(255,255,255,.8)" stroke-width="1.1" fill="none"/></svg></div><div style="width:30px;height:30px;border-radius:50%;background:rgba(7,7,9,.4);border:.5px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="rgba(255,255,255,.8)" stroke-width="1.1" stroke-linecap="round"/></svg></div></div><div style="position:absolute;left:12px;bottom:56px"><div style="font-size:9px;font-weight:600;color:#fff">@creator</div><div style="font-size:7px;color:rgba(255,255,255,.4)">Verified · Trending</div></div></div><div class="phone-nav"><div class="phone-tab act">Feed</div><div class="phone-tab">Promo</div><div class="phone-tab">Create</div><div class="phone-tab">Wallet</div><div class="phone-tab">Profile</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 POP -->
+<section class="s" data-v="Proof of Presence. Six layers of verification validate attention across independent signals. Presence, participation, perception, signal integrity, session integrity, and reward eligibility. All must pass. Zero guesswork. On-device only — privacy first. Bots cost more than they can extract. Ninety-two percent composite attention score.">
+  <div class="sl"><span class="sl-n">7/11</span><span class="sl-c">POP · Proof of Presence</span></div>
+  <div class="layout-split">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <h1>6 Layers of<br><span class="gr">Verification</span></h1>
+      <p class="sub">Our POP system validates attention across six independent layers. On-device only. Zero guesswork.</p>
+      <div class="pop-grid">
+        <div class="pop-item"><div class="pop-dot">✓</div><div><div class="pop-text">Proof of Presence</div><div class="pop-sub">Is a real human present?</div></div></div>
+        <div class="pop-item"><div class="pop-dot">✓</div><div><div class="pop-text">Proof of Participation</div><div class="pop-sub">Did interaction occur?</div></div></div>
+        <div class="pop-item"><div class="pop-dot">✓</div><div><div class="pop-text">Proof of Perception</div><div class="pop-sub">Was attention on content?</div></div></div>
+        <div class="pop-item"><div class="pop-dot">✓</div><div><div class="pop-text">Proof of Signal</div><div class="pop-sub">Are device signals consistent?</div></div></div>
+        <div class="pop-item"><div class="pop-dot">✓</div><div><div class="pop-text">Session Integrity</div><div class="pop-sub">Was session uninterrupted?</div></div></div>
+        <div class="pop-item"><div class="pop-dot">✓</div><div><div class="pop-text">Reward Eligibility</div><div class="pop-sub">Does it meet campaign rules?</div></div></div>
+      </div>
+      <div class="tag">Six layers. One truth: Verified Human Attention.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:16px">
+      <div class="score-ring"><div class="score-val">92%</div><div class="score-lbl">Strong</div></div>
+      <div style="display:flex;flex-direction:column;gap:5px;width:160px">
+        <div style="display:flex;justify-content:space-between;font-size:9px"><span style="color:var(--muted)">Presence</span><span style="color:var(--mint)">95%</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:9px"><span style="color:var(--muted)">Participation</span><span style="color:var(--mint)">90%</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:9px"><span style="color:var(--muted)">Perception</span><span style="color:var(--mint)">91%</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:9px"><span style="color:var(--muted)">Signal</span><span style="color:var(--mint)">88%</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:9px"><span style="color:var(--muted)">Session</span><span style="color:var(--mint)">94%</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:9px"><span style="color:var(--muted)">Eligibility</span><span style="color:var(--mint)">92%</span></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══ SLIDE 6: POP ══ -->
-<section class="slide" data-voice="Proof of Presence. 6 layers of verification validate attention across independent signals. Proof of Presence: is a real human present? Proof of Participation: did interaction occur? Proof of Perception: was attention on content? Proof of Signal: are device signals consistent? Proof of Session Integrity: was the session uninterrupted? Proof of Reward Eligibility: does it meet campaign rules? Six layers. One truth: Verified Human Attention.">
-  <div class="slide-header"><span class="slide-number">6/9</span><span class="slide-category">POP (Proof of Presence)</span></div>
-  <div class="two-col">
-    <div class="col-text">
-      <h1 class="slide-h1">6 Layers of<br><span class="gradient">Verification</span></h1>
-      <p class="slide-p">Our POP system validates attention across six independent layers. Zero guesswork.</p>
-      <div class="pop-layers">
-        <div class="pop-layer"><div class="pop-check">✓</div><div><div class="pop-name">Proof of Presence</div><div class="pop-desc">Is a real human present?</div></div></div>
-        <div class="pop-layer"><div class="pop-check">✓</div><div><div class="pop-name">Proof of Participation</div><div class="pop-desc">Did interaction occur?</div></div></div>
-        <div class="pop-layer"><div class="pop-check">✓</div><div><div class="pop-name">Proof of Perception</div><div class="pop-desc">Was attention on content?</div></div></div>
-        <div class="pop-layer"><div class="pop-check">✓</div><div><div class="pop-name">Proof of Signal</div><div class="pop-desc">Are device signals consistent?</div></div></div>
-        <div class="pop-layer"><div class="pop-check">✓</div><div><div class="pop-name">Proof of Session Integrity</div><div class="pop-desc">Was the session uninterrupted?</div></div></div>
-        <div class="pop-layer"><div class="pop-check">✓</div><div><div class="pop-name">Proof of Reward Eligibility</div><div class="pop-desc">Does it meet campaign rules?</div></div></div>
+<!-- 8 WALLET -->
+<section class="s" data-v="The Attention Wallet. Two currencies with two purposes. iCoins are cash equivalent: earned from attention, convertible to real money, withdrawable anytime. vCoins are utility: boost content, unlock features, tip creators. Transparent. Fair. User-owned. Every exit declared. Every fee honest.">
+  <div class="sl"><span class="sl-n">8/11</span><span class="sl-c">Wallet & Economy</span></div>
+  <div class="layout-split">
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <h1>Attention Wallet<br><span class="gr">Two Currencies.<br>Two Purposes.</span></h1>
+      <div class="wcards">
+        <div class="wcard"><div class="wcard-t">iCoins</div><div class="wcard-v g">128.75</div><ul class="wcard-list"><li>Cash-equivalent</li><li>Earned from attention</li><li>Convert to cash</li><li>Withdraw anytime</li></ul><button class="wcard-btn g">Convert</button></div>
+        <div class="wcard"><div class="wcard-t">vCoins</div><div class="wcard-v p">350.20</div><ul class="wcard-list"><li>Platform utility</li><li>Boost content</li><li>Unlock features</li><li>Tip creators</li></ul><button class="wcard-btn p">Use vCoins</button></div>
       </div>
-      <div class="slide-cta">Six layers. One truth: Verified Human Attention.</div>
     </div>
-    <div class="col-visual" style="flex-direction:column;gap:20px">
-      <div class="score-display">
-        <div class="score-value">92%</div>
-        <div class="score-label">Strong</div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:6px;width:200px">
-        <div style="display:flex;justify-content:space-between;font-size:10px"><span style="color:var(--text-secondary)">Presence</span><span style="color:var(--mint)">95%</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:10px"><span style="color:var(--text-secondary)">Participation</span><span style="color:var(--mint)">90%</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:10px"><span style="color:var(--text-secondary)">Perception</span><span style="color:var(--mint)">91%</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:10px"><span style="color:var(--text-secondary)">Signal</span><span style="color:var(--mint)">88%</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:10px"><span style="color:var(--text-secondary)">Session Integrity</span><span style="color:var(--mint)">94%</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:10px"><span style="color:var(--text-secondary)">Eligibility</span><span style="color:var(--mint)">92%</span></div>
-      </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card"><div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:10px">Quick Actions</div><div style="display:flex;flex-direction:column;gap:8px"><div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;border:1px solid var(--line)"><span style="width:24px;height:24px;border-radius:50%;background:rgba(74,222,128,.12);display:flex;align-items:center;justify-content:center;font-size:10px">↺</span><span style="font-size:11px">Convert iCoins</span></div><div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;border:1px solid var(--line)"><span style="width:24px;height:24px;border-radius:50%;background:rgba(124,67,255,.12);display:flex;align-items:center;justify-content:center;font-size:10px">↓</span><span style="font-size:11px">Withdraw</span></div><div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;border:1px solid var(--line)"><span style="width:24px;height:24px;border-radius:50%;background:rgba(245,158,11,.12);display:flex;align-items:center;justify-content:center;font-size:10px">♡</span><span style="font-size:11px">Tip Creator</span></div><div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;border:1px solid var(--line)"><span style="width:24px;height:24px;border-radius:50%;background:rgba(52,213,255,.12);display:flex;align-items:center;justify-content:center;font-size:10px">◎</span><span style="font-size:11px">Pay for Content</span></div></div></div>
+      <div style="font-size:12px;color:var(--muted);text-align:center">Transparent. Fair. User-Owned.</div>
     </div>
   </div>
 </section>
 
-<!-- ══ SLIDE 7: WALLET & ECONOMY ══ -->
-<section class="slide" data-voice="The Attention Wallet. Two currencies. Two purposes. iCoins are cash-equivalent — earned from your attention, convertible to real money, withdrawable anytime. vCoins are utility tokens — boost content, unlock features, access drops. Transparent. Fair. User-owned. Every fee declared. Every exit honest.">
-  <div class="slide-header"><span class="slide-number">7/9</span><span class="slide-category">Wallet & Economy</span></div>
-  <div class="two-col">
-    <div class="col-text">
-      <h1 class="slide-h1">Attention Wallet<br><span class="gradient">Two Currencies.<br>Two Purposes.</span></h1>
-      <div class="wallet-cards">
-        <div class="wallet-card">
-          <div class="wallet-card-title">iCoins</div>
-          <div class="wallet-card-value icoin">128.75</div>
-          <ul class="wallet-card-bullets">
-            <li>Cash-equivalent</li>
-            <li>Earned from attention</li>
-            <li>Convert to cash</li>
-            <li>Withdraw anytime</li>
-          </ul>
-          <button class="wallet-card-btn mint">Convert</button>
-        </div>
-        <div class="wallet-card">
-          <div class="wallet-card-title">vCoins</div>
-          <div class="wallet-card-value vcoin">350.20</div>
-          <ul class="wallet-card-bullets">
-            <li>Platform utility</li>
-            <li>Boost content</li>
-            <li>Unlock features</li>
-            <li>Access drops</li>
-          </ul>
-          <button class="wallet-card-btn purple">Use vCoins</button>
-        </div>
+<!-- 9 CREATORS & ADVERTISERS -->
+<section class="s" data-v="For creators: monetize real attention with 60 percent revenue share. For advertisers: buy verified attention with 98.6 percent delivery rate. Creators earn reliably. Advertisers get results. Users win. Three-sided marketplace — everyone aligned.">
+  <div class="sl"><span class="sl-n">9/11</span><span class="sl-c">Creators & Advertisers</span></div>
+  <div class="layout-triple">
+    <div style="display:flex;flex-direction:column;gap:14px"><h2 style="color:var(--a)">For Creators</h2><p style="font-size:13px;color:var(--muted)">Monetize Real Attention</p><ul class="bullets" style="gap:8px"><li>Verified engagement pay</li><li>60% revenue share</li><li>Audience insights</li><li>Built-in tipping</li><li>Grow community</li></ul><div class="card" style="margin-top:10px"><div style="font-size:8px;color:var(--dim)">This Month</div><div style="font-family:var(--mono);font-size:20px;color:var(--mint)">$2,340 <span style="font-size:10px">+24%</span></div></div></div>
+    <div class="phone" style="width:180px;height:370px;border-radius:28px"><div class="phone-inner" style="border-radius:22px"><div style="position:absolute;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;padding:24px 12px;gap:8px"><div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:14px">A</div><div style="font-size:10px;font-weight:600">Alex Creator</div><div style="font-size:7px;color:var(--dim)">@alexcreator</div><div style="display:flex;gap:10px;margin:6px 0"><div style="text-align:center"><div style="font-family:var(--mono);font-size:9px">128K</div><div style="font-size:6px;color:var(--dim)">Followers</div></div><div style="text-align:center"><div style="font-family:var(--mono);font-size:9px">3.2M</div><div style="font-size:6px;color:var(--dim)">Views</div></div><div style="text-align:center"><div style="font-family:var(--mono);font-size:9px;color:var(--mint)">98%</div><div style="font-size:6px;color:var(--dim)">Verified</div></div></div><div style="padding:5px 16px;border-radius:10px;background:var(--mint);font-size:8px;font-weight:600;color:#000">Follow</div></div></div></div>
+    <div style="display:flex;flex-direction:column;gap:14px"><h2 style="color:var(--c)">For Advertisers</h2><p style="font-size:13px;color:var(--muted)">Buy Verified Attention</p><ul class="bullets" style="gap:8px"><li>Real humans, not bots</li><li>Campaigns with proof</li><li>Pay for qualified only</li><li>Real-time data</li><li>Fraud protection</li></ul><div class="card" style="margin-top:10px;text-align:center"><div style="font-size:8px;color:var(--dim)">Attention Delivered</div><div style="font-family:var(--mono);font-size:24px;color:var(--c)">98.6%</div><div style="font-size:9px;color:var(--muted)">Verified</div></div></div>
+  </div>
+</section>
+
+<!-- 10 TRACTION -->
+<section class="s" data-v="Traction. Product fully designed — 18 investor-ready feature explainers shipped. POP version 2 complete with iOS and Android native vision. Loop 1 MVP built locally with React and Supabase. Campaign builder, wallet, and studio all prototyped. Ready for seed funding to launch beta.">
+  <div class="sl"><span class="sl-n">10/11</span><span class="sl-c">Traction</span></div>
+  <div class="layout-split">
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <h1><span class="gr">Traction</span></h1>
+      <p class="sub">Product designed, prototyped, and validated. Technical infrastructure proven. Ready for seed to launch closed beta.</p>
+      <div class="stat-row">
+        <div class="stat"><div class="stat-val">18</div><div class="stat-lbl">Feature explainers shipped<br>investor-ready HTML prototypes</div></div>
+        <div class="stat"><div class="stat-val">POP v2</div><div class="stat-lbl">Complete · iOS ARKit<br>+ Android MediaPipe native</div></div>
+        <div class="stat"><div class="stat-val">Loop 1</div><div class="stat-lbl">MVP spine built locally<br>React + Supabase + Edge Functions</div></div>
+        <div class="stat"><div class="stat-val">26+ω</div><div class="stat-lbl">Currency taxonomy defined<br>immutable economy rules</div></div>
       </div>
     </div>
-    <div class="col-visual">
-      <div class="quick-actions">
-        <div class="quick-action-title">Quick Actions</div>
-        <div class="quick-action-item"><div class="qa-icon mint">↺</div><div class="qa-text">Convert iCoins</div></div>
-        <div class="quick-action-item"><div class="qa-icon purple">↓</div><div class="qa-text">Withdraw</div></div>
-        <div class="quick-action-item"><div class="qa-icon gold">♡</div><div class="qa-text">Tip Creator</div></div>
-        <div class="quick-action-item"><div class="qa-icon cyan">◎</div><div class="qa-text">Pay for Content</div></div>
-      </div>
-      <div style="margin-top:16px;font-size:13px;color:var(--text-secondary);text-align:center">Transparent. Fair. User-Owned.</div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="card"><div style="font-size:9px;color:var(--a);font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">Built & Ready</div><div style="display:flex;flex-direction:column;gap:6px;font-size:11px;color:var(--muted)"><div>✓ Immersive feed (Picture 2 shell)</div><div>✓ Watch → Verify → Reward → Wallet loop</div><div>✓ 5-gate POP verification engine</div><div>✓ Dual currency wallet (iCoins + vCoins)</div><div>✓ Gesture rail with configurable actions</div><div>✓ ELO companion AI layer</div><div>✓ Campaign builder prototype</div><div>✓ Studio creation tools</div></div></div>
+      <div class="card"><div style="font-size:9px;color:var(--gold);font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">Next Milestones</div><div style="display:flex;flex-direction:column;gap:6px;font-size:11px;color:var(--muted)"><div>→ Closed beta with 500 users</div><div>→ First brand campaign (Nike-tier)</div><div>→ App Store launch Q1 2027</div></div></div>
     </div>
   </div>
 </section>
 
-<!-- ══ SLIDE 8: CREATORS & ADVERTISERS ══ -->
-<section class="slide" data-voice="For Creators: monetize real attention. Get paid for verified engagement. Fair revenue shares — 60 percent to creator. Audience insights that matter. Built-in tipping and subscriptions. For Advertisers: buy verified attention. Reach real humans, not bots. Campaigns with proof. Pay only for qualified attention. Real-time performance data. Fraud protection built in. Creators earn reliably. Advertisers get results. Users win.">
-  <div class="slide-header"><span class="slide-number">8/9</span><span class="slide-category">For Creators & Advertisers</span></div>
-  <div class="dual-panel">
-    <div class="panel">
-      <div class="panel-title purple">For Creators</div>
-      <p style="font-size:14px;color:var(--text-secondary);margin-bottom:8px">Monetize Real Attention</p>
-      <ul class="slide-bullets">
-        <li>Get paid for verified engagement</li>
-        <li>Fair revenue shares — 60% to creator</li>
-        <li>Audience insights that matter</li>
-        <li>Built-in tipping & subscriptions</li>
-        <li>Grow your loyal community</li>
-      </ul>
-      <div style="margin-top:16px;padding:14px;border-radius:12px;background:var(--card);border:1px solid var(--card-border)">
-        <div style="font-size:9px;color:var(--text-muted);margin-bottom:4px">Earnings This Month</div>
-        <div style="font-family:var(--mono);font-size:22px;color:var(--mint)">$2,340.50 <span style="font-size:11px;color:var(--mint)">+24.5%</span></div>
-      </div>
+<!-- 11 OUR ASK -->
+<section class="s" data-v="Our ask. Revenue sources: 10 percent platform fee on every verified transaction plus brand campaign marketplace fees. Pricing strategy: free for users — brands pay per certified attention second. Customer acquisition: referral programs where sharing earns, plus creator partnerships that bring audiences. Join the revolution. Own your attention — on [ i ].">
+  <div class="sl"><span class="sl-n">11/11</span><span class="sl-c">Our Ask</span></div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:32px;width:100%;max-width:900px">
+    <h1 style="text-align:center"><span class="gr">Our Ask</span></h1>
+    <p class="sub" style="text-align:center">To ensure long-term sustainability, our model generates multiple revenue streams while delivering value to every stakeholder.</p>
+    <div class="ask-grid">
+      <div class="ask-item"><div class="ask-title">Revenue Sources</div><div class="ask-text">10% platform fee on verified transactions. Brand campaign marketplace with CPV (cost per verified) pricing. Premium creator tools subscription tier.</div></div>
+      <div class="ask-item"><div class="ask-title">Pricing Strategy</div><div class="ask-text">Free for users — always. Brands pay per certified attention second. Tiered plans for creators: Basic (free), Pro ($9.99/mo), Studio ($29.99/mo).</div></div>
+      <div class="ask-item"><div class="ask-title">Customer Acquisition</div><div class="ask-text">Referral programs where sharing earns iCoins. Creator partnerships bring audiences organically. Brand launch campaigns seed initial user base.</div></div>
     </div>
-    <div style="display:flex;align-items:center;justify-content:center">
-      <div class="phone-mockup" style="width:200px;height:410px;border-radius:32px">
-        <div class="phone-screen-inner" style="border-radius:26px">
-          <div style="position:absolute;inset:0;background:var(--panel);display:flex;flex-direction:column;align-items:center;padding:28px 14px;gap:10px">
-            <div style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--text-primary)">A</div>
-            <div style="font-size:11px;font-weight:600;color:var(--text-primary)">Alex Creator</div>
-            <div style="font-size:8px;color:var(--text-muted)">@alexcreator</div>
-            <div style="display:flex;gap:12px;margin:8px 0">
-              <div style="text-align:center"><div style="font-family:var(--mono);font-size:10px;color:var(--text-primary)">128K</div><div style="font-size:7px;color:var(--text-muted)">Followers</div></div>
-              <div style="text-align:center"><div style="font-family:var(--mono);font-size:10px;color:var(--text-primary)">3.2M</div><div style="font-size:7px;color:var(--text-muted)">Views</div></div>
-              <div style="text-align:center"><div style="font-family:var(--mono);font-size:10px;color:var(--mint)">98%</div><div style="font-size:7px;color:var(--text-muted)">Verified</div></div>
-            </div>
-            <div style="padding:6px 20px;border-radius:14px;background:var(--mint);font-size:9px;font-weight:600;color:#000">Follow</div>
-          </div>
-        </div>
-      </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:12px">
+      <p style="font-size:16px;color:var(--a)">Welcome to [ i ]. Welcome to the future.</p>
+      <button class="cta-btn">Join the Revolution</button>
     </div>
-    <div class="panel">
-      <div class="panel-title cyan">For Advertisers</div>
-      <p style="font-size:14px;color:var(--text-secondary);margin-bottom:8px">Buy Verified Attention</p>
-      <ul class="slide-bullets">
-        <li>Reach real humans, not bots</li>
-        <li>Campaigns with proof of attention</li>
-        <li>Pay only for qualified engagement</li>
-        <li>Real-time performance data</li>
-        <li>Fraud protection built-in</li>
-      </ul>
-      <div style="margin-top:16px;padding:14px;border-radius:12px;background:var(--card);border:1px solid var(--card-border);text-align:center">
-        <div style="font-size:9px;color:var(--text-muted);margin-bottom:4px">Campaign Result</div>
-        <div style="font-size:9px;color:var(--text-muted)">Attention Delivered</div>
-        <div style="font-family:var(--mono);font-size:28px;color:var(--cyan)">98.6%</div>
-        <div style="font-size:10px;color:var(--text-secondary)">Verified</div>
-      </div>
-    </div>
-  </div>
-  <div style="position:absolute;bottom:36px;left:0;right:0;text-align:center;font-size:13px;color:var(--purple)">Creators earn reliably. Advertisers get results. Users win.</div>
-</section>
-
-<!-- ══ SLIDE 9: THE FUTURE ══ -->
-<section class="slide" data-voice="The Attention Economy starts with you. Your attention has value. We make it undeniable. Own your attention. Earn for your time. Support what you love. Build the future together. Welcome to [ i ]. Welcome to the future.">
-  <div class="slide-header"><span class="slide-number">9/9</span><span class="slide-category">The Future</span></div>
-  <div class="finale-content">
-    <h1 class="finale-h1">The Attention Economy<br>Starts With <span class="gradient">You.</span></h1>
-    <p class="slide-p" style="max-width:520px;text-align:center">Your attention has value.<br>We make it undeniable.</p>
-    <ul class="slide-bullets" style="align-items:center">
-      <li>Own your attention</li>
-      <li>Earn for your time</li>
-      <li>Support what you love</li>
-      <li>Build the future together</li>
-    </ul>
-    <p style="font-size:18px;color:var(--purple);margin-top:12px">Welcome to [ i ].<br>Welcome to the future.</p>
-    <button class="finale-cta">Join the Revolution</button>
   </div>
 </section>
 
-</div><!-- end deck -->
+</div>
 
 <script>
-(function() {
-  'use strict';
+(function(){
+const C=document.getElementById('particles'),X=C.getContext('2d');let P=[];
+function resize(){C.width=innerWidth;C.height=innerHeight}resize();addEventListener('resize',resize);
+for(let i=0;i<50;i++)P.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,s:Math.random()*1.5+.5,o:Math.random()*.25+.05,h:Math.random()>.5?270:210});
+function draw(){X.clearRect(0,0,C.width,C.height);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>C.width)p.vx*=-1;if(p.y<0||p.y>C.height)p.vy*=-1;X.beginPath();X.arc(p.x,p.y,p.s,0,Math.PI*2);X.fillStyle=`hsla(${p.h},60%,55%,${p.o})`;X.fill()});requestAnimationFrame(draw)}draw();
 
-  // Particle canvas
-  const canvas = document.getElementById('particleCanvas');
-  const ctx = canvas.getContext('2d');
-  let particles = [];
-  const PARTICLE_COUNT = 60;
-
-  function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  resizeCanvas();
-  window.addEventListener('resize', resizeCanvas);
-
-  function createParticle() {
-    return {
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.3,
-      vy: (Math.random() - 0.5) * 0.3,
-      size: Math.random() * 1.5 + 0.5,
-      opacity: Math.random() * 0.3 + 0.05,
-      hue: Math.random() > 0.5 ? 270 : 230
-    };
-  }
-
-  for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(createParticle());
-
-  function animateParticles() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach(p => {
-      p.x += p.vx;
-      p.y += p.vy;
-      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      ctx.fillStyle = `hsla(${p.hue}, 70%, 60%, ${p.opacity})`;
-      ctx.fill();
-    });
-    requestAnimationFrame(animateParticles);
-  }
-  animateParticles();
-
-  // Slide engine
-  const slides = document.querySelectorAll('.slide');
-  const navDots = document.getElementById('navDots');
-  const navCounter = document.getElementById('navCounter');
-  const progressFill = document.getElementById('progressFill');
-  const btnPrev = document.getElementById('btnPrev');
-  const btnNext = document.getElementById('btnNext');
-  const btnVoice = document.getElementById('btnVoice');
-  const btnAuto = document.getElementById('btnAuto');
-  const voiceInd = document.getElementById('voiceInd');
-
-  let current = 0;
-  let voiceOn = false;
-  let autoOn = false;
-  let autoTimer = null;
-
-  // Create dots
-  slides.forEach((_, i) => {
-    const dot = document.createElement('button');
-    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
-    dot.addEventListener('click', () => goTo(i));
-    navDots.appendChild(dot);
-  });
-
-  function updateSlides() {
-    slides.forEach((s, i) => {
-      s.classList.remove('active', 'exit-left');
-      if (i === current) s.classList.add('active');
-      else if (i < current) s.classList.add('exit-left');
-    });
-    navDots.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === current));
-    navCounter.textContent = (current + 1) + '/' + slides.length;
-    progressFill.style.width = ((current + 1) / slides.length * 100) + '%';
-    if (voiceOn) speak();
-  }
-
-  function goTo(i) {
-    clearTimeout(autoTimer);
-    current = Math.max(0, Math.min(slides.length - 1, i));
-    updateSlides();
-    if (autoOn && !voiceOn) scheduleAuto();
-  }
-
-  function nextSlide() { goTo(current + 1); }
-  function prevSlide() { goTo(current - 1); }
-
-  function scheduleAuto() {
-    clearTimeout(autoTimer);
-    autoTimer = setTimeout(() => {
-      if (current < slides.length - 1) nextSlide();
-      else goTo(0);
-    }, 9000);
-  }
-
-  // Voice
-  function speak() {
-    if (!('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
-    const text = slides[current].getAttribute('data-voice');
-    if (!text) return;
-    const u = new SpeechSynthesisUtterance(text);
-    u.rate = 0.88;
-    u.pitch = 0.65;
-    const voices = window.speechSynthesis.getVoices();
-    const pref = voices.find(v => /Daniel|Alex|Aaron|Male/i.test(v.name));
-    if (pref) u.voice = pref;
-    u.onstart = () => voiceInd.classList.add('speaking');
-    u.onend = () => {
-      voiceInd.classList.remove('speaking');
-      if (autoOn) autoTimer = setTimeout(() => { if (current < slides.length - 1) nextSlide(); else goTo(0); }, 1500);
-    };
-    u.onerror = () => voiceInd.classList.remove('speaking');
-    window.speechSynthesis.speak(u);
-  }
-
-  btnNext.addEventListener('click', nextSlide);
-  btnPrev.addEventListener('click', prevSlide);
-  btnVoice.addEventListener('click', () => {
-    voiceOn = !voiceOn;
-    btnVoice.classList.toggle('active', voiceOn);
-    if (voiceOn) {
-      if (!window.speechSynthesis.getVoices().length) window.speechSynthesis.onvoiceschanged = speak;
-      else speak();
-    } else {
-      window.speechSynthesis.cancel();
-      voiceInd.classList.remove('speaking');
-    }
-  });
-  btnAuto.addEventListener('click', () => {
-    autoOn = !autoOn;
-    btnAuto.classList.toggle('active', autoOn);
-    if (autoOn) { if (!voiceOn) scheduleAuto(); }
-    else clearTimeout(autoTimer);
-  });
-
-  document.addEventListener('keydown', e => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextSlide();
-    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prevSlide();
-    else if (e.key === ' ') { e.preventDefault(); btnVoice.click(); }
-    else if (e.key === 'a') btnAuto.click();
-  });
-
-  let tx = 0;
-  document.addEventListener('touchstart', e => { tx = e.changedTouches[0].screenX; });
-  document.addEventListener('touchend', e => {
-    const d = e.changedTouches[0].screenX - tx;
-    if (Math.abs(d) > 50) d < 0 ? nextSlide() : prevSlide();
-  });
-
-  window.nextSlide = nextSlide;
+const slides=document.querySelectorAll('.s'),dots=document.getElementById('dots'),cnt=document.getElementById('cnt'),pb=document.getElementById('pb'),bv=document.getElementById('bv'),ba=document.getElementById('ba'),vi=document.getElementById('vi');
+let cur=0,voiceOn=false,autoOn=false,autoT=null;
+slides.forEach((_,i)=>{const d=document.createElement('button');d.className='dot'+(i===0?' on':'');d.onclick=()=>go(i);dots.appendChild(d)});
+function upd(){slides.forEach((s,i)=>{s.classList.remove('active','left');if(i===cur)s.classList.add('active');else if(i<cur)s.classList.add('left')});dots.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===cur));cnt.textContent=(cur+1)+'/'+slides.length;pb.style.width=((cur+1)/slides.length*100)+'%';if(voiceOn)speak()}
+function go(i){clearTimeout(autoT);cur=Math.max(0,Math.min(slides.length-1,i));upd();if(autoOn&&!voiceOn)schAuto()}
+function nx(){go(cur+1)}function pv(){go(cur-1)}
+function schAuto(){clearTimeout(autoT);autoT=setTimeout(()=>{cur<slides.length-1?nx():go(0)},9000)}
+function speak(){if(!('speechSynthesis' in window))return;speechSynthesis.cancel();const t=slides[cur].getAttribute('data-v');if(!t)return;const u=new SpeechSynthesisUtterance(t);u.rate=.88;u.pitch=.65;const v=speechSynthesis.getVoices();const p=v.find(x=>/Daniel|Alex|Aaron|Male/i.test(x.name));if(p)u.voice=p;u.onstart=()=>vi.classList.add('on');u.onend=()=>{vi.classList.remove('on');if(autoOn)autoT=setTimeout(()=>{cur<slides.length-1?nx():go(0)},1500)};u.onerror=()=>vi.classList.remove('on');speechSynthesis.speak(u)}
+document.getElementById('bn').onclick=nx;document.getElementById('bp').onclick=pv;
+bv.onclick=()=>{voiceOn=!voiceOn;bv.classList.toggle('on',voiceOn);if(voiceOn){if(!speechSynthesis.getVoices().length)speechSynthesis.onvoiceschanged=speak;else speak()}else{speechSynthesis.cancel();vi.classList.remove('on')}};
+ba.onclick=()=>{autoOn=!autoOn;ba.classList.toggle('on',autoOn);if(autoOn&&!voiceOn)schAuto();else clearTimeout(autoT)};
+document.onkeydown=e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown')nx();else if(e.key==='ArrowLeft'||e.key==='ArrowUp')pv();else if(e.key===' '){e.preventDefault();bv.click()}else if(e.key==='a')ba.click();else if(e.key==='f')document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()};
+let tx=0;document.ontouchstart=e=>{tx=e.changedTouches[0].screenX};document.ontouchend=e=>{const d=e.changedTouches[0].screenX-tx;if(Math.abs(d)>50)d<0?nx():pv()};
+window.nx=nx;
 })();
 </script>
 </body>
