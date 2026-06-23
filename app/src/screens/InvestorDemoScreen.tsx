@@ -25,6 +25,7 @@ import { InvestorConnectPlatformsView } from '../demo/screens/InvestorConnectPla
 import { InvestorCampaignPreviewView } from '../demo/screens/InvestorCampaignPreviewView'
 import { InvestorPayView } from '../demo/screens/InvestorPayView'
 import { InvestorWithdrawView } from '../demo/screens/InvestorWithdrawView'
+import { InvestorPromoView } from '../demo/screens/InvestorPromoView'
 import type { InvestorView } from '../demo/investorDemoData'
 
 // ─── View router (reads from context) ─────────────────────────────────────
@@ -54,6 +55,8 @@ function ViewSwitch({ view }: { view: InvestorView }) {
       return <InvestorPayView />
     case 'withdraw':
       return <InvestorWithdrawView />
+    case 'promo':
+      return <InvestorPromoView />
     case 'connectPlatforms':
       return <InvestorConnectPlatformsView />
     case 'campaignPreview':

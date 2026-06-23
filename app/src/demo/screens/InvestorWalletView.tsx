@@ -26,6 +26,7 @@ function txIcon(kind: string, txType?: string) {
   if (txType === 'tip') return '♥'
   if (txType === 'pay') return '→'
   if (txType === 'withdraw') return '↓'
+  if (txType === 'promo') return '◈'
   if (kind === 'positive') return '+'
   if (kind === 'negative') return '−'
   return '◷'
@@ -36,6 +37,7 @@ function txLatestClass(txType?: string): string {
   if (txType === 'tip') return ' id-wallet__tx--tip'
   if (txType === 'pay') return ' id-wallet__tx--pay'
   if (txType === 'withdraw') return ' id-wallet__tx--withdraw'
+  if (txType === 'promo') return ' id-wallet__tx--promo'
   return ''
 }
 

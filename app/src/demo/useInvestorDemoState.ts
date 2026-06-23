@@ -12,7 +12,9 @@ import {
   freshGates,
   cloneBaselinePlatforms,
   cloneBaselineCampaign,
+  cloneBaselinePromoStatus,
   connectPlatformHandle,
+  getPromoOffer,
   gatesForStrictness,
   withdrawFee,
   type CampaignAction,
@@ -20,6 +22,7 @@ import {
   type CampaignPreviewState,
   type PayMode,
   type PlatformConnection,
+  type PromoStatus,
   type VerificationStrictness,
   type WithdrawMethod,
   type InvestorTransaction,
@@ -71,6 +74,13 @@ export interface InvestorDemoState {
   withdrawSession: number
   platformConnections: PlatformConnection[]
   campaign: CampaignPreviewState
+  promoStatus: Record<string, PromoStatus>
+  claimedPromoIds: string[]
+  selectedPromoId: string | null
+  promoVerificationStep: number
+  promoClaimConfirmed: boolean
+  lastClaimedPromoId: string | null
+  promoSession: number
   likedContentIds: string[]
   savedContentIds: string[]
   toast: string | null
@@ -113,6 +123,12 @@ type Action =
   | { type: 'SET_CAMPAIGN_STRICTNESS'; strictness: VerificationStrictness }
   | { type: 'TOGGLE_CAMPAIGN_GATE'; gateId: CampaignGateId }
   | { type: 'PUBLISH_CAMPAIGN_PREVIEW' }
+  | { type: 'OPEN_PROMO' }
+  | { type: 'SELECT_PROMO'; promoId: string | null }
+  | { type: 'START_PROMO'; promoId: string }
+  | { type: 'VERIFY_PROMO' }
+  | { type: 'CLAIM_PROMO_REWARD' }
+  | { type: 'DISMISS_PROMO_CLAIM' }
   | { type: 'RESET' }
 
 function cloneSeedTransactions(): InvestorTransaction[] {
@@ -181,6 +197,13 @@ function createBaselineState(): InvestorDemoState {
     withdrawSession: 0,
     platformConnections: cloneBaselinePlatforms(),
     campaign: cloneBaselineCampaign(),
+    promoStatus: cloneBaselinePromoStatus(),
+    claimedPromoIds: [],
+    selectedPromoId: null,
+    promoVerificationStep: 0,
+    promoClaimConfirmed: false,
+    lastClaimedPromoId: null,
+    promoSession: 0,
     likedContentIds: [],
     savedContentIds: [],
     toast: null,
@@ -525,6 +548,84 @@ function reducer(state: InvestorDemoState, action: Action): InvestorDemoState {
         },
       }
 
+    case 'OPEN_PROMO':
+      return {
+        ...state,
+        currentView: 'promo',
+        selectedPromoId: null,
+        promoVerificationStep: 0,
+        promoClaimConfirmed: false,
+      }
+
+    case 'SELECT_PROMO':
+      return {
+        ...state,
+        selectedPromoId: action.promoId,
+        promoVerificationStep: 0,
+        promoClaimConfirmed: false,
+      }
+
+    case 'START_PROMO': {
+      const status = state.promoStatus[action.promoId]
+      if (!status || status === 'claimed' || status === 'verified') return state
+      return {
+        ...state,
+        selectedPromoId: action.promoId,
+        promoStatus: { ...state.promoStatus, [action.promoId]: 'started' },
+        promoVerificationStep: 0,
+      }
+    }
+
+    case 'VERIFY_PROMO': {
+      const id = state.selectedPromoId
+      if (!id) return state
+      if (state.promoStatus[id] !== 'started') return state
+      return {
+        ...state,
+        promoStatus: { ...state.promoStatus, [id]: 'verified' },
+        promoVerificationStep: 4,
+      }
+    }
+
+    case 'CLAIM_PROMO_REWARD': {
+      const id = state.selectedPromoId
+      if (!id) return state
+      if (state.claimedPromoIds.includes(id)) return state
+      if (state.promoStatus[id] !== 'verified') return state
+
+      const offer = getPromoOffer(id)
+      if (!offer) return state
+
+      const amount = offer.rewardAmount
+      const newTx: InvestorTransaction = {
+        id: `tx-promo-${state.promoSession + 1}`,
+        source: 'iGo reward · Simulated',
+        timeLabel: 'Just now',
+        amountDisplay: `+${amount.toFixed(2)} iC`,
+        kind: 'positive',
+        txType: 'promo',
+      }
+      return {
+        ...state,
+        promoStatus: { ...state.promoStatus, [id]: 'claimed' },
+        claimedPromoIds: [...state.claimedPromoIds, id],
+        promoClaimConfirmed: true,
+        lastClaimedPromoId: id,
+        promoSession: state.promoSession + 1,
+        walletBalance: +(state.walletBalance + amount).toFixed(2),
+        lifetimeEarned: +(state.lifetimeEarned + amount).toFixed(2),
+        sessionEarned: +(state.sessionEarned + amount).toFixed(2),
+        transactions: [newTx, ...state.transactions],
+      }
+    }
+
+    case 'DISMISS_PROMO_CLAIM':
+      return {
+        ...state,
+        promoClaimConfirmed: false,
+        selectedPromoId: null,
+      }
+
     case 'RESET':
       return createBaselineState()
 
@@ -714,6 +815,30 @@ export function useInvestorDemoState() {
     dispatch({ type: 'PUBLISH_CAMPAIGN_PREVIEW' })
   }, [])
 
+  const openPromo = useCallback(() => {
+    dispatch({ type: 'OPEN_PROMO' })
+  }, [])
+
+  const selectPromo = useCallback((promoId: string | null) => {
+    dispatch({ type: 'SELECT_PROMO', promoId })
+  }, [])
+
+  const startPromo = useCallback((promoId: string) => {
+    dispatch({ type: 'START_PROMO', promoId })
+  }, [])
+
+  const verifyPromo = useCallback(() => {
+    dispatch({ type: 'VERIFY_PROMO' })
+  }, [])
+
+  const claimPromoReward = useCallback(() => {
+    dispatch({ type: 'CLAIM_PROMO_REWARD' })
+  }, [])
+
+  const dismissPromoClaim = useCallback(() => {
+    dispatch({ type: 'DISMISS_PROMO_CLAIM' })
+  }, [])
+
   const presenterNext = useCallback(() => {
     const nextIndex = Math.min(
       state.presenterStepIndex + 1,
@@ -764,6 +889,12 @@ export function useInvestorDemoState() {
     setCampaignStrictness,
     toggleCampaignGate,
     publishCampaignPreview,
+    openPromo,
+    selectPromo,
+    startPromo,
+    verifyPromo,
+    claimPromoReward,
+    dismissPromoClaim,
   }
 }
 

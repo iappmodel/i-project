@@ -13,6 +13,7 @@ export type InvestorView =
   | 'tip'
   | 'pay'
   | 'withdraw'
+  | 'promo'
   | 'connectPlatforms'
   | 'campaignPreview'
 
@@ -47,7 +48,7 @@ export interface InvestorTransaction {
   timeLabel: string
   amountDisplay: string
   kind: 'positive' | 'negative' | 'pending' | 'neutral'
-  txType?: 'reward' | 'convert' | 'withdraw' | 'tip' | 'pay'
+  txType?: 'reward' | 'convert' | 'withdraw' | 'tip' | 'pay' | 'promo'
 }
 
 export interface PresenterStep {
@@ -361,6 +362,96 @@ export function payModeLabel(mode: PayMode): string {
       return 'QR'
     case 'link':
       return 'Link'
+  }
+}
+
+// ─── Promo / iGo ─────────────────────────────────────────────────────────────
+
+export type PromoStatus = 'available' | 'started' | 'verified' | 'claimed'
+
+export interface PromoOffer {
+  id: string
+  merchantName: string
+  actionType: string
+  rewardAmount: number
+  distanceLabel: string
+  instruction: string
+  initials: string
+  color: string
+}
+
+export const PROMO_OFFERS: PromoOffer[] = [
+  {
+    id: 'marios-pizza',
+    merchantName: "Mario's Pizza",
+    actionType: 'Check in',
+    rewardAmount: 0.4,
+    distanceLabel: '0.2 mi · simulated',
+    instruction: 'Tap start, then confirm you are at the venue · demo only',
+    initials: 'MP',
+    color: '#ff4d6d',
+  },
+  {
+    id: 'nova-gym',
+    merchantName: 'Nova Gym',
+    actionType: 'Visit',
+    rewardAmount: 0.65,
+    distanceLabel: '0.5 mi · simulated',
+    instruction: 'Complete a simulated visit window · no GPS used',
+    initials: 'NG',
+    color: '#378ADD',
+  },
+  {
+    id: 'bloom-coffee',
+    merchantName: 'Bloom Coffee',
+    actionType: 'Scan receipt',
+    rewardAmount: 0.3,
+    distanceLabel: '0.1 mi · simulated',
+    instruction: 'Receipt scan is mocked — no camera or merchant API',
+    initials: 'BC',
+    color: '#1D9E75',
+  },
+  {
+    id: 'studiopop',
+    merchantName: 'StudioPop',
+    actionType: 'Attend',
+    rewardAmount: 1.2,
+    distanceLabel: '0.8 mi · simulated',
+    instruction: 'Simulated event attendance check · investor preview',
+    initials: 'SP',
+    color: '#EF9F27',
+  },
+]
+
+export const PROMO_VERIFICATION_CHECKS = [
+  { id: 'presence', label: 'Presence window', sublabel: 'Simulated proximity' },
+  { id: 'action', label: 'Action matched', sublabel: 'Demo action type' },
+  { id: 'fraud', label: 'Fraud screen', sublabel: 'Mock integrity pass' },
+  { id: 'eligible', label: 'Reward eligible', sublabel: 'Ready to claim' },
+] as const
+
+export function baselinePromoStatus(): Record<string, PromoStatus> {
+  return Object.fromEntries(PROMO_OFFERS.map((o) => [o.id, 'available' as PromoStatus]))
+}
+
+export function cloneBaselinePromoStatus(): Record<string, PromoStatus> {
+  return { ...baselinePromoStatus() }
+}
+
+export function getPromoOffer(promoId: string): PromoOffer | undefined {
+  return PROMO_OFFERS.find((o) => o.id === promoId)
+}
+
+export function promoStatusLabel(status: PromoStatus): string {
+  switch (status) {
+    case 'available':
+      return 'Available'
+    case 'started':
+      return 'In progress'
+    case 'verified':
+      return 'Verified'
+    case 'claimed':
+      return 'Claimed'
   }
 }
 
