@@ -18,17 +18,17 @@ const VIEW_TO_TAB: Record<string, DockTab> = {
   wallet: 'wallet',
   convert: 'wallet',
   tip: 'wallet',
+  connectPlatforms: 'profile',
   splash: 'feed',
 }
 
-const COMING_SOON: Record<Exclude<DockTab, 'feed' | 'wallet'>, string> = {
+const COMING_SOON: Record<Exclude<DockTab, 'feed' | 'wallet' | 'profile'>, string> = {
   promo: 'Promo map — full walkthrough',
   create: 'Studio — full walkthrough',
-  profile: 'Profile — full walkthrough',
 }
 
 export function InvestorDock() {
-  const { state, goView, showToast, setPresenterStep } = useInvestorDemo()
+  const { state, goView, showToast, setPresenterStep, openConnectPlatforms } = useInvestorDemo()
 
   const activeTab = VIEW_TO_TAB[state.currentView] ?? 'feed'
 
@@ -39,6 +39,8 @@ export function InvestorDock() {
     } else if (tab === 'wallet') {
       setPresenterStep(5)
       goView('wallet')
+    } else if (tab === 'profile') {
+      openConnectPlatforms()
     } else {
       showToast(COMING_SOON[tab])
     }

@@ -11,6 +11,7 @@ export type InvestorView =
   | 'wallet'
   | 'convert'
   | 'tip'
+  | 'connectPlatforms'
 
 export interface FeedItem {
   id: string
@@ -295,3 +296,72 @@ export const DEFAULT_TIP_CREATOR = {
 export const TIP_PRESETS = [0.1, 0.25, 0.5, 1.0] as const
 
 export const TIP_FEE_RATE = 0
+
+// ─── Connect Platforms ─────────────────────────────────────────────────────
+
+export interface PlatformConnection {
+  id: string
+  name: string
+  initials: string
+  color: string
+  /** Demo handle when connected */
+  handle: string | null
+  connected: boolean
+  contentCount: number
+}
+
+const PLATFORM_HANDLES: Record<string, string> = {
+  youtube: '@melodymae',
+  tiktok: '@melodymae',
+  instagram: '@melodymae',
+  twitch: '@melodymae_live',
+}
+
+export function baselinePlatforms(): PlatformConnection[] {
+  return [
+    {
+      id: 'youtube',
+      name: 'YouTube',
+      initials: 'YT',
+      color: '#cc0000',
+      handle: PLATFORM_HANDLES.youtube,
+      connected: true,
+      contentCount: 24,
+    },
+    {
+      id: 'tiktok',
+      name: 'TikTok',
+      initials: 'TT',
+      color: '#111118',
+      handle: null,
+      connected: false,
+      contentCount: 0,
+    },
+    {
+      id: 'instagram',
+      name: 'Instagram',
+      initials: 'IG',
+      color: '#c13584',
+      handle: null,
+      connected: false,
+      contentCount: 0,
+    },
+    {
+      id: 'twitch',
+      name: 'Twitch',
+      initials: 'TW',
+      color: '#9146ff',
+      handle: null,
+      connected: false,
+      contentCount: 0,
+    },
+  ]
+}
+
+export function connectPlatformHandle(platformId: string): string {
+  return PLATFORM_HANDLES[platformId] ?? `@${platformId}_demo`
+}
+
+export function cloneBaselinePlatforms(): PlatformConnection[] {
+  return baselinePlatforms().map((p) => ({ ...p }))
+}

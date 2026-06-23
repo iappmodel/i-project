@@ -10,6 +10,9 @@ import {
   PRESENTER_STEPS,
   SEED_TRANSACTIONS,
   freshGates,
+  cloneBaselinePlatforms,
+  connectPlatformHandle,
+  type PlatformConnection,
   type InvestorTransaction,
   type InvestorView,
   type VerificationGate,
@@ -46,6 +49,7 @@ export interface InvestorDemoState {
   lastTipAmount: number
   lastTipMessage: string
   tipSession: number
+  platformConnections: PlatformConnection[]
   likedContentIds: string[]
   savedContentIds: string[]
   toast: string | null
@@ -72,6 +76,8 @@ type Action =
   | { type: 'CONFIRM_CONVERT'; amount: number }
   | { type: 'OPEN_TIP' }
   | { type: 'CONFIRM_TIP'; amount: number; message: string }
+  | { type: 'OPEN_CONNECT_PLATFORMS' }
+  | { type: 'TOGGLE_PLATFORM'; platformId: string }
   | { type: 'RESET' }
 
 function cloneSeedTransactions(): InvestorTransaction[] {
@@ -127,6 +133,7 @@ function createBaselineState(): InvestorDemoState {
     lastTipAmount: 0,
     lastTipMessage: '',
     tipSession: 0,
+    platformConnections: cloneBaselinePlatforms(),
     likedContentIds: [],
     savedContentIds: [],
     toast: null,
@@ -293,6 +300,24 @@ function reducer(state: InvestorDemoState, action: Action): InvestorDemoState {
       }
     }
 
+    case 'OPEN_CONNECT_PLATFORMS':
+      return { ...state, currentView: 'connectPlatforms' }
+
+    case 'TOGGLE_PLATFORM':
+      return {
+        ...state,
+        platformConnections: state.platformConnections.map((p) => {
+          if (p.id !== action.platformId) return p
+          const nextConnected = !p.connected
+          return {
+            ...p,
+            connected: nextConnected,
+            handle: nextConnected ? connectPlatformHandle(p.id) : null,
+            contentCount: nextConnected ? (p.contentCount > 0 ? p.contentCount : 12) : 0,
+          }
+        }),
+      }
+
     case 'RESET':
       return createBaselineState()
 
@@ -418,6 +443,14 @@ export function useInvestorDemoState() {
     dispatch({ type: 'CONFIRM_TIP', amount, message })
   }, [])
 
+  const openConnectPlatforms = useCallback(() => {
+    dispatch({ type: 'OPEN_CONNECT_PLATFORMS' })
+  }, [])
+
+  const togglePlatform = useCallback((platformId: string) => {
+    dispatch({ type: 'TOGGLE_PLATFORM', platformId })
+  }, [])
+
   const presenterNext = useCallback(() => {
     const nextIndex = Math.min(
       state.presenterStepIndex + 1,
@@ -452,6 +485,8 @@ export function useInvestorDemoState() {
     confirmConvert,
     openTip,
     confirmTip,
+    openConnectPlatforms,
+    togglePlatform,
   }
 }
 
