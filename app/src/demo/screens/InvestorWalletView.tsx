@@ -23,13 +23,14 @@ function txBg(kind: string) {
 
 function txIcon(kind: string, txType?: string) {
   if (txType === 'convert') return '⇄'
+  if (txType === 'tip') return '♥'
   if (kind === 'positive') return '+'
   if (kind === 'negative') return '−'
   return '◷'
 }
 
 export function InvestorWalletView() {
-  const { state, goView, showToast, setPresenterStep, openConvert } = useInvestorDemo()
+  const { state, goView, showToast, setPresenterStep, openConvert, openTip } = useInvestorDemo()
 
   const { walletBalance, usableBalance, pendingBalance, lifetimeEarned, sessionEarned, transactions } = state
 
@@ -58,6 +59,10 @@ export function InvestorWalletView() {
   const handleAction = (id: string, label: string) => {
     if (id === 'convert') {
       openConvert()
+      return
+    }
+    if (id === 'tip') {
+      openTip()
       return
     }
     showToast(`${label} — full walkthrough`)
@@ -148,7 +153,7 @@ export function InvestorWalletView() {
           return (
             <div
               key={tx.id}
-              className={`id-wallet__tx${isLatest ? ' id-wallet__tx--latest' : ''}${tx.txType === 'convert' && isLatest ? ' id-wallet__tx--convert' : ''}`}
+              className={`id-wallet__tx${isLatest ? ' id-wallet__tx--latest' : ''}${tx.txType === 'convert' && isLatest ? ' id-wallet__tx--convert' : ''}${tx.txType === 'tip' && isLatest ? ' id-wallet__tx--tip' : ''}`}
             >
               {isLatest ? (
                 <span className="id-wallet__tx-badge">New</span>
@@ -172,7 +177,7 @@ export function InvestorWalletView() {
         })}
 
         <p className="id-wallet__disclaimer">
-          Simulated balances · no real payout or bank transfer
+          Simulated balances · no real value moved
         </p>
       </div>
 

@@ -17,6 +17,7 @@ const VIEW_TO_TAB: Record<string, DockTab> = {
   reward: 'feed',
   wallet: 'wallet',
   convert: 'wallet',
+  tip: 'wallet',
   splash: 'feed',
 }
 

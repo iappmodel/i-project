@@ -41,6 +41,11 @@ export interface InvestorDemoState {
   /** Last confirmed convert amount (for confirmation card) */
   lastConvertAmount: number
   convertSession: number
+  /** Tip flow — confirmation shown, blocks double-submit */
+  tipConfirmed: boolean
+  lastTipAmount: number
+  lastTipMessage: string
+  tipSession: number
   likedContentIds: string[]
   savedContentIds: string[]
   toast: string | null
@@ -65,10 +70,39 @@ type Action =
   | { type: 'SET_PRESENTER_STEP'; index: number }
   | { type: 'OPEN_CONVERT' }
   | { type: 'CONFIRM_CONVERT'; amount: number }
+  | { type: 'OPEN_TIP' }
+  | { type: 'CONFIRM_TIP'; amount: number; message: string }
   | { type: 'RESET' }
 
 function cloneSeedTransactions(): InvestorTransaction[] {
   return SEED_TRANSACTIONS.map((tx) => ({ ...tx }))
+}
+
+/** Total spendable for tips: usable first, then verified fallback */
+export function tipSpendableBalance(usable: number, verified: number): number {
+  return +(usable + verified).toFixed(2)
+}
+
+function debitForTip(
+  usableBalance: number,
+  walletBalance: number,
+  amount: number,
+): { usableBalance: number; walletBalance: number } | null {
+  if (amount <= 0) return null
+  const total = tipSpendableBalance(usableBalance, walletBalance)
+  if (amount > total) return null
+
+  let remaining = amount
+  const fromUsable = Math.min(remaining, usableBalance)
+  const newUsable = +(usableBalance - fromUsable).toFixed(2)
+  remaining = +(remaining - fromUsable).toFixed(2)
+
+  const fromWallet = Math.min(remaining, walletBalance)
+  const newWallet = +(walletBalance - fromWallet).toFixed(2)
+  remaining = +(remaining - fromWallet).toFixed(2)
+
+  if (remaining > 0.001) return null
+  return { usableBalance: newUsable, walletBalance: newWallet }
 }
 
 function createBaselineState(): InvestorDemoState {
@@ -89,6 +123,10 @@ function createBaselineState(): InvestorDemoState {
     convertConfirmed: false,
     lastConvertAmount: 0,
     convertSession: 0,
+    tipConfirmed: false,
+    lastTipAmount: 0,
+    lastTipMessage: '',
+    tipSession: 0,
     likedContentIds: [],
     savedContentIds: [],
     toast: null,
@@ -218,6 +256,43 @@ function reducer(state: InvestorDemoState, action: Action): InvestorDemoState {
       }
     }
 
+    case 'OPEN_TIP':
+      return {
+        ...state,
+        currentView: 'tip',
+        tipConfirmed: false,
+        lastTipAmount: 0,
+        lastTipMessage: '',
+      }
+
+    case 'CONFIRM_TIP': {
+      const amount = +action.amount.toFixed(2)
+      if (state.tipConfirmed) return state
+      if (amount <= 0) return state
+
+      const debited = debitForTip(state.usableBalance, state.walletBalance, amount)
+      if (!debited) return state
+
+      const newTx: InvestorTransaction = {
+        id: `tx-tip-${state.tipSession + 1}`,
+        source: 'Creator tip · Simulated',
+        timeLabel: 'Just now',
+        amountDisplay: `−${amount.toFixed(2)} iC`,
+        kind: 'negative',
+        txType: 'tip',
+      }
+      return {
+        ...state,
+        tipConfirmed: true,
+        lastTipAmount: amount,
+        lastTipMessage: action.message.trim(),
+        tipSession: state.tipSession + 1,
+        usableBalance: debited.usableBalance,
+        walletBalance: debited.walletBalance,
+        transactions: [newTx, ...state.transactions],
+      }
+    }
+
     case 'RESET':
       return createBaselineState()
 
@@ -335,6 +410,14 @@ export function useInvestorDemoState() {
     dispatch({ type: 'CONFIRM_CONVERT', amount })
   }, [])
 
+  const openTip = useCallback(() => {
+    dispatch({ type: 'OPEN_TIP' })
+  }, [])
+
+  const confirmTip = useCallback((amount: number, message: string) => {
+    dispatch({ type: 'CONFIRM_TIP', amount, message })
+  }, [])
+
   const presenterNext = useCallback(() => {
     const nextIndex = Math.min(
       state.presenterStepIndex + 1,
@@ -367,6 +450,8 @@ export function useInvestorDemoState() {
     reset,
     openConvert,
     confirmConvert,
+    openTip,
+    confirmTip,
   }
 }
 

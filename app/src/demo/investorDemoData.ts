@@ -10,6 +10,7 @@ export type InvestorView =
   | 'reward'
   | 'wallet'
   | 'convert'
+  | 'tip'
 
 export interface FeedItem {
   id: string
@@ -42,7 +43,7 @@ export interface InvestorTransaction {
   timeLabel: string
   amountDisplay: string
   kind: 'positive' | 'negative' | 'pending' | 'neutral'
-  txType?: 'reward' | 'convert' | 'withdraw'
+  txType?: 'reward' | 'convert' | 'withdraw' | 'tip'
 }
 
 export interface PresenterStep {
@@ -280,3 +281,17 @@ export const CONVERT_RATE = 1
 export const CONVERT_FEE_RATE = 0
 export const CONVERT_TRUST_TIER = 'Tier 2'
 export const CONVERT_TRUST_MULTIPLIER = 1
+
+/** Default creator for tip flow (from organic feed) */
+export const DEFAULT_TIP_CREATOR = {
+  name: 'Melody Mae',
+  handle: '@melodymae',
+  initials: 'MM',
+  color: '#1D9E75',
+  platform: 'YouTube',
+} as const
+
+/** Preset tip amounts in iCoins */
+export const TIP_PRESETS = [0.1, 0.25, 0.5, 1.0] as const
+
+export const TIP_FEE_RATE = 0

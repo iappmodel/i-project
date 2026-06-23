@@ -20,6 +20,7 @@ import { InvestorWatchVerifyView } from '../demo/screens/InvestorWatchVerifyView
 import { InvestorRewardRevealView } from '../demo/screens/InvestorRewardRevealView'
 import { InvestorWalletView } from '../demo/screens/InvestorWalletView'
 import { InvestorConvertView } from '../demo/screens/InvestorConvertView'
+import { InvestorTipView } from '../demo/screens/InvestorTipView'
 import type { InvestorView } from '../demo/investorDemoData'
 
 // ─── View router (reads from context) ─────────────────────────────────────
@@ -43,6 +44,8 @@ function ViewSwitch({ view }: { view: InvestorView }) {
       return <InvestorWalletView />
     case 'convert':
       return <InvestorConvertView />
+    case 'tip':
+      return <InvestorTipView />
     case 'splash':
     default:
       return <InvestorSplashView />
