@@ -16,6 +16,7 @@ export type InvestorView =
   | 'promo'
   | 'connectPlatforms'
   | 'campaignPreview'
+  | 'studioPreview'
 
 export interface FeedItem {
   id: string
@@ -664,4 +665,98 @@ export function computeCampaignEconomics(
     Math.floor(budgetCap / Math.max(costPerView, 0.01)),
   )
   return { viewerReward, creatorShare, platformFee, estimatedVerifiedViews }
+}
+
+// ─── Studio Preview ──────────────────────────────────────────────────────────
+
+export type StudioFormat = '9:16' | '1:1' | '16:9'
+export type StudioCta = 'follow' | 'visit' | 'shop' | 'learn'
+export type StudioStatus = 'draft' | 'preview_ready'
+
+export interface StudioClip {
+  id: string
+  label: string
+  duration: string
+  color: string
+  startPct: number
+  widthPct: number
+}
+
+export interface StudioPreviewState {
+  selectedClipId: string
+  captionsEnabled: boolean
+  rewardOverlayEnabled: boolean
+  studioCta: StudioCta
+  studioFormat: StudioFormat
+  studioStatus: StudioStatus
+}
+
+export const STUDIO_CLIPS: StudioClip[] = [
+  { id: 'intro', label: 'Intro', duration: '0:06', color: '#378ADD', startPct: 0, widthPct: 22 },
+  { id: 'hook', label: 'Hook', duration: '0:12', color: '#EF9F27', startPct: 24, widthPct: 38 },
+  { id: 'cta', label: 'CTA', duration: '0:06', color: '#1D9E75', startPct: 66, widthPct: 28 },
+]
+
+export const STUDIO_CTA_OPTIONS: { id: StudioCta; label: string }[] = [
+  { id: 'follow', label: 'Follow' },
+  { id: 'visit', label: 'Visit' },
+  { id: 'shop', label: 'Shop' },
+  { id: 'learn', label: 'Learn More' },
+]
+
+export const STUDIO_FORMAT_OPTIONS: { id: StudioFormat; label: string }[] = [
+  { id: '9:16', label: '9:16' },
+  { id: '1:1', label: '1:1' },
+  { id: '16:9', label: '16:9' },
+]
+
+export function baselineStudio(): StudioPreviewState {
+  return {
+    selectedClipId: 'hook',
+    captionsEnabled: true,
+    rewardOverlayEnabled: true,
+    studioCta: 'follow',
+    studioFormat: '9:16',
+    studioStatus: 'draft',
+  }
+}
+
+export function cloneBaselineStudio(): StudioPreviewState {
+  return { ...baselineStudio() }
+}
+
+export function studioCtaLabel(cta: StudioCta): string {
+  return STUDIO_CTA_OPTIONS.find((o) => o.id === cta)?.label ?? cta
+}
+
+export function studioStatusLabel(status: StudioStatus): string {
+  return status === 'preview_ready' ? 'Preview ready · Simulated' : 'Draft · Simulated'
+}
+
+/** Map studio CTA selection into campaign builder action fields. */
+export function studioCtaToCampaign(cta: StudioCta): {
+  action: CampaignAction
+  customLabel: string
+} {
+  switch (cta) {
+    case 'follow':
+      return { action: 'follow', customLabel: '' }
+    case 'visit':
+      return { action: 'visit', customLabel: '' }
+    case 'shop':
+      return { action: 'shop', customLabel: '' }
+    case 'learn':
+      return { action: 'custom', customLabel: 'Learn More' }
+  }
+}
+
+export function studioFormatAspect(format: StudioFormat): string {
+  switch (format) {
+    case '9:16':
+      return '9 / 16'
+    case '1:1':
+      return '1 / 1'
+    case '16:9':
+      return '16 / 9'
+  }
 }

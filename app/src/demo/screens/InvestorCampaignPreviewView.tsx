@@ -21,6 +21,7 @@ export function InvestorCampaignPreviewView() {
     setCampaignStrictness,
     toggleCampaignGate,
     publishCampaignPreview,
+    openStudioPreview,
   } = useInvestorDemo()
 
   const { campaign } = state
@@ -91,6 +92,18 @@ export function InvestorCampaignPreviewView() {
               <p className="id-campaign__media-meta">Simulated · 0:24 · no upload</p>
             </div>
           </div>
+          <button
+            type="button"
+            className="id-campaign__studio-link"
+            onClick={openStudioPreview}
+          >
+            <span className="id-campaign__studio-icon" aria-hidden>✦</span>
+            <span className="id-campaign__studio-text">
+              <span className="id-campaign__studio-title">Open Studio Preview</span>
+              <span className="id-campaign__studio-sub">Edit media, overlays & CTA · simulated</span>
+            </span>
+            <span className="id-campaign__studio-arrow" aria-hidden>→</span>
+          </button>
         </section>
 
         <section className="id-campaign__card">

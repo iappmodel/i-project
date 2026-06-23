@@ -12,10 +12,12 @@ import {
   freshGates,
   cloneBaselinePlatforms,
   cloneBaselineCampaign,
+  cloneBaselineStudio,
   cloneBaselinePromoStatus,
   connectPlatformHandle,
   getPromoOffer,
   gatesForStrictness,
+  studioCtaToCampaign,
   withdrawFee,
   type CampaignAction,
   type CampaignGateId,
@@ -23,6 +25,9 @@ import {
   type PayMode,
   type PlatformConnection,
   type PromoStatus,
+  type StudioCta,
+  type StudioFormat,
+  type StudioPreviewState,
   type VerificationStrictness,
   type WithdrawMethod,
   type InvestorTransaction,
@@ -74,6 +79,7 @@ export interface InvestorDemoState {
   withdrawSession: number
   platformConnections: PlatformConnection[]
   campaign: CampaignPreviewState
+  studio: StudioPreviewState
   promoStatus: Record<string, PromoStatus>
   claimedPromoIds: string[]
   selectedPromoId: string | null
@@ -123,6 +129,14 @@ type Action =
   | { type: 'SET_CAMPAIGN_STRICTNESS'; strictness: VerificationStrictness }
   | { type: 'TOGGLE_CAMPAIGN_GATE'; gateId: CampaignGateId }
   | { type: 'PUBLISH_CAMPAIGN_PREVIEW' }
+  | { type: 'OPEN_STUDIO_PREVIEW' }
+  | { type: 'SET_STUDIO_CLIP'; clipId: string }
+  | { type: 'TOGGLE_STUDIO_CAPTIONS' }
+  | { type: 'TOGGLE_STUDIO_REWARD_OVERLAY' }
+  | { type: 'SET_STUDIO_CTA'; cta: StudioCta }
+  | { type: 'SET_STUDIO_FORMAT'; format: StudioFormat }
+  | { type: 'GENERATE_STUDIO_PREVIEW' }
+  | { type: 'SEND_STUDIO_TO_CAMPAIGN' }
   | { type: 'OPEN_PROMO' }
   | { type: 'SELECT_PROMO'; promoId: string | null }
   | { type: 'START_PROMO'; promoId: string }
@@ -197,6 +211,7 @@ function createBaselineState(): InvestorDemoState {
     withdrawSession: 0,
     platformConnections: cloneBaselinePlatforms(),
     campaign: cloneBaselineCampaign(),
+    studio: cloneBaselineStudio(),
     promoStatus: cloneBaselinePromoStatus(),
     claimedPromoIds: [],
     selectedPromoId: null,
@@ -548,6 +563,64 @@ function reducer(state: InvestorDemoState, action: Action): InvestorDemoState {
         },
       }
 
+    case 'OPEN_STUDIO_PREVIEW':
+      return { ...state, currentView: 'studioPreview' }
+
+    case 'SET_STUDIO_CLIP':
+      return {
+        ...state,
+        studio: { ...state.studio, selectedClipId: action.clipId },
+      }
+
+    case 'TOGGLE_STUDIO_CAPTIONS':
+      return {
+        ...state,
+        studio: {
+          ...state.studio,
+          captionsEnabled: !state.studio.captionsEnabled,
+        },
+      }
+
+    case 'TOGGLE_STUDIO_REWARD_OVERLAY':
+      return {
+        ...state,
+        studio: {
+          ...state.studio,
+          rewardOverlayEnabled: !state.studio.rewardOverlayEnabled,
+        },
+      }
+
+    case 'SET_STUDIO_CTA':
+      return {
+        ...state,
+        studio: { ...state.studio, studioCta: action.cta },
+      }
+
+    case 'SET_STUDIO_FORMAT':
+      return {
+        ...state,
+        studio: { ...state.studio, studioFormat: action.format },
+      }
+
+    case 'GENERATE_STUDIO_PREVIEW':
+      return {
+        ...state,
+        studio: { ...state.studio, studioStatus: 'preview_ready' },
+      }
+
+    case 'SEND_STUDIO_TO_CAMPAIGN': {
+      const mapped = studioCtaToCampaign(state.studio.studioCta)
+      return {
+        ...state,
+        currentView: 'campaignPreview',
+        campaign: {
+          ...state.campaign,
+          selectedAction: mapped.action,
+          customActionLabel: mapped.customLabel,
+        },
+      }
+    }
+
     case 'OPEN_PROMO':
       return {
         ...state,
@@ -815,6 +888,38 @@ export function useInvestorDemoState() {
     dispatch({ type: 'PUBLISH_CAMPAIGN_PREVIEW' })
   }, [])
 
+  const openStudioPreview = useCallback(() => {
+    dispatch({ type: 'OPEN_STUDIO_PREVIEW' })
+  }, [])
+
+  const setStudioClip = useCallback((clipId: string) => {
+    dispatch({ type: 'SET_STUDIO_CLIP', clipId })
+  }, [])
+
+  const toggleStudioCaptions = useCallback(() => {
+    dispatch({ type: 'TOGGLE_STUDIO_CAPTIONS' })
+  }, [])
+
+  const toggleStudioRewardOverlay = useCallback(() => {
+    dispatch({ type: 'TOGGLE_STUDIO_REWARD_OVERLAY' })
+  }, [])
+
+  const setStudioCta = useCallback((cta: StudioCta) => {
+    dispatch({ type: 'SET_STUDIO_CTA', cta })
+  }, [])
+
+  const setStudioFormat = useCallback((format: StudioFormat) => {
+    dispatch({ type: 'SET_STUDIO_FORMAT', format })
+  }, [])
+
+  const generateStudioPreview = useCallback(() => {
+    dispatch({ type: 'GENERATE_STUDIO_PREVIEW' })
+  }, [])
+
+  const sendStudioToCampaign = useCallback(() => {
+    dispatch({ type: 'SEND_STUDIO_TO_CAMPAIGN' })
+  }, [])
+
   const openPromo = useCallback(() => {
     dispatch({ type: 'OPEN_PROMO' })
   }, [])
@@ -889,6 +994,14 @@ export function useInvestorDemoState() {
     setCampaignStrictness,
     toggleCampaignGate,
     publishCampaignPreview,
+    openStudioPreview,
+    setStudioClip,
+    toggleStudioCaptions,
+    toggleStudioRewardOverlay,
+    setStudioCta,
+    setStudioFormat,
+    generateStudioPreview,
+    sendStudioToCampaign,
     openPromo,
     selectPromo,
     startPromo,
