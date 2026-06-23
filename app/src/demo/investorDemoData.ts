@@ -11,6 +11,8 @@ export type InvestorView =
   | 'wallet'
   | 'convert'
   | 'tip'
+  | 'pay'
+  | 'withdraw'
   | 'connectPlatforms'
   | 'campaignPreview'
 
@@ -45,7 +47,7 @@ export interface InvestorTransaction {
   timeLabel: string
   amountDisplay: string
   kind: 'positive' | 'negative' | 'pending' | 'neutral'
-  txType?: 'reward' | 'convert' | 'withdraw' | 'tip'
+  txType?: 'reward' | 'convert' | 'withdraw' | 'tip' | 'pay'
 }
 
 export interface PresenterStep {
@@ -297,6 +299,70 @@ export const DEFAULT_TIP_CREATOR = {
 export const TIP_PRESETS = [0.1, 0.25, 0.5, 1.0] as const
 
 export const TIP_FEE_RATE = 0
+
+// ─── Pay & Withdraw ──────────────────────────────────────────────────────────
+
+export type PayMode = 'tap' | 'qr' | 'link'
+export type WithdrawMethod = 'standard' | 'fast' | 'external'
+
+export const DEFAULT_PAY_MERCHANT = {
+  name: "Mario's Pizza",
+  subtitle: 'Local merchant · simulated',
+  initials: 'MP',
+  color: '#ffb300',
+} as const
+
+export const PAY_MODE_OPTIONS: { id: PayMode; label: string; icon: string }[] = [
+  { id: 'tap', label: 'Tap', icon: '◎' },
+  { id: 'qr', label: 'QR', icon: '▦' },
+  { id: 'link', label: 'Link', icon: '↗' },
+]
+
+export const WITHDRAW_METHOD_OPTIONS: {
+  id: WithdrawMethod
+  label: string
+  sublabel: string
+}[] = [
+  { id: 'standard', label: 'Standard', sublabel: 'No fee · simulated' },
+  { id: 'fast', label: 'Fast', sublabel: '0.02 iC fee' },
+  { id: 'external', label: 'External wallet', sublabel: '0.01 iC fee' },
+]
+
+export const PAY_PRESETS = [0.5, 1.0, 2.5, 5.0] as const
+export const WITHDRAW_PRESETS = [0.25, 0.5, 1.0, 2.0] as const
+
+export function withdrawFee(method: WithdrawMethod): number {
+  switch (method) {
+    case 'standard':
+      return 0
+    case 'fast':
+      return 0.02
+    case 'external':
+      return 0.01
+  }
+}
+
+export function withdrawMethodLabel(method: WithdrawMethod): string {
+  switch (method) {
+    case 'standard':
+      return 'Standard'
+    case 'fast':
+      return 'Fast'
+    case 'external':
+      return 'External wallet'
+  }
+}
+
+export function payModeLabel(mode: PayMode): string {
+  switch (mode) {
+    case 'tap':
+      return 'Tap'
+    case 'qr':
+      return 'QR'
+    case 'link':
+      return 'Link'
+  }
+}
 
 // ─── Connect Platforms ─────────────────────────────────────────────────────
 

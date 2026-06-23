@@ -14,11 +14,14 @@ import {
   cloneBaselineCampaign,
   connectPlatformHandle,
   gatesForStrictness,
+  withdrawFee,
   type CampaignAction,
   type CampaignGateId,
   type CampaignPreviewState,
+  type PayMode,
   type PlatformConnection,
   type VerificationStrictness,
+  type WithdrawMethod,
   type InvestorTransaction,
   type InvestorView,
   type VerificationGate,
@@ -55,6 +58,17 @@ export interface InvestorDemoState {
   lastTipAmount: number
   lastTipMessage: string
   tipSession: number
+  payAmount: number
+  payMode: PayMode
+  payConfirmed: boolean
+  lastPayAmount: number
+  paySession: number
+  withdrawAmount: number
+  withdrawMethod: WithdrawMethod
+  withdrawConfirmed: boolean
+  lastWithdrawAmount: number
+  lastWithdrawFee: number
+  withdrawSession: number
   platformConnections: PlatformConnection[]
   campaign: CampaignPreviewState
   likedContentIds: string[]
@@ -83,6 +97,14 @@ type Action =
   | { type: 'CONFIRM_CONVERT'; amount: number }
   | { type: 'OPEN_TIP' }
   | { type: 'CONFIRM_TIP'; amount: number; message: string }
+  | { type: 'OPEN_PAY' }
+  | { type: 'SET_PAY_AMOUNT'; amount: number }
+  | { type: 'SET_PAY_MODE'; mode: PayMode }
+  | { type: 'CONFIRM_PAY' }
+  | { type: 'OPEN_WITHDRAW' }
+  | { type: 'SET_WITHDRAW_AMOUNT'; amount: number }
+  | { type: 'SET_WITHDRAW_METHOD'; method: WithdrawMethod }
+  | { type: 'CONFIRM_WITHDRAW' }
   | { type: 'OPEN_CONNECT_PLATFORMS' }
   | { type: 'TOGGLE_PLATFORM'; platformId: string }
   | { type: 'OPEN_CAMPAIGN_PREVIEW' }
@@ -102,7 +124,7 @@ export function tipSpendableBalance(usable: number, verified: number): number {
   return +(usable + verified).toFixed(2)
 }
 
-function debitForTip(
+function debitSpendable(
   usableBalance: number,
   walletBalance: number,
   amount: number,
@@ -146,6 +168,17 @@ function createBaselineState(): InvestorDemoState {
     lastTipAmount: 0,
     lastTipMessage: '',
     tipSession: 0,
+    payAmount: 0,
+    payMode: 'tap',
+    payConfirmed: false,
+    lastPayAmount: 0,
+    paySession: 0,
+    withdrawAmount: 0,
+    withdrawMethod: 'standard',
+    withdrawConfirmed: false,
+    lastWithdrawAmount: 0,
+    lastWithdrawFee: 0,
+    withdrawSession: 0,
     platformConnections: cloneBaselinePlatforms(),
     campaign: cloneBaselineCampaign(),
     likedContentIds: [],
@@ -291,7 +324,7 @@ function reducer(state: InvestorDemoState, action: Action): InvestorDemoState {
       if (state.tipConfirmed) return state
       if (amount <= 0) return state
 
-      const debited = debitForTip(state.usableBalance, state.walletBalance, amount)
+      const debited = debitSpendable(state.usableBalance, state.walletBalance, amount)
       if (!debited) return state
 
       const newTx: InvestorTransaction = {
@@ -308,6 +341,109 @@ function reducer(state: InvestorDemoState, action: Action): InvestorDemoState {
         lastTipAmount: amount,
         lastTipMessage: action.message.trim(),
         tipSession: state.tipSession + 1,
+        usableBalance: debited.usableBalance,
+        walletBalance: debited.walletBalance,
+        transactions: [newTx, ...state.transactions],
+      }
+    }
+
+    case 'OPEN_PAY':
+      return {
+        ...state,
+        currentView: 'pay',
+        payAmount: 0,
+        payMode: 'tap',
+        payConfirmed: false,
+        lastPayAmount: 0,
+      }
+
+    case 'SET_PAY_AMOUNT':
+      return {
+        ...state,
+        payAmount: Math.max(0, +action.amount.toFixed(2)),
+      }
+
+    case 'SET_PAY_MODE':
+      return {
+        ...state,
+        payMode: action.mode,
+      }
+
+    case 'CONFIRM_PAY': {
+      const amount = +state.payAmount.toFixed(2)
+      if (state.payConfirmed) return state
+      if (amount <= 0) return state
+
+      const debited = debitSpendable(state.usableBalance, state.walletBalance, amount)
+      if (!debited) return state
+
+      const newTx: InvestorTransaction = {
+        id: `tx-pay-${state.paySession + 1}`,
+        source: 'Merchant payment · Simulated',
+        timeLabel: 'Just now',
+        amountDisplay: `−${amount.toFixed(2)} iC`,
+        kind: 'negative',
+        txType: 'pay',
+      }
+      return {
+        ...state,
+        payConfirmed: true,
+        lastPayAmount: amount,
+        paySession: state.paySession + 1,
+        usableBalance: debited.usableBalance,
+        walletBalance: debited.walletBalance,
+        transactions: [newTx, ...state.transactions],
+      }
+    }
+
+    case 'OPEN_WITHDRAW':
+      return {
+        ...state,
+        currentView: 'withdraw',
+        withdrawAmount: 0,
+        withdrawMethod: 'standard',
+        withdrawConfirmed: false,
+        lastWithdrawAmount: 0,
+        lastWithdrawFee: 0,
+      }
+
+    case 'SET_WITHDRAW_AMOUNT':
+      return {
+        ...state,
+        withdrawAmount: Math.max(0, +action.amount.toFixed(2)),
+      }
+
+    case 'SET_WITHDRAW_METHOD':
+      return {
+        ...state,
+        withdrawMethod: action.method,
+      }
+
+    case 'CONFIRM_WITHDRAW': {
+      const amount = +state.withdrawAmount.toFixed(2)
+      const fee = withdrawFee(state.withdrawMethod)
+      const totalDebit = +(amount + fee).toFixed(2)
+      if (state.withdrawConfirmed) return state
+      if (amount <= 0) return state
+
+      const debited = debitSpendable(state.usableBalance, state.walletBalance, totalDebit)
+      if (!debited) return state
+
+      const feeSuffix = fee > 0 ? ` (incl. ${fee.toFixed(2)} fee)` : ''
+      const newTx: InvestorTransaction = {
+        id: `tx-withdraw-${state.withdrawSession + 1}`,
+        source: 'Withdrawal preview · Simulated',
+        timeLabel: 'Just now',
+        amountDisplay: `−${totalDebit.toFixed(2)} iC${feeSuffix}`,
+        kind: 'negative',
+        txType: 'withdraw',
+      }
+      return {
+        ...state,
+        withdrawConfirmed: true,
+        lastWithdrawAmount: amount,
+        lastWithdrawFee: fee,
+        withdrawSession: state.withdrawSession + 1,
         usableBalance: debited.usableBalance,
         walletBalance: debited.walletBalance,
         transactions: [newTx, ...state.transactions],
@@ -514,6 +650,38 @@ export function useInvestorDemoState() {
     dispatch({ type: 'CONFIRM_TIP', amount, message })
   }, [])
 
+  const openPay = useCallback(() => {
+    dispatch({ type: 'OPEN_PAY' })
+  }, [])
+
+  const setPayAmount = useCallback((amount: number) => {
+    dispatch({ type: 'SET_PAY_AMOUNT', amount })
+  }, [])
+
+  const setPayMode = useCallback((mode: PayMode) => {
+    dispatch({ type: 'SET_PAY_MODE', mode })
+  }, [])
+
+  const confirmPay = useCallback(() => {
+    dispatch({ type: 'CONFIRM_PAY' })
+  }, [])
+
+  const openWithdraw = useCallback(() => {
+    dispatch({ type: 'OPEN_WITHDRAW' })
+  }, [])
+
+  const setWithdrawAmount = useCallback((amount: number) => {
+    dispatch({ type: 'SET_WITHDRAW_AMOUNT', amount })
+  }, [])
+
+  const setWithdrawMethod = useCallback((method: WithdrawMethod) => {
+    dispatch({ type: 'SET_WITHDRAW_METHOD', method })
+  }, [])
+
+  const confirmWithdraw = useCallback(() => {
+    dispatch({ type: 'CONFIRM_WITHDRAW' })
+  }, [])
+
   const openConnectPlatforms = useCallback(() => {
     dispatch({ type: 'OPEN_CONNECT_PLATFORMS' })
   }, [])
@@ -580,6 +748,14 @@ export function useInvestorDemoState() {
     confirmConvert,
     openTip,
     confirmTip,
+    openPay,
+    setPayAmount,
+    setPayMode,
+    confirmPay,
+    openWithdraw,
+    setWithdrawAmount,
+    setWithdrawMethod,
+    confirmWithdraw,
     openConnectPlatforms,
     togglePlatform,
     openCampaignPreview,

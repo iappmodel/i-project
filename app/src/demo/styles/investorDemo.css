@@ -1782,6 +1782,40 @@
   background: rgba(255, 77, 109, 0.05);
 }
 
+.id-wallet__tx--pay {
+  border-color: rgba(255, 179, 0, 0.22);
+  background: rgba(255, 179, 0, 0.05);
+}
+
+.id-wallet__tx--pay .id-wallet__tx-badge {
+  color: var(--accent-amber);
+  background: rgba(255, 179, 0, 0.12);
+  border-color: rgba(255, 179, 0, 0.25);
+}
+
+.id-wallet__tx--withdraw {
+  border-color: rgba(0, 229, 255, 0.22);
+  background: rgba(0, 229, 255, 0.05);
+}
+
+.id-wallet__tx--withdraw .id-wallet__tx-badge {
+  color: var(--accent-cyan);
+  background: rgba(0, 229, 255, 0.12);
+  border-color: rgba(0, 229, 255, 0.25);
+}
+
+.id-wallet__tx--convert .id-wallet__tx-badge {
+  color: var(--accent-cyan);
+  background: rgba(0, 229, 255, 0.12);
+  border-color: rgba(0, 229, 255, 0.25);
+}
+
+.id-wallet__tx--tip .id-wallet__tx-badge {
+  color: var(--accent-rose);
+  background: rgba(255, 77, 109, 0.12);
+  border-color: rgba(255, 77, 109, 0.25);
+}
+
 /* ── Convert ──────────────────────────────────────────────────────────────── */
 
 .id-convert {
@@ -2556,6 +2590,573 @@
 .id-tip__confirm-row .mono {
   font-family: var(--font-mono);
   color: var(--text-primary);
+}
+
+/* ── Pay ──────────────────────────────────────────────────────────────────── */
+
+.id-pay,
+.id-withdraw {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 20px 18px 28px;
+  background: var(--bg-surface);
+  min-height: 0;
+}
+
+.id-pay__back,
+.id-withdraw__back {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 0;
+  margin-bottom: 18px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.id-pay__back:hover,
+.id-withdraw__back:hover { color: var(--text-primary); }
+
+.id-pay__back-icon,
+.id-withdraw__back-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--bg-panel);
+  border: 0.5px solid var(--border-mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+}
+
+.id-pay__title,
+.id-withdraw__title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+}
+
+.id-pay__sub,
+.id-withdraw__sub {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0 0 18px;
+}
+
+.id-pay__balance-card,
+.id-withdraw__balance-card {
+  background: var(--bg-panel);
+  border: 0.5px solid var(--border-mid);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 18px;
+}
+
+.id-pay__balance-label,
+.id-withdraw__balance-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 6px;
+}
+
+.id-pay__balance-num,
+.id-withdraw__balance-num {
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+  line-height: 1;
+}
+
+.id-pay__balance-num span,
+.id-withdraw__balance-num span {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.id-pay__balance-sub,
+.id-withdraw__balance-sub {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.id-pay__sec-label,
+.id-withdraw__sec-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin: 0 0 10px;
+}
+
+.id-pay__mode-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.id-pay__mode {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 6px;
+  border-radius: 12px;
+  border: 0.5px solid var(--border-subtle);
+  background: var(--bg-panel);
+  color: var(--text-secondary);
+  font-size: 11px;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+}
+
+.id-pay__mode.active {
+  border-color: rgba(255, 179, 0, 0.45);
+  background: rgba(255, 179, 0, 0.08);
+  color: var(--accent-amber);
+}
+
+.id-pay__mode-icon {
+  font-size: 14px;
+}
+
+.id-pay__merchant {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-panel);
+  border: 0.5px solid var(--border-mid);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 18px;
+}
+
+.id-pay__merchant-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.id-pay__merchant-name {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 2px;
+}
+
+.id-pay__merchant-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.id-pay__presets,
+.id-withdraw__presets {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.id-pay__preset,
+.id-withdraw__preset {
+  padding: 11px 4px;
+  border-radius: 12px;
+  border: 0.5px solid var(--border-subtle);
+  background: var(--bg-panel);
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.12s, border-color 0.12s;
+  font-family: var(--font-body);
+}
+
+.id-pay__preset:hover:not(:disabled),
+.id-withdraw__preset:hover:not(:disabled) {
+  border-color: var(--border-mid);
+}
+
+.id-pay__preset.active {
+  background: var(--accent-amber);
+  border-color: var(--accent-amber);
+}
+
+.id-withdraw__preset.active {
+  background: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+}
+
+.id-pay__preset:disabled,
+.id-withdraw__preset:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.id-pay__preset-amt,
+.id-withdraw__preset-amt {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.id-pay__preset.active .id-pay__preset-amt,
+.id-withdraw__preset.active .id-withdraw__preset-amt {
+  color: var(--bg-void);
+}
+
+.id-pay__preset-coin,
+.id-withdraw__preset-coin {
+  font-size: 9px;
+  color: var(--text-muted);
+}
+
+.id-pay__preset.active .id-pay__preset-coin,
+.id-withdraw__preset.active .id-withdraw__preset-coin {
+  color: rgba(7, 7, 9, 0.55);
+}
+
+.id-pay__custom-row,
+.id-withdraw__custom-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-panel);
+  border: 0.5px solid var(--border-mid);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+}
+
+.id-pay__custom-input,
+.id-withdraw__custom-input {
+  flex: 1;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-mono);
+  -moz-appearance: textfield;
+}
+
+.id-pay__custom-input::-webkit-outer-spin-button,
+.id-pay__custom-input::-webkit-inner-spin-button,
+.id-withdraw__custom-input::-webkit-outer-spin-button,
+.id-withdraw__custom-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.id-pay__custom-sym,
+.id-withdraw__custom-sym {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.id-pay__error,
+.id-withdraw__error {
+  font-size: 11px;
+  color: var(--accent-rose);
+  margin: 0 0 10px;
+}
+
+.id-pay__preview,
+.id-withdraw__preview {
+  border: 0.5px solid var(--border-subtle);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.id-pay__preview-row,
+.id-withdraw__preview-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  border-bottom: 0.5px solid var(--border-subtle);
+}
+
+.id-pay__preview-row:last-child,
+.id-withdraw__preview-row:last-child {
+  border-bottom: none;
+}
+
+.id-pay__preview-row--total,
+.id-withdraw__preview-row--total {
+  background: rgba(255, 255, 255, 0.02);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.id-pay__cta,
+.id-withdraw__cta {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  border: 0.5px solid var(--border-mid);
+  background: var(--bg-panel);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.id-pay__cta--primary {
+  background: var(--accent-amber);
+  border-color: var(--accent-amber);
+  color: var(--bg-void);
+}
+
+.id-withdraw__cta--primary {
+  background: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+  color: var(--bg-void);
+}
+
+.id-pay__cta--primary:active:not(:disabled),
+.id-withdraw__cta--primary:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.id-pay__cta:disabled,
+.id-withdraw__cta:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.id-pay__disclaimer,
+.id-withdraw__disclaimer {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: center;
+  margin: 14px 0 0;
+}
+
+.id-pay__confirm-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px 12px;
+  background: var(--bg-panel);
+  border: 0.5px solid rgba(255, 179, 0, 0.22);
+  border-radius: 18px;
+  margin-top: 12px;
+}
+
+.id-withdraw__confirm-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px 12px;
+  background: var(--bg-panel);
+  border: 0.5px solid rgba(0, 229, 255, 0.22);
+  border-radius: 18px;
+  margin-top: 12px;
+}
+
+.id-pay__confirm-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(255, 179, 0, 0.12);
+  border: 0.5px solid rgba(255, 179, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: var(--accent-amber);
+  margin-bottom: 16px;
+}
+
+.id-withdraw__confirm-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(0, 229, 255, 0.12);
+  border: 0.5px solid rgba(0, 229, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: var(--accent-cyan);
+  margin-bottom: 16px;
+}
+
+.id-pay__confirm-title,
+.id-withdraw__confirm-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 8px;
+}
+
+.id-pay__confirm-amount {
+  font-family: var(--font-mono);
+  font-size: 40px;
+  font-weight: 500;
+  color: var(--accent-amber);
+  letter-spacing: -0.03em;
+  margin: 0 0 4px;
+  line-height: 1;
+}
+
+.id-withdraw__confirm-amount {
+  font-family: var(--font-mono);
+  font-size: 40px;
+  font-weight: 500;
+  color: var(--accent-cyan);
+  letter-spacing: -0.03em;
+  margin: 0 0 4px;
+  line-height: 1;
+}
+
+.id-pay__confirm-amount span,
+.id-withdraw__confirm-amount span {
+  font-size: 16px;
+  color: var(--text-muted);
+}
+
+.id-pay__confirm-sub,
+.id-withdraw__confirm-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0 0 8px;
+}
+
+.id-withdraw__confirm-fee {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin: 0 0 12px;
+}
+
+.id-pay__confirm-rows,
+.id-withdraw__confirm-rows {
+  width: 100%;
+  margin-bottom: 20px;
+  border-top: 0.5px solid var(--border-subtle);
+  padding-top: 14px;
+}
+
+.id-pay__confirm-row,
+.id-withdraw__confirm-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-secondary);
+  padding: 6px 0;
+}
+
+.id-pay__confirm-row .mono,
+.id-withdraw__confirm-row .mono {
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+}
+
+.id-withdraw__method-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.id-withdraw__method {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 11px 12px;
+  border-radius: 12px;
+  border: 0.5px solid var(--border-subtle);
+  background: var(--bg-panel);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+
+.id-withdraw__method.active {
+  border-color: rgba(0, 229, 255, 0.45);
+  background: rgba(0, 229, 255, 0.08);
+}
+
+.id-withdraw__method-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.id-withdraw__method-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.id-withdraw__destination {
+  background: var(--bg-panel);
+  border: 0.5px dashed var(--border-mid);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+}
+
+.id-withdraw__destination-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 0 0 6px;
+}
+
+.id-withdraw__destination-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 2px;
+}
+
+.id-withdraw__destination-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 0;
 }
 
 /* ── Connect Platforms ────────────────────────────────────────────────────── */

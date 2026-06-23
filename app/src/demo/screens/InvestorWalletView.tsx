@@ -24,13 +24,23 @@ function txBg(kind: string) {
 function txIcon(kind: string, txType?: string) {
   if (txType === 'convert') return '⇄'
   if (txType === 'tip') return '♥'
+  if (txType === 'pay') return '→'
+  if (txType === 'withdraw') return '↓'
   if (kind === 'positive') return '+'
   if (kind === 'negative') return '−'
   return '◷'
 }
 
+function txLatestClass(txType?: string): string {
+  if (txType === 'convert') return ' id-wallet__tx--convert'
+  if (txType === 'tip') return ' id-wallet__tx--tip'
+  if (txType === 'pay') return ' id-wallet__tx--pay'
+  if (txType === 'withdraw') return ' id-wallet__tx--withdraw'
+  return ''
+}
+
 export function InvestorWalletView() {
-  const { state, goView, showToast, setPresenterStep, openConvert, openTip } = useInvestorDemo()
+  const { state, goView, showToast, setPresenterStep, openConvert, openTip, openPay, openWithdraw } = useInvestorDemo()
 
   const { walletBalance, usableBalance, pendingBalance, lifetimeEarned, sessionEarned, transactions } = state
 
@@ -63,6 +73,14 @@ export function InvestorWalletView() {
     }
     if (id === 'tip') {
       openTip()
+      return
+    }
+    if (id === 'pay') {
+      openPay()
+      return
+    }
+    if (id === 'withdraw') {
+      openWithdraw()
       return
     }
     showToast(`${label} — full walkthrough`)
@@ -153,7 +171,7 @@ export function InvestorWalletView() {
           return (
             <div
               key={tx.id}
-              className={`id-wallet__tx${isLatest ? ' id-wallet__tx--latest' : ''}${tx.txType === 'convert' && isLatest ? ' id-wallet__tx--convert' : ''}${tx.txType === 'tip' && isLatest ? ' id-wallet__tx--tip' : ''}`}
+              className={`id-wallet__tx${isLatest ? ' id-wallet__tx--latest' : ''}${isLatest ? txLatestClass(tx.txType) : ''}`}
             >
               {isLatest ? (
                 <span className="id-wallet__tx-badge">New</span>

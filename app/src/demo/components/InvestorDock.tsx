@@ -18,6 +18,8 @@ const VIEW_TO_TAB: Record<string, DockTab> = {
   wallet: 'wallet',
   convert: 'wallet',
   tip: 'wallet',
+  pay: 'wallet',
+  withdraw: 'wallet',
   connectPlatforms: 'profile',
   campaignPreview: 'create',
   splash: 'feed',
