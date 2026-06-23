@@ -312,6 +312,14 @@ export function useInvestorDemoState() {
 
     if (step.view === 'watchVerify') {
       dispatch({ type: 'START_VERIFICATION' })
+      dispatch({ type: 'GO_VIEW', view: step.view })
+      return
+    }
+
+    if (step.view === 'convert') {
+      // Open convert form only — never auto-convert balances
+      dispatch({ type: 'OPEN_CONVERT' })
+      return
     }
 
     dispatch({ type: 'GO_VIEW', view: step.view })

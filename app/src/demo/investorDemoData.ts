@@ -239,9 +239,29 @@ export const PRESENTER_STEPS: PresenterStep[] = [
     view: 'wallet',
     title: 'Verified value becomes usable balance',
     bullets: [
-      'The wallet is the economic hub: iCoins, pending, and lifetime earnings.',
-      'Users convert, withdraw to bank, pay merchants, or tip creators.',
-      'Loop 1 → Wallet → Loop 3: Balance → Convert → Use.',
+      'The wallet is the economic hub: verified iCoins, pending, and lifetime earnings.',
+      'Investors see balances update in real time as attention is verified.',
+      'Convert, withdraw, pay, and tip all start from here.',
+    ],
+  },
+  {
+    index: 6,
+    view: 'convert',
+    title: 'Convert verified attention',
+    bullets: [
+      'Verified iCoins become usable wallet value.',
+      'Conversion is simulated here; no real financial movement.',
+      'This proves the bridge from attention proof to spendable utility.',
+    ],
+  },
+  {
+    index: 7,
+    view: 'wallet',
+    title: 'Spendable utility unlocked',
+    bullets: [
+      'After conversion, usable balance is ready for in-app spend.',
+      'Loop 1 is complete: Watch → Verify → Reward → Wallet → Convert.',
+      'Withdraw, pay, and tip extend the story in the full walkthrough.',
     ],
   },
 ]
