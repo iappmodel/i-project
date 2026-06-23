@@ -12,6 +12,7 @@ export type InvestorView =
   | 'convert'
   | 'tip'
   | 'connectPlatforms'
+  | 'campaignPreview'
 
 export interface FeedItem {
   id: string
@@ -364,4 +365,146 @@ export function connectPlatformHandle(platformId: string): string {
 
 export function cloneBaselinePlatforms(): PlatformConnection[] {
   return baselinePlatforms().map((p) => ({ ...p }))
+}
+
+// ─── Campaign Builder Preview ────────────────────────────────────────────────
+
+export type CampaignAction = 'follow' | 'visit' | 'shop' | 'custom'
+export type CampaignStatus = 'draft' | 'published'
+export type VerificationStrictness = 'light' | 'standard' | 'strict'
+
+export interface CampaignGates {
+  watchTime: boolean
+  gazeForward: boolean
+  fraudCheck: boolean
+  actionConfirmation: boolean
+}
+
+export type CampaignGateId = keyof CampaignGates
+
+export interface CampaignPreviewState {
+  campaignStatus: CampaignStatus
+  selectedAction: CampaignAction
+  customActionLabel: string
+  selectedReward: number
+  budgetCap: number
+  verificationStrictness: VerificationStrictness
+  enabledGates: CampaignGates
+}
+
+export const CAMPAIGN_ACTION_PRESETS: {
+  id: CampaignAction
+  label: string
+  hint: string
+  color: string
+}[] = [
+  { id: 'follow', label: 'Follow', hint: 'creator', color: '#1D9E75' },
+  { id: 'visit', label: 'Visit', hint: 'location', color: '#EF9F27' },
+  { id: 'shop', label: 'Shop', hint: 'purchase', color: '#378ADD' },
+  { id: 'custom', label: 'Custom', hint: 'write it', color: 'rgba(255,255,255,0.38)' },
+]
+
+export const CAMPAIGN_REWARD_PRESETS = [0.15, 0.25, 0.5, 1.0] as const
+
+export const CAMPAIGN_STRICTNESS_OPTIONS: {
+  id: VerificationStrictness
+  label: string
+  sublabel: string
+}[] = [
+  { id: 'light', label: 'Light', sublabel: 'watch + action' },
+  { id: 'standard', label: 'Standard', sublabel: 'recommended' },
+  { id: 'strict', label: 'Strict', sublabel: 'full POP stack' },
+]
+
+export const CAMPAIGN_GATE_DEFS: {
+  id: CampaignGateId
+  label: string
+  sublabel: string
+}[] = [
+  { id: 'watchTime', label: 'Watch time', sublabel: 'Minimum view duration' },
+  { id: 'gazeForward', label: 'Gaze forward', sublabel: 'Eyes on screen' },
+  { id: 'fraudCheck', label: 'Fraud check', sublabel: 'Bot / replay screening' },
+  { id: 'actionConfirmation', label: 'Action confirmation', sublabel: 'CTA tap verified' },
+]
+
+export function gatesForStrictness(strictness: VerificationStrictness): CampaignGates {
+  switch (strictness) {
+    case 'light':
+      return {
+        watchTime: true,
+        gazeForward: false,
+        fraudCheck: false,
+        actionConfirmation: true,
+      }
+    case 'standard':
+      return {
+        watchTime: true,
+        gazeForward: true,
+        fraudCheck: true,
+        actionConfirmation: true,
+      }
+    case 'strict':
+      return {
+        watchTime: true,
+        gazeForward: true,
+        fraudCheck: true,
+        actionConfirmation: true,
+      }
+  }
+}
+
+export function baselineCampaign(): CampaignPreviewState {
+  return {
+    campaignStatus: 'draft',
+    selectedAction: 'follow',
+    customActionLabel: '',
+    selectedReward: 0.25,
+    budgetCap: 50,
+    verificationStrictness: 'standard',
+    enabledGates: gatesForStrictness('standard'),
+  }
+}
+
+export function cloneBaselineCampaign(): CampaignPreviewState {
+  const base = baselineCampaign()
+  return { ...base, enabledGates: { ...base.enabledGates } }
+}
+
+export function campaignActionLabel(
+  action: CampaignAction,
+  customLabel: string,
+): string {
+  switch (action) {
+    case 'follow':
+      return 'Follow'
+    case 'visit':
+      return 'Visit'
+    case 'shop':
+      return 'Shop Now'
+    case 'custom':
+      return customLabel.trim() || 'Custom action'
+  }
+}
+
+export interface CampaignEconomics {
+  viewerReward: number
+  creatorShare: number
+  platformFee: number
+  estimatedVerifiedViews: number
+}
+
+/** Deterministic mock economics — no real ad spend. */
+export function computeCampaignEconomics(
+  reward: number,
+  budgetCap: number,
+): CampaignEconomics {
+  const viewerReward = reward
+  const creatorShare = +(reward * 0.15).toFixed(3)
+  const platformFee = +(reward * 0.05).toFixed(3)
+  const costPerView = +(viewerReward + creatorShare + platformFee).toFixed(3)
+  const estimatedVerifiedViews = Math.max(
+    1,
+    Math.floor(budgetCap / Math.max(costPerView, 0.01)),
+  )
+  return { viewerReward, creatorShare, platformFee, estimatedVerifiedViews }
 }

@@ -11,8 +11,14 @@ import {
   SEED_TRANSACTIONS,
   freshGates,
   cloneBaselinePlatforms,
+  cloneBaselineCampaign,
   connectPlatformHandle,
+  gatesForStrictness,
+  type CampaignAction,
+  type CampaignGateId,
+  type CampaignPreviewState,
   type PlatformConnection,
+  type VerificationStrictness,
   type InvestorTransaction,
   type InvestorView,
   type VerificationGate,
@@ -50,6 +56,7 @@ export interface InvestorDemoState {
   lastTipMessage: string
   tipSession: number
   platformConnections: PlatformConnection[]
+  campaign: CampaignPreviewState
   likedContentIds: string[]
   savedContentIds: string[]
   toast: string | null
@@ -78,6 +85,12 @@ type Action =
   | { type: 'CONFIRM_TIP'; amount: number; message: string }
   | { type: 'OPEN_CONNECT_PLATFORMS' }
   | { type: 'TOGGLE_PLATFORM'; platformId: string }
+  | { type: 'OPEN_CAMPAIGN_PREVIEW' }
+  | { type: 'SET_CAMPAIGN_ACTION'; action: CampaignAction; customLabel?: string }
+  | { type: 'SET_CAMPAIGN_REWARD'; amount: number }
+  | { type: 'SET_CAMPAIGN_STRICTNESS'; strictness: VerificationStrictness }
+  | { type: 'TOGGLE_CAMPAIGN_GATE'; gateId: CampaignGateId }
+  | { type: 'PUBLISH_CAMPAIGN_PREVIEW' }
   | { type: 'RESET' }
 
 function cloneSeedTransactions(): InvestorTransaction[] {
@@ -134,6 +147,7 @@ function createBaselineState(): InvestorDemoState {
     lastTipMessage: '',
     tipSession: 0,
     platformConnections: cloneBaselinePlatforms(),
+    campaign: cloneBaselineCampaign(),
     likedContentIds: [],
     savedContentIds: [],
     toast: null,
@@ -318,6 +332,63 @@ function reducer(state: InvestorDemoState, action: Action): InvestorDemoState {
         }),
       }
 
+    case 'OPEN_CAMPAIGN_PREVIEW':
+      return { ...state, currentView: 'campaignPreview' }
+
+    case 'SET_CAMPAIGN_ACTION':
+      return {
+        ...state,
+        campaign: {
+          ...state.campaign,
+          selectedAction: action.action,
+          customActionLabel:
+            action.customLabel !== undefined
+              ? action.customLabel
+              : state.campaign.customActionLabel,
+        },
+      }
+
+    case 'SET_CAMPAIGN_REWARD':
+      return {
+        ...state,
+        campaign: {
+          ...state.campaign,
+          selectedReward: action.amount,
+        },
+      }
+
+    case 'SET_CAMPAIGN_STRICTNESS':
+      return {
+        ...state,
+        campaign: {
+          ...state.campaign,
+          verificationStrictness: action.strictness,
+          enabledGates: gatesForStrictness(action.strictness),
+        },
+      }
+
+    case 'TOGGLE_CAMPAIGN_GATE':
+      return {
+        ...state,
+        campaign: {
+          ...state.campaign,
+          enabledGates: {
+            ...state.campaign.enabledGates,
+            [action.gateId]: !state.campaign.enabledGates[action.gateId],
+          },
+        },
+      }
+
+    case 'PUBLISH_CAMPAIGN_PREVIEW':
+      if (state.campaign.campaignStatus === 'published') return state
+      return {
+        ...state,
+        campaign: {
+          ...state.campaign,
+          campaignStatus: 'published',
+        },
+      }
+
     case 'RESET':
       return createBaselineState()
 
@@ -451,6 +522,30 @@ export function useInvestorDemoState() {
     dispatch({ type: 'TOGGLE_PLATFORM', platformId })
   }, [])
 
+  const openCampaignPreview = useCallback(() => {
+    dispatch({ type: 'OPEN_CAMPAIGN_PREVIEW' })
+  }, [])
+
+  const setCampaignAction = useCallback((action: CampaignAction, customLabel?: string) => {
+    dispatch({ type: 'SET_CAMPAIGN_ACTION', action, customLabel })
+  }, [])
+
+  const setCampaignReward = useCallback((amount: number) => {
+    dispatch({ type: 'SET_CAMPAIGN_REWARD', amount })
+  }, [])
+
+  const setCampaignStrictness = useCallback((strictness: VerificationStrictness) => {
+    dispatch({ type: 'SET_CAMPAIGN_STRICTNESS', strictness })
+  }, [])
+
+  const toggleCampaignGate = useCallback((gateId: CampaignGateId) => {
+    dispatch({ type: 'TOGGLE_CAMPAIGN_GATE', gateId })
+  }, [])
+
+  const publishCampaignPreview = useCallback(() => {
+    dispatch({ type: 'PUBLISH_CAMPAIGN_PREVIEW' })
+  }, [])
+
   const presenterNext = useCallback(() => {
     const nextIndex = Math.min(
       state.presenterStepIndex + 1,
@@ -487,6 +582,12 @@ export function useInvestorDemoState() {
     confirmTip,
     openConnectPlatforms,
     togglePlatform,
+    openCampaignPreview,
+    setCampaignAction,
+    setCampaignReward,
+    setCampaignStrictness,
+    toggleCampaignGate,
+    publishCampaignPreview,
   }
 }
 

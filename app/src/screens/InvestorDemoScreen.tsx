@@ -22,6 +22,7 @@ import { InvestorWalletView } from '../demo/screens/InvestorWalletView'
 import { InvestorConvertView } from '../demo/screens/InvestorConvertView'
 import { InvestorTipView } from '../demo/screens/InvestorTipView'
 import { InvestorConnectPlatformsView } from '../demo/screens/InvestorConnectPlatformsView'
+import { InvestorCampaignPreviewView } from '../demo/screens/InvestorCampaignPreviewView'
 import type { InvestorView } from '../demo/investorDemoData'
 
 // ─── View router (reads from context) ─────────────────────────────────────
@@ -49,6 +50,8 @@ function ViewSwitch({ view }: { view: InvestorView }) {
       return <InvestorTipView />
     case 'connectPlatforms':
       return <InvestorConnectPlatformsView />
+    case 'campaignPreview':
+      return <InvestorCampaignPreviewView />
     case 'splash':
     default:
       return <InvestorSplashView />
