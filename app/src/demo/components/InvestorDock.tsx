@@ -22,6 +22,7 @@ const VIEW_TO_TAB: Record<string, DockTab> = {
   withdraw: 'wallet',
   promo: 'promo',
   connectPlatforms: 'profile',
+  unifiedProfile: 'profile',
   campaignPreview: 'create',
   studioPreview: 'create',
   splash: 'feed',

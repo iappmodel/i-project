@@ -10,6 +10,7 @@ import {
   PRESENTER_STEPS,
   SEED_TRANSACTIONS,
   freshGates,
+  baselineProfileFilter,
   cloneBaselinePlatforms,
   cloneBaselineCampaign,
   cloneBaselineStudio,
@@ -28,6 +29,7 @@ import {
   type StudioCta,
   type StudioFormat,
   type StudioPreviewState,
+  type ProfilePlatformFilter,
   type VerificationStrictness,
   type WithdrawMethod,
   type InvestorTransaction,
@@ -87,6 +89,8 @@ export interface InvestorDemoState {
   promoClaimConfirmed: boolean
   lastClaimedPromoId: string | null
   promoSession: number
+  selectedProfilePlatformFilter: ProfilePlatformFilter
+  selectedProfileContentId: string | null
   likedContentIds: string[]
   savedContentIds: string[]
   toast: string | null
@@ -143,6 +147,9 @@ type Action =
   | { type: 'VERIFY_PROMO' }
   | { type: 'CLAIM_PROMO_REWARD' }
   | { type: 'DISMISS_PROMO_CLAIM' }
+  | { type: 'OPEN_UNIFIED_PROFILE' }
+  | { type: 'SET_PROFILE_PLATFORM_FILTER'; filter: ProfilePlatformFilter }
+  | { type: 'SELECT_PROFILE_CONTENT'; contentId: string | null }
   | { type: 'RESET' }
 
 function cloneSeedTransactions(): InvestorTransaction[] {
@@ -219,6 +226,8 @@ function createBaselineState(): InvestorDemoState {
     promoClaimConfirmed: false,
     lastClaimedPromoId: null,
     promoSession: 0,
+    selectedProfilePlatformFilter: baselineProfileFilter(),
+    selectedProfileContentId: null,
     likedContentIds: [],
     savedContentIds: [],
     toast: null,
@@ -699,6 +708,26 @@ function reducer(state: InvestorDemoState, action: Action): InvestorDemoState {
         selectedPromoId: null,
       }
 
+    case 'OPEN_UNIFIED_PROFILE':
+      return {
+        ...state,
+        currentView: 'unifiedProfile',
+        selectedProfileContentId: null,
+      }
+
+    case 'SET_PROFILE_PLATFORM_FILTER':
+      return {
+        ...state,
+        selectedProfilePlatformFilter: action.filter,
+        selectedProfileContentId: null,
+      }
+
+    case 'SELECT_PROFILE_CONTENT':
+      return {
+        ...state,
+        selectedProfileContentId: action.contentId,
+      }
+
     case 'RESET':
       return createBaselineState()
 
@@ -944,6 +973,18 @@ export function useInvestorDemoState() {
     dispatch({ type: 'DISMISS_PROMO_CLAIM' })
   }, [])
 
+  const openUnifiedProfile = useCallback(() => {
+    dispatch({ type: 'OPEN_UNIFIED_PROFILE' })
+  }, [])
+
+  const setProfilePlatformFilter = useCallback((filter: ProfilePlatformFilter) => {
+    dispatch({ type: 'SET_PROFILE_PLATFORM_FILTER', filter })
+  }, [])
+
+  const selectProfileContent = useCallback((contentId: string | null) => {
+    dispatch({ type: 'SELECT_PROFILE_CONTENT', contentId })
+  }, [])
+
   const presenterNext = useCallback(() => {
     const nextIndex = Math.min(
       state.presenterStepIndex + 1,
@@ -1008,6 +1049,9 @@ export function useInvestorDemoState() {
     verifyPromo,
     claimPromoReward,
     dismissPromoClaim,
+    openUnifiedProfile,
+    setProfilePlatformFilter,
+    selectProfileContent,
   }
 }
 

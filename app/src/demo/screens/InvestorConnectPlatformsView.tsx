@@ -3,7 +3,7 @@ import { useInvestorDemo } from '../useInvestorDemoState'
 import { InvestorDock } from '../components/InvestorDock'
 
 export function InvestorConnectPlatformsView() {
-  const { state, goView, togglePlatform, showToast } = useInvestorDemo()
+  const { state, goView, togglePlatform, showToast, openUnifiedProfile } = useInvestorDemo()
   const { platformConnections } = state
 
   const [syncingId, setSyncingId] = useState<string | null>(null)
@@ -138,6 +138,21 @@ export function InvestorConnectPlatformsView() {
             and creator tools — without re-entering profile data.
           </p>
         </div>
+
+        <button
+          type="button"
+          className="id-connect__profile-link"
+          onClick={openUnifiedProfile}
+        >
+          <span className="id-connect__profile-icon" aria-hidden>○</span>
+          <span className="id-connect__profile-text">
+            <span className="id-connect__profile-title">View Unified Profile</span>
+            <span className="id-connect__profile-sub">
+              Cross-platform content grid · simulated import
+            </span>
+          </span>
+          <span className="id-connect__profile-arrow" aria-hidden>→</span>
+        </button>
 
         <p className="id-connect__disclaimer">
           Simulated platform connection. No external account access.

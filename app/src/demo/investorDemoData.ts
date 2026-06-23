@@ -17,6 +17,7 @@ export type InvestorView =
   | 'connectPlatforms'
   | 'campaignPreview'
   | 'studioPreview'
+  | 'unifiedProfile'
 
 export interface FeedItem {
   id: string
@@ -523,6 +524,188 @@ export function connectPlatformHandle(platformId: string): string {
 
 export function cloneBaselinePlatforms(): PlatformConnection[] {
   return baselinePlatforms().map((p) => ({ ...p }))
+}
+
+// ─── Unified Creator Profile ─────────────────────────────────────────────────
+
+export type ProfilePlatformFilter = 'all' | 'youtube' | 'tiktok' | 'instagram' | 'twitch'
+export type ProfilePlatformId = Exclude<ProfilePlatformFilter, 'all'>
+
+export interface UnifiedProfileContent {
+  id: string
+  platformId: ProfilePlatformId
+  title: string
+  viewsLabel: string
+  rewardReady: boolean
+  gradient: string
+}
+
+export const UNIFIED_PROFILE_CREATOR = {
+  ...DEFAULT_TIP_CREATOR,
+  bio: 'Acoustic creator · cross-platform rewards · demo profile',
+} as const
+
+export const PROFILE_PLATFORM_FILTERS: { id: ProfilePlatformFilter; label: string }[] = [
+  { id: 'all', label: 'All' },
+  { id: 'youtube', label: 'YouTube' },
+  { id: 'tiktok', label: 'TikTok' },
+  { id: 'instagram', label: 'Instagram' },
+  { id: 'twitch', label: 'Twitch' },
+]
+
+const PLATFORM_META: Record<
+  ProfilePlatformId,
+  { initials: string; color: string; name: string }
+> = {
+  youtube: { initials: 'YT', color: '#cc0000', name: 'YouTube' },
+  tiktok: { initials: 'TT', color: '#111118', name: 'TikTok' },
+  instagram: { initials: 'IG', color: '#c13584', name: 'Instagram' },
+  twitch: { initials: 'TW', color: '#9146ff', name: 'Twitch' },
+}
+
+export function profilePlatformMeta(platformId: ProfilePlatformId) {
+  return PLATFORM_META[platformId]
+}
+
+export const UNIFIED_PROFILE_CONTENT: UnifiedProfileContent[] = [
+  {
+    id: 'yt-live-session',
+    platformId: 'youtube',
+    title: 'Live acoustic set',
+    viewsLabel: '24.1K',
+    rewardReady: true,
+    gradient: 'linear-gradient(160deg, #1a0a0a 0%, #2d1515 100%)',
+  },
+  {
+    id: 'yt-cover-vlog',
+    platformId: 'youtube',
+    title: 'Sunday cover vlog',
+    viewsLabel: '18.6K',
+    rewardReady: true,
+    gradient: 'linear-gradient(160deg, #0d1a2e 0%, #091020 100%)',
+  },
+  {
+    id: 'yt-studio-clip',
+    platformId: 'youtube',
+    title: 'Studio warm-up',
+    viewsLabel: '9.2K',
+    rewardReady: false,
+    gradient: 'linear-gradient(160deg, #0a1c17 0%, #061210 100%)',
+  },
+  {
+    id: 'tt-hook-01',
+    platformId: 'tiktok',
+    title: 'Hook · earn loop',
+    viewsLabel: '142K',
+    rewardReady: true,
+    gradient: 'linear-gradient(160deg, #12121a 0%, #1a1028 100%)',
+  },
+  {
+    id: 'tt-duet',
+    platformId: 'tiktok',
+    title: 'Duet challenge',
+    viewsLabel: '88K',
+    rewardReady: true,
+    gradient: 'linear-gradient(160deg, #0f1419 0%, #0a1018 100%)',
+  },
+  {
+    id: 'tt-bts',
+    platformId: 'tiktok',
+    title: 'Behind the scenes',
+    viewsLabel: '31K',
+    rewardReady: false,
+    gradient: 'linear-gradient(160deg, #181818 0%, #101010 100%)',
+  },
+  {
+    id: 'ig-reel-promo',
+    platformId: 'instagram',
+    title: 'Reel · brand fit',
+    viewsLabel: '12.4K',
+    rewardReady: true,
+    gradient: 'linear-gradient(160deg, #2a1020 0%, #1a0818 100%)',
+  },
+  {
+    id: 'ig-story',
+    platformId: 'instagram',
+    title: 'Story highlights',
+    viewsLabel: '6.8K',
+    rewardReady: false,
+    gradient: 'linear-gradient(160deg, #1f1530 0%, #120d20 100%)',
+  },
+  {
+    id: 'ig-carousel',
+    platformId: 'instagram',
+    title: 'Tour carousel',
+    viewsLabel: '4.1K',
+    rewardReady: true,
+    gradient: 'linear-gradient(160deg, #201a10 0%, #141008 100%)',
+  },
+  {
+    id: 'tw-stream',
+    platformId: 'twitch',
+    title: 'Stream highlight',
+    viewsLabel: '3.2K',
+    rewardReady: true,
+    gradient: 'linear-gradient(160deg, #1a1030 0%, #100820 100%)',
+  },
+  {
+    id: 'tw-clip',
+    platformId: 'twitch',
+    title: 'Chat reaction clip',
+    viewsLabel: '1.9K',
+    rewardReady: false,
+    gradient: 'linear-gradient(160deg, #141428 0%, #0c0c18 100%)',
+  },
+  {
+    id: 'tw-vod',
+    platformId: 'twitch',
+    title: 'VOD segment',
+    viewsLabel: '980',
+    rewardReady: true,
+    gradient: 'linear-gradient(160deg, #18122a 0%, #0e0a16 100%)',
+  },
+]
+
+export interface UnifiedProfileStats {
+  connectedCount: number
+  importedPosts: number
+  attentionValue: number
+}
+
+export function computeUnifiedProfileStats(
+  connections: PlatformConnection[],
+  content: UnifiedProfileContent[],
+): UnifiedProfileStats {
+  const connectedIds = new Set(
+    connections.filter((p) => p.connected).map((p) => p.id as ProfilePlatformId),
+  )
+  const connectedCount = connectedIds.size
+  const importedPosts = connections
+    .filter((p) => p.connected)
+    .reduce((sum, p) => sum + p.contentCount, 0)
+  const unlocked = content.filter((c) => connectedIds.has(c.platformId))
+  const rewardReady = unlocked.filter((c) => c.rewardReady).length
+  const attentionValue = +(rewardReady * 0.35 + unlocked.length * 0.08).toFixed(2)
+  return { connectedCount, importedPosts, attentionValue }
+}
+
+export function filterUnifiedProfileContent(
+  content: UnifiedProfileContent[],
+  filter: ProfilePlatformFilter,
+): UnifiedProfileContent[] {
+  if (filter === 'all') return content
+  return content.filter((c) => c.platformId === filter)
+}
+
+export function isProfileContentLocked(
+  platformId: ProfilePlatformId,
+  connections: PlatformConnection[],
+): boolean {
+  return !connections.some((p) => p.id === platformId && p.connected)
+}
+
+export function baselineProfileFilter(): ProfilePlatformFilter {
+  return 'all'
 }
 
 // ─── Campaign Builder Preview ────────────────────────────────────────────────
