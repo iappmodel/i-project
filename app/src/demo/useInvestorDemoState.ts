@@ -13,6 +13,12 @@ import {
   baselineProfileFilter,
   baselineACoinsTab,
   baselineAlphabetUnit,
+  baselinePOPLiveSignals,
+  baselinePOPLiveTab,
+  baselinePOPLiveScore,
+  baselinePOPLiveEligibility,
+  baselinePOPLiveDriftState,
+  baselinePOPLiveFrame,
   cloneBaselinePlatforms,
   cloneBaselineCampaign,
   cloneBaselineStudio,
@@ -34,6 +40,12 @@ import {
   type ProfilePlatformFilter,
   type ACoinsTab,
   type AlphabetUnitId,
+  type POPLiveTab,
+  type POPLiveSignalId,
+  type POPLiveSignalState,
+  type POPLiveFrame,
+  type POPLiveEligibility,
+  type POPLiveDriftState,
   type VerificationStrictness,
   type WithdrawMethod,
   type InvestorTransaction,
@@ -97,6 +109,14 @@ export interface InvestorDemoState {
   selectedProfileContentId: string | null
   selectedACoinsTab: ACoinsTab
   selectedAlphabetUnit: AlphabetUnitId
+  popLiveRunning: boolean
+  popLiveTab: POPLiveTab
+  popLiveSignals: POPLiveSignalState
+  popLiveScore: number
+  popLiveEligibility: POPLiveEligibility
+  popLiveDriftState: POPLiveDriftState
+  popLiveFrame: POPLiveFrame
+  popLiveSimTick: number
   likedContentIds: string[]
   savedContentIds: string[]
   toast: string | null
@@ -159,6 +179,20 @@ type Action =
   | { type: 'OPEN_ACOINS' }
   | { type: 'SET_ACOINS_TAB'; tab: ACoinsTab }
   | { type: 'SELECT_ALPHABET_UNIT'; unitId: AlphabetUnitId }
+  | { type: 'OPEN_POP_LIVE' }
+  | { type: 'START_POP_LIVE' }
+  | { type: 'PAUSE_POP_LIVE' }
+  | { type: 'RESET_POP_LIVE' }
+  | { type: 'SET_POP_LIVE_TAB'; tab: POPLiveTab }
+  | { type: 'TOGGLE_POP_LIVE_SIGNAL'; signalId: POPLiveSignalId }
+  | {
+      type: 'UPDATE_POP_LIVE_FRAME'
+      frame: POPLiveFrame
+      score: number
+      eligibility: POPLiveEligibility
+      driftState: POPLiveDriftState
+      simTick: number
+    }
   | { type: 'RESET' }
 
 function cloneSeedTransactions(): InvestorTransaction[] {
@@ -239,6 +273,14 @@ function createBaselineState(): InvestorDemoState {
     selectedProfileContentId: null,
     selectedACoinsTab: baselineACoinsTab(),
     selectedAlphabetUnit: baselineAlphabetUnit(),
+    popLiveRunning: false,
+    popLiveTab: baselinePOPLiveTab(),
+    popLiveSignals: baselinePOPLiveSignals(),
+    popLiveScore: baselinePOPLiveScore(),
+    popLiveEligibility: baselinePOPLiveEligibility(),
+    popLiveDriftState: baselinePOPLiveDriftState(),
+    popLiveFrame: baselinePOPLiveFrame(),
+    popLiveSimTick: 0,
     likedContentIds: [],
     savedContentIds: [],
     toast: null,
@@ -748,6 +790,52 @@ function reducer(state: InvestorDemoState, action: Action): InvestorDemoState {
     case 'SELECT_ALPHABET_UNIT':
       return { ...state, selectedAlphabetUnit: action.unitId }
 
+    case 'OPEN_POP_LIVE':
+      return { ...state, currentView: 'popLive' }
+
+    case 'START_POP_LIVE':
+      return { ...state, popLiveRunning: true }
+
+    case 'PAUSE_POP_LIVE':
+      return { ...state, popLiveRunning: false }
+
+    case 'RESET_POP_LIVE':
+      return {
+        ...state,
+        popLiveRunning: false,
+        popLiveTab: baselinePOPLiveTab(),
+        popLiveSignals: baselinePOPLiveSignals(),
+        popLiveScore: baselinePOPLiveScore(),
+        popLiveEligibility: baselinePOPLiveEligibility(),
+        popLiveDriftState: baselinePOPLiveDriftState(),
+        popLiveFrame: baselinePOPLiveFrame(),
+        popLiveSimTick: 0,
+      }
+
+    case 'SET_POP_LIVE_TAB':
+      return { ...state, popLiveTab: action.tab }
+
+    case 'TOGGLE_POP_LIVE_SIGNAL': {
+      const key = action.signalId
+      return {
+        ...state,
+        popLiveSignals: {
+          ...state.popLiveSignals,
+          [key]: !state.popLiveSignals[key],
+        },
+      }
+    }
+
+    case 'UPDATE_POP_LIVE_FRAME':
+      return {
+        ...state,
+        popLiveFrame: action.frame,
+        popLiveScore: action.score,
+        popLiveEligibility: action.eligibility,
+        popLiveDriftState: action.driftState,
+        popLiveSimTick: action.simTick,
+      }
+
     case 'RESET':
       return createBaselineState()
 
@@ -1017,6 +1105,43 @@ export function useInvestorDemoState() {
     dispatch({ type: 'SELECT_ALPHABET_UNIT', unitId })
   }, [])
 
+  const openPOPLive = useCallback(() => {
+    dispatch({ type: 'OPEN_POP_LIVE' })
+  }, [])
+
+  const startPOPLive = useCallback(() => {
+    dispatch({ type: 'START_POP_LIVE' })
+  }, [])
+
+  const pausePOPLive = useCallback(() => {
+    dispatch({ type: 'PAUSE_POP_LIVE' })
+  }, [])
+
+  const resetPOPLive = useCallback(() => {
+    dispatch({ type: 'RESET_POP_LIVE' })
+  }, [])
+
+  const setPOPLiveTab = useCallback((tab: POPLiveTab) => {
+    dispatch({ type: 'SET_POP_LIVE_TAB', tab })
+  }, [])
+
+  const togglePOPLiveSignal = useCallback((signalId: POPLiveSignalId) => {
+    dispatch({ type: 'TOGGLE_POP_LIVE_SIGNAL', signalId })
+  }, [])
+
+  const updatePOPLiveFrame = useCallback(
+    (payload: {
+      frame: POPLiveFrame
+      score: number
+      eligibility: POPLiveEligibility
+      driftState: POPLiveDriftState
+      simTick: number
+    }) => {
+      dispatch({ type: 'UPDATE_POP_LIVE_FRAME', ...payload })
+    },
+    [],
+  )
+
   const presenterNext = useCallback(() => {
     const nextIndex = Math.min(
       state.presenterStepIndex + 1,
@@ -1087,6 +1212,13 @@ export function useInvestorDemoState() {
     openACoins,
     setACoinsTab,
     selectAlphabetUnit,
+    openPOPLive,
+    startPOPLive,
+    pausePOPLive,
+    resetPOPLive,
+    setPOPLiveTab,
+    togglePOPLiveSignal,
+    updatePOPLiveFrame,
   }
 }
 

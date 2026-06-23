@@ -9,7 +9,7 @@ const RING_R = 38
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_R
 
 export function InvestorWatchVerifyView() {
-  const { state, setWatchProgress, completeGate, claimReward } = useInvestorDemo()
+  const { state, setWatchProgress, completeGate, claimReward, openPOPLive } = useInvestorDemo()
 
   const { verificationGates, watchProgress, selectedOfferId, verificationSession, rewardClaimed } =
     state
@@ -122,6 +122,16 @@ export function InvestorWatchVerifyView() {
           Demo only — no camera, no eye tracking, no device permissions
         </span>
       </div>
+
+      <button type="button" className="id-watch__poplive-link" onClick={openPOPLive}>
+        <span className="id-watch__poplive-icon" aria-hidden>◎</span>
+        <span className="id-watch__poplive-text">
+          <span className="id-watch__poplive-title">Live POP Demo</span>
+          <span className="id-watch__poplive-sub">See attention confidence move in real time</span>
+        </span>
+        <span className="id-watch__poplive-pill" aria-hidden>POP Live</span>
+        <span className="id-watch__poplive-arrow" aria-hidden>→</span>
+      </button>
 
       <div className="id-watch__gates" role="list">
         {verificationGates.map((gate, index) => (

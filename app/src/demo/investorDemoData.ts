@@ -19,6 +19,7 @@ export type InvestorView =
   | 'studioPreview'
   | 'unifiedProfile'
   | 'acoins'
+  | 'popLive'
 
 export interface FeedItem {
   id: string
@@ -1128,4 +1129,260 @@ export function baselineACoinsTab(): ACoinsTab {
 
 export function baselineAlphabetUnit(): AlphabetUnitId {
   return 'attention'
+}
+
+// ─── POP Live Tracking Demo ─────────────────────────────────────────────────
+
+export type POPTrackingMode = 'simulated' | 'camera' | 'webgazer'
+
+export type POPLiveTab = 'live' | 'signals' | 'timeline' | 'privacy'
+
+export type POPLiveSignalId =
+  | 'presence'
+  | 'eyesOpen'
+  | 'gazeOnContent'
+  | 'headStable'
+  | 'watchActive'
+  | 'fraudClear'
+
+export interface POPLiveSignalState {
+  presence: boolean
+  eyesOpen: boolean
+  gazeOnContent: boolean
+  headStable: boolean
+  watchActive: boolean
+  fraudClear: boolean
+}
+
+export interface POPLiveFrame {
+  gazeX: number
+  gazeY: number
+  inZone: boolean
+}
+
+export type POPLiveEligibility = 'eligible' | 'recovering' | 'ineligible'
+
+export type POPLiveDriftState = 'on_content' | 'drifting' | 'recovering'
+
+export const POPLIVE_TABS: { id: POPLiveTab; label: string }[] = [
+  { id: 'live', label: 'Live' },
+  { id: 'signals', label: 'Signals' },
+  { id: 'timeline', label: 'Timeline' },
+  { id: 'privacy', label: 'Privacy' },
+]
+
+export const POPLIVE_SIGNAL_DEFS: {
+  id: POPLiveSignalId
+  label: string
+  sub: string
+  icon: string
+}[] = [
+  { id: 'presence', label: 'Presence', sub: 'Session integrity · simulated', icon: '◎' },
+  { id: 'eyesOpen', label: 'Eyes open', sub: 'Attention confidence · simulated', icon: '◉' },
+  { id: 'gazeOnContent', label: 'Gaze on content', sub: 'Gaze estimate · simulated', icon: '◎' },
+  { id: 'headStable', label: 'Head stable', sub: 'Pose stability · simulated', icon: '◇' },
+  { id: 'watchActive', label: 'Watch active', sub: 'Playback session · simulated', icon: '▶' },
+  { id: 'fraudClear', label: 'Fraud screen', sub: 'Integrity check · simulated', icon: '✓' },
+]
+
+export const POPLIVE_TIMELINE: {
+  id: string
+  label: string
+  sub: string
+}[] = [
+  { id: 'offer', label: 'Offer opened', sub: 'Sponsored content context' },
+  { id: 'watch', label: 'Watch started', sub: 'Session clock running' },
+  { id: 'presence', label: 'Presence confirmed', sub: 'Proof-of-presence layer' },
+  { id: 'attention', label: 'Attention maintained', sub: 'Gaze estimate in safe zone' },
+  { id: 'action', label: 'Action completed', sub: 'Engagement gate passed' },
+  { id: 'reward', label: 'Reward eligible', sub: 'Eligibility preview only' },
+]
+
+export const POPLIVE_PRIVACY_RULES: string[] = [
+  'This is a simulated POP demo — no camera, biometric processing, or real sensor access.',
+  'Gaze dots and signal cards are deterministic animations for investor presentation.',
+  'Tracking adapter ready: simulated → camera → WebGazer (not enabled in this build).',
+  'Reward eligibility shown here is a preview only — not a real fraud or payout decision.',
+  'No face recognition, surveillance, or guaranteed bot prevention is performed.',
+]
+
+/** Attention-safe zone bounds (percent of theater) */
+export const POPLIVE_SAFE_ZONE = {
+  left: 22,
+  top: 28,
+  width: 56,
+  height: 44,
+}
+
+export function baselinePOPLiveSignals(): POPLiveSignalState {
+  return {
+    presence: true,
+    eyesOpen: true,
+    gazeOnContent: true,
+    headStable: true,
+    watchActive: true,
+    fraudClear: true,
+  }
+}
+
+export function baselinePOPLiveTab(): POPLiveTab {
+  return 'live'
+}
+
+export function baselinePOPLiveScore(): number {
+  return 72
+}
+
+export function baselinePOPLiveEligibility(): POPLiveEligibility {
+  return 'ineligible'
+}
+
+export function baselinePOPLiveDriftState(): POPLiveDriftState {
+  return 'on_content'
+}
+
+export function baselinePOPLiveFrame(): POPLiveFrame {
+  return { gazeX: 50, gazeY: 48, inZone: true }
+}
+
+export function isGazeInSafeZone(x: number, y: number): boolean {
+  const z = POPLIVE_SAFE_ZONE
+  return (
+    x >= z.left &&
+    x <= z.left + z.width &&
+    y >= z.top &&
+    y <= z.top + z.height
+  )
+}
+
+/** Deterministic gaze path — mostly in zone, periodic drift, then recovery */
+export function simulateGazeAtTick(tick: number): POPLiveFrame {
+  const cycleLen = 140
+  const cycle = (tick % cycleLen) / cycleLen
+  const t = tick * 0.07
+
+  if (cycle < 0.68) {
+    const x = 50 + Math.sin(t) * 11 + Math.cos(t * 0.65) * 7
+    const y = 48 + Math.cos(t * 1.05) * 9 + Math.sin(t * 0.48) * 5
+    return { gazeX: x, gazeY: y, inZone: true }
+  }
+
+  if (cycle < 0.84) {
+    const drift = (cycle - 0.68) / 0.16
+    const x = 50 + Math.sin(t) * 11 + drift * 38
+    const y = 48 + Math.cos(t) * 9 + drift * 28
+    return { gazeX: x, gazeY: y, inZone: isGazeInSafeZone(x, y) }
+  }
+
+  const recover = (cycle - 0.84) / 0.16
+  const edgeX = 50 + Math.sin(t) * 11 + 38
+  const edgeY = 48 + Math.cos(t) * 9 + 28
+  const x = edgeX + (50 - edgeX) * recover
+  const y = edgeY + (48 - edgeY) * recover
+  return { gazeX: x, gazeY: y, inZone: recover > 0.55 || isGazeInSafeZone(x, y) }
+}
+
+function signalsValid(signals: POPLiveSignalState): boolean {
+  return (
+    signals.presence &&
+    signals.eyesOpen &&
+    signals.gazeOnContent &&
+    signals.headStable &&
+    signals.watchActive &&
+    signals.fraudClear
+  )
+}
+
+export function computePOPLiveMetrics(
+  frame: POPLiveFrame,
+  signals: POPLiveSignalState,
+  prevDrift: POPLiveDriftState,
+  prevScore: number,
+): {
+  score: number
+  eligibility: POPLiveEligibility
+  driftState: POPLiveDriftState
+} {
+  const inZone = frame.inZone && signals.gazeOnContent
+  let driftState: POPLiveDriftState
+
+  if (inZone) {
+    driftState = prevDrift === 'drifting' || prevDrift === 'recovering' ? 'recovering' : 'on_content'
+  } else {
+    driftState = 'drifting'
+  }
+
+  const targetHigh = signalsValid(signals) ? 92 : 84
+  const targetLow = signals.fraudClear ? 52 : 38
+
+  let score: number
+  if (inZone) {
+    const rise = driftState === 'recovering' ? 0.04 : 0.08
+    score = Math.min(targetHigh, prevScore + rise * (targetHigh - prevScore) * 0.15 + 0.6)
+    if (prevScore < 70) score = Math.max(score, 72)
+  } else {
+    const fall = 0.12
+    score = Math.max(targetLow, prevScore - fall * (prevScore - targetLow) * 0.2 - 1.2)
+    score = Math.min(score, 58)
+  }
+
+  score = Math.round(Math.max(38, Math.min(96, score)))
+
+  let eligibility: POPLiveEligibility
+  if (inZone && signalsValid(signals) && score >= 85 && driftState === 'on_content') {
+    eligibility = 'eligible'
+  } else if (driftState === 'recovering' || (inZone && score >= 78)) {
+    eligibility = 'recovering'
+  } else {
+    eligibility = 'ineligible'
+  }
+
+  if (driftState === 'recovering' && score >= 88 && signalsValid(signals)) {
+    driftState = 'on_content'
+    eligibility = 'eligible'
+  }
+
+  return { score, eligibility, driftState }
+}
+
+export function popLiveRiskLabel(score: number): string {
+  if (score >= 85) return 'Low'
+  if (score >= 65) return 'Moderate'
+  return 'Elevated'
+}
+
+export function popLiveAttentionLabel(drift: POPLiveDriftState): string {
+  if (drift === 'on_content') return 'On content'
+  if (drift === 'recovering') return 'Recovering'
+  return 'Attention drift'
+}
+
+export type POPLiveTimelineStatus = 'done' | 'active' | 'drift' | 'pending'
+
+export function popLiveTimelineStatuses(
+  tick: number,
+  driftState: POPLiveDriftState,
+  eligibility: POPLiveEligibility,
+): POPLiveTimelineStatus[] {
+  const progress = Math.min(tick / 80, 1)
+  const statuses: POPLiveTimelineStatus[] = []
+
+  for (let i = 0; i < POPLIVE_TIMELINE.length; i++) {
+    const threshold = (i + 1) / POPLIVE_TIMELINE.length
+    if (progress < threshold - 0.34) {
+      statuses.push('pending')
+    } else if (i === 3 && driftState === 'drifting') {
+      statuses.push('drift')
+    } else if (i === POPLIVE_TIMELINE.length - 1) {
+      statuses.push(
+        eligibility === 'eligible' ? 'active' : eligibility === 'recovering' ? 'drift' : 'pending',
+      )
+    } else if (progress >= threshold) {
+      statuses.push('done')
+    } else {
+      statuses.push('active')
+    }
+  }
+
+  return statuses
 }
