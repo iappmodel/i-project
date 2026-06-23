@@ -8,7 +8,7 @@ const BAR_DELAYS = [0, 0.12, 0.24, 0.36, 0.18, 0.06, 0.3, 0.42, 0.15]
 const BAR_COLORS = ['#1D9E75', '#5DCAA5', '#1D9E75', '#1D9E75', '#5DCAA5', '#1D9E75', '#1D9E75', '#5DCAA5', '#1D9E75']
 
 export function InvestorFeedView() {
-  const { state, setFeedIndex, selectOffer, goView, showToast } = useInvestorDemo()
+  const { state, setFeedIndex, selectOffer, goView, showToast, setPresenterStep } = useInvestorDemo()
 
   const { currentFeedIndex, walletBalance } = state
   const item = FEED_ITEMS[currentFeedIndex]
@@ -30,6 +30,7 @@ export function InvestorFeedView() {
   }
 
   const handleWalletChip = () => {
+    setPresenterStep(5)
     goView('wallet')
   }
 

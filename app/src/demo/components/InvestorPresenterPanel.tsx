@@ -2,7 +2,7 @@ import { PRESENTER_STEPS } from '../investorDemoData'
 import { useInvestorDemo } from '../useInvestorDemoState'
 
 export function InvestorPresenterPanel() {
-  const { state, presenterNext, presenterBack, setPresenterStep, goView, reset } =
+  const { state, presenterNext, presenterBack, goPresenterStep, reset, showToast } =
     useInvestorDemo()
 
   const { presenterStepIndex } = state
@@ -13,36 +13,32 @@ export function InvestorPresenterPanel() {
 
   const handleReset = () => {
     reset()
+    showToast('Demo reset')
   }
 
   return (
     <aside className="id-presenter">
       <div className="id-presenter__inner">
-        {/* Step indicator */}
-        <div className="id-presenter__steps">
+        <div className="id-presenter__steps" role="tablist" aria-label="Presenter steps">
           {PRESENTER_STEPS.map((s, i) => (
             <button
               key={s.index}
               type="button"
+              role="tab"
+              aria-selected={i === presenterStepIndex}
               className={`id-presenter__step-dot${i === presenterStepIndex ? ' on' : ''}`}
-              aria-label={s.title}
-              onClick={() => {
-                setPresenterStep(i)
-                goView(s.view)
-              }}
+              aria-label={`Step ${i + 1}: ${s.title}`}
+              onClick={() => goPresenterStep(i)}
             />
           ))}
         </div>
 
-        {/* Eyebrow */}
         <p className="id-presenter__eyebrow">
-          Step {presenterStepIndex + 1} of {PRESENTER_STEPS.length}
+          Step {presenterStepIndex + 1} of {PRESENTER_STEPS.length} · Investor Demo
         </p>
 
-        {/* Title */}
         <h2 className="id-presenter__title">{step.title}</h2>
 
-        {/* Bullets */}
         <ul className="id-presenter__bullets">
           {step.bullets.map((b, i) => (
             <li key={i} className="id-presenter__bullet">
@@ -51,7 +47,6 @@ export function InvestorPresenterPanel() {
           ))}
         </ul>
 
-        {/* Controls */}
         <div className="id-presenter__controls">
           <button
             type="button"

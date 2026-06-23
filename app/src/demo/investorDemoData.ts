@@ -75,12 +75,12 @@ export const FEED_ITEMS: FeedItem[] = [
     brand: 'Nike',
     creatorHandle: '@runwithkai',
     platform: 'Instagram',
-    caption: 'Air Max 2025 launch — watch 8 seconds and earn your reward',
+    caption: 'Air Max 2025 launch — watch 6 seconds and earn your reward',
     rewardAmount: 0.25,
     rewardCurrency: 'iCoins',
-    duration: 8,
+    duration: 6,
     requirements: [
-      'Watch 8 seconds of content',
+      'Watch 6 seconds of content',
       'Verified attention (5 gates)',
       'No fraud signals detected',
     ],
@@ -113,36 +113,39 @@ export const FEED_ITEMS: FeedItem[] = [
 
 // ─── Verification gates (5) ────────────────────────────────────────────────
 
+/** Default sponsored offer for presenter jumps and demo loop */
+export const DEFAULT_DEMO_OFFER_ID = 'sponsored-nike'
+
 export const INITIAL_GATES: Omit<VerificationGate, 'completed'>[] = [
   {
     id: 'face',
     label: 'Face present',
     sublabel: 'Biometric signal detected',
-    completesAtProgress: 0.2,
+    completesAtProgress: 0.12,
   },
   {
     id: 'eyes',
     label: 'Eyes open',
     sublabel: 'Gaze active & unobstructed',
-    completesAtProgress: 0.4,
+    completesAtProgress: 0.28,
   },
   {
     id: 'gaze',
     label: 'Gaze forward',
     sublabel: 'On-screen attention locked',
-    completesAtProgress: 0.6,
+    completesAtProgress: 0.44,
   },
   {
     id: 'time',
     label: 'Time watched',
     sublabel: 'Minimum view duration met',
-    completesAtProgress: 0.82,
+    completesAtProgress: 0.62,
   },
   {
     id: 'fraud',
     label: 'Fraud check',
     sublabel: 'Session integrity verified',
-    completesAtProgress: 1.0,
+    completesAtProgress: 0.82,
   },
 ]
 
@@ -169,9 +172,9 @@ export const SEED_TRANSACTIONS: InvestorTransaction[] = [
   },
   {
     id: 'tx-seed-1',
-    source: 'Withdrawal · Bank',
+    source: 'Withdraw preview · Simulated',
     timeLabel: '3 days ago',
-    amountDisplay: '−$2.00',
+    amountDisplay: '−0.50 iCoins',
     kind: 'negative',
   },
 ]

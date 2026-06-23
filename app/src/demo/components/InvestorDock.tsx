@@ -19,18 +19,26 @@ const VIEW_TO_TAB: Record<string, DockTab> = {
   splash: 'feed',
 }
 
+const COMING_SOON: Record<Exclude<DockTab, 'feed' | 'wallet'>, string> = {
+  promo: 'Promo map — full walkthrough',
+  create: 'Studio — full walkthrough',
+  profile: 'Profile — full walkthrough',
+}
+
 export function InvestorDock() {
-  const { state, goView, showToast } = useInvestorDemo()
+  const { state, goView, showToast, setPresenterStep } = useInvestorDemo()
 
   const activeTab = VIEW_TO_TAB[state.currentView] ?? 'feed'
 
   const handleTab = (tab: DockTab) => {
     if (tab === 'feed') {
+      setPresenterStep(1)
       goView('feed')
     } else if (tab === 'wallet') {
+      setPresenterStep(5)
       goView('wallet')
     } else {
-      showToast(`${tab.charAt(0).toUpperCase() + tab.slice(1)} available in full walkthrough`)
+      showToast(COMING_SOON[tab])
     }
   }
 
@@ -43,6 +51,7 @@ export function InvestorDock() {
           className={`id-dock__tab${activeTab === tab.id ? ' active' : ''}`}
           onClick={() => handleTab(tab.id)}
           aria-label={tab.label}
+          aria-current={activeTab === tab.id ? 'page' : undefined}
         >
           <span className="id-dock__icon">{tab.icon}</span>
           <span className="id-dock__label">{tab.label}</span>

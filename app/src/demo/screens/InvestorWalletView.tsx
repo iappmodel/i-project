@@ -28,7 +28,7 @@ function txIcon(kind: string) {
 export function InvestorWalletView() {
   const { state, goView, showToast, setPresenterStep } = useInvestorDemo()
 
-  const { walletBalance, pendingBalance, lifetimeEarned, transactions } = state
+  const { walletBalance, pendingBalance, lifetimeEarned, sessionEarned, transactions } = state
 
   const balanceFmt = walletBalance.toLocaleString(undefined, {
     minimumFractionDigits: 2,
@@ -45,8 +45,10 @@ export function InvestorWalletView() {
     maximumFractionDigits: 2,
   })
 
-  const handleAction = (id: string) => {
-    showToast(`${id.charAt(0).toUpperCase() + id.slice(1)} — available in full investor walkthrough`)
+  const sessionFmt = sessionEarned.toFixed(2)
+
+  const handleAction = (label: string) => {
+    showToast(`${label} — full walkthrough`)
   }
 
   const handleBackToFeed = () => {
@@ -56,22 +58,22 @@ export function InvestorWalletView() {
 
   return (
     <div className="id-wallet">
-      {/* Header */}
       <div className="id-wallet__header">
-        <p className="id-wallet__greeting">Attention Wallet · Simulated</p>
+        <p className="id-wallet__greeting">Investor Demo · Simulated</p>
         <p className="id-wallet__title">[ i ] Wallet</p>
 
-        {/* Balance card */}
         <div className="id-wallet__balance-card">
-          <p className="id-wallet__balance-label">Available balance</p>
+          <p className="id-wallet__balance-label">Available balance · demo</p>
           <p className="id-wallet__balance-num">
             <span>iC</span>
             {balanceFmt}
           </p>
-          <div className="id-wallet__today-pill">
-            <span className="id-wallet__today-dot" aria-hidden />
-            <span className="id-wallet__today-label">+{(walletBalance - 3.65 + 0.25).toFixed(2)} iC today</span>
-          </div>
+          {sessionEarned > 0 ? (
+            <div className="id-wallet__today-pill">
+              <span className="id-wallet__today-dot" aria-hidden />
+              <span className="id-wallet__today-label">+{sessionFmt} iC this session</span>
+            </div>
+          ) : null}
 
           <div className="id-wallet__stats">
             <div className="id-wallet__stat">
@@ -96,14 +98,13 @@ export function InvestorWalletView() {
         </div>
       </div>
 
-      {/* Action buttons */}
       <div className="id-wallet__actions">
         {ACTION_BUTTONS.map((btn) => (
           <button
             key={btn.id}
             type="button"
             className="id-wallet__action-btn"
-            onClick={() => handleAction(btn.id)}
+            onClick={() => handleAction(btn.label)}
             aria-label={btn.label}
           >
             <div
@@ -118,51 +119,51 @@ export function InvestorWalletView() {
         ))}
       </div>
 
-      {/* Transactions */}
       <div className="id-wallet__section-header">
         <p className="id-wallet__section-title">Recent activity</p>
-        <span className="id-wallet__section-link">View all</span>
+        <button
+          type="button"
+          className="id-wallet__section-link"
+          onClick={() => showToast('Full history — full walkthrough')}
+        >
+          View all
+        </button>
       </div>
 
       <div className="id-wallet__txns">
-        {transactions.map((tx) => (
-          <div key={tx.id} className="id-wallet__tx">
+        {transactions.map((tx, index) => {
+          const isLatest = index === 0 && tx.timeLabel === 'Just now'
+          return (
             <div
-              className="id-wallet__tx-dot"
-              style={{ background: txBg(tx.kind), color: txColor(tx.kind) }}
-              aria-hidden
+              key={tx.id}
+              className={`id-wallet__tx${isLatest ? ' id-wallet__tx--latest' : ''}`}
             >
-              {txIcon(tx.kind)}
+              {isLatest ? (
+                <span className="id-wallet__tx-badge">New</span>
+              ) : null}
+              <div
+                className="id-wallet__tx-dot"
+                style={{ background: txBg(tx.kind), color: txColor(tx.kind) }}
+                aria-hidden
+              >
+                {txIcon(tx.kind)}
+              </div>
+              <div className="id-wallet__tx-info">
+                <p className="id-wallet__tx-source">{tx.source}</p>
+                <p className="id-wallet__tx-time">{tx.timeLabel}</p>
+              </div>
+              <span className="id-wallet__tx-amount" style={{ color: txColor(tx.kind) }}>
+                {tx.amountDisplay}
+              </span>
             </div>
-            <div className="id-wallet__tx-info">
-              <p className="id-wallet__tx-source">{tx.source}</p>
-              <p className="id-wallet__tx-time">{tx.timeLabel}</p>
-            </div>
-            <span
-              className="id-wallet__tx-amount"
-              style={{ color: txColor(tx.kind) }}
-            >
-              {tx.amountDisplay}
-            </span>
-          </div>
-        ))}
+          )
+        })}
 
-        {/* Disclaimer */}
-        <p style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 9,
-          color: 'var(--text-muted)',
-          textAlign: 'center',
-          letterSpacing: '0.06em',
-          textTransform: 'uppercase',
-          marginTop: 16,
-          marginBottom: 8,
-        }}>
-          Simulated balances · no real value
+        <p className="id-wallet__disclaimer">
+          Simulated balances · no real payout or bank transfer
         </p>
       </div>
 
-      {/* Back to feed sticky button */}
       <button
         type="button"
         className="id-wallet__back-btn"

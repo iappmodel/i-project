@@ -5,6 +5,7 @@
 import { createContext, useCallback, useContext, useReducer } from 'react'
 import {
   BASELINE_WALLET,
+  DEFAULT_DEMO_OFFER_ID,
   FEED_ITEMS,
   PRESENTER_STEPS,
   SEED_TRANSACTIONS,
@@ -23,9 +24,15 @@ export interface InvestorDemoState {
   walletBalance: number
   pendingBalance: number
   lifetimeEarned: number
+  /** iCoins earned since demo load / last reset */
+  sessionEarned: number
   transactions: InvestorTransaction[]
   verificationGates: VerificationGate[]
   watchProgress: number
+  /** Increments each watch session — remounts timer in WatchVerify */
+  verificationSession: number
+  /** Prevents double-credit on repeated Claim clicks */
+  rewardClaimed: boolean
   likedContentIds: string[]
   savedContentIds: string[]
   toast: string | null
@@ -39,9 +46,10 @@ type Action =
   | { type: 'SET_FEED_INDEX'; index: number }
   | { type: 'SELECT_OFFER'; offerId: string }
   | { type: 'START_VERIFICATION' }
+  | { type: 'BEGIN_WATCH_FROM_OFFER' }
   | { type: 'SET_WATCH_PROGRESS'; progress: number }
   | { type: 'COMPLETE_GATE'; gateId: string }
-  | { type: 'CREDIT_REWARD'; offerId: string }
+  | { type: 'CLAIM_REWARD'; offerId: string }
   | { type: 'LIKE_TOGGLE'; contentId: string }
   | { type: 'SAVE_TOGGLE'; contentId: string }
   | { type: 'SHOW_TOAST'; message: string }
@@ -49,22 +57,29 @@ type Action =
   | { type: 'SET_PRESENTER_STEP'; index: number }
   | { type: 'RESET' }
 
-// ─── Baseline (used for initial state and reset) ──────────────────────────
+function cloneSeedTransactions(): InvestorTransaction[] {
+  return SEED_TRANSACTIONS.map((tx) => ({ ...tx }))
+}
 
-const BASELINE: InvestorDemoState = {
-  currentView: 'splash',
-  currentFeedIndex: 1, // start on sponsored Nike offer for demo
-  selectedOfferId: null,
-  walletBalance: BASELINE_WALLET.walletBalance,
-  pendingBalance: BASELINE_WALLET.pendingBalance,
-  lifetimeEarned: BASELINE_WALLET.lifetimeEarned,
-  transactions: SEED_TRANSACTIONS,
-  verificationGates: freshGates(),
-  watchProgress: 0,
-  likedContentIds: [],
-  savedContentIds: [],
-  toast: null,
-  presenterStepIndex: 0,
+function createBaselineState(): InvestorDemoState {
+  return {
+    currentView: 'splash',
+    currentFeedIndex: 1,
+    selectedOfferId: null,
+    walletBalance: BASELINE_WALLET.walletBalance,
+    pendingBalance: BASELINE_WALLET.pendingBalance,
+    lifetimeEarned: BASELINE_WALLET.lifetimeEarned,
+    sessionEarned: 0,
+    transactions: cloneSeedTransactions(),
+    verificationGates: freshGates(),
+    watchProgress: 0,
+    verificationSession: 0,
+    rewardClaimed: false,
+    likedContentIds: [],
+    savedContentIds: [],
+    toast: null,
+    presenterStepIndex: 0,
+  }
 }
 
 // ─── Reducer ───────────────────────────────────────────────────────────────
@@ -85,6 +100,16 @@ function reducer(state: InvestorDemoState, action: Action): InvestorDemoState {
         ...state,
         watchProgress: 0,
         verificationGates: freshGates(),
+        verificationSession: state.verificationSession + 1,
+      }
+
+    case 'BEGIN_WATCH_FROM_OFFER':
+      return {
+        ...state,
+        watchProgress: 0,
+        verificationGates: freshGates(),
+        verificationSession: state.verificationSession + 1,
+        rewardClaimed: false,
       }
 
     case 'SET_WATCH_PROGRESS':
@@ -98,11 +123,13 @@ function reducer(state: InvestorDemoState, action: Action): InvestorDemoState {
         ),
       }
 
-    case 'CREDIT_REWARD': {
+    case 'CLAIM_REWARD': {
+      if (state.rewardClaimed) return state
+
       const offer = FEED_ITEMS.find((f) => f.id === action.offerId)
       const amount = offer?.rewardAmount ?? 0.25
       const newTx: InvestorTransaction = {
-        id: `tx-reward-${Date.now()}`,
+        id: `tx-reward-${state.verificationSession}`,
         source: `${offer?.brand ?? 'Sponsored offer'} · Verified attention`,
         timeLabel: 'Just now',
         amountDisplay: `+${amount.toFixed(2)} iCoins`,
@@ -110,8 +137,11 @@ function reducer(state: InvestorDemoState, action: Action): InvestorDemoState {
       }
       return {
         ...state,
+        rewardClaimed: true,
+        currentView: 'reward',
         walletBalance: +(state.walletBalance + amount).toFixed(2),
         lifetimeEarned: +(state.lifetimeEarned + amount).toFixed(2),
+        sessionEarned: +(state.sessionEarned + amount).toFixed(2),
         transactions: [newTx, ...state.transactions],
       }
     }
@@ -142,7 +172,7 @@ function reducer(state: InvestorDemoState, action: Action): InvestorDemoState {
       return { ...state, presenterStepIndex: action.index }
 
     case 'RESET':
-      return { ...BASELINE, transactions: SEED_TRANSACTIONS }
+      return createBaselineState()
 
     default:
       return state
@@ -154,7 +184,7 @@ function reducer(state: InvestorDemoState, action: Action): InvestorDemoState {
 export type InvestorDemoActions = ReturnType<typeof useInvestorDemoState>
 
 export function useInvestorDemoState() {
-  const [state, dispatch] = useReducer(reducer, BASELINE)
+  const [state, dispatch] = useReducer(reducer, undefined, createBaselineState)
 
   const goView = useCallback(
     (view: InvestorView) => dispatch({ type: 'GO_VIEW', view }),
@@ -175,7 +205,7 @@ export function useInvestorDemoState() {
   )
 
   const startVerification = useCallback(() => {
-    dispatch({ type: 'START_VERIFICATION' })
+    dispatch({ type: 'BEGIN_WATCH_FROM_OFFER' })
     dispatch({ type: 'GO_VIEW', view: 'watchVerify' })
   }, [])
 
@@ -189,13 +219,10 @@ export function useInvestorDemoState() {
     [],
   )
 
-  const creditReward = useCallback(
-    (offerId: string) => {
-      dispatch({ type: 'CREDIT_REWARD', offerId })
-      dispatch({ type: 'GO_VIEW', view: 'reward' })
-    },
-    [],
-  )
+  /** Atomically credit once and navigate to reward reveal. */
+  const claimReward = useCallback((offerId: string) => {
+    dispatch({ type: 'CLAIM_REWARD', offerId })
+  }, [])
 
   const likeToggle = useCallback(
     (contentId: string) => dispatch({ type: 'LIKE_TOGGLE', contentId }),
@@ -214,7 +241,7 @@ export function useInvestorDemoState() {
     clearTimeout(toastTimerRef.current)
     toastTimerRef.current = setTimeout(
       () => dispatch({ type: 'CLEAR_TOAST' }),
-      2400,
+      2200,
     )
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -224,25 +251,39 @@ export function useInvestorDemoState() {
     [],
   )
 
+  /** Jump presenter to a step and ensure offer context for post-feed views. */
+  const goPresenterStep = useCallback((index: number) => {
+    const step = PRESENTER_STEPS[index]
+    if (!step) return
+
+    dispatch({ type: 'SET_PRESENTER_STEP', index })
+
+    const needsOffer = step.view === 'offerDetail' || step.view === 'watchVerify' || step.view === 'reward'
+    if (needsOffer) {
+      dispatch({ type: 'SELECT_OFFER', offerId: DEFAULT_DEMO_OFFER_ID })
+    }
+
+    if (step.view === 'watchVerify') {
+      dispatch({ type: 'START_VERIFICATION' })
+    }
+
+    dispatch({ type: 'GO_VIEW', view: step.view })
+  }, [])
+
   const reset = useCallback(() => dispatch({ type: 'RESET' }), [])
 
-  // Derived presenter helpers
   const presenterNext = useCallback(() => {
     const nextIndex = Math.min(
       state.presenterStepIndex + 1,
       PRESENTER_STEPS.length - 1,
     )
-    const step = PRESENTER_STEPS[nextIndex]
-    dispatch({ type: 'SET_PRESENTER_STEP', index: nextIndex })
-    dispatch({ type: 'GO_VIEW', view: step.view })
-  }, [state.presenterStepIndex])
+    goPresenterStep(nextIndex)
+  }, [state.presenterStepIndex, goPresenterStep])
 
   const presenterBack = useCallback(() => {
     const prevIndex = Math.max(state.presenterStepIndex - 1, 0)
-    const step = PRESENTER_STEPS[prevIndex]
-    dispatch({ type: 'SET_PRESENTER_STEP', index: prevIndex })
-    dispatch({ type: 'GO_VIEW', view: step.view })
-  }, [state.presenterStepIndex])
+    goPresenterStep(prevIndex)
+  }, [state.presenterStepIndex, goPresenterStep])
 
   return {
     state,
@@ -252,11 +293,12 @@ export function useInvestorDemoState() {
     startVerification,
     setWatchProgress,
     completeGate,
-    creditReward,
+    claimReward,
     likeToggle,
     saveToggle,
     showToast,
     setPresenterStep,
+    goPresenterStep,
     presenterNext,
     presenterBack,
     reset,
