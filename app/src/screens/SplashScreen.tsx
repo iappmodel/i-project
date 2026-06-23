@@ -27,9 +27,14 @@ export function SplashScreen() {
         </p>
       </button>
       {appMode === 'product' ? (
-        <button type="button" className="splash-presenter-link" onClick={() => startPresenterTour()}>
-          Investor presenter walkthrough
-        </button>
+        <>
+          <button type="button" className="splash-presenter-link" onClick={() => startPresenterTour()}>
+            Investor presenter walkthrough
+          </button>
+          <button type="button" className="splash-presenter-link" onClick={() => setScreen('investor-demo')} style={{ marginTop: 4 }}>
+            ⚡ Investor Demo MVP
+          </button>
+        </>
       ) : null}
       {appMode === 'presenter' ? (
         <SourceEvidence

@@ -30,11 +30,13 @@ import { VerificationResultScreen } from './screens/VerificationResultScreen'
 import { WalletScreen } from './screens/WalletScreen'
 import { WatchVerifyScreen } from './screens/WatchVerifyScreen'
 import { WithdrawPreviewScreen } from './screens/WithdrawPreviewScreen'
+import { InvestorDemoScreen } from './screens/InvestorDemoScreen'
 
 function ScreenRouter() {
   const { currentScreen } = useDemo()
 
   const table: Record<DemoScreenId, ReactElement> = {
+    'investor-demo': <InvestorDemoScreen />,
     splash: <SplashScreen />,
     feed: <FeedScreen />,
     'immersive-feed': <ImmersiveFeedScreen />,

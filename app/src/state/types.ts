@@ -9,6 +9,7 @@ export type ProductTabId = 'feed' | 'earn' | 'wallet' | 'profile'
 export type AppMode = 'product' | 'presenter'
 
 export type DemoScreenId =
+  | 'investor-demo'
   | 'splash'
   | 'feed'
   | 'immersive-feed'
