@@ -11,6 +11,8 @@ import {
   SEED_TRANSACTIONS,
   freshGates,
   baselineProfileFilter,
+  baselineACoinsTab,
+  baselineAlphabetUnit,
   cloneBaselinePlatforms,
   cloneBaselineCampaign,
   cloneBaselineStudio,
@@ -30,6 +32,8 @@ import {
   type StudioFormat,
   type StudioPreviewState,
   type ProfilePlatformFilter,
+  type ACoinsTab,
+  type AlphabetUnitId,
   type VerificationStrictness,
   type WithdrawMethod,
   type InvestorTransaction,
@@ -91,6 +95,8 @@ export interface InvestorDemoState {
   promoSession: number
   selectedProfilePlatformFilter: ProfilePlatformFilter
   selectedProfileContentId: string | null
+  selectedACoinsTab: ACoinsTab
+  selectedAlphabetUnit: AlphabetUnitId
   likedContentIds: string[]
   savedContentIds: string[]
   toast: string | null
@@ -150,6 +156,9 @@ type Action =
   | { type: 'OPEN_UNIFIED_PROFILE' }
   | { type: 'SET_PROFILE_PLATFORM_FILTER'; filter: ProfilePlatformFilter }
   | { type: 'SELECT_PROFILE_CONTENT'; contentId: string | null }
+  | { type: 'OPEN_ACOINS' }
+  | { type: 'SET_ACOINS_TAB'; tab: ACoinsTab }
+  | { type: 'SELECT_ALPHABET_UNIT'; unitId: AlphabetUnitId }
   | { type: 'RESET' }
 
 function cloneSeedTransactions(): InvestorTransaction[] {
@@ -228,6 +237,8 @@ function createBaselineState(): InvestorDemoState {
     promoSession: 0,
     selectedProfilePlatformFilter: baselineProfileFilter(),
     selectedProfileContentId: null,
+    selectedACoinsTab: baselineACoinsTab(),
+    selectedAlphabetUnit: baselineAlphabetUnit(),
     likedContentIds: [],
     savedContentIds: [],
     toast: null,
@@ -728,6 +739,15 @@ function reducer(state: InvestorDemoState, action: Action): InvestorDemoState {
         selectedProfileContentId: action.contentId,
       }
 
+    case 'OPEN_ACOINS':
+      return { ...state, currentView: 'acoins' }
+
+    case 'SET_ACOINS_TAB':
+      return { ...state, selectedACoinsTab: action.tab }
+
+    case 'SELECT_ALPHABET_UNIT':
+      return { ...state, selectedAlphabetUnit: action.unitId }
+
     case 'RESET':
       return createBaselineState()
 
@@ -985,6 +1005,18 @@ export function useInvestorDemoState() {
     dispatch({ type: 'SELECT_PROFILE_CONTENT', contentId })
   }, [])
 
+  const openACoins = useCallback(() => {
+    dispatch({ type: 'OPEN_ACOINS' })
+  }, [])
+
+  const setACoinsTab = useCallback((tab: ACoinsTab) => {
+    dispatch({ type: 'SET_ACOINS_TAB', tab })
+  }, [])
+
+  const selectAlphabetUnit = useCallback((unitId: AlphabetUnitId) => {
+    dispatch({ type: 'SELECT_ALPHABET_UNIT', unitId })
+  }, [])
+
   const presenterNext = useCallback(() => {
     const nextIndex = Math.min(
       state.presenterStepIndex + 1,
@@ -1052,6 +1084,9 @@ export function useInvestorDemoState() {
     openUnifiedProfile,
     setProfilePlatformFilter,
     selectProfileContent,
+    openACoins,
+    setACoinsTab,
+    selectAlphabetUnit,
   }
 }
 

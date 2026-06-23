@@ -42,7 +42,7 @@ function txLatestClass(txType?: string): string {
 }
 
 export function InvestorWalletView() {
-  const { state, goView, showToast, setPresenterStep, openConvert, openTip, openPay, openWithdraw } = useInvestorDemo()
+  const { state, goView, showToast, setPresenterStep, openConvert, openTip, openPay, openWithdraw, openACoins } = useInvestorDemo()
 
   const { walletBalance, usableBalance, pendingBalance, lifetimeEarned, sessionEarned, transactions } = state
 
@@ -134,6 +134,15 @@ export function InvestorWalletView() {
           </div>
         </div>
       </div>
+
+      <button type="button" className="id-wallet__acoins-link" onClick={openACoins}>
+        <span className="id-wallet__acoins-icon" aria-hidden>A</span>
+        <span className="id-wallet__acoins-text">
+          <span className="id-wallet__acoins-title">ACoins / Value System</span>
+          <span className="id-wallet__acoins-sub">See how verified attention becomes usable value</span>
+        </span>
+        <span className="id-wallet__acoins-arrow" aria-hidden>→</span>
+      </button>
 
       <div className="id-wallet__actions">
         {ACTION_BUTTONS.map((btn) => (

@@ -18,6 +18,7 @@ export type InvestorView =
   | 'campaignPreview'
   | 'studioPreview'
   | 'unifiedProfile'
+  | 'acoins'
 
 export interface FeedItem {
   id: string
@@ -942,4 +943,189 @@ export function studioFormatAspect(format: StudioFormat): string {
     case '16:9':
       return '16 / 9'
   }
+}
+
+// ─── ACoins / Alphabet Currency ──────────────────────────────────────────────
+
+export type ACoinsTab = 'overview' | 'flow' | 'ledger' | 'rules'
+
+export type AlphabetUnitId =
+  | 'attention'
+  | 'creator'
+  | 'icoin'
+  | 'presence'
+  | 'verified'
+  | 'wallet'
+
+export const ACOINS_TABS: { id: ACoinsTab; label: string }[] = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'flow', label: 'Flow' },
+  { id: 'ledger', label: 'Ledger' },
+  { id: 'rules', label: 'Rules' },
+]
+
+export const ALPHABET_UNITS: {
+  id: AlphabetUnitId
+  letter: string
+  name: string
+  description: string
+  color: string
+}[] = [
+  {
+    id: 'attention',
+    letter: 'A',
+    name: 'Attention',
+    description: 'Verified human focus — the root value unit in demo',
+    color: '#c8a84b',
+  },
+  {
+    id: 'creator',
+    letter: 'C',
+    name: 'Creator',
+    description: 'Supply-side participation and campaign funding layer',
+    color: '#d46bb5',
+  },
+  {
+    id: 'icoin',
+    letter: 'I',
+    name: 'iCoin',
+    description: 'Platform value unit holding verified attention · simulated',
+    color: '#4ade80',
+  },
+  {
+    id: 'presence',
+    letter: 'P',
+    name: 'Presence',
+    description: 'Location and action proofs in iGo · simulated',
+    color: '#EF9F27',
+  },
+  {
+    id: 'verified',
+    letter: 'V',
+    name: 'Verified',
+    description: 'POP gates confirm attention before value moves',
+    color: '#378ADD',
+  },
+  {
+    id: 'wallet',
+    letter: 'W',
+    name: 'Wallet',
+    description: 'Internal balance routes for pay, tip, withdraw previews',
+    color: '#00e5ff',
+  },
+]
+
+export const ACOINS_FLOW_STEPS = [
+  { icon: '▶', label: 'Watch / Visit / Create', sub: 'Earn loops & creator supply' },
+  { icon: '◎', label: 'POP verifies attention', sub: 'Simulated proof stack' },
+  { icon: 'A', label: 'ACoins are generated', sub: 'Attention value units · demo' },
+  { icon: 'iC', label: 'iCoins hold platform value', sub: 'Internal ledger layer' },
+  { icon: '⇄', label: 'Convert unlocks usable', sub: 'Demo conversion · 1:1' },
+  { icon: '→', label: 'Pay / Tip / Withdraw', sub: 'Spend routes · simulated' },
+] as const
+
+export const ACOINS_RULES = [
+  'ACoins represent verified attention units in this demo — not real currency.',
+  'iCoins are internal platform value units with no cash equivalent.',
+  'POP verification is simulated; no blockchain or token is involved.',
+  'Convert moves verified iCoins to usable balance at a demo 1:1 rate.',
+  'Pay, Tip, and Withdraw only affect local simulated balances.',
+  'No exchange rate, investment return, or guaranteed monetary value.',
+] as const
+
+export interface ACoinsSummary {
+  verifiedAttention: number
+  acoinsEarned: number
+  icoinsAvailable: number
+  usableBalance: number
+}
+
+export function computeACoinsSummary(
+  walletBalance: number,
+  usableBalance: number,
+  lifetimeEarned: number,
+): ACoinsSummary {
+  return {
+    verifiedAttention: walletBalance,
+    acoinsEarned: lifetimeEarned,
+    icoinsAvailable: walletBalance,
+    usableBalance,
+  }
+}
+
+export interface ACoinsLedgerRow {
+  id: string
+  label: string
+  amountDisplay: string
+  timeLabel: string
+  kind: 'positive' | 'negative' | 'neutral' | 'empty'
+}
+
+export function acoinsLedgerPreview(
+  transactions: InvestorTransaction[],
+): ACoinsLedgerRow[] {
+  const defs: {
+    id: string
+    label: string
+    match: (tx: InvestorTransaction) => boolean
+  }[] = [
+    {
+      id: 'watch',
+      label: 'Watch reward',
+      match: (tx) => tx.kind === 'positive' && tx.txType !== 'promo',
+    },
+    {
+      id: 'igo',
+      label: 'iGo reward',
+      match: (tx) => tx.txType === 'promo',
+    },
+    {
+      id: 'convert',
+      label: 'Convert',
+      match: (tx) => tx.txType === 'convert',
+    },
+    {
+      id: 'tip',
+      label: 'Tip',
+      match: (tx) => tx.txType === 'tip',
+    },
+    {
+      id: 'pay',
+      label: 'Pay',
+      match: (tx) => tx.txType === 'pay',
+    },
+    {
+      id: 'withdraw',
+      label: 'Withdraw',
+      match: (tx) => tx.txType === 'withdraw',
+    },
+  ]
+
+  return defs.map((def) => {
+    const tx = transactions.find(def.match)
+    if (!tx) {
+      return {
+        id: def.id,
+        label: def.label,
+        amountDisplay: '—',
+        timeLabel: 'No activity · simulated',
+        kind: 'empty',
+      }
+    }
+    return {
+      id: def.id,
+      label: def.label,
+      amountDisplay: tx.amountDisplay,
+      timeLabel: tx.timeLabel,
+      kind: tx.kind === 'pending' ? 'neutral' : tx.kind,
+    }
+  })
+}
+
+export function baselineACoinsTab(): ACoinsTab {
+  return 'overview'
+}
+
+export function baselineAlphabetUnit(): AlphabetUnitId {
+  return 'attention'
 }
