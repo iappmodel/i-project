@@ -10,25 +10,28 @@ const ACTION_BUTTONS = [
 function txColor(kind: string) {
   if (kind === 'positive') return 'var(--icoin-primary)'
   if (kind === 'negative') return 'var(--accent-rose)'
+  if (kind === 'neutral') return 'var(--accent-cyan)'
   return 'var(--accent-amber)'
 }
 
 function txBg(kind: string) {
   if (kind === 'positive') return 'rgba(74, 222, 128, 0.08)'
   if (kind === 'negative') return 'rgba(255, 77, 109, 0.08)'
+  if (kind === 'neutral') return 'rgba(0, 229, 255, 0.08)'
   return 'rgba(255, 179, 0, 0.08)'
 }
 
-function txIcon(kind: string) {
+function txIcon(kind: string, txType?: string) {
+  if (txType === 'convert') return '⇄'
   if (kind === 'positive') return '+'
   if (kind === 'negative') return '−'
   return '◷'
 }
 
 export function InvestorWalletView() {
-  const { state, goView, showToast, setPresenterStep } = useInvestorDemo()
+  const { state, goView, showToast, setPresenterStep, openConvert } = useInvestorDemo()
 
-  const { walletBalance, pendingBalance, lifetimeEarned, sessionEarned, transactions } = state
+  const { walletBalance, usableBalance, pendingBalance, lifetimeEarned, sessionEarned, transactions } = state
 
   const balanceFmt = walletBalance.toLocaleString(undefined, {
     minimumFractionDigits: 2,
@@ -47,7 +50,16 @@ export function InvestorWalletView() {
 
   const sessionFmt = sessionEarned.toFixed(2)
 
-  const handleAction = (label: string) => {
+  const usableFmt = usableBalance.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+
+  const handleAction = (id: string, label: string) => {
+    if (id === 'convert') {
+      openConvert()
+      return
+    }
     showToast(`${label} — full walkthrough`)
   }
 
@@ -63,7 +75,7 @@ export function InvestorWalletView() {
         <p className="id-wallet__title">[ i ] Wallet</p>
 
         <div className="id-wallet__balance-card">
-          <p className="id-wallet__balance-label">Available balance · demo</p>
+          <p className="id-wallet__balance-label">Verified balance · demo</p>
           <p className="id-wallet__balance-num">
             <span>iC</span>
             {balanceFmt}
@@ -77,6 +89,12 @@ export function InvestorWalletView() {
 
           <div className="id-wallet__stats">
             <div className="id-wallet__stat">
+              <p className="id-wallet__stat-label">Usable</p>
+              <p className="id-wallet__stat-val" style={{ color: 'var(--icoin-primary)' }}>
+                {usableFmt}
+              </p>
+            </div>
+            <div className="id-wallet__stat">
               <p className="id-wallet__stat-label">Pending</p>
               <p className="id-wallet__stat-val" style={{ color: 'var(--accent-amber)' }}>
                 {pendingFmt}
@@ -86,12 +104,6 @@ export function InvestorWalletView() {
               <p className="id-wallet__stat-label">Lifetime</p>
               <p className="id-wallet__stat-val" style={{ color: 'var(--text-secondary)' }}>
                 {lifetimeFmt}
-              </p>
-            </div>
-            <div className="id-wallet__stat">
-              <p className="id-wallet__stat-label">Trust tier</p>
-              <p className="id-wallet__stat-val" style={{ color: 'var(--accent-cyan)' }}>
-                Verified
               </p>
             </div>
           </div>
@@ -104,7 +116,7 @@ export function InvestorWalletView() {
             key={btn.id}
             type="button"
             className="id-wallet__action-btn"
-            onClick={() => handleAction(btn.label)}
+            onClick={() => handleAction(btn.id, btn.label)}
             aria-label={btn.label}
           >
             <div
@@ -136,7 +148,7 @@ export function InvestorWalletView() {
           return (
             <div
               key={tx.id}
-              className={`id-wallet__tx${isLatest ? ' id-wallet__tx--latest' : ''}`}
+              className={`id-wallet__tx${isLatest ? ' id-wallet__tx--latest' : ''}${tx.txType === 'convert' && isLatest ? ' id-wallet__tx--convert' : ''}`}
             >
               {isLatest ? (
                 <span className="id-wallet__tx-badge">New</span>
@@ -146,7 +158,7 @@ export function InvestorWalletView() {
                 style={{ background: txBg(tx.kind), color: txColor(tx.kind) }}
                 aria-hidden
               >
-                {txIcon(tx.kind)}
+                {txIcon(tx.kind, tx.txType)}
               </div>
               <div className="id-wallet__tx-info">
                 <p className="id-wallet__tx-source">{tx.source}</p>

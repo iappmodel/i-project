@@ -21,7 +21,10 @@ export interface InvestorDemoState {
   currentView: InvestorView
   currentFeedIndex: number
   selectedOfferId: string | null
+  /** Verified iCoins available to convert */
   walletBalance: number
+  /** Spendable usable balance after conversion */
+  usableBalance: number
   pendingBalance: number
   lifetimeEarned: number
   /** iCoins earned since demo load / last reset */
@@ -33,6 +36,11 @@ export interface InvestorDemoState {
   verificationSession: number
   /** Prevents double-credit on repeated Claim clicks */
   rewardClaimed: boolean
+  /** Convert flow — confirmation shown, blocks double-submit */
+  convertConfirmed: boolean
+  /** Last confirmed convert amount (for confirmation card) */
+  lastConvertAmount: number
+  convertSession: number
   likedContentIds: string[]
   savedContentIds: string[]
   toast: string | null
@@ -55,6 +63,8 @@ type Action =
   | { type: 'SHOW_TOAST'; message: string }
   | { type: 'CLEAR_TOAST' }
   | { type: 'SET_PRESENTER_STEP'; index: number }
+  | { type: 'OPEN_CONVERT' }
+  | { type: 'CONFIRM_CONVERT'; amount: number }
   | { type: 'RESET' }
 
 function cloneSeedTransactions(): InvestorTransaction[] {
@@ -67,6 +77,7 @@ function createBaselineState(): InvestorDemoState {
     currentFeedIndex: 1,
     selectedOfferId: null,
     walletBalance: BASELINE_WALLET.walletBalance,
+    usableBalance: BASELINE_WALLET.usableBalance,
     pendingBalance: BASELINE_WALLET.pendingBalance,
     lifetimeEarned: BASELINE_WALLET.lifetimeEarned,
     sessionEarned: 0,
@@ -75,6 +86,9 @@ function createBaselineState(): InvestorDemoState {
     watchProgress: 0,
     verificationSession: 0,
     rewardClaimed: false,
+    convertConfirmed: false,
+    lastConvertAmount: 0,
+    convertSession: 0,
     likedContentIds: [],
     savedContentIds: [],
     toast: null,
@@ -170,6 +184,39 @@ function reducer(state: InvestorDemoState, action: Action): InvestorDemoState {
 
     case 'SET_PRESENTER_STEP':
       return { ...state, presenterStepIndex: action.index }
+
+    case 'OPEN_CONVERT':
+      return {
+        ...state,
+        currentView: 'convert',
+        convertConfirmed: false,
+        lastConvertAmount: 0,
+      }
+
+    case 'CONFIRM_CONVERT': {
+      const amount = +action.amount.toFixed(2)
+      if (state.convertConfirmed) return state
+      if (amount <= 0 || amount > state.walletBalance) return state
+
+      const received = +(amount * 1).toFixed(2) // CONVERT_RATE = 1, fee = 0
+      const newTx: InvestorTransaction = {
+        id: `tx-convert-${state.convertSession + 1}`,
+        source: 'Convert preview · Simulated',
+        timeLabel: 'Just now',
+        amountDisplay: `⇄ ${amount.toFixed(2)} iC → usable`,
+        kind: 'neutral',
+        txType: 'convert',
+      }
+      return {
+        ...state,
+        convertConfirmed: true,
+        lastConvertAmount: amount,
+        convertSession: state.convertSession + 1,
+        walletBalance: +(state.walletBalance - amount).toFixed(2),
+        usableBalance: +(state.usableBalance + received).toFixed(2),
+        transactions: [newTx, ...state.transactions],
+      }
+    }
 
     case 'RESET':
       return createBaselineState()
@@ -272,6 +319,14 @@ export function useInvestorDemoState() {
 
   const reset = useCallback(() => dispatch({ type: 'RESET' }), [])
 
+  const openConvert = useCallback(() => {
+    dispatch({ type: 'OPEN_CONVERT' })
+  }, [])
+
+  const confirmConvert = useCallback((amount: number) => {
+    dispatch({ type: 'CONFIRM_CONVERT', amount })
+  }, [])
+
   const presenterNext = useCallback(() => {
     const nextIndex = Math.min(
       state.presenterStepIndex + 1,
@@ -302,6 +357,8 @@ export function useInvestorDemoState() {
     presenterNext,
     presenterBack,
     reset,
+    openConvert,
+    confirmConvert,
   }
 }
 

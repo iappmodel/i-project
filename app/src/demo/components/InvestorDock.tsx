@@ -16,6 +16,7 @@ const VIEW_TO_TAB: Record<string, DockTab> = {
   watchVerify: 'feed',
   reward: 'feed',
   wallet: 'wallet',
+  convert: 'wallet',
   splash: 'feed',
 }
 

@@ -9,6 +9,7 @@ export type InvestorView =
   | 'watchVerify'
   | 'reward'
   | 'wallet'
+  | 'convert'
 
 export interface FeedItem {
   id: string
@@ -40,7 +41,8 @@ export interface InvestorTransaction {
   source: string
   timeLabel: string
   amountDisplay: string
-  kind: 'positive' | 'negative' | 'pending'
+  kind: 'positive' | 'negative' | 'pending' | 'neutral'
+  txType?: 'reward' | 'convert' | 'withdraw'
 }
 
 export interface PresenterStep {
@@ -248,6 +250,13 @@ export const PRESENTER_STEPS: PresenterStep[] = [
 
 export const BASELINE_WALLET = {
   walletBalance: 3.65,
+  usableBalance: 1.20,
   pendingBalance: 2.25,
   lifetimeEarned: 14.2,
 } as const
+
+/** Demo conversion: 1 verified iCoin → 1 usable iCoin, zero fee */
+export const CONVERT_RATE = 1
+export const CONVERT_FEE_RATE = 0
+export const CONVERT_TRUST_TIER = 'Tier 2'
+export const CONVERT_TRUST_MULTIPLIER = 1
