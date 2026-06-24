@@ -1783,6 +1783,73 @@
   flex-shrink: 0;
 }
 
+.id-wallet__map-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: calc(100% - 40px);
+  margin: 0 20px 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 0.5px solid rgba(0, 229, 255, 0.35);
+  background: rgba(0, 229, 255, 0.06);
+  cursor: pointer;
+  text-align: left;
+  color: var(--text-primary);
+  flex-shrink: 0;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.id-wallet__map-link:hover {
+  border-color: rgba(0, 229, 255, 0.55);
+  background: rgba(0, 229, 255, 0.1);
+}
+
+.id-wallet__map-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(0, 229, 255, 0.12);
+  border: 0.5px solid rgba(0, 229, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  color: #00e5ff;
+  flex-shrink: 0;
+}
+
+.id-wallet__map-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.id-wallet__map-title {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.id-wallet__map-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  line-height: 1.35;
+}
+
+.id-wallet__map-cta {
+  font-size: 10px;
+  font-weight: 600;
+  color: #00e5ff;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: rgba(0, 229, 255, 0.1);
+  border: 0.5px solid rgba(0, 229, 255, 0.3);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
 .id-wallet__actions {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -8215,6 +8282,444 @@
 
   .id-branddash__pop-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ─── Money Movement Map ──────────────────────────────────────────────────── */
+
+.id-moneymap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-surface);
+  min-height: 0;
+}
+
+.id-moneymap__scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 16px 28px;
+  min-height: 0;
+}
+
+.id-moneymap__back {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 0;
+  margin-bottom: 14px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.id-moneymap__back:hover { color: var(--text-primary); }
+
+.id-moneymap__back-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--bg-panel);
+  border: 0.5px solid var(--border-mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+}
+
+.id-moneymap__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.id-moneymap__mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(0, 229, 255, 0.1);
+  border: 0.5px solid rgba(0, 229, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #00e5ff;
+  flex-shrink: 0;
+}
+
+.id-moneymap__title {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.id-moneymap__sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 4px 0 0;
+}
+
+.id-moneymap__flow-hint {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin: 0 0 12px;
+  line-height: 1.4;
+}
+
+.id-moneymap__balance-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.id-moneymap__balance-cell {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(7, 7, 9, 0.45);
+  border: 0.5px solid var(--border-mid);
+}
+
+.id-moneymap__balance-key {
+  display: block;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 3px;
+}
+
+.id-moneymap__balance-val {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.id-moneymap__tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.id-moneymap__tab {
+  flex-shrink: 0;
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 0.5px solid var(--border-mid);
+  background: var(--bg-panel);
+  font-size: 11px;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.id-moneymap__tab.active {
+  background: rgba(0, 229, 255, 0.1);
+  border-color: rgba(0, 229, 255, 0.4);
+  color: #00e5ff;
+}
+
+.id-moneymap__diagram {
+  margin-bottom: 12px;
+}
+
+.id-moneymap__layer {
+  margin-bottom: 4px;
+}
+
+.id-moneymap__connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 0;
+  color: var(--text-muted);
+}
+
+.id-moneymap__connector-line {
+  width: 1px;
+  height: 10px;
+  background: var(--border-mid);
+}
+
+.id-moneymap__connector-arrow {
+  font-size: 10px;
+  line-height: 1;
+}
+
+.id-moneymap__layer-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin: 0 0 8px;
+}
+
+.id-moneymap__node-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.id-moneymap__node-grid.cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.id-moneymap__node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 6px;
+  border-radius: 10px;
+  border: 0.5px solid var(--border-mid);
+  background: rgba(7, 7, 9, 0.35);
+  cursor: pointer;
+  color: var(--text-primary);
+  min-height: 72px;
+}
+
+.id-moneymap__node.active {
+  border-color: rgba(0, 229, 255, 0.45);
+  background: rgba(0, 229, 255, 0.08);
+  box-shadow: 0 0 0 1px rgba(0, 229, 255, 0.12);
+}
+
+.id-moneymap__node-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 0.5px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.id-moneymap__node-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.id-moneymap__panel,
+.id-moneymap__routes {
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(7, 7, 9, 0.35);
+  border: 0.5px solid var(--border-mid);
+  margin-bottom: 12px;
+}
+
+.id-moneymap__panel-title {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  margin: 0 0 10px;
+}
+
+.id-moneymap__panel-body {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.id-moneymap__panel-note {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin: 10px 0 0;
+  line-height: 1.4;
+}
+
+.id-moneymap__state-list,
+.id-moneymap__fee-list,
+.id-moneymap__receipt-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.id-moneymap__state-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--bg-panel);
+  border: 0.5px solid var(--border-mid);
+}
+
+.id-moneymap__state-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+  background: var(--text-muted);
+}
+
+.id-moneymap__state-row.active .id-moneymap__state-dot { background: #00e5ff; }
+.id-moneymap__state-row.done .id-moneymap__state-dot { background: #4ade80; }
+.id-moneymap__state-row.warning .id-moneymap__state-dot { background: #ffb300; }
+
+.id-moneymap__state-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.id-moneymap__state-sub {
+  display: block;
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  line-height: 1.35;
+}
+
+.id-moneymap__fee-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 0.5px solid var(--border-mid);
+}
+
+.id-moneymap__fee-row:last-child { border-bottom: none; }
+
+.id-moneymap__fee-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.id-moneymap__fee-sub {
+  display: block;
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.id-moneymap__fee-amt {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.id-moneymap__receipt-card {
+  padding: 10px;
+  border-radius: 8px;
+  background: var(--bg-panel);
+  border: 0.5px solid var(--border-mid);
+}
+
+.id-moneymap__receipt-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.id-moneymap__receipt-type {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.id-moneymap__receipt-status {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #00e5ff;
+}
+
+.id-moneymap__receipt-id {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin: 0 0 6px;
+}
+
+.id-moneymap__receipt-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.id-moneymap__receipt-detail {
+  font-size: 10px;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.id-moneymap__receipt-amt {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.id-moneymap__route-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.id-moneymap__route-row:last-child { margin-bottom: 0; }
+
+.id-moneymap__route-btn {
+  padding: 10px 8px;
+  border-radius: 8px;
+  border: 0.5px solid var(--border-mid);
+  background: var(--bg-panel);
+  font-size: 10px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.id-moneymap__route-btn:hover {
+  border-color: rgba(0, 229, 255, 0.4);
+  background: rgba(0, 229, 255, 0.08);
+  color: var(--text-primary);
+}
+
+.id-moneymap__disclaimer {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: center;
+  margin: 4px 0 0;
+  line-height: 1.5;
+}
+
+@media (min-width: 520px) {
+  .id-moneymap__node-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .id-moneymap__node-grid.cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 280px;
   }
 }
 

@@ -23,6 +23,7 @@ export type InvestorView =
   | 'threeLoops'
   | 'creatorDashboard'
   | 'brandDashboard'
+  | 'moneyMap'
 
 export interface FeedItem {
   id: string
@@ -1978,4 +1979,459 @@ export function baselineBrandDashboardTab(): BrandDashboardTab {
 
 export function baselineBrandCta(campaign?: CampaignPreviewState): CampaignAction {
   return campaign?.selectedAction ?? baselineCampaign().selectedAction
+}
+
+// ─── Money Movement Map ──────────────────────────────────────────────────────
+
+export type MoneyMapTab = 'map' | 'states' | 'fees' | 'receipts'
+
+export const MONEY_MAP_TABS: { id: MoneyMapTab; label: string }[] = [
+  { id: 'map', label: 'Map' },
+  { id: 'states', label: 'States' },
+  { id: 'fees', label: 'Fees' },
+  { id: 'receipts', label: 'Receipts' },
+]
+
+export type MoneyMapNodeGroup = 'source' | 'verification' | 'value' | 'destination'
+
+export interface MoneyMapNode {
+  id: string
+  label: string
+  short: string
+  group: MoneyMapNodeGroup
+  icon: string
+  color: string
+  explanation: string
+}
+
+export const MONEY_MAP_NODE_GROUPS: { id: MoneyMapNodeGroup; label: string }[] = [
+  { id: 'source', label: 'Sources' },
+  { id: 'verification', label: 'Verification' },
+  { id: 'value', label: 'Value layer' },
+  { id: 'destination', label: 'Destinations' },
+]
+
+export const MONEY_MAP_NODES: MoneyMapNode[] = [
+  {
+    id: 'brand-pool',
+    label: 'Brand reward pool',
+    short: 'Pool',
+    group: 'source',
+    icon: '◈',
+    color: '#1D9E75',
+    explanation:
+      'Campaign owners fund a simulated reward pool. Verified attention draws from this pool — preview only, no real ad spend.',
+  },
+  {
+    id: 'creator-campaign',
+    label: 'Creator campaign',
+    short: 'Campaign',
+    group: 'source',
+    icon: '✦',
+    color: '#7F77DD',
+    explanation:
+      'Creator-led campaigns route share value after POP verification. Internal value layer — not external payout.',
+  },
+  {
+    id: 'igo-merchant',
+    label: 'iGo merchant reward',
+    short: 'iGo',
+    group: 'source',
+    icon: '◎',
+    color: '#EF9F27',
+    explanation:
+      'Local promo / iGo check-ins release simulated merchant rewards after presence verification.',
+  },
+  {
+    id: 'user-attention',
+    label: 'User attention',
+    short: 'Attention',
+    group: 'source',
+    icon: '▶',
+    color: '#378ADD',
+    explanation:
+      'Watch, verify, and earn flows start with user attention inside immersive media — the raw input to POP.',
+  },
+  {
+    id: 'pop-verification',
+    label: 'POP verification',
+    short: 'POP',
+    group: 'verification',
+    icon: '◎',
+    color: '#00e5ff',
+    explanation:
+      'Proof-of-presence gates convert attention into verified outcomes. Simulated in this demo — no camera required on all paths.',
+  },
+  {
+    id: 'review-fraud',
+    label: 'Review / fraud screen',
+    short: 'Review',
+    group: 'verification',
+    icon: '⛨',
+    color: '#ffb300',
+    explanation:
+      'Review and fraud-screen preview states hold value before release. Simulated screening — not guaranteed fraud prevention.',
+  },
+  {
+    id: 'acoins',
+    label: 'ACoins',
+    short: 'ACoins',
+    group: 'value',
+    icon: 'A',
+    color: '#a78bfa',
+    explanation:
+      'ACoins represent the internal attention-value layer — how verified attention is classified before wallet routing.',
+  },
+  {
+    id: 'icoins',
+    label: 'iCoins',
+    short: 'iCoins',
+    group: 'value',
+    icon: 'iC',
+    color: '#4ade80',
+    explanation:
+      'iCoins are verified earn units credited after POP. They sit in the wallet until converted or spent — simulated ledger only.',
+  },
+  {
+    id: 'pending-balance',
+    label: 'Pending balance',
+    short: 'Pending',
+    group: 'value',
+    icon: '◷',
+    color: '#ffb300',
+    explanation:
+      'Value awaiting review or settlement preview. Shown separately from available balance — no real banking hold.',
+  },
+  {
+    id: 'available-wallet',
+    label: 'Available wallet',
+    short: 'Wallet',
+    group: 'value',
+    icon: '◎',
+    color: '#4ade80',
+    explanation:
+      'Verified iCoins available in the demo wallet. This is the primary routing hub for convert, tip, pay, and withdraw previews.',
+  },
+  {
+    id: 'usable-balance',
+    label: 'Usable balance',
+    short: 'Usable',
+    group: 'value',
+    icon: '⇄',
+    color: '#00e5ff',
+    explanation:
+      'Converted spendable balance after the internal convert step. Used for tips, merchant pay, and withdraw previews.',
+  },
+  {
+    id: 'tip-creator',
+    label: 'Tip creator',
+    short: 'Tip',
+    group: 'destination',
+    icon: '♥',
+    color: '#ff4d6d',
+    explanation:
+      'Usable value routes to a creator tip receipt preview. Simulated transfer — no real payment rail.',
+  },
+  {
+    id: 'pay-merchant',
+    label: 'Pay merchant',
+    short: 'Pay',
+    group: 'destination',
+    icon: '→',
+    color: '#ffb300',
+    explanation:
+      'Merchant payment preview debits usable balance and issues a simulated pay receipt. Not a real merchant charge.',
+  },
+  {
+    id: 'withdraw-preview',
+    label: 'Withdraw preview',
+    short: 'Withdraw',
+    group: 'destination',
+    icon: '↓',
+    color: '#00e5ff',
+    explanation:
+      'Withdraw preview shows how value would exit the internal wallet — simulated fee tiers, no real payout.',
+  },
+  {
+    id: 'creator-wallet',
+    label: 'Creator wallet',
+    short: 'Creator',
+    group: 'destination',
+    icon: '○',
+    color: '#7F77DD',
+    explanation:
+      'Creator-side wallet routing for campaign share and tips — architecture preview tied to the Creator Dashboard.',
+  },
+  {
+    id: 'platform-fee',
+    label: 'Platform fee',
+    short: 'Fee',
+    group: 'destination',
+    icon: '%',
+    color: '#94a3b8',
+    explanation:
+      'Simulated platform fee slice on verified attention economics. Preview accounting — not actual revenue settlement.',
+  },
+  {
+    id: 'receipt-confirmation',
+    label: 'Receipt / confirmation',
+    short: 'Receipt',
+    group: 'destination',
+    icon: '✓',
+    color: '#1D9E75',
+    explanation:
+      'Each route ends in a receipt preview with simulated transaction ID and status. No real financial confirmation.',
+  },
+]
+
+/** Simulated merchant payment fee preview (not a real charge) */
+export const PAY_FEE_PREVIEW = 0.01
+
+export interface MoneyMapStateRow {
+  id: string
+  label: string
+  sub: string
+  tone: 'neutral' | 'active' | 'warning' | 'done'
+}
+
+export interface MoneyMapFeeRow {
+  id: string
+  label: string
+  amount: string
+  sub: string
+}
+
+export interface MoneyMapReceipt {
+  id: string
+  type: string
+  txId: string
+  status: string
+  amount: string
+  detail: string
+}
+
+export interface MoneyMapSnapshot {
+  balances: {
+    verified: number
+    usable: number
+    pending: number
+    lifetime: number
+  }
+  campaignReward: number
+  campaignStatusLabel: string
+  flowSummary: string
+  states: MoneyMapStateRow[]
+  fees: MoneyMapFeeRow[]
+  receipts: MoneyMapReceipt[]
+}
+
+export function baselineMoneyMapTab(): MoneyMapTab {
+  return 'map'
+}
+
+export function baselineMoneyNode(): string {
+  return 'available-wallet'
+}
+
+export function moneyMapNodeById(nodeId: string): MoneyMapNode | undefined {
+  return MONEY_MAP_NODES.find((n) => n.id === nodeId)
+}
+
+function simulatedTxId(prefix: string, seed: number): string {
+  return `${prefix}-${String(seed).padStart(6, '0')}-SIM`
+}
+
+export interface MoneyMapInput {
+  walletBalance: number
+  usableBalance: number
+  pendingBalance: number
+  lifetimeEarned: number
+  campaign: CampaignPreviewState
+  transactions: InvestorTransaction[]
+  convertConfirmed: boolean
+  lastConvertAmount: number
+  tipConfirmed: boolean
+  lastTipAmount: number
+  payConfirmed: boolean
+  lastPayAmount: number
+  withdrawConfirmed: boolean
+  lastWithdrawAmount: number
+  lastWithdrawFee: number
+  promoClaimConfirmed: boolean
+  lastClaimedPromoId: string | null
+}
+
+export function computeMoneyMapSnapshot(input: MoneyMapInput): MoneyMapSnapshot {
+  const economics = computeCampaignEconomics(
+    input.campaign.selectedReward,
+    input.campaign.budgetCap,
+  )
+  const published = input.campaign.campaignStatus === 'published'
+  const campaignStatusLabel = published ? 'Published · Simulated' : 'Draft · Simulated'
+
+  const states: MoneyMapStateRow[] = [
+    {
+      id: 'pending',
+      label: 'Pending',
+      sub: `${fmtMoney(input.pendingBalance)} iC in review / hold preview`,
+      tone: input.pendingBalance > 0 ? 'active' : 'neutral',
+    },
+    {
+      id: 'verified',
+      label: 'Verified',
+      sub: `${fmtMoney(input.walletBalance)} iC verified in wallet layer`,
+      tone: 'done',
+    },
+    {
+      id: 'converted',
+      label: 'Converted',
+      sub: input.convertConfirmed
+        ? `${fmtMoney(input.lastConvertAmount)} iC converted · receipt preview`
+        : 'Awaiting convert preview',
+      tone: input.convertConfirmed ? 'done' : 'neutral',
+    },
+    {
+      id: 'sent',
+      label: 'Sent',
+      sub:
+        input.tipConfirmed || input.payConfirmed
+          ? 'Tip or pay route initiated · simulated'
+          : 'No outbound send preview yet',
+      tone: input.tipConfirmed || input.payConfirmed ? 'active' : 'neutral',
+    },
+    {
+      id: 'completed',
+      label: 'Completed',
+      sub: 'Receipt preview closed · internal ledger only',
+      tone: 'done',
+    },
+    {
+      id: 'review',
+      label: 'Review',
+      sub: 'Fraud / policy review gate before release',
+      tone: 'warning',
+    },
+    {
+      id: 'failed',
+      label: 'Failed / returned preview',
+      sub: 'Simulated return-to-wallet path · no real reversal',
+      tone: 'neutral',
+    },
+  ]
+
+  const fees: MoneyMapFeeRow[] = [
+    {
+      id: 'viewer-reward',
+      label: 'Viewer reward',
+      amount: `${fmtMoney(economics.viewerReward)} iC`,
+      sub: 'Per verified attention · campaign preview',
+    },
+    {
+      id: 'creator-share',
+      label: 'Creator / share value',
+      amount: `${fmtMoney(economics.creatorShare)} iC`,
+      sub: 'Simulated share split',
+    },
+    {
+      id: 'platform-fee',
+      label: 'Platform fee preview',
+      amount: `${fmtMoney(economics.platformFee)} iC`,
+      sub: 'Internal economics · not settlement',
+    },
+    {
+      id: 'convert-fee',
+      label: 'Convert preview fee',
+      amount: `${fmtMoney(CONVERT_FEE_RATE)} iC`,
+      sub: 'Demo convert · zero fee',
+    },
+    {
+      id: 'withdraw-fast',
+      label: 'Fast withdrawal preview fee',
+      amount: `${fmtMoney(withdrawFee('fast'))} iC`,
+      sub: 'Simulated tier · not a real payout fee',
+    },
+    {
+      id: 'pay-merchant',
+      label: 'Merchant payment fee preview',
+      amount: `${fmtMoney(PAY_FEE_PREVIEW)} iC`,
+      sub: 'Pay route preview · simulated',
+    },
+  ]
+
+  const receipts: MoneyMapReceipt[] = [
+    {
+      id: 'receipt-convert',
+      type: 'Conversion receipt',
+      txId: simulatedTxId('CNV', input.lastConvertAmount * 100 || 120),
+      status: input.convertConfirmed ? 'Completed · preview' : 'Ready · preview',
+      amount: input.convertConfirmed
+        ? `${fmtMoney(input.lastConvertAmount)} iC`
+        : '—',
+      detail: 'Verified iCoins → usable balance · simulated',
+    },
+    {
+      id: 'receipt-tip',
+      type: 'Tip receipt',
+      txId: simulatedTxId('TIP', input.lastTipAmount * 100 || 25),
+      status: input.tipConfirmed ? 'Sent · preview' : 'Ready · preview',
+      amount: input.tipConfirmed ? `${fmtMoney(input.lastTipAmount)} iC` : '—',
+      detail: `To ${DEFAULT_TIP_CREATOR.handle} · simulated`,
+    },
+    {
+      id: 'receipt-pay',
+      type: 'Pay receipt',
+      txId: simulatedTxId('PAY', input.lastPayAmount * 100 || 50),
+      status: input.payConfirmed ? 'Completed · preview' : 'Ready · preview',
+      amount: input.payConfirmed ? `${fmtMoney(input.lastPayAmount)} iC` : '—',
+      detail: `${DEFAULT_PAY_MERCHANT.name} · merchant preview`,
+    },
+    {
+      id: 'receipt-withdraw',
+      type: 'Withdraw receipt',
+      txId: simulatedTxId('WDR', input.lastWithdrawAmount * 100 || 50),
+      status: input.withdrawConfirmed ? 'Review · preview' : 'Ready · preview',
+      amount: input.withdrawConfirmed
+        ? `${fmtMoney(input.lastWithdrawAmount)} iC`
+        : '—',
+      detail:
+        input.withdrawConfirmed && input.lastWithdrawFee > 0
+          ? `Incl. ${fmtMoney(input.lastWithdrawFee)} iC fee preview`
+          : 'Withdraw routing preview · simulated',
+    },
+    {
+      id: 'receipt-promo',
+      type: 'Promo reward receipt',
+      txId: simulatedTxId('PRM', 150),
+      status: input.promoClaimConfirmed ? 'Completed · preview' : 'Ready · preview',
+      amount: input.promoClaimConfirmed ? '+0.15 iC' : '—',
+      detail: 'iGo / promo check-in · simulated reward',
+    },
+  ]
+
+  const recent = input.transactions[0]
+  const flowSummary = recent
+    ? `Latest activity: ${recent.source} · ${recent.amountDisplay}`
+    : `Campaign reward ${fmtMoney(input.campaign.selectedReward)} iC · ${campaignStatusLabel}`
+
+  return {
+    balances: {
+      verified: input.walletBalance,
+      usable: input.usableBalance,
+      pending: input.pendingBalance,
+      lifetime: input.lifetimeEarned,
+    },
+    campaignReward: input.campaign.selectedReward,
+    campaignStatusLabel,
+    flowSummary,
+    states,
+    fees,
+    receipts,
+  }
+}
+
+function fmtMoney(n: number): string {
+  return n.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
 }

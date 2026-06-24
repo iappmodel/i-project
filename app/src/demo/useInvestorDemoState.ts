@@ -27,6 +27,8 @@ import {
   baselineCreatorPlatformFilter,
   baselineBrandDashboardTab,
   baselineBrandCta,
+  baselineMoneyMapTab,
+  baselineMoneyNode,
   cloneBaselinePlatforms,
   cloneBaselineCampaign,
   cloneBaselineStudio,
@@ -65,6 +67,7 @@ import {
   type CreatorDashboardTab,
   type CreatorPlatformFilter,
   type BrandDashboardTab,
+  type MoneyMapTab,
 } from './investorDemoData'
 
 // ─── State shape ───────────────────────────────────────────────────────────
@@ -142,6 +145,8 @@ export interface InvestorDemoState {
   selectedCreatorContentId: string | null
   brandDashboardTab: BrandDashboardTab
   selectedBrandCta: CampaignAction
+  moneyMapTab: MoneyMapTab
+  selectedMoneyNode: string
   likedContentIds: string[]
   savedContentIds: string[]
   toast: string | null
@@ -235,6 +240,9 @@ type Action =
   | { type: 'OPEN_BRAND_DASHBOARD' }
   | { type: 'SET_BRAND_DASHBOARD_TAB'; tab: BrandDashboardTab }
   | { type: 'SET_BRAND_CTA'; cta: CampaignAction }
+  | { type: 'OPEN_MONEY_MAP' }
+  | { type: 'SET_MONEY_MAP_TAB'; tab: MoneyMapTab }
+  | { type: 'SELECT_MONEY_NODE'; nodeId: string }
   | { type: 'RESET' }
 
 function cloneSeedTransactions(): InvestorTransaction[] {
@@ -334,6 +342,8 @@ function createBaselineState(): InvestorDemoState {
     selectedCreatorContentId: null,
     brandDashboardTab: baselineBrandDashboardTab(),
     selectedBrandCta: baselineBrandCta(),
+    moneyMapTab: baselineMoneyMapTab(),
+    selectedMoneyNode: baselineMoneyNode(),
     likedContentIds: [],
     savedContentIds: [],
     toast: null,
@@ -982,6 +992,20 @@ function reducer(state: InvestorDemoState, action: Action): InvestorDemoState {
         },
       }
 
+    case 'OPEN_MONEY_MAP':
+      return {
+        ...state,
+        currentView: 'moneyMap',
+        moneyMapTab: 'map',
+        selectedMoneyNode: baselineMoneyNode(),
+      }
+
+    case 'SET_MONEY_MAP_TAB':
+      return { ...state, moneyMapTab: action.tab }
+
+    case 'SELECT_MONEY_NODE':
+      return { ...state, selectedMoneyNode: action.nodeId }
+
     case 'RESET':
       return createBaselineState()
 
@@ -1343,6 +1367,18 @@ export function useInvestorDemoState() {
     dispatch({ type: 'SET_BRAND_CTA', cta })
   }, [])
 
+  const openMoneyMap = useCallback(() => {
+    dispatch({ type: 'OPEN_MONEY_MAP' })
+  }, [])
+
+  const setMoneyMapTab = useCallback((tab: MoneyMapTab) => {
+    dispatch({ type: 'SET_MONEY_MAP_TAB', tab })
+  }, [])
+
+  const selectMoneyNode = useCallback((nodeId: string) => {
+    dispatch({ type: 'SELECT_MONEY_NODE', nodeId })
+  }, [])
+
   const presenterNext = useCallback(() => {
     const nextIndex = Math.min(
       state.presenterStepIndex + 1,
@@ -1433,6 +1469,9 @@ export function useInvestorDemoState() {
     openBrandDashboard,
     setBrandDashboardTab,
     setBrandCta,
+    openMoneyMap,
+    setMoneyMapTab,
+    selectMoneyNode,
   }
 }
 

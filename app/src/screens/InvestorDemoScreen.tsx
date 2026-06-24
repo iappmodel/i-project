@@ -33,6 +33,7 @@ import { InvestorPOPLiveView } from '../demo/screens/InvestorPOPLiveView'
 import { InvestorThreeLoopsView } from '../demo/screens/InvestorThreeLoopsView'
 import { InvestorCreatorDashboardView } from '../demo/screens/InvestorCreatorDashboardView'
 import { InvestorBrandDashboardView } from '../demo/screens/InvestorBrandDashboardView'
+import { InvestorMoneyMapView } from '../demo/screens/InvestorMoneyMapView'
 import type { InvestorView } from '../demo/investorDemoData'
 
 // ─── View router (reads from context) ─────────────────────────────────────
@@ -82,6 +83,8 @@ function ViewSwitch({ view }: { view: InvestorView }) {
       return <InvestorCreatorDashboardView />
     case 'brandDashboard':
       return <InvestorBrandDashboardView />
+    case 'moneyMap':
+      return <InvestorMoneyMapView />
     case 'splash':
     default:
       return <InvestorSplashView />
