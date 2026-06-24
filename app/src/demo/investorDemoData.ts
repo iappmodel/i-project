@@ -22,6 +22,7 @@ export type InvestorView =
   | 'popLive'
   | 'threeLoops'
   | 'creatorDashboard'
+  | 'brandDashboard'
 
 export interface FeedItem {
   id: string
@@ -1774,4 +1775,207 @@ export function baselineCreatorDashboardTab(): CreatorDashboardTab {
 
 export function baselineCreatorPlatformFilter(): CreatorPlatformFilter {
   return 'all'
+}
+
+// ─── Brand / Owner Analytics Dashboard ───────────────────────────────────────
+
+export type BrandDashboardTab = 'overview' | 'pop' | 'audience' | 'spend'
+
+export const BRAND_DASHBOARD_TABS: { id: BrandDashboardTab; label: string }[] = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'pop', label: 'POP Quality' },
+  { id: 'audience', label: 'Audience' },
+  { id: 'spend', label: 'Spend' },
+]
+
+export const BRAND_DASHBOARD_OWNER = {
+  brandName: 'Nike Running',
+  campaignTitle: 'Pegasus 41 Launch',
+} as const
+
+export interface BrandDashboardKPIs {
+  verifiedViews: number
+  rewardPoolRemaining: number
+  costPerVerifiedAttention: number
+  ctaCompletionRate: number
+  fraudPrevented: number
+  estimatedReach: number
+}
+
+export interface BrandCtaPerformance {
+  id: CampaignAction
+  label: string
+  completionRate: number
+  color: string
+}
+
+export interface BrandAudienceSegment {
+  id: string
+  label: string
+  sharePct: number
+  sub: string
+}
+
+export type BrandTimelineStatus = 'done' | 'active' | 'pending'
+
+export interface BrandTimelineStep {
+  id: string
+  label: string
+  sub: string
+  status: BrandTimelineStatus
+}
+
+export interface BrandDashboardSnapshot {
+  statusLabel: string
+  ctaLabel: string
+  selectedReward: number
+  kpis: BrandDashboardKPIs
+  rewardPool: {
+    budgetCap: number
+    spentPreview: number
+    remainingPreview: number
+    viewerRewards: number
+    creatorShare: number
+    platformFee: number
+  }
+  popQuality: {
+    sessionIntegrity: number
+    attentionConfidence: number
+    driftRecovered: number
+    fraudScreenPassed: number
+  }
+  ctaPerformance: BrandCtaPerformance[]
+  audience: BrandAudienceSegment[]
+  timeline: BrandTimelineStep[]
+}
+
+const BRAND_CTA_BASE_RATES: Record<CampaignAction, number> = {
+  follow: 68,
+  visit: 54,
+  shop: 41,
+  custom: 36,
+}
+
+function strictnessPopBoost(strictness: VerificationStrictness): number {
+  if (strictness === 'strict') return 12
+  if (strictness === 'standard') return 6
+  return 0
+}
+
+export function computeBrandDashboardSnapshot(
+  campaign: CampaignPreviewState,
+  studio: StudioPreviewState,
+  selectedBrandCta: CampaignAction,
+): BrandDashboardSnapshot {
+  const economics = computeCampaignEconomics(campaign.selectedReward, campaign.budgetCap)
+  const published = campaign.campaignStatus === 'published'
+  const activeGates = Object.values(campaign.enabledGates).filter(Boolean).length
+  const popBoost = strictnessPopBoost(campaign.verificationStrictness)
+
+  const spentPreview = published
+    ? +(campaign.budgetCap * 0.22).toFixed(2)
+    : +(campaign.budgetCap * 0.06).toFixed(2)
+  const remainingPreview = +(campaign.budgetCap - spentPreview).toFixed(2)
+  const verifiedViews = published
+    ? Math.round(economics.estimatedVerifiedViews * 0.14)
+    : Math.round(economics.estimatedVerifiedViews * 0.03)
+  const costPerVerifiedAttention = +(
+    spentPreview / Math.max(verifiedViews, 1)
+  ).toFixed(3)
+
+  const baseCta = BRAND_CTA_BASE_RATES[selectedBrandCta]
+  const ctaCompletionRate = published
+    ? Math.min(96, baseCta + popBoost + (selectedBrandCta === campaign.selectedAction ? 8 : 0))
+    : Math.max(24, baseCta - 18)
+
+  const fraudPrevented = campaign.enabledGates.fraudCheck
+    ? 8 + activeGates * 3 + (published ? 6 : 0)
+    : 2 + activeGates
+
+  const ctaPerformance: BrandCtaPerformance[] = CAMPAIGN_ACTION_PRESETS.map((preset) => ({
+    id: preset.id,
+    label: preset.label,
+    completionRate: published
+      ? BRAND_CTA_BASE_RATES[preset.id] + popBoost
+      : Math.max(20, BRAND_CTA_BASE_RATES[preset.id] - 20),
+    color: preset.color,
+  }))
+
+  const audience: BrandAudienceSegment[] = [
+    { id: 'a', label: '18–24 · Music fans', sharePct: 34, sub: 'Simulated segment · preview' },
+    { id: 'b', label: '25–34 · Runners', sharePct: 41, sub: 'Simulated segment · preview' },
+    { id: 'c', label: 'Metro · Local interest', sharePct: 25, sub: 'No real geo targeting' },
+  ]
+
+  const mediaReady = studio.studioStatus === 'preview_ready'
+  const gatesSelected = activeGates >= 2
+
+  const timeline: BrandTimelineStep[] = [
+    { id: 'created', label: 'Created', sub: 'Campaign draft initialized', status: 'done' },
+    {
+      id: 'media',
+      label: 'Media ready',
+      sub: mediaReady ? 'Studio preview ready' : 'Studio draft · simulated',
+      status: mediaReady ? 'done' : 'active',
+    },
+    {
+      id: 'gates',
+      label: 'POP gates selected',
+      sub: `${activeGates} gate${activeGates === 1 ? '' : 's'} · ${campaign.verificationStrictness}`,
+      status: gatesSelected ? 'done' : 'active',
+    },
+    {
+      id: 'published',
+      label: 'Preview published',
+      sub: published ? 'Owner preview live' : 'Awaiting publish',
+      status: published ? 'done' : gatesSelected ? 'active' : 'pending',
+    },
+    {
+      id: 'verified',
+      label: 'Verified attention collected',
+      sub: published ? `${verifiedViews.toLocaleString()} est. views` : 'Not started',
+      status: published ? 'active' : 'pending',
+    },
+  ]
+
+  return {
+    statusLabel: published ? 'Published · Simulated' : 'Draft · Simulated',
+    ctaLabel: campaignActionLabel(campaign.selectedAction, campaign.customActionLabel),
+    selectedReward: campaign.selectedReward,
+    kpis: {
+      verifiedViews,
+      rewardPoolRemaining: remainingPreview,
+      costPerVerifiedAttention,
+      ctaCompletionRate,
+      fraudPrevented,
+      estimatedReach: Math.round(economics.estimatedVerifiedViews * (published ? 1.35 : 1.1)),
+    },
+    rewardPool: {
+      budgetCap: campaign.budgetCap,
+      spentPreview,
+      remainingPreview,
+      viewerRewards: economics.viewerReward,
+      creatorShare: economics.creatorShare,
+      platformFee: economics.platformFee,
+    },
+    popQuality: {
+      sessionIntegrity: Math.min(96, 72 + popBoost + activeGates * 2),
+      attentionConfidence: Math.min(94, 68 + popBoost + (campaign.enabledGates.gazeForward ? 8 : 0)),
+      driftRecovered: published ? 68 + popBoost : 42,
+      fraudScreenPassed: campaign.enabledGates.fraudCheck
+        ? Math.min(97, 78 + popBoost + 6)
+        : 52,
+    },
+    ctaPerformance,
+    audience,
+    timeline,
+  }
+}
+
+export function baselineBrandDashboardTab(): BrandDashboardTab {
+  return 'overview'
+}
+
+export function baselineBrandCta(campaign?: CampaignPreviewState): CampaignAction {
+  return campaign?.selectedAction ?? baselineCampaign().selectedAction
 }

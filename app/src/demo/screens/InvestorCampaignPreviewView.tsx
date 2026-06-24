@@ -23,6 +23,7 @@ export function InvestorCampaignPreviewView() {
     publishCampaignPreview,
     openStudioPreview,
     openCreatorDashboard,
+    openBrandDashboard,
   } = useInvestorDemo()
 
   const { campaign } = state
@@ -274,6 +275,21 @@ export function InvestorCampaignPreviewView() {
             </div>
           </div>
         </section>
+
+        <button
+          type="button"
+          className="id-campaign__owner-link"
+          onClick={openBrandDashboard}
+        >
+          <span className="id-campaign__owner-icon" aria-hidden>◎</span>
+          <span className="id-campaign__owner-text">
+            <span className="id-campaign__owner-title">Owner Analytics</span>
+            <span className="id-campaign__owner-sub">
+              Track verified attention, reward pool, fraud screen, and CTA performance
+            </span>
+          </span>
+          <span className="id-campaign__owner-arrow" aria-hidden>→</span>
+        </button>
 
         <button
           type="button"

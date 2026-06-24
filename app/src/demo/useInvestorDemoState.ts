@@ -25,6 +25,8 @@ import {
   baselineSelectedLoop,
   baselineCreatorDashboardTab,
   baselineCreatorPlatformFilter,
+  baselineBrandDashboardTab,
+  baselineBrandCta,
   cloneBaselinePlatforms,
   cloneBaselineCampaign,
   cloneBaselineStudio,
@@ -62,6 +64,7 @@ import {
   type ThreeLoopId,
   type CreatorDashboardTab,
   type CreatorPlatformFilter,
+  type BrandDashboardTab,
 } from './investorDemoData'
 
 // ─── State shape ───────────────────────────────────────────────────────────
@@ -137,6 +140,8 @@ export interface InvestorDemoState {
   creatorDashboardTab: CreatorDashboardTab
   selectedCreatorPlatform: CreatorPlatformFilter
   selectedCreatorContentId: string | null
+  brandDashboardTab: BrandDashboardTab
+  selectedBrandCta: CampaignAction
   likedContentIds: string[]
   savedContentIds: string[]
   toast: string | null
@@ -227,6 +232,9 @@ type Action =
   | { type: 'SET_CREATOR_DASHBOARD_TAB'; tab: CreatorDashboardTab }
   | { type: 'SET_CREATOR_PLATFORM_FILTER'; platform: CreatorPlatformFilter }
   | { type: 'SELECT_CREATOR_CONTENT'; contentId: string | null }
+  | { type: 'OPEN_BRAND_DASHBOARD' }
+  | { type: 'SET_BRAND_DASHBOARD_TAB'; tab: BrandDashboardTab }
+  | { type: 'SET_BRAND_CTA'; cta: CampaignAction }
   | { type: 'RESET' }
 
 function cloneSeedTransactions(): InvestorTransaction[] {
@@ -324,6 +332,8 @@ function createBaselineState(): InvestorDemoState {
     creatorDashboardTab: baselineCreatorDashboardTab(),
     selectedCreatorPlatform: baselineCreatorPlatformFilter(),
     selectedCreatorContentId: null,
+    brandDashboardTab: baselineBrandDashboardTab(),
+    selectedBrandCta: baselineBrandCta(),
     likedContentIds: [],
     savedContentIds: [],
     toast: null,
@@ -617,6 +627,7 @@ function reducer(state: InvestorDemoState, action: Action): InvestorDemoState {
     case 'SET_CAMPAIGN_ACTION':
       return {
         ...state,
+        selectedBrandCta: action.action,
         campaign: {
           ...state.campaign,
           selectedAction: action.action,
@@ -949,6 +960,27 @@ function reducer(state: InvestorDemoState, action: Action): InvestorDemoState {
 
     case 'SELECT_CREATOR_CONTENT':
       return { ...state, selectedCreatorContentId: action.contentId }
+
+    case 'OPEN_BRAND_DASHBOARD':
+      return {
+        ...state,
+        currentView: 'brandDashboard',
+        brandDashboardTab: 'overview',
+        selectedBrandCta: state.campaign.selectedAction,
+      }
+
+    case 'SET_BRAND_DASHBOARD_TAB':
+      return { ...state, brandDashboardTab: action.tab }
+
+    case 'SET_BRAND_CTA':
+      return {
+        ...state,
+        selectedBrandCta: action.cta,
+        campaign: {
+          ...state.campaign,
+          selectedAction: action.cta,
+        },
+      }
 
     case 'RESET':
       return createBaselineState()
@@ -1299,6 +1331,18 @@ export function useInvestorDemoState() {
     dispatch({ type: 'SELECT_CREATOR_CONTENT', contentId })
   }, [])
 
+  const openBrandDashboard = useCallback(() => {
+    dispatch({ type: 'OPEN_BRAND_DASHBOARD' })
+  }, [])
+
+  const setBrandDashboardTab = useCallback((tab: BrandDashboardTab) => {
+    dispatch({ type: 'SET_BRAND_DASHBOARD_TAB', tab })
+  }, [])
+
+  const setBrandCta = useCallback((cta: CampaignAction) => {
+    dispatch({ type: 'SET_BRAND_CTA', cta })
+  }, [])
+
   const presenterNext = useCallback(() => {
     const nextIndex = Math.min(
       state.presenterStepIndex + 1,
@@ -1386,6 +1430,9 @@ export function useInvestorDemoState() {
     setCreatorDashboardTab,
     setCreatorPlatformFilter,
     selectCreatorContent,
+    openBrandDashboard,
+    setBrandDashboardTab,
+    setBrandCta,
   }
 }
 

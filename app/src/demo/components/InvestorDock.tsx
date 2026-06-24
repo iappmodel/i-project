@@ -29,6 +29,7 @@ const VIEW_TO_TAB: Record<string, DockTab> = {
   creatorDashboard: 'profile',
   campaignPreview: 'create',
   studioPreview: 'create',
+  brandDashboard: 'create',
   splash: 'feed',
 }
 
