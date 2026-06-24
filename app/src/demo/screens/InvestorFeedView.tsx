@@ -2,13 +2,12 @@ import { FEED_ITEMS } from '../investorDemoData'
 import { useInvestorDemo } from '../useInvestorDemoState'
 import { InvestorActionRail } from '../components/InvestorActionRail'
 import { InvestorDock } from '../components/InvestorDock'
-
-// Waveform bar delays for visual richness
 const BAR_DELAYS = [0, 0.12, 0.24, 0.36, 0.18, 0.06, 0.3, 0.42, 0.15]
 const BAR_COLORS = ['#1D9E75', '#5DCAA5', '#1D9E75', '#1D9E75', '#5DCAA5', '#1D9E75', '#1D9E75', '#5DCAA5', '#1D9E75']
 
 export function InvestorFeedView() {
-  const { state, setFeedIndex, selectOffer, goView, showToast, setPresenterStep } = useInvestorDemo()
+  const { state, setFeedIndex, selectOffer, goView, showToast, setPresenterStep, openThreeLoops } =
+    useInvestorDemo()
 
   const { currentFeedIndex, walletBalance } = state
   const item = FEED_ITEMS[currentFeedIndex]
@@ -122,6 +121,17 @@ export function InvestorFeedView() {
           </button>
         )}
       </div>
+
+      <button type="button" className="id-feed__loops-entry" onClick={openThreeLoops}>
+        <span className="id-feed__loops-entry-icon" aria-hidden>∞</span>
+        <span className="id-feed__loops-entry-text">
+          <span className="id-feed__loops-entry-title">Three Loops</span>
+          <span className="id-feed__loops-entry-sub">
+            How [ i ] turns verified attention into value
+          </span>
+        </span>
+        <span className="id-feed__loops-entry-cta">View system</span>
+      </button>
 
       {/* Nav arrows */}
       <button

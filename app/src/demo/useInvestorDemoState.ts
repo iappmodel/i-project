@@ -22,6 +22,7 @@ import {
   baselinePopTrackingMode,
   baselineWebGazerStatus,
   POPLIVE_CALIBRATION_TOTAL,
+  baselineSelectedLoop,
   cloneBaselinePlatforms,
   cloneBaselineCampaign,
   cloneBaselineStudio,
@@ -56,6 +57,7 @@ import {
   type InvestorTransaction,
   type InvestorView,
   type VerificationGate,
+  type ThreeLoopId,
 } from './investorDemoData'
 
 // ─── State shape ───────────────────────────────────────────────────────────
@@ -127,6 +129,7 @@ export interface InvestorDemoState {
   popWebGazerError: string | null
   popCalibrationStep: number
   popCalibrationVisited: number[]
+  selectedLoopId: ThreeLoopId
   likedContentIds: string[]
   savedContentIds: string[]
   toast: string | null
@@ -211,6 +214,8 @@ type Action =
     }
   | { type: 'REGISTER_CALIBRATION_POINT'; pointId: number }
   | { type: 'WEBGAZER_FALLBACK_SIMULATED'; error?: string | null }
+  | { type: 'OPEN_THREE_LOOPS' }
+  | { type: 'SET_SELECTED_LOOP'; loopId: ThreeLoopId }
   | { type: 'RESET' }
 
 function cloneSeedTransactions(): InvestorTransaction[] {
@@ -304,6 +309,7 @@ function createBaselineState(): InvestorDemoState {
     popWebGazerError: null,
     popCalibrationStep: 0,
     popCalibrationVisited: [],
+    selectedLoopId: baselineSelectedLoop(),
     likedContentIds: [],
     savedContentIds: [],
     toast: null,
@@ -908,6 +914,12 @@ function reducer(state: InvestorDemoState, action: Action): InvestorDemoState {
         popCalibrationVisited: [],
       }
 
+    case 'OPEN_THREE_LOOPS':
+      return { ...state, currentView: 'threeLoops' }
+
+    case 'SET_SELECTED_LOOP':
+      return { ...state, selectedLoopId: action.loopId }
+
     case 'RESET':
       return createBaselineState()
 
@@ -1233,6 +1245,14 @@ export function useInvestorDemoState() {
     dispatch({ type: 'WEBGAZER_FALLBACK_SIMULATED', error })
   }, [])
 
+  const openThreeLoops = useCallback(() => {
+    dispatch({ type: 'OPEN_THREE_LOOPS' })
+  }, [])
+
+  const setSelectedLoop = useCallback((loopId: ThreeLoopId) => {
+    dispatch({ type: 'SET_SELECTED_LOOP', loopId })
+  }, [])
+
   const presenterNext = useCallback(() => {
     const nextIndex = Math.min(
       state.presenterStepIndex + 1,
@@ -1314,6 +1334,8 @@ export function useInvestorDemoState() {
     setWebGazerStatus,
     registerCalibrationPoint,
     webGazerFallbackSimulated,
+    openThreeLoops,
+    setSelectedLoop,
   }
 }
 

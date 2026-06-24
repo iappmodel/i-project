@@ -15,6 +15,7 @@ const VIEW_TO_TAB: Record<string, DockTab> = {
   offerDetail: 'feed',
   watchVerify: 'feed',
   popLive: 'feed',
+  threeLoops: 'feed',
   reward: 'feed',
   wallet: 'wallet',
   convert: 'wallet',

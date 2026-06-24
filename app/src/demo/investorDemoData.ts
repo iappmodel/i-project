@@ -20,6 +20,7 @@ export type InvestorView =
   | 'unifiedProfile'
   | 'acoins'
   | 'popLive'
+  | 'threeLoops'
 
 export interface FeedItem {
   id: string
@@ -1448,4 +1449,115 @@ export function popLiveTimelineStatuses(
   }
 
   return statuses
+}
+
+// ─── Three Loops Overview ────────────────────────────────────────────────────
+
+export type ThreeLoopId = 'watch' | 'igo' | 'creator'
+
+export interface ThreeLoopDef {
+  id: ThreeLoopId
+  num: string
+  name: string
+  tag: string
+  source: string
+  proof: string
+  reward: string
+  cta: string
+  outcome: string
+  accent: string
+  steps: string[]
+  popLink: string
+  acoinsLink: string
+  walletLink: string
+}
+
+export const THREE_LOOPS_SYSTEM_SUMMARY: { key: string; sub: string }[] = [
+  { key: 'Users earn', sub: 'Verified attention → internal value units' },
+  { key: 'Creators monetize', sub: 'Campaigns, tips, and audience proof' },
+  { key: 'Brands fund outcomes', sub: 'Simulated sponsored reward preview' },
+  { key: 'Wallet routes value', sub: 'Convert · pay · tip · withdraw preview' },
+]
+
+export const THREE_LOOPS: ThreeLoopDef[] = [
+  {
+    id: 'watch',
+    num: 'Loop 1',
+    name: 'Watch / Verify / Earn',
+    tag: 'Immersive feed earning',
+    source: 'Immersive feed + sponsored offers',
+    proof: 'POP attention verification · simulated',
+    reward: 'iCoins / ACoins to wallet · preview',
+    cta: 'Open earning loop',
+    outcome: 'Session payoff — watch, verify, reward preview',
+    accent: '#4ade80',
+    steps: [
+      'Discover content in the immersive feed',
+      'Open sponsored offer · see reward preview',
+      'Watch with POP proof-of-presence layer',
+      'Pass verification gates · simulated',
+      'Reward credits to wallet · internal value layer',
+    ],
+    popLink: 'POP validates attention confidence',
+    acoinsLink: 'ACoins record verified attention units',
+    walletLink: 'Wallet holds earned iCoins preview',
+  },
+  {
+    id: 'igo',
+    num: 'Loop 2',
+    name: 'iGo / Local Presence / Earn',
+    tag: 'Nearby action loop',
+    source: 'Promo map · nearby actions · iGo preview',
+    proof: 'Simulated presence / action verification',
+    reward: 'Local reward to wallet · preview',
+    cta: 'Open iGo',
+    outcome: 'Place-based engagement — check in, verify, earn preview',
+    accent: '#a78bfa',
+    steps: [
+      'Browse nearby promo actions · simulated',
+      'Start iGo check-in flow · no real GPS',
+      'Confirm presence with POP-style gates',
+      'Complete action verification · preview',
+      'Local reward routes to wallet preview',
+    ],
+    popLink: 'POP confirms session integrity',
+    acoinsLink: 'ACoins map action value units',
+    walletLink: 'Wallet receives local earn preview',
+  },
+  {
+    id: 'creator',
+    num: 'Loop 3',
+    name: 'Creator / Campaign / Monetize',
+    tag: 'Creator economy loop',
+    source: 'Studio + campaign builder · unified profile',
+    proof: 'Verified attention + action confirmation · simulated',
+    reward: 'Creator value, campaign ROI, tips · preview',
+    cta: 'Open creator side',
+    outcome: 'Creators fund outcomes and monetize verified attention',
+    accent: '#c8a84b',
+    steps: [
+      'Connect platforms · unified creator profile',
+      'Build campaign in campaign builder preview',
+      'Publish studio clip with reward overlay',
+      'Audience completes verified watch loop',
+      'Tips and campaign value route via wallet preview',
+    ],
+    popLink: 'POP verifies audience attention',
+    acoinsLink: 'ACoins track campaign value layer',
+    walletLink: 'Wallet routes tips and creator value',
+  },
+]
+
+export const THREE_LOOPS_SHARED_LAYER: {
+  id: string
+  label: string
+  sub: string
+}[] = [
+  { id: 'pop', label: 'POP System', sub: 'Proof-of-presence · attention confidence' },
+  { id: 'acoins', label: 'ACoins / Value', sub: 'Internal value layer · simulated' },
+  { id: 'wallet', label: 'Wallet', sub: 'Convert · pay · tip · withdraw preview' },
+]
+
+export function baselineSelectedLoop(): ThreeLoopId {
+  return 'watch'
 }
