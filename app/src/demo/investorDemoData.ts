@@ -21,6 +21,7 @@ export type InvestorView =
   | 'acoins'
   | 'popLive'
   | 'threeLoops'
+  | 'creatorDashboard'
 
 export interface FeedItem {
   id: string
@@ -1560,4 +1561,217 @@ export const THREE_LOOPS_SHARED_LAYER: {
 
 export function baselineSelectedLoop(): ThreeLoopId {
   return 'watch'
+}
+
+// ─── Creator Economy Dashboard ───────────────────────────────────────────────
+
+export type CreatorDashboardTab = 'earnings' | 'content' | 'campaigns' | 'wallet'
+
+export type CreatorPlatformFilter = 'all' | ProfilePlatformId
+
+export const CREATOR_DASHBOARD_TABS: { id: CreatorDashboardTab; label: string }[] = [
+  { id: 'earnings', label: 'Earnings' },
+  { id: 'content', label: 'Content' },
+  { id: 'campaigns', label: 'Campaigns' },
+  { id: 'wallet', label: 'Wallet' },
+]
+
+export interface CreatorDashboardKPIs {
+  totalEarnings: number
+  tipsReceived: number
+  verifiedViews: number
+  activeCampaigns: number
+  pendingReview: number
+  attentionValueScore: number
+}
+
+export interface CreatorRevenueRow {
+  id: string
+  label: string
+  amount: number
+  sharePct: number
+}
+
+export interface CreatorPlatformPerformance {
+  platformId: ProfilePlatformId
+  verifiedViews: number
+  earnedValue: number
+  connected: boolean
+}
+
+export interface CreatorContentRow {
+  id: string
+  title: string
+  platformId: ProfilePlatformId
+  verifiedViews: string
+  earnedValue: number
+  rewardReady: boolean
+  locked: boolean
+}
+
+export interface CreatorDashboardSnapshot {
+  kpis: CreatorDashboardKPIs
+  revenue: CreatorRevenueRow[]
+  platforms: CreatorPlatformPerformance[]
+  topContent: CreatorContentRow[]
+  profileValueScore: number
+  campaign: {
+    title: string
+    status: string
+    budgetRemaining: number
+    verifiedAttention: number
+    ctaPerformance: number
+  }
+  wallet: {
+    available: number
+    pending: number
+    tips: number
+    converted: number
+  }
+}
+
+const CREATOR_PLATFORM_VIEWS: Record<ProfilePlatformId, number> = {
+  youtube: 24100,
+  tiktok: 261000,
+  instagram: 23300,
+  twitch: 6080,
+}
+
+function parseViewsLabel(label: string): number {
+  const upper = label.toUpperCase()
+  const n = parseFloat(label.replace(/[^0-9.]/g, ''))
+  if (Number.isNaN(n)) return 0
+  if (upper.includes('K')) return Math.round(n * 1000)
+  if (upper.includes('M')) return Math.round(n * 1_000_000)
+  return Math.round(n)
+}
+
+function contentEarnedPreview(item: UnifiedProfileContent, connected: boolean): number {
+  if (!connected) return 0
+  const views = parseViewsLabel(item.viewsLabel)
+  const base = (views / 10_000) * 0.14
+  return +(base * (item.rewardReady ? 1.35 : 0.55)).toFixed(2)
+}
+
+export function computeCreatorDashboardSnapshot(
+  connections: PlatformConnection[],
+  campaign: CampaignPreviewState,
+  walletBalance: number,
+  usableBalance: number,
+  pendingBalance: number,
+  lifetimeEarned: number,
+  content: UnifiedProfileContent[] = UNIFIED_PROFILE_CONTENT,
+): CreatorDashboardSnapshot {
+  const profileStats = computeUnifiedProfileStats(connections, content)
+  const economics = computeCampaignEconomics(campaign.selectedReward, campaign.budgetCap)
+
+  const platforms: CreatorPlatformPerformance[] = (
+    ['youtube', 'tiktok', 'instagram', 'twitch'] as ProfilePlatformId[]
+  ).map((platformId) => {
+    const conn = connections.find((p) => p.id === platformId)
+    const connected = Boolean(conn?.connected)
+    const platformContent = content.filter((c) => c.platformId === platformId)
+    const verifiedViews = connected
+      ? platformContent.reduce((sum, c) => sum + parseViewsLabel(c.viewsLabel), 0) ||
+        CREATOR_PLATFORM_VIEWS[platformId]
+      : Math.round(CREATOR_PLATFORM_VIEWS[platformId] * 0.35)
+    const earnedValue = connected
+      ? +platformContent.reduce((sum, c) => sum + contentEarnedPreview(c, true), 0).toFixed(2)
+      : +(CREATOR_PLATFORM_VIEWS[platformId] / 50_000).toFixed(2)
+    return { platformId, verifiedViews, earnedValue, connected }
+  })
+
+  const topContent: CreatorContentRow[] = content
+    .map((item) => ({
+      id: item.id,
+      title: item.title,
+      platformId: item.platformId,
+      verifiedViews: item.viewsLabel,
+      earnedValue: contentEarnedPreview(item, !isProfileContentLocked(item.platformId, connections)),
+      rewardReady: item.rewardReady,
+      locked: isProfileContentLocked(item.platformId, connections),
+    }))
+    .sort((a, b) => b.earnedValue - a.earnedValue)
+
+  const tipsReceived = 1.85
+  const campaignEarnings = +(economics.creatorShare * economics.estimatedVerifiedViews * 0.08).toFixed(2)
+  const igoEarnings = 0.92
+  const directSupport = 0.64
+  const totalEarnings = +(
+    tipsReceived +
+    campaignEarnings +
+    igoEarnings +
+    directSupport +
+    profileStats.attentionValue
+  ).toFixed(2)
+
+  const revenueTotal = totalEarnings || 1
+  const revenue: CreatorRevenueRow[] = [
+    {
+      id: 'tips',
+      label: 'Tips',
+      amount: tipsReceived,
+      sharePct: Math.round((tipsReceived / revenueTotal) * 100),
+    },
+    {
+      id: 'campaign',
+      label: 'Campaign rewards',
+      amount: campaignEarnings,
+      sharePct: Math.round((campaignEarnings / revenueTotal) * 100),
+    },
+    {
+      id: 'igo',
+      label: 'iGo / partner content',
+      amount: igoEarnings,
+      sharePct: Math.round((igoEarnings / revenueTotal) * 100),
+    },
+    {
+      id: 'direct',
+      label: 'Direct support',
+      amount: directSupport,
+      sharePct: Math.round((directSupport / revenueTotal) * 100),
+    },
+  ]
+
+  const verifiedViews = platforms.reduce((sum, p) => sum + p.verifiedViews, 0)
+  const spendPreview =
+    campaign.campaignStatus === 'published'
+      ? +(campaign.budgetCap * 0.18).toFixed(2)
+      : +(campaign.budgetCap * 0.04).toFixed(2)
+
+  return {
+    kpis: {
+      totalEarnings,
+      tipsReceived,
+      verifiedViews,
+      activeCampaigns: campaign.campaignStatus === 'published' ? 1 : 0,
+      pendingReview: Math.max(0, 3 - profileStats.connectedCount),
+      attentionValueScore: +(profileStats.attentionValue * 24).toFixed(0),
+    },
+    revenue,
+    platforms,
+    topContent,
+    profileValueScore: +(profileStats.attentionValue * 10).toFixed(1),
+    campaign: {
+      title: `${campaignActionLabel(campaign.selectedAction, campaign.customActionLabel)} campaign`,
+      status: campaign.campaignStatus === 'published' ? 'Active · simulated' : 'Draft · simulated',
+      budgetRemaining: +(campaign.budgetCap - spendPreview).toFixed(2),
+      verifiedAttention: economics.estimatedVerifiedViews,
+      ctaPerformance: campaign.campaignStatus === 'published' ? 68 : 42,
+    },
+    wallet: {
+      available: usableBalance,
+      pending: pendingBalance,
+      tips: tipsReceived,
+      converted: +(lifetimeEarned - walletBalance * 0.35).toFixed(2),
+    },
+  }
+}
+
+export function baselineCreatorDashboardTab(): CreatorDashboardTab {
+  return 'earnings'
+}
+
+export function baselineCreatorPlatformFilter(): CreatorPlatformFilter {
+  return 'all'
 }

@@ -18,6 +18,7 @@ export function InvestorUnifiedProfileView() {
     openTip,
     openCampaignPreview,
     openStudioPreview,
+    openCreatorDashboard,
     setProfilePlatformFilter,
     selectProfileContent,
   } = useInvestorDemo()
@@ -94,6 +95,17 @@ export function InvestorUnifiedProfileView() {
             </button>
           </div>
         </header>
+
+        <button type="button" className="id-profile__dashboard-link" onClick={openCreatorDashboard}>
+          <span className="id-profile__dashboard-icon" aria-hidden>◈</span>
+          <span className="id-profile__dashboard-text">
+            <span className="id-profile__dashboard-title">Creator Dashboard</span>
+            <span className="id-profile__dashboard-sub">
+              Track verified attention, earnings, tips, and campaigns
+            </span>
+          </span>
+          <span className="id-profile__dashboard-arrow" aria-hidden>→</span>
+        </button>
 
         <div className="id-profile__filters">
           {PROFILE_PLATFORM_FILTERS.map((tab) => (

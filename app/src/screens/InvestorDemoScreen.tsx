@@ -31,6 +31,7 @@ import { InvestorUnifiedProfileView } from '../demo/screens/InvestorUnifiedProfi
 import { InvestorACoinsView } from '../demo/screens/InvestorACoinsView'
 import { InvestorPOPLiveView } from '../demo/screens/InvestorPOPLiveView'
 import { InvestorThreeLoopsView } from '../demo/screens/InvestorThreeLoopsView'
+import { InvestorCreatorDashboardView } from '../demo/screens/InvestorCreatorDashboardView'
 import type { InvestorView } from '../demo/investorDemoData'
 
 // ─── View router (reads from context) ─────────────────────────────────────
@@ -76,6 +77,8 @@ function ViewSwitch({ view }: { view: InvestorView }) {
       return <InvestorPOPLiveView />
     case 'threeLoops':
       return <InvestorThreeLoopsView />
+    case 'creatorDashboard':
+      return <InvestorCreatorDashboardView />
     case 'splash':
     default:
       return <InvestorSplashView />

@@ -22,6 +22,7 @@ export function InvestorCampaignPreviewView() {
     toggleCampaignGate,
     publishCampaignPreview,
     openStudioPreview,
+    openCreatorDashboard,
   } = useInvestorDemo()
 
   const { campaign } = state
@@ -280,6 +281,14 @@ export function InvestorCampaignPreviewView() {
           onClick={handlePublish}
         >
           {campaign.campaignStatus === 'published' ? 'Published preview' : 'Publish preview'}
+        </button>
+
+        <button
+          type="button"
+          className="id-campaign__dashboard-link"
+          onClick={openCreatorDashboard}
+        >
+          View creator dashboard →
         </button>
 
         <p className="id-campaign__disclaimer">

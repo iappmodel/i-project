@@ -23,6 +23,8 @@ import {
   baselineWebGazerStatus,
   POPLIVE_CALIBRATION_TOTAL,
   baselineSelectedLoop,
+  baselineCreatorDashboardTab,
+  baselineCreatorPlatformFilter,
   cloneBaselinePlatforms,
   cloneBaselineCampaign,
   cloneBaselineStudio,
@@ -58,6 +60,8 @@ import {
   type InvestorView,
   type VerificationGate,
   type ThreeLoopId,
+  type CreatorDashboardTab,
+  type CreatorPlatformFilter,
 } from './investorDemoData'
 
 // ─── State shape ───────────────────────────────────────────────────────────
@@ -130,6 +134,9 @@ export interface InvestorDemoState {
   popCalibrationStep: number
   popCalibrationVisited: number[]
   selectedLoopId: ThreeLoopId
+  creatorDashboardTab: CreatorDashboardTab
+  selectedCreatorPlatform: CreatorPlatformFilter
+  selectedCreatorContentId: string | null
   likedContentIds: string[]
   savedContentIds: string[]
   toast: string | null
@@ -216,6 +223,10 @@ type Action =
   | { type: 'WEBGAZER_FALLBACK_SIMULATED'; error?: string | null }
   | { type: 'OPEN_THREE_LOOPS' }
   | { type: 'SET_SELECTED_LOOP'; loopId: ThreeLoopId }
+  | { type: 'OPEN_CREATOR_DASHBOARD' }
+  | { type: 'SET_CREATOR_DASHBOARD_TAB'; tab: CreatorDashboardTab }
+  | { type: 'SET_CREATOR_PLATFORM_FILTER'; platform: CreatorPlatformFilter }
+  | { type: 'SELECT_CREATOR_CONTENT'; contentId: string | null }
   | { type: 'RESET' }
 
 function cloneSeedTransactions(): InvestorTransaction[] {
@@ -310,6 +321,9 @@ function createBaselineState(): InvestorDemoState {
     popCalibrationStep: 0,
     popCalibrationVisited: [],
     selectedLoopId: baselineSelectedLoop(),
+    creatorDashboardTab: baselineCreatorDashboardTab(),
+    selectedCreatorPlatform: baselineCreatorPlatformFilter(),
+    selectedCreatorContentId: null,
     likedContentIds: [],
     savedContentIds: [],
     toast: null,
@@ -920,6 +934,22 @@ function reducer(state: InvestorDemoState, action: Action): InvestorDemoState {
     case 'SET_SELECTED_LOOP':
       return { ...state, selectedLoopId: action.loopId }
 
+    case 'OPEN_CREATOR_DASHBOARD':
+      return { ...state, currentView: 'creatorDashboard' }
+
+    case 'SET_CREATOR_DASHBOARD_TAB':
+      return { ...state, creatorDashboardTab: action.tab }
+
+    case 'SET_CREATOR_PLATFORM_FILTER':
+      return {
+        ...state,
+        selectedCreatorPlatform: action.platform,
+        selectedCreatorContentId: null,
+      }
+
+    case 'SELECT_CREATOR_CONTENT':
+      return { ...state, selectedCreatorContentId: action.contentId }
+
     case 'RESET':
       return createBaselineState()
 
@@ -1253,6 +1283,22 @@ export function useInvestorDemoState() {
     dispatch({ type: 'SET_SELECTED_LOOP', loopId })
   }, [])
 
+  const openCreatorDashboard = useCallback(() => {
+    dispatch({ type: 'OPEN_CREATOR_DASHBOARD' })
+  }, [])
+
+  const setCreatorDashboardTab = useCallback((tab: CreatorDashboardTab) => {
+    dispatch({ type: 'SET_CREATOR_DASHBOARD_TAB', tab })
+  }, [])
+
+  const setCreatorPlatformFilter = useCallback((platform: CreatorPlatformFilter) => {
+    dispatch({ type: 'SET_CREATOR_PLATFORM_FILTER', platform })
+  }, [])
+
+  const selectCreatorContent = useCallback((contentId: string | null) => {
+    dispatch({ type: 'SELECT_CREATOR_CONTENT', contentId })
+  }, [])
+
   const presenterNext = useCallback(() => {
     const nextIndex = Math.min(
       state.presenterStepIndex + 1,
@@ -1336,6 +1382,10 @@ export function useInvestorDemoState() {
     webGazerFallbackSimulated,
     openThreeLoops,
     setSelectedLoop,
+    openCreatorDashboard,
+    setCreatorDashboardTab,
+    setCreatorPlatformFilter,
+    selectCreatorContent,
   }
 }
 

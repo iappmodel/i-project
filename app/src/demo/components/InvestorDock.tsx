@@ -26,6 +26,7 @@ const VIEW_TO_TAB: Record<string, DockTab> = {
   promo: 'promo',
   connectPlatforms: 'profile',
   unifiedProfile: 'profile',
+  creatorDashboard: 'profile',
   campaignPreview: 'create',
   studioPreview: 'create',
   splash: 'feed',
