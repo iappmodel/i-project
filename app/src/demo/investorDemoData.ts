@@ -1135,6 +1135,25 @@ export function baselineAlphabetUnit(): AlphabetUnitId {
 
 export type POPTrackingMode = 'simulated' | 'camera' | 'webgazer'
 
+export type POPWebGazerStatus =
+  | 'idle'
+  | 'loading'
+  | 'calibrating'
+  | 'running'
+  | 'denied'
+  | 'failed'
+
+export const POPLIVE_CALIBRATION_TOTAL = 5
+
+/** Calibration dot positions (% of theater overlay) */
+export const POPLIVE_CALIBRATION_POINTS: { id: number; x: number; y: number }[] = [
+  { id: 0, x: 22, y: 24 },
+  { id: 1, x: 78, y: 24 },
+  { id: 2, x: 50, y: 50 },
+  { id: 3, x: 22, y: 76 },
+  { id: 4, x: 78, y: 76 },
+]
+
 export type POPLiveTab = 'live' | 'signals' | 'timeline' | 'privacy'
 
 export type POPLiveSignalId =
@@ -1199,9 +1218,10 @@ export const POPLIVE_TIMELINE: {
 ]
 
 export const POPLIVE_PRIVACY_RULES: string[] = [
-  'This is a simulated POP demo — no camera, biometric processing, or real sensor access.',
-  'Gaze dots and signal cards are deterministic animations for investor presentation.',
-  'Tracking adapter ready: simulated → camera → WebGazer (not enabled in this build).',
+  'Simulated POP demo available without camera access.',
+  'Optional WebGazer preview runs locally in your browser — no video is stored by this demo.',
+  'Gaze estimates are experimental previews, not exact tracking or biometric identification.',
+  'Tracking adapter: simulated (default) → WebGazer preview (optional).',
   'Reward eligibility shown here is a preview only — not a real fraud or payout decision.',
   'No face recognition, surveillance, or guaranteed bot prevention is performed.',
 ]
@@ -1243,6 +1263,49 @@ export function baselinePOPLiveDriftState(): POPLiveDriftState {
 
 export function baselinePOPLiveFrame(): POPLiveFrame {
   return { gazeX: 50, gazeY: 48, inZone: true }
+}
+
+export function baselinePopTrackingMode(): POPTrackingMode {
+  return 'simulated'
+}
+
+export function baselineWebGazerStatus(): POPWebGazerStatus {
+  return 'idle'
+}
+
+/** Map browser screen gaze coordinates to theater frame percentages */
+export function mapScreenGazeToTheaterFrame(
+  screenX: number,
+  screenY: number,
+  theaterRect: DOMRect,
+): POPLiveFrame {
+  if (theaterRect.width <= 0 || theaterRect.height <= 0) {
+    return baselinePOPLiveFrame()
+  }
+  const gazeX = ((screenX - theaterRect.left) / theaterRect.width) * 100
+  const gazeY = ((screenY - theaterRect.top) / theaterRect.height) * 100
+  const clampedX = Math.max(0, Math.min(100, gazeX))
+  const clampedY = Math.max(0, Math.min(100, gazeY))
+  return {
+    gazeX: clampedX,
+    gazeY: clampedY,
+    inZone: isGazeInSafeZone(clampedX, clampedY),
+  }
+}
+
+export function popLiveCameraPermissionLabel(status: POPWebGazerStatus): string {
+  if (status === 'denied') return 'denied'
+  if (status === 'failed') return 'unavailable'
+  if (status === 'loading') return 'waiting'
+  if (status === 'calibrating' || status === 'running') return 'active'
+  return 'waiting'
+}
+
+export function popLiveModeLabel(mode: POPTrackingMode, wgStatus: POPWebGazerStatus): string {
+  if (mode === 'webgazer' && (wgStatus === 'calibrating' || wgStatus === 'running')) {
+    return 'WebGazer preview'
+  }
+  return 'Simulated'
 }
 
 export function isGazeInSafeZone(x: number, y: number): boolean {

@@ -19,6 +19,9 @@ import {
   baselinePOPLiveEligibility,
   baselinePOPLiveDriftState,
   baselinePOPLiveFrame,
+  baselinePopTrackingMode,
+  baselineWebGazerStatus,
+  POPLIVE_CALIBRATION_TOTAL,
   cloneBaselinePlatforms,
   cloneBaselineCampaign,
   cloneBaselineStudio,
@@ -46,6 +49,8 @@ import {
   type POPLiveFrame,
   type POPLiveEligibility,
   type POPLiveDriftState,
+  type POPTrackingMode,
+  type POPWebGazerStatus,
   type VerificationStrictness,
   type WithdrawMethod,
   type InvestorTransaction,
@@ -117,6 +122,11 @@ export interface InvestorDemoState {
   popLiveDriftState: POPLiveDriftState
   popLiveFrame: POPLiveFrame
   popLiveSimTick: number
+  popTrackingMode: POPTrackingMode
+  popWebGazerStatus: POPWebGazerStatus
+  popWebGazerError: string | null
+  popCalibrationStep: number
+  popCalibrationVisited: number[]
   likedContentIds: string[]
   savedContentIds: string[]
   toast: string | null
@@ -191,8 +201,16 @@ type Action =
       score: number
       eligibility: POPLiveEligibility
       driftState: POPLiveDriftState
-      simTick: number
+      simTick?: number
     }
+  | { type: 'SET_POP_TRACKING_MODE'; mode: POPTrackingMode }
+  | {
+      type: 'SET_WEBGAZER_STATUS'
+      status: POPWebGazerStatus
+      error?: string | null
+    }
+  | { type: 'REGISTER_CALIBRATION_POINT'; pointId: number }
+  | { type: 'WEBGAZER_FALLBACK_SIMULATED'; error?: string | null }
   | { type: 'RESET' }
 
 function cloneSeedTransactions(): InvestorTransaction[] {
@@ -281,6 +299,11 @@ function createBaselineState(): InvestorDemoState {
     popLiveDriftState: baselinePOPLiveDriftState(),
     popLiveFrame: baselinePOPLiveFrame(),
     popLiveSimTick: 0,
+    popTrackingMode: baselinePopTrackingMode(),
+    popWebGazerStatus: baselineWebGazerStatus(),
+    popWebGazerError: null,
+    popCalibrationStep: 0,
+    popCalibrationVisited: [],
     likedContentIds: [],
     savedContentIds: [],
     toast: null,
@@ -810,6 +833,11 @@ function reducer(state: InvestorDemoState, action: Action): InvestorDemoState {
         popLiveDriftState: baselinePOPLiveDriftState(),
         popLiveFrame: baselinePOPLiveFrame(),
         popLiveSimTick: 0,
+        popTrackingMode: baselinePopTrackingMode(),
+        popWebGazerStatus: baselineWebGazerStatus(),
+        popWebGazerError: null,
+        popCalibrationStep: 0,
+        popCalibrationVisited: [],
       }
 
     case 'SET_POP_LIVE_TAB':
@@ -826,14 +854,58 @@ function reducer(state: InvestorDemoState, action: Action): InvestorDemoState {
       }
     }
 
-    case 'UPDATE_POP_LIVE_FRAME':
+    case 'UPDATE_POP_LIVE_FRAME': {
+      const signals =
+        state.popTrackingMode === 'webgazer'
+          ? { ...state.popLiveSignals, gazeOnContent: action.frame.inZone }
+          : state.popLiveSignals
       return {
         ...state,
         popLiveFrame: action.frame,
         popLiveScore: action.score,
         popLiveEligibility: action.eligibility,
         popLiveDriftState: action.driftState,
-        popLiveSimTick: action.simTick,
+        popLiveSignals: signals,
+        popLiveSimTick: action.simTick ?? state.popLiveSimTick,
+      }
+    }
+
+    case 'SET_POP_TRACKING_MODE':
+      return { ...state, popTrackingMode: action.mode }
+
+    case 'SET_WEBGAZER_STATUS':
+      return {
+        ...state,
+        popWebGazerStatus: action.status,
+        popWebGazerError: action.error ?? null,
+      }
+
+    case 'REGISTER_CALIBRATION_POINT': {
+      if (state.popCalibrationVisited.includes(action.pointId)) {
+        return state
+      }
+      const visited = [...state.popCalibrationVisited, action.pointId]
+      const step = Math.min(visited.length, POPLIVE_CALIBRATION_TOTAL)
+      const done = step >= POPLIVE_CALIBRATION_TOTAL
+      return {
+        ...state,
+        popCalibrationVisited: visited,
+        popCalibrationStep: step,
+        popWebGazerStatus: done ? 'running' : 'calibrating',
+        popTrackingMode: done ? 'webgazer' : state.popTrackingMode,
+        popLiveRunning: done ? false : state.popLiveRunning,
+      }
+    }
+
+    case 'WEBGAZER_FALLBACK_SIMULATED':
+      return {
+        ...state,
+        popTrackingMode: baselinePopTrackingMode(),
+        popWebGazerStatus:
+          action.error && /denied/i.test(action.error) ? 'denied' : 'failed',
+        popWebGazerError: action.error ?? null,
+        popCalibrationStep: 0,
+        popCalibrationVisited: [],
       }
 
     case 'RESET':
@@ -1135,12 +1207,31 @@ export function useInvestorDemoState() {
       score: number
       eligibility: POPLiveEligibility
       driftState: POPLiveDriftState
-      simTick: number
+      simTick?: number
     }) => {
       dispatch({ type: 'UPDATE_POP_LIVE_FRAME', ...payload })
     },
     [],
   )
+
+  const setPopTrackingMode = useCallback((mode: POPTrackingMode) => {
+    dispatch({ type: 'SET_POP_TRACKING_MODE', mode })
+  }, [])
+
+  const setWebGazerStatus = useCallback(
+    (status: POPWebGazerStatus, error?: string | null) => {
+      dispatch({ type: 'SET_WEBGAZER_STATUS', status, error })
+    },
+    [],
+  )
+
+  const registerCalibrationPoint = useCallback((pointId: number) => {
+    dispatch({ type: 'REGISTER_CALIBRATION_POINT', pointId })
+  }, [])
+
+  const webGazerFallbackSimulated = useCallback((error?: string | null) => {
+    dispatch({ type: 'WEBGAZER_FALLBACK_SIMULATED', error })
+  }, [])
 
   const presenterNext = useCallback(() => {
     const nextIndex = Math.min(
@@ -1219,6 +1310,10 @@ export function useInvestorDemoState() {
     setPOPLiveTab,
     togglePOPLiveSignal,
     updatePOPLiveFrame,
+    setPopTrackingMode,
+    setWebGazerStatus,
+    registerCalibrationPoint,
+    webGazerFallbackSimulated,
   }
 }
 
