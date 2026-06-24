@@ -24,6 +24,13 @@ export type InvestorView =
   | 'creatorDashboard'
   | 'brandDashboard'
   | 'moneyMap'
+  | 'receipt'
+  | 'clickEarn'
+  | 'productMap'
+  | 'attentionAnalytics'
+  | 'remoteControl'
+  | 'eloOverlay'
+  | 'onboarding'
 
 export interface FeedItem {
   id: string
@@ -56,7 +63,7 @@ export interface InvestorTransaction {
   timeLabel: string
   amountDisplay: string
   kind: 'positive' | 'negative' | 'pending' | 'neutral'
-  txType?: 'reward' | 'convert' | 'withdraw' | 'tip' | 'pay' | 'promo'
+  txType?: 'reward' | 'convert' | 'withdraw' | 'tip' | 'pay' | 'promo' | 'clickEarn'
 }
 
 export interface PresenterStep {
@@ -2434,4 +2441,1273 @@ function fmtMoney(n: number): string {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })
+}
+
+// ─── Wallet tabs / state preview ─────────────────────────────────────────────
+
+export type WalletTab = 'overview' | 'available' | 'pending' | 'earned' | 'sent' | 'review'
+
+export const WALLET_TABS: { id: WalletTab; label: string }[] = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'available', label: 'Available' },
+  { id: 'pending', label: 'Pending' },
+  { id: 'earned', label: 'Earned' },
+  { id: 'sent', label: 'Sent' },
+  { id: 'review', label: 'Review' },
+]
+
+export type WalletTxBucket = 'earned' | 'sent' | 'available' | 'pending' | 'review'
+
+export function classifyWalletTransaction(tx: InvestorTransaction): WalletTxBucket {
+  if (tx.kind === 'pending') return 'pending'
+  if (tx.txType === 'tip' || tx.txType === 'pay' || tx.txType === 'withdraw') return 'sent'
+  if (tx.txType === 'convert') return 'sent'
+  if (tx.kind === 'positive') return 'earned'
+  if (tx.kind === 'neutral') return 'available'
+  return 'review'
+}
+
+export function parseTransactionAmount(tx: InvestorTransaction): number {
+  const match = tx.amountDisplay.match(/[\d.]+/)
+  return match ? parseFloat(match[0]) : 0
+}
+
+export interface WalletPendingItem {
+  id: string
+  source: string
+  amount: string
+  status: string
+  reason: string
+  reviewStep: string
+  cta: 'moneyMap' | 'popLive'
+  ctaLabel: string
+}
+
+export interface WalletEarnedBreakdown {
+  watch: number
+  igo: number
+  campaign: number
+  creator: number
+}
+
+export interface WalletReviewStep {
+  id: string
+  label: string
+  sub: string
+  status: 'done' | 'active' | 'pending'
+}
+
+export interface WalletTabSnapshot {
+  pendingItems: WalletPendingItem[]
+  earnedTotal: number
+  earnedBreakdown: WalletEarnedBreakdown
+  earnedTransactions: InvestorTransaction[]
+  sentTransactions: InvestorTransaction[]
+  availableTransactions: InvestorTransaction[]
+  reviewPipeline: WalletReviewStep[]
+}
+
+export function baselineWalletTab(): WalletTab {
+  return 'overview'
+}
+
+export function sentTransactionMeta(tx: InvestorTransaction): {
+  destination: string
+  status: string
+} {
+  switch (tx.txType) {
+    case 'tip':
+      return { destination: DEFAULT_TIP_CREATOR.handle, status: 'Sent · receipt preview' }
+    case 'pay':
+      return { destination: DEFAULT_PAY_MERCHANT.name, status: 'Completed · preview' }
+    case 'withdraw':
+      return { destination: 'Withdraw route · simulated', status: 'Review · preview' }
+    case 'convert':
+      return { destination: 'Usable balance', status: 'Routed · preview' }
+    default:
+      return { destination: 'Internal wallet', status: 'Preview' }
+  }
+}
+
+export interface WalletTabInput {
+  walletBalance: number
+  usableBalance: number
+  pendingBalance: number
+  lifetimeEarned: number
+  sessionEarned: number
+  transactions: InvestorTransaction[]
+  campaign: CampaignPreviewState
+  rewardClaimed: boolean
+  tipConfirmed: boolean
+  lastTipAmount: number
+  payConfirmed: boolean
+  withdrawConfirmed: boolean
+  lastWithdrawAmount: number
+  verificationGates: VerificationGate[]
+}
+
+export function computeWalletTabSnapshot(input: WalletTabInput): WalletTabSnapshot {
+  const published = input.campaign.campaignStatus === 'published'
+  const gatesDone = input.verificationGates.filter((g) => g.completed).length
+
+  const pendingItems: WalletPendingItem[] = [
+    {
+      id: 'pending-watch',
+      source: 'Watch reward',
+      amount: `${fmtMoney(Math.max(0.15, input.pendingBalance * 0.35))} iC`,
+      status: 'Pending review',
+      reason: 'POP verification hold · simulated',
+      reviewStep: 'Step 2 · POP signals checked',
+      cta: 'popLive',
+      ctaLabel: 'View POP Live',
+    },
+    {
+      id: 'pending-igo',
+      source: 'iGo reward',
+      amount: '0.15 iC',
+      status: 'Pending POP review',
+      reason: 'Check-in reward awaiting presence preview',
+      reviewStep: 'Step 3 · Fraud screen preview',
+      cta: 'popLive',
+      ctaLabel: 'View POP Live',
+    },
+    {
+      id: 'pending-campaign',
+      source: 'Campaign reward',
+      amount: `${fmtMoney(input.campaign.selectedReward)} iC`,
+      status: published ? 'Verified · preview' : 'Awaiting verification',
+      reason: published
+        ? 'Campaign preview published · simulated'
+        : 'Campaign reward awaiting verification gates',
+      reviewStep: published ? 'Step 5 · Wallet updated' : 'Step 1 · Attention captured',
+      cta: 'moneyMap',
+      ctaLabel: 'View Money Map',
+    },
+    {
+      id: 'pending-tip',
+      source: 'Creator tip',
+      amount: input.tipConfirmed ? `${fmtMoney(input.lastTipAmount)} iC` : '0.10 iC',
+      status: input.tipConfirmed ? 'Recipient review · preview' : 'Ready · preview',
+      reason: 'Tip routing hold before receipt preview closes',
+      reviewStep: 'Step 4 · Action confirmation',
+      cta: 'moneyMap',
+      ctaLabel: 'View Money Map',
+    },
+    {
+      id: 'pending-withdraw',
+      source: 'Withdraw preview',
+      amount: input.withdrawConfirmed
+        ? `${fmtMoney(input.lastWithdrawAmount)} iC`
+        : '0.50 iC',
+      status: input.withdrawConfirmed ? 'Pending confirmation' : 'Draft · preview',
+      reason: 'Withdraw preview pending internal review state',
+      reviewStep: 'Step 6 · Receipt generated',
+      cta: 'moneyMap',
+      ctaLabel: 'View Money Map',
+    },
+  ]
+
+  const earnedTransactions = input.transactions.filter(
+    (tx) => classifyWalletTransaction(tx) === 'earned',
+  )
+  const sentTransactions = input.transactions.filter(
+    (tx) => classifyWalletTransaction(tx) === 'sent',
+  )
+  const availableTransactions = input.transactions.filter((tx) => {
+    const bucket = classifyWalletTransaction(tx)
+    return bucket === 'earned' || bucket === 'available' || tx.txType === 'convert'
+  })
+
+  const earnedBreakdown: WalletEarnedBreakdown = {
+    watch: 0,
+    igo: 0,
+    campaign: published ? input.campaign.selectedReward : 0,
+    creator: 0,
+  }
+
+  for (const tx of earnedTransactions) {
+    const amt = parseTransactionAmount(tx)
+    if (tx.txType === 'promo') {
+      earnedBreakdown.igo += amt
+    } else if (tx.source.toLowerCase().includes('campaign')) {
+      earnedBreakdown.campaign += amt
+    } else if (tx.source.toLowerCase().includes('creator')) {
+      earnedBreakdown.creator += amt
+    } else {
+      earnedBreakdown.watch += amt
+    }
+  }
+
+  if (input.sessionEarned > 0 && earnedBreakdown.watch === 0) {
+    earnedBreakdown.watch += input.sessionEarned
+  }
+
+  earnedBreakdown.creator = +(
+    earnedBreakdown.creator + input.lifetimeEarned * 0.04
+  ).toFixed(2)
+
+  const earnedTotal = +(
+    earnedBreakdown.watch +
+    earnedBreakdown.igo +
+    earnedBreakdown.campaign +
+    earnedBreakdown.creator
+  ).toFixed(2)
+
+  const popActive = input.rewardClaimed || gatesDone > 0
+  const reviewPipeline: WalletReviewStep[] = [
+    {
+      id: 'attention',
+      label: 'Attention captured',
+      sub: 'Watch / promo / campaign input · simulated',
+      status: popActive ? 'done' : 'active',
+    },
+    {
+      id: 'pop',
+      label: 'POP signals checked',
+      sub: `${gatesDone}/${input.verificationGates.length} gates · preview`,
+      status: gatesDone >= 3 ? 'done' : popActive ? 'active' : 'pending',
+    },
+    {
+      id: 'fraud',
+      label: 'Fraud screen preview',
+      sub: 'Internal review state · not a real fraud decision',
+      status: gatesDone >= 4 ? 'done' : gatesDone >= 2 ? 'active' : 'pending',
+    },
+    {
+      id: 'verified',
+      label: 'Reward marked verified',
+      sub: input.rewardClaimed ? 'Verified value credited · preview' : 'Awaiting verification',
+      status: input.rewardClaimed ? 'done' : popActive ? 'active' : 'pending',
+    },
+    {
+      id: 'wallet',
+      label: 'Wallet updated',
+      sub: `${fmtMoney(input.walletBalance)} iC verified · ${fmtMoney(input.usableBalance)} usable`,
+      status: input.walletBalance > 0 ? 'done' : 'pending',
+    },
+    {
+      id: 'receipt',
+      label: 'Receipt generated',
+      sub: 'Receipt preview ready · simulated ID',
+      status:
+        input.tipConfirmed || input.payConfirmed || input.withdrawConfirmed
+          ? 'active'
+          : input.rewardClaimed
+            ? 'done'
+            : 'pending',
+    },
+  ]
+
+  return {
+    pendingItems,
+    earnedTotal: earnedTotal > 0 ? earnedTotal : input.lifetimeEarned,
+    earnedBreakdown,
+    earnedTransactions,
+    sentTransactions,
+    availableTransactions,
+    reviewPipeline,
+  }
+}
+
+// ─── Receipt / confirmation preview ──────────────────────────────────────────
+
+export type ReceiptType =
+  | 'convert'
+  | 'tip'
+  | 'pay'
+  | 'withdraw'
+  | 'promo'
+  | 'watch'
+  | 'unknown'
+
+export type ReceiptStatusTone = 'completed' | 'pending' | 'preview'
+
+export interface ReceiptTimelineStep {
+  id: string
+  label: string
+  sub: string
+  status: 'done' | 'active' | 'pending'
+}
+
+export interface ReceiptDetail {
+  id: string
+  type: ReceiptType
+  typeLabel: string
+  amount: string
+  direction: 'credit' | 'debit' | 'neutral'
+  source: string
+  destination: string
+  statusBadge: string
+  statusTone: ReceiptStatusTone
+  timestamp: string
+  simulatedTxId: string
+  popReview?: string
+  feePreview?: string
+  timeline: ReceiptTimelineStep[]
+  showPopRoute: boolean
+}
+
+export function inferReceiptType(tx: InvestorTransaction): ReceiptType {
+  if (tx.txType === 'convert') return 'convert'
+  if (tx.txType === 'tip') return 'tip'
+  if (tx.txType === 'pay') return 'pay'
+  if (tx.txType === 'withdraw') return 'withdraw'
+  if (tx.txType === 'promo') return 'promo'
+  if (tx.txType === 'reward' || tx.txType === 'clickEarn') return 'watch'
+  if (tx.kind === 'positive') return 'watch'
+  if (tx.source.toLowerCase().includes('withdraw')) return 'withdraw'
+  if (tx.source.toLowerCase().includes('convert')) return 'convert'
+  if (tx.source.toLowerCase().includes('tip')) return 'tip'
+  if (tx.source.toLowerCase().includes('pay') || tx.source.toLowerCase().includes('merchant')) {
+    return 'pay'
+  }
+  if (tx.source.toLowerCase().includes('igo') || tx.source.toLowerCase().includes('promo')) {
+    return 'promo'
+  }
+  return 'unknown'
+}
+
+function receiptSimulatedId(tx: InvestorTransaction): string {
+  const prefix = inferReceiptType(tx).toUpperCase().slice(0, 3)
+  const seed = tx.id.replace(/\D/g, '').slice(-6) || '000001'
+  return `RCP-${prefix}-${seed.padStart(6, '0')}-SIM`
+}
+
+export function buildReceiptDetail(tx: InvestorTransaction): ReceiptDetail {
+  const type = inferReceiptType(tx)
+  const typeLabels: Record<ReceiptType, string> = {
+    convert: 'Conversion receipt',
+    tip: 'Tip receipt',
+    pay: 'Pay receipt',
+    withdraw: 'Withdraw receipt',
+    promo: 'Promo reward receipt',
+    watch: 'Watch reward receipt',
+    unknown: 'Wallet receipt',
+  }
+
+  let direction: ReceiptDetail['direction'] = 'neutral'
+  if (tx.kind === 'positive') direction = 'credit'
+  if (tx.kind === 'negative') direction = 'debit'
+  if (tx.txType === 'convert') direction = 'neutral'
+
+  let destination = 'Internal wallet'
+  let statusBadge = 'Completed · Simulated'
+  let statusTone: ReceiptStatusTone = 'completed'
+  let popReview: string | undefined
+  let feePreview: string | undefined
+  const showPopRoute = type === 'watch' || type === 'promo'
+
+  switch (type) {
+    case 'convert':
+      destination = 'Usable balance'
+      statusBadge = 'Completed · Simulated'
+      feePreview = `${fmtMoney(CONVERT_FEE_RATE)} iC convert preview fee`
+      break
+    case 'tip':
+      destination = DEFAULT_TIP_CREATOR.handle
+      statusBadge = 'Sent · Simulated'
+      feePreview = `${fmtMoney(TIP_FEE_RATE)} iC tip preview fee`
+      break
+    case 'pay':
+      destination = DEFAULT_PAY_MERCHANT.name
+      statusBadge = 'Completed · Simulated'
+      feePreview = `${fmtMoney(PAY_FEE_PREVIEW)} iC merchant preview fee`
+      break
+    case 'withdraw':
+      destination = 'Withdraw route · simulated'
+      statusBadge = 'Pending review · Simulated'
+      statusTone = 'pending'
+      feePreview = 'Fee tier preview · simulated'
+      break
+    case 'promo':
+      destination = 'Verified wallet'
+      popReview = 'iGo POP check-in · preview passed'
+      break
+    case 'watch':
+      destination = 'Verified wallet'
+      popReview = 'POP verification · preview passed'
+      break
+    default:
+      statusBadge = 'Preview only'
+      statusTone = 'preview'
+  }
+
+  if (tx.kind === 'pending') {
+    statusBadge = 'Pending review · Simulated'
+    statusTone = 'pending'
+  }
+
+  const timeline: ReceiptTimelineStep[] = [
+    {
+      id: 'created',
+      label: 'Created',
+      sub: `${typeLabels[type]} initiated · simulated`,
+      status: 'done',
+    },
+    {
+      id: 'review',
+      label: 'POP / review checked',
+      sub: popReview ?? 'Internal review preview · no real fraud decision',
+      status: showPopRoute ? 'done' : type === 'withdraw' ? 'active' : 'done',
+    },
+    {
+      id: 'wallet',
+      label: 'Wallet updated',
+      sub: 'Internal value route · wallet update preview',
+      status: statusTone === 'pending' ? 'active' : 'done',
+    },
+    {
+      id: 'receipt',
+      label: 'Receipt generated',
+      sub: 'Simulated receipt ID issued · preview only',
+      status: statusTone === 'pending' ? 'pending' : 'done',
+    },
+  ]
+
+  return {
+    id: tx.id,
+    type,
+    typeLabel: typeLabels[type],
+    amount: tx.amountDisplay,
+    direction,
+    source: tx.source,
+    destination,
+    statusBadge,
+    statusTone,
+    timestamp: tx.timeLabel,
+    simulatedTxId: receiptSimulatedId(tx),
+    popReview,
+    feePreview,
+    timeline,
+    showPopRoute,
+  }
+}
+
+export function findReceiptTransaction(
+  transactions: InvestorTransaction[],
+  receiptId: string | null,
+): InvestorTransaction | undefined {
+  if (!receiptId) return undefined
+  return transactions.find((tx) => tx.id === receiptId)
+}
+
+// ─── Click-and-Earn / hold-to-value ──────────────────────────────────────────
+
+export type ClickEarnMode = 'idle' | 'liked' | 'holding' | 'preview' | 'confirmed'
+
+export const CLICK_EARN_MIN = 0.05
+export const CLICK_EARN_MAX = 1.0
+export const CLICK_EARN_BASE = 0.1
+
+export function clampClickEarnAmount(amount: number): number {
+  return +Math.min(CLICK_EARN_MAX, Math.max(CLICK_EARN_MIN, amount)).toFixed(2)
+}
+
+export function baselineClickEarnMode(): ClickEarnMode {
+  return 'idle'
+}
+
+export function baselineClickEarnAmount(): number {
+  return CLICK_EARN_BASE
+}
+
+// ─── Investor Product Map / Ecosystem ──────────────────────────────────────
+
+export type ProductMapNodeId =
+  | 'users'
+  | 'creators'
+  | 'brands'
+  | 'merchants'
+  | 'pop'
+  | 'wallet'
+  | 'acoins'
+  | 'igo'
+  | 'studio'
+  | 'campaign'
+  | 'profile'
+  | 'creatorDash'
+  | 'brandDash'
+  | 'elo'
+
+export type ProductMapGroupId =
+  | 'demand'
+  | 'supply'
+  | 'buyers'
+  | 'local'
+  | 'verification'
+  | 'value'
+  | 'creation'
+  | 'intelligence'
+
+export interface ProductMapGroup {
+  id: ProductMapGroupId
+  label: string
+  sub: string
+}
+
+export interface ProductMapRoute {
+  label: string
+  view: InvestorView
+}
+
+export interface ProductMapNode {
+  id: ProductMapNodeId
+  group: ProductMapGroupId
+  label: string
+  sub: string
+  explanation: string
+  routes: ProductMapRoute[]
+}
+
+export const PRODUCT_MAP_GROUPS: ProductMapGroup[] = [
+  { id: 'demand', label: 'Demand side', sub: 'Users' },
+  { id: 'supply', label: 'Supply side', sub: 'Creators' },
+  { id: 'buyers', label: 'Buyers', sub: 'Brands' },
+  { id: 'local', label: 'Local economy', sub: 'Merchants' },
+  { id: 'verification', label: 'Verification', sub: 'POP' },
+  { id: 'value', label: 'Value layer', sub: 'Wallet · ACoins' },
+  { id: 'creation', label: 'Creation layer', sub: 'Studio · Campaigns' },
+  { id: 'intelligence', label: 'Intelligence layer', sub: 'ELO / Ni' },
+]
+
+export const PRODUCT_MAP_NODES: ProductMapNode[] = [
+  {
+    id: 'users',
+    group: 'demand',
+    label: 'Users',
+    sub: 'Watch · earn · spend',
+    explanation:
+      'Users supply verified attention through immersive feed loops. Rewards preview into the internal wallet — no external account access.',
+    routes: [{ label: 'Feed', view: 'feed' }, { label: 'Three Loops', view: 'threeLoops' }],
+  },
+  {
+    id: 'creators',
+    group: 'supply',
+    label: 'Creators',
+    sub: 'Content · tips · campaigns',
+    explanation:
+      'Creators publish attention-backed content and receive simulated tip and campaign share previews through unified profile and dashboard surfaces.',
+    routes: [
+      { label: 'Unified Profile', view: 'unifiedProfile' },
+      { label: 'Creator Dashboard', view: 'creatorDashboard' },
+    ],
+  },
+  {
+    id: 'brands',
+    group: 'buyers',
+    label: 'Brands',
+    sub: 'Sponsored attention',
+    explanation:
+      'Brands fund campaign previews with reward budgets and verification gates. Performance routes through brand dashboard analytics — simulated only.',
+    routes: [
+      { label: 'Campaign Builder', view: 'campaignPreview' },
+      { label: 'Brand Dashboard', view: 'brandDashboard' },
+    ],
+  },
+  {
+    id: 'merchants',
+    group: 'local',
+    label: 'Merchants',
+    sub: 'Pay · local promos',
+    explanation:
+      'Merchants appear in pay and iGo promo previews as local economy endpoints. Routing is internal value state only.',
+    routes: [{ label: 'Promo / iGo', view: 'promo' }, { label: 'Pay', view: 'pay' }],
+  },
+  {
+    id: 'pop',
+    group: 'verification',
+    label: 'POP',
+    sub: 'Proof-of-presence',
+    explanation:
+      'POP layers gaze, session, and fraud-screen previews before rewards release. Conceptual verification — not guaranteed fraud prevention.',
+    routes: [{ label: 'POP Live', view: 'popLive' }, { label: 'Three Loops', view: 'threeLoops' }],
+  },
+  {
+    id: 'wallet',
+    group: 'value',
+    label: 'Wallet',
+    sub: 'Internal value routing',
+    explanation:
+      'Wallet holds verified, usable, and pending previews. Convert, tip, pay, and withdraw are simulated internal routes.',
+    routes: [{ label: 'Wallet', view: 'wallet' }, { label: 'Money Map', view: 'moneyMap' }],
+  },
+  {
+    id: 'acoins',
+    group: 'value',
+    label: 'ACoins',
+    sub: 'Attention currency',
+    explanation:
+      'ACoins alphabet and unit previews explain how attention converts into typed internal currency representations.',
+    routes: [{ label: 'ACoins', view: 'acoins' }, { label: 'Wallet', view: 'wallet' }],
+  },
+  {
+    id: 'igo',
+    group: 'local',
+    label: 'iGo',
+    sub: 'Location promos',
+    explanation:
+      'iGo connects location check-in promos to wallet reward previews inside the immersive promo flow.',
+    routes: [{ label: 'Promo / iGo', view: 'promo' }],
+  },
+  {
+    id: 'studio',
+    group: 'creation',
+    label: 'Studio',
+    sub: 'Content creation',
+    explanation:
+      'Studio preview shows clip, caption, and reward overlay tooling before sending to campaign builder.',
+    routes: [{ label: 'Studio', view: 'studioPreview' }],
+  },
+  {
+    id: 'campaign',
+    group: 'creation',
+    label: 'Campaign Builder',
+    sub: 'Reward campaigns',
+    explanation:
+      'Campaign builder configures reward, strictness, and gates for sponsored attention previews.',
+    routes: [{ label: 'Campaign Builder', view: 'campaignPreview' }],
+  },
+  {
+    id: 'profile',
+    group: 'supply',
+    label: 'Unified Profile',
+    sub: 'Cross-platform identity',
+    explanation:
+      'Unified profile aggregates creator content and platform connections in one immersive identity surface.',
+    routes: [{ label: 'Unified Profile', view: 'unifiedProfile' }],
+  },
+  {
+    id: 'creatorDash',
+    group: 'supply',
+    label: 'Creator Dashboard',
+    sub: 'Performance preview',
+    explanation:
+      'Creator dashboard summarizes content performance and campaign participation — simulated analytics only.',
+    routes: [{ label: 'Creator Dashboard', view: 'creatorDashboard' }],
+  },
+  {
+    id: 'brandDash',
+    group: 'buyers',
+    label: 'Brand Dashboard',
+    sub: 'Campaign analytics',
+    explanation:
+      'Brand dashboard tracks spend, reach, and verification previews for buyer-side campaign management.',
+    routes: [{ label: 'Brand Dashboard', view: 'brandDashboard' }],
+  },
+  {
+    id: 'elo',
+    group: 'intelligence',
+    label: 'ELO / Ni',
+    sub: 'Assistant layer',
+    explanation:
+      'ELO is the future intelligent membrane explaining rewards, wallet state, and campaign guidance — preview layer concept only.',
+    routes: [{ label: 'Three Loops', view: 'threeLoops' }, { label: 'Feed', view: 'feed' }],
+  },
+]
+
+export function baselineProductMapNode(): ProductMapNodeId {
+  return 'users'
+}
+
+export function productMapNodeById(id: ProductMapNodeId): ProductMapNode {
+  return PRODUCT_MAP_NODES.find((n) => n.id === id) ?? PRODUCT_MAP_NODES[0]
+}
+
+// ─── Demo mode switch (User / Creator / Brand / Merchant) ──────────────────
+
+export type DemoMode = 'user' | 'creator' | 'brand' | 'merchant'
+
+export const DEMO_MODES: { id: DemoMode; label: string; sub: string }[] = [
+  { id: 'user', label: 'User', sub: 'Earn · wallet · spend' },
+  { id: 'creator', label: 'Creator', sub: 'Profile · studio · campaigns' },
+  { id: 'brand', label: 'Brand', sub: 'Builder · analytics · POP' },
+  { id: 'merchant', label: 'Merchant', sub: 'iGo · local pay utility' },
+]
+
+export const DEMO_MODE_CONTEXT: Record<
+  DemoMode,
+  { title: string; bullets: string[] }
+> = {
+  user: {
+    title: 'User mode · simulated',
+    bullets: [
+      'Earn from verified attention',
+      'Use wallet previews',
+      'Pay · Tip · Withdraw routes',
+    ],
+  },
+  creator: {
+    title: 'Creator mode · simulated',
+    bullets: [
+      'Unified profile surface',
+      'Studio content preview',
+      'Creator dashboard & campaign monetization',
+    ],
+  },
+  brand: {
+    title: 'Brand mode · simulated',
+    bullets: [
+      'Campaign builder preview',
+      'Reward pool configuration',
+      'POP analytics & owner dashboard',
+    ],
+  },
+  merchant: {
+    title: 'Merchant mode · simulated',
+    bullets: [
+      'iGo offers & check-in promos',
+      'Local action previews',
+      'Simulated payment utility',
+    ],
+  },
+}
+
+export function baselineDemoMode(): DemoMode {
+  return 'user'
+}
+
+export function demoModeToastLabel(mode: DemoMode): string {
+  const labels: Record<DemoMode, string> = {
+    user: 'User mode · earn & wallet preview',
+    creator: 'Creator mode · profile & studio preview',
+    brand: 'Brand mode · campaign buyer preview',
+    merchant: 'Merchant mode · iGo & local preview',
+  }
+  return labels[mode]
+}
+
+// ─── Attention Analytics dashboard preview ─────────────────────────────────
+
+export type AnalyticsView = 'user' | 'creator' | 'brand' | 'system'
+
+export type AnalyticsRange = 'today' | 'week' | 'month'
+
+export type AnalyticsInsightId =
+  | 'best-loop'
+  | 'highest-value-content'
+  | 'strongest-cta'
+  | 'wallet-conversion'
+
+export interface AnalyticsInsight {
+  id: AnalyticsInsightId
+  label: string
+  detail: string
+}
+
+export const ANALYTICS_VIEWS: { id: AnalyticsView; label: string }[] = [
+  { id: 'user', label: 'User' },
+  { id: 'creator', label: 'Creator' },
+  { id: 'brand', label: 'Brand' },
+  { id: 'system', label: 'System' },
+]
+
+export const ANALYTICS_RANGES: { id: AnalyticsRange; label: string }[] = [
+  { id: 'today', label: 'Today' },
+  { id: 'week', label: 'Week' },
+  { id: 'month', label: 'Month' },
+]
+
+export const ANALYTICS_INSIGHTS: AnalyticsInsight[] = [
+  {
+    id: 'best-loop',
+    label: 'Best loop',
+    detail: 'Watch loop shows highest verified attention minutes this preview period.',
+  },
+  {
+    id: 'highest-value-content',
+    label: 'Highest value content',
+    detail: 'Sponsored Nike offer preview leads estimated attention value.',
+  },
+  {
+    id: 'strongest-cta',
+    label: 'Strongest CTA',
+    detail: 'Campaign builder “Watch & earn” CTA preview ranks highest engagement.',
+  },
+  {
+    id: 'wallet-conversion',
+    label: 'Wallet conversion trend',
+    detail: 'Convert preview shows steady usable balance growth — simulated only.',
+  },
+]
+
+export interface AttentionAnalyticsSnapshot {
+  kpis: {
+    id: string
+    label: string
+    value: string
+    sub: string
+  }[]
+  loops: {
+    id: string
+    label: string
+    minutes: number
+    popConfidence: number
+    rewards: string
+  }[]
+  charts: {
+    id: string
+    label: string
+    value: string
+    pct: number
+    tone: 'mint' | 'gold' | 'violet' | 'rose'
+  }[]
+}
+
+const RANGE_MULTIPLIER: Record<AnalyticsRange, number> = {
+  today: 1,
+  week: 4.2,
+  month: 14.5,
+}
+
+const VIEW_BIAS: Record<AnalyticsView, number> = {
+  user: 1,
+  creator: 1.08,
+  brand: 1.12,
+  system: 1.05,
+}
+
+export function baselineAnalyticsView(): AnalyticsView {
+  return 'system'
+}
+
+export function baselineAnalyticsRange(): AnalyticsRange {
+  return 'week'
+}
+
+export function computeAttentionAnalyticsSnapshot(input: {
+  view: AnalyticsView
+  range: AnalyticsRange
+  walletBalance: number
+  sessionEarned: number
+  lifetimeEarned: number
+}): AttentionAnalyticsSnapshot {
+  const mult = RANGE_MULTIPLIER[input.range] * VIEW_BIAS[input.view]
+  const minutes = Math.round(18.4 * mult)
+  const popConf = Math.min(98, Math.round(72 + mult * 2.1))
+  const rewards = +(input.sessionEarned + input.lifetimeEarned * 0.04 * mult).toFixed(2)
+  const creatorRouted = +(rewards * 0.38).toFixed(2)
+  const efficiency = Math.min(94, Math.round(61 + mult * 1.8))
+  const fraudPreview = Math.round(3 + mult * 0.4)
+
+  return {
+    kpis: [
+      {
+        id: 'minutes',
+        label: 'Verified attention minutes',
+        value: `${minutes}`,
+        sub: 'Estimated · simulated',
+      },
+      {
+        id: 'pop',
+        label: 'POP confidence average',
+        value: `${popConf}%`,
+        sub: 'Attention confidence preview',
+      },
+      {
+        id: 'rewards',
+        label: 'Rewards earned',
+        value: `${fmtMoney(rewards)} iC`,
+        sub: 'Internal value preview',
+      },
+      {
+        id: 'creator',
+        label: 'Creator value routed',
+        value: `${fmtMoney(creatorRouted)} iC`,
+        sub: 'Simulated share preview',
+      },
+      {
+        id: 'campaign',
+        label: 'Campaign efficiency',
+        value: `${efficiency}%`,
+        sub: 'Verified attention / spend preview',
+      },
+      {
+        id: 'fraud',
+        label: 'Fraud screen preview',
+        value: `${fraudPreview} flags`,
+        sub: 'Risk review · not a real decision',
+      },
+    ],
+    loops: [
+      {
+        id: 'watch',
+        label: 'Watch loop',
+        minutes: Math.round(minutes * 0.52),
+        popConfidence: popConf,
+        rewards: `${fmtMoney(rewards * 0.55)} iC`,
+      },
+      {
+        id: 'igo',
+        label: 'iGo loop',
+        minutes: Math.round(minutes * 0.28),
+        popConfidence: Math.max(60, popConf - 8),
+        rewards: `${fmtMoney(rewards * 0.25)} iC`,
+      },
+      {
+        id: 'creator',
+        label: 'Creator / campaign loop',
+        minutes: Math.round(minutes * 0.2),
+        popConfidence: Math.max(58, popConf - 12),
+        rewards: `${fmtMoney(rewards * 0.2)} iC`,
+      },
+    ],
+    charts: [
+      {
+        id: 'quality',
+        label: 'Attention quality score',
+        value: `${popConf}`,
+        pct: popConf,
+        tone: 'mint',
+      },
+      {
+        id: 'eps',
+        label: 'Earnings per session',
+        value: `${fmtMoney(rewards / Math.max(1, mult))} iC`,
+        pct: Math.min(100, 40 + mult * 8),
+        tone: 'gold',
+      },
+      {
+        id: 'cpva',
+        label: 'Cost per verified attention',
+        value: `${fmtMoney(0.08 + mult * 0.01)} iC`,
+        pct: Math.min(100, 55 + mult * 3),
+        tone: 'violet',
+      },
+      {
+        id: 'distribution',
+        label: 'Reward distribution',
+        value: '62 / 25 / 13',
+        pct: 72,
+        tone: 'rose',
+      },
+      {
+        id: 'risk',
+        label: 'Fraud / risk prevented preview',
+        value: `${fraudPreview} reviews`,
+        pct: Math.min(100, 20 + fraudPreview * 6),
+        tone: 'violet',
+      },
+    ],
+  }
+}
+
+export function analyticsInsightById(id: AnalyticsInsightId): AnalyticsInsight {
+  return ANALYTICS_INSIGHTS.find((i) => i.id === id) ?? ANALYTICS_INSIGHTS[0]
+}
+
+// ─── Remote Control / Accessibility preview ────────────────────────────────
+
+export type RemoteMode = 'dwell' | 'blink' | 'gesture'
+
+export type RemoteTargetId =
+  | 'feed'
+  | 'wallet'
+  | 'promo'
+  | 'profile'
+  | 'create'
+  | 'popLive'
+
+export interface RemoteCursorPosition {
+  x: number
+  y: number
+}
+
+export interface RemoteTarget {
+  id: RemoteTargetId
+  label: string
+  sub: string
+  x: number
+  y: number
+}
+
+export interface RemoteCommandLogEntry {
+  id: string
+  timeLabel: string
+  message: string
+}
+
+export const REMOTE_MODES: { id: RemoteMode; label: string; sub: string }[] = [
+  { id: 'dwell', label: 'Dwell', sub: 'Hold gaze to activate' },
+  { id: 'blink', label: 'Blink', sub: 'Blink select preview' },
+  { id: 'gesture', label: 'Gesture', sub: 'Head gesture command' },
+]
+
+export const REMOTE_TARGETS: RemoteTarget[] = [
+  { id: 'feed', label: 'Feed', sub: 'Immersive content', x: 18, y: 22 },
+  { id: 'wallet', label: 'Wallet', sub: 'Value layer', x: 50, y: 22 },
+  { id: 'promo', label: 'Promo', sub: 'iGo rewards', x: 82, y: 22 },
+  { id: 'profile', label: 'Profile', sub: 'Unified identity', x: 18, y: 58 },
+  { id: 'create', label: 'Create', sub: 'Studio / campaigns', x: 50, y: 58 },
+  { id: 'popLive', label: 'POP Live', sub: 'Proof signals', x: 82, y: 58 },
+]
+
+export const REMOTE_DEMO_PATH: RemoteTargetId[] = [
+  'feed',
+  'wallet',
+  'promo',
+  'profile',
+  'create',
+  'popLive',
+]
+
+export const REMOTE_SIGNAL_PANEL = [
+  { key: 'Gaze stable', sub: 'Simulated fixation estimate' },
+  { key: 'Blink select', sub: 'Optional blink trigger preview' },
+  { key: 'Dwell timer', sub: 'Activation ring progress' },
+  { key: 'Head gesture', sub: 'Nod / tilt command preview' },
+  { key: 'Accessibility mode', sub: 'Hands-free navigation layer' },
+] as const
+
+export function remoteTargetById(id: RemoteTargetId): RemoteTarget {
+  return REMOTE_TARGETS.find((t) => t.id === id) ?? REMOTE_TARGETS[0]
+}
+
+export function remoteTargetView(id: RemoteTargetId): InvestorView {
+  switch (id) {
+    case 'feed':
+      return 'feed'
+    case 'wallet':
+      return 'wallet'
+    case 'promo':
+      return 'promo'
+    case 'profile':
+      return 'unifiedProfile'
+    case 'create':
+      return 'campaignPreview'
+    case 'popLive':
+      return 'popLive'
+    default:
+      return 'feed'
+  }
+}
+
+export function baselineRemoteCursor(): RemoteCursorPosition {
+  return { x: 50, y: 40 }
+}
+
+export function baselineRemoteMode(): RemoteMode {
+  return 'dwell'
+}
+
+export function baselineRemoteTarget(): RemoteTargetId {
+  return 'feed'
+}
+
+// ─── ELO assistant overlay preview ─────────────────────────────────────────
+
+export type EloMode = 'user' | 'creator' | 'brand' | 'system'
+
+export type EloPromptId =
+  | 'explain-reward'
+  | 'summarize-wallet'
+  | 'build-campaign'
+  | 'optimize-profile'
+  | 'explain-pop'
+
+export interface EloPrompt {
+  id: EloPromptId
+  label: string
+  sub: string
+}
+
+export interface EloResponse {
+  id: string
+  promptId: EloPromptId
+  mode: EloMode
+  title: string
+  body: string
+  bullets: string[]
+  contextTags: string[]
+}
+
+export const ELO_MODES: { id: EloMode; label: string; sub: string }[] = [
+  { id: 'user', label: 'User', sub: 'Earn & spend guidance' },
+  { id: 'creator', label: 'Creator', sub: 'Content & campaigns' },
+  { id: 'brand', label: 'Brand', sub: 'Campaign intelligence' },
+  { id: 'system', label: 'System', sub: 'POP & platform layer' },
+]
+
+export const ELO_PROMPTS: EloPrompt[] = [
+  { id: 'explain-reward', label: 'Explain this reward', sub: 'Watch · promo · campaign preview' },
+  { id: 'summarize-wallet', label: 'Summarize my wallet', sub: 'Balances & recent activity' },
+  { id: 'build-campaign', label: 'Help build a campaign', sub: 'Reward · gates · publish path' },
+  { id: 'optimize-profile', label: 'Optimize my creator profile', sub: 'Unified profile preview' },
+  { id: 'explain-pop', label: 'Explain POP score', sub: 'Signals · eligibility · drift' },
+]
+
+export const ELO_CONTEXT_CARDS = [
+  { id: 'wallet', label: 'Wallet', sub: 'Internal value state' },
+  { id: 'pop', label: 'POP', sub: 'Proof-of-presence layer' },
+  { id: 'acoins', label: 'ACoins', sub: 'Attention currency preview' },
+  { id: 'creator', label: 'Creator', sub: 'Dashboard & profile' },
+  { id: 'brand', label: 'Brand', sub: 'Campaign buyer view' },
+] as const
+
+export function baselineEloMode(): EloMode {
+  return 'user'
+}
+
+export function baselineEloPrompt(): EloPromptId {
+  return 'explain-reward'
+}
+
+export function buildEloResponse(
+  promptId: EloPromptId,
+  mode: EloMode,
+  walletBalance: number,
+  usableBalance: number,
+): EloResponse {
+  const fmt = (n: number) =>
+    n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+  const modeLead =
+    mode === 'creator'
+      ? 'Creator lens'
+      : mode === 'brand'
+        ? 'Brand lens'
+        : mode === 'system'
+          ? 'System lens'
+          : 'User lens'
+
+  const responses: Record<EloPromptId, Omit<EloResponse, 'id' | 'promptId' | 'mode'>> = {
+    'explain-reward': {
+      title: 'Reward path · simulated',
+      body: `${modeLead}: verified attention unlocks an internal reward preview. POP checks run before wallet credit is marked verified.`,
+      bullets: [
+        'Watch loop credits verified iCoins after gate completion',
+        'Promo / iGo adds location-aware reward preview',
+        'Campaign rewards route through creator share preview',
+      ],
+      contextTags: ['Wallet', 'POP', 'ACoins'],
+    },
+    'summarize-wallet': {
+      title: 'Wallet snapshot · preview',
+      body: `${modeLead}: you hold ${fmt(walletBalance)} iC verified and ${fmt(usableBalance)} iC usable in this demo session.`,
+      bullets: [
+        'Verified balance = earned attention value preview',
+        'Usable balance = converted spendable preview',
+        'Pending items stay in review until POP clears',
+      ],
+      contextTags: ['Wallet', 'ACoins'],
+    },
+    'build-campaign': {
+      title: 'Campaign builder guidance',
+      body: `${modeLead}: set reward amount, verification strictness, and gates before publishing a simulated campaign preview.`,
+      bullets: [
+        'Studio clip can feed the campaign builder',
+        'Brand dashboard tracks simulated performance',
+        'POP strictness changes gate count in preview',
+      ],
+      contextTags: ['Creator', 'Brand', 'POP'],
+    },
+    'optimize-profile': {
+      title: 'Creator profile optimization',
+      body: `${modeLead}: unify platform handles, highlight top content, and align reward CTAs across the immersive profile shell.`,
+      bullets: [
+        'Cross-platform filter shows connected preview accounts',
+        'Top clips surface earn labels for sponsors',
+        'Profile routes to tip and campaign previews',
+      ],
+      contextTags: ['Creator', 'Wallet'],
+    },
+    'explain-pop': {
+      title: 'POP score · concept',
+      body: `${modeLead}: POP aggregates gaze stability, session integrity, and fraud-screen previews into an eligibility estimate — not a medical or compliance certification.`,
+      bullets: [
+        'POP Live shows simulated signal toggles',
+        'Drift and safe-zone previews explain attention quality',
+        'Wallet release waits on verified POP path',
+      ],
+      contextTags: ['POP', 'Wallet', 'System'],
+    },
+  }
+
+  const base = responses[promptId]
+  return {
+    id: `elo-${promptId}-${mode}`,
+    promptId,
+    mode,
+    ...base,
+  }
+}
+
+// ─── Onboarding / Account setup preview ────────────────────────────────────
+
+export type OnboardingMode = 'user' | 'creator' | 'brand' | 'merchant'
+
+export type OnboardingPlatformId = 'youtube' | 'tiktok' | 'instagram' | 'twitch'
+
+export type OnboardingInterestId =
+  | 'music'
+  | 'sports'
+  | 'fashion'
+  | 'food'
+  | 'gaming'
+  | 'local-offers'
+
+export type OnboardingFinishDestination = 'feed' | 'offer' | 'wallet' | 'connect'
+
+export const ONBOARDING_STEP_COUNT = 6
+
+export const ONBOARDING_MODES: {
+  id: OnboardingMode
+  label: string
+  sub: string
+}[] = [
+  { id: 'user', label: 'User', sub: 'Earn from verified attention' },
+  { id: 'creator', label: 'Creator', sub: 'Publish & monetize content' },
+  { id: 'brand', label: 'Brand', sub: 'Fund sponsored campaigns' },
+  { id: 'merchant', label: 'Merchant', sub: 'Local offers & pay utility' },
+]
+
+export const ONBOARDING_PLATFORMS: {
+  id: OnboardingPlatformId
+  label: string
+  initials: string
+  color: string
+}[] = [
+  { id: 'youtube', label: 'YouTube', initials: 'YT', color: '#cc0000' },
+  { id: 'tiktok', label: 'TikTok', initials: 'TT', color: '#111118' },
+  { id: 'instagram', label: 'Instagram', initials: 'IG', color: '#c13584' },
+  { id: 'twitch', label: 'Twitch', initials: 'TW', color: '#9146ff' },
+]
+
+export const ONBOARDING_INTERESTS: {
+  id: OnboardingInterestId
+  label: string
+  emoji: string
+}[] = [
+  { id: 'music', label: 'Music', emoji: '♪' },
+  { id: 'sports', label: 'Sports', emoji: '◎' },
+  { id: 'fashion', label: 'Fashion', emoji: '◇' },
+  { id: 'food', label: 'Food', emoji: '◈' },
+  { id: 'gaming', label: 'Gaming', emoji: '▶' },
+  { id: 'local-offers', label: 'Local offers', emoji: '◉' },
+]
+
+export const ONBOARDING_STEP_LABELS = [
+  'Welcome',
+  'Choose mode',
+  'Wallet preview',
+  'Connect platforms',
+  'Interests',
+  'First reward',
+] as const
+
+export const SIMULATED_ONBOARDING_WALLET_ID = 'i-demo-wallet-preview-7a2f'
+
+export function baselineOnboardingStep(): number {
+  return 1
+}
+
+export function baselineOnboardingMode(): OnboardingMode {
+  return 'user'
+}
+
+export function baselineOnboardingPlatforms(): OnboardingPlatformId[] {
+  return []
+}
+
+export function baselineOnboardingInterests(): OnboardingInterestId[] {
+  return []
 }

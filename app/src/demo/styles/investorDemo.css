@@ -8723,3 +8723,666 @@
   }
 }
 
+.id-wallet__tabs {
+  padding: 0 20px 10px;
+.id-wallet__tab {
+  padding: 6px 10px;
+.id-wallet__tab.active {
+  background: rgba(74, 222, 128, 0.1);
+.id-wallet__scroll {
+  padding-bottom: 8px;
+.id-wallet__panel {
+  margin: 0 20px 12px;
+.id-wallet__panel-title {
+.id-wallet__panel-note {
+.id-wallet__panel-note--top {
+.id-wallet__avail-grid {
+.id-wallet__avail-cell {
+.id-wallet__avail-cell.highlight {
+.id-wallet__avail-key {
+.id-wallet__avail-val {
+.id-wallet__quick-actions {
+  padding: 0 20px 12px;
+.id-wallet__quick-btn {
+.id-wallet__quick-btn:hover {
+.id-wallet__pending-list,
+.id-wallet__sent-list {
+.id-wallet__pending-card,
+.id-wallet__sent-card {
+.id-wallet__pending-top,
+.id-wallet__sent-top {
+.id-wallet__pending-source,
+.id-wallet__sent-type {
+.id-wallet__pending-pill,
+.id-wallet__sent-status {
+.id-wallet__pending-amt {
+.id-wallet__pending-reason,
+.id-wallet__pending-step {
+.id-wallet__pending-cta {
+  padding: 7px 10px;
+.id-wallet__earned-total {
+  font-size: 24px;
+.id-wallet__breakdown {
+.id-wallet__breakdown-row {
+.id-wallet__breakdown-row:last-child {
+.id-wallet__sent-dest {
+.id-wallet__sent-bottom {
+.id-wallet__sent-time {
+.id-wallet__sent-amt {
+.id-wallet__pipeline {
+.id-wallet__pipeline-step {
+.id-wallet__pipeline-step:not(:last-child)::after {
+.id-wallet__pipeline-dot {
+.id-wallet__pipeline-step.done .id-wallet__pipeline-dot {
+  border-color: #4ade80;
+  background: #4ade80;
+.id-wallet__pipeline-step.active .id-wallet__pipeline-dot {
+  border-color: #ffb300;
+  background: rgba(255, 179, 0, 0.3);
+.id-wallet__pipeline-label {
+.id-wallet__pipeline-sub {
+.id-wallet__route-row {
+  padding: 0 20px 12px;
+.id-wallet__route-btn {
+.id-wallet__route-btn:hover {
+.id-wallet__empty {
+  padding: 16px 20px;
+.id-wallet__txns--inline {
+  flex: none;
+  overflow: visible;
+  padding: 0 20px 8px;
+  margin: 0 20px 12px;
+
+.id-wallet__tx-receipt {
+.id-wallet__tx-receipt:hover {
+  text-decoration: underline;
+.id-convert__receipt-link,
+.id-tip__receipt-link,
+.id-pay__receipt-link,
+.id-withdraw__receipt-link {
+.id-convert__receipt-link:hover,
+.id-tip__receipt-link:hover,
+.id-pay__receipt-link:hover,
+.id-withdraw__receipt-link:hover {
+/* ─── Receipt view ─────────────────────────────────────────────────────────── */
+.id-receipt {
+.id-receipt__scroll {
+.id-receipt__back {
+.id-receipt__back:hover { color: var(--text-primary); }
+.id-receipt__back-icon {
+.id-receipt__header {
+.id-receipt__mark {
+.id-receipt__title {
+.id-receipt__sub {
+.id-receipt__status {
+.id-receipt__status--completed {
+.id-receipt__status--pending {
+.id-receipt__status--preview {
+.id-receipt__card,
+.id-receipt__panel,
+.id-receipt__routes {
+.id-receipt__type {
+.id-receipt__amount {
+.id-receipt__direction {
+.id-receipt__rows {
+.id-receipt__row {
+.id-receipt__row:last-child { border-bottom: none; }
+.id-receipt__key {
+.id-receipt__val {
+.id-receipt__panel-title {
+.id-receipt__timeline {
+.id-receipt__step {
+.id-receipt__step:not(:last-child)::after {
+.id-receipt__step-dot {
+.id-receipt__step.done .id-receipt__step-dot {
+  border-color: #4ade80;
+  background: #4ade80;
+.id-receipt__step.active .id-receipt__step-dot {
+  border-color: #ffb300;
+  background: rgba(255, 179, 0, 0.3);
+.id-receipt__step-label {
+.id-receipt__step-sub {
+.id-receipt__route-row {
+.id-receipt__route-row:last-child { margin-bottom: 0; }
+.id-receipt__route-btn {
+.id-receipt__route-btn:hover {
+.id-receipt__route-spacer {
+.id-receipt__disclaimer {
+.id-receipt__empty {
+  padding: 24px 0;
+
+.id-feed__clickearn-entry {
+  top: 118px;
+  z-index: 24;
+.id-feed__clickearn-entry:hover {
+  border-color: rgba(255, 77, 109, 0.55);
+  background: rgba(255, 77, 109, 0.1);
+.id-feed__clickearn-entry-icon {
+  background: rgba(255, 77, 109, 0.15);
+  color: #ff4d6d;
+.id-feed__clickearn-entry-text {
+.id-feed__clickearn-entry-title {
+.id-feed__clickearn-entry-sub {
+.id-feed__clickearn-entry-cta {
+  color: #ff4d6d;
+.id-wallet__tx--clickearn {
+  border-color: rgba(255, 77, 109, 0.28);
+  background: rgba(255, 77, 109, 0.07);
+.id-wallet__tx--clickearn .id-wallet__tx-badge {
+  color: #ff4d6d;
+  background: rgba(255, 77, 109, 0.14);
+  border-color: rgba(255, 77, 109, 0.3);
+/* ─── Click-and-Earn ──────────────────────────────────────────────────────── */
+.id-clickearn {
+.id-clickearn__scroll {
+.id-clickearn__back {
+.id-clickearn__back-icon {
+.id-clickearn__title {
+.id-clickearn__sub {
+  margin: 4px 0 14px;
+.id-clickearn__preview-card {
+.id-clickearn__preview-media {
+  background: linear-gradient(135deg, #1d9e75, #378add);
+.id-clickearn__preview-caption {
+.id-clickearn__creator {
+.id-clickearn__creator-avatar {
+.id-clickearn__creator-name {
+.id-clickearn__creator-handle {
+.id-clickearn__stage {
+  min-height: 200px;
+.id-clickearn__meter {
+.id-clickearn__meter-track {
+  width: 10px;
+  height: 140px;
+  justify-content: flex-end;
+.id-clickearn__meter-fill {
+  background: linear-gradient(180deg, #ff4d6d, #ffb300);
+  transition: height 0.08s ease-out;
+.id-clickearn__meter-label {
+.id-clickearn__button-wrap {
+.id-clickearn__love-btn {
+  width: 88px;
+  height: 88px;
+  border: 0.5px solid rgba(255, 77, 109, 0.45);
+  color: #ff4d6d;
+  touch-action: none;
+  transition: transform 0.12s, box-shadow 0.12s;
+.id-clickearn__love-btn.holding {
+  transform: scale(1.06);
+  box-shadow: 0 0 24px rgba(255, 77, 109, 0.35);
+.id-clickearn__love-btn.liked {
+  border-color: rgba(255, 255, 255, 0.25);
+.id-clickearn__particle {
+  color: #ff4d6d;
+  transition: opacity 0.15s;
+.id-clickearn__particle.active {
+  opacity: 0.85;
+  animation: id-clickearn-float 1.2s ease-out infinite;
+  animation-delay: calc(var(--i) * 0.12s);
+@keyframes id-clickearn-float {
+  0% { transform: translate(0, 0) scale(0.8); opacity: 0.9; }
+  100% { transform: translate(calc(var(--i) * 6px - 12px), -48px) scale(1.1); opacity: 0; }
+.id-clickearn__message {
+.id-clickearn__offer {
+  background: rgba(255, 77, 109, 0.08);
+  border: 0.5px solid rgba(255, 77, 109, 0.3);
+.id-clickearn__offer.confirmed {
+  border-color: rgba(74, 222, 128, 0.3);
+.id-clickearn__offer-title {
+.id-clickearn__offer-amount {
+  font-size: 24px;
+.id-clickearn__offer-sub,
+.id-clickearn__offer-bal {
+.id-clickearn__offer-actions {
+.id-clickearn__btn {
+.id-clickearn__btn--primary {
+  background: rgba(255, 77, 109, 0.15);
+  border-color: rgba(255, 77, 109, 0.4);
+  color: #ff4d6d;
+.id-clickearn__hint {
+.id-clickearn__hint p { margin: 0 0 4px; }
+.id-clickearn__range {
+.id-clickearn__disclaimer {
+
+.id-presenter__system-tools {
+  border-top: 0.5px solid rgba(255, 255, 255, 0.08);
+.id-presenter__system-btn {
+  border: 0.5px solid rgba(93, 202, 165, 0.3);
+  background: rgba(93, 202, 165, 0.08);
+.id-presenter__system-btn:hover {
+  border-color: rgba(93, 202, 165, 0.5);
+  background: rgba(93, 202, 165, 0.12);
+.id-presenter__system-title {
+.id-presenter__system-sub {
+  top: 108px;
+.id-feed__map-entry {
+  border: 0.5px solid rgba(93, 202, 165, 0.32);
+.id-feed__map-entry:hover {
+  border-color: rgba(93, 202, 165, 0.5);
+.id-feed__map-entry-icon {
+  background: rgba(93, 202, 165, 0.12);
+  border: 0.5px solid rgba(93, 202, 165, 0.35);
+  color: #5dcaa5;
+.id-feed__map-entry-text {
+.id-feed__map-entry-title {
+.id-feed__map-entry-sub {
+.id-feed__map-entry-cta {
+  color: #5dcaa5;
+/* ── Investor Product Map ─────────────────────────────────────────────────── */
+.id-productmap {
+  background: var(--surface-deep);
+.id-productmap__scroll {
+  padding: 14px 14px 28px;
+.id-productmap__back {
+  padding: 4px 0 12px;
+.id-productmap__back-icon {
+.id-productmap__title {
+.id-productmap__sub {
+.id-productmap__groups {
+  margin: 16px 0;
+.id-productmap__group-head {
+.id-productmap__group-label {
+  color: var(--accent-mint);
+.id-productmap__group-sub {
+.id-productmap__node-grid {
+.id-productmap__node {
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+.id-productmap__node.active {
+  border-color: rgba(93, 202, 165, 0.45);
+.id-productmap__node-label {
+.id-productmap__node-sub {
+.id-productmap__panel-title {
+.id-productmap__detail-card {
+  background: rgba(7, 7, 9, 0.6);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+.id-productmap__detail-title {
+.id-productmap__detail-sub {
+.id-productmap__detail-body {
+.id-productmap__route-row {
+.id-productmap__route-btn {
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+.id-productmap__disclaimer {
+
+/* ── Demo mode switch ─────────────────────────────────────────────────────── */
+.id-mode-switch {
+  margin: 14px 0;
+.id-mode-switch__label {
+.id-mode-switch__row {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+.id-mode-switch__btn {
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+.id-mode-switch__btn.active {
+  border-color: rgba(93, 202, 165, 0.45);
+  color: var(--accent-mint);
+.id-mode-switch__context-title {
+.id-mode-switch__context-list {
+  padding-left: 14px;
+.id-mode-switch__disclaimer {
+
+/* ── Attention Analytics ──────────────────────────────────────────────────── */
+.id-analytics {
+  background: var(--surface-deep);
+.id-analytics__scroll {
+  padding: 14px 14px 28px;
+.id-analytics__back {
+  padding: 4px 0 12px;
+.id-analytics__back-icon {
+.id-analytics__title {
+.id-analytics__sub {
+.id-analytics__panel-title {
+.id-analytics__filters {
+  margin: 14px 0;
+.id-analytics__filter-row {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+.id-analytics__filter-btn,
+.id-analytics__range-btn {
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+.id-analytics__filter-btn.active,
+.id-analytics__range-btn.active {
+.id-analytics__kpi-grid {
+.id-analytics__kpi {
+.id-analytics__kpi-label {
+.id-analytics__kpi-value {
+.id-analytics__kpi-sub {
+.id-analytics__loops {
+.id-analytics__loop-row {
+  padding: 10px 0;
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.08);
+.id-analytics__loop-head {
+.id-analytics__loop-label {
+.id-analytics__loop-rewards {
+  color: var(--accent-mint);
+.id-analytics__loop-meta {
+  margin: 4px 0 6px;
+.id-analytics__loop-bar {
+.id-analytics__loop-bar span {
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent-mint), #5dcaa5);
+.id-analytics__chart-grid {
+.id-analytics__chart {
+.id-analytics__chart--mint .id-analytics__chart-bar span { background: #5dcaa5; }
+.id-analytics__chart--gold .id-analytics__chart-bar span { background: #c8a84b; }
+.id-analytics__chart--violet .id-analytics__chart-bar span { background: #b794f6; }
+.id-analytics__chart--rose .id-analytics__chart-bar span { background: #ff4d6d; }
+.id-analytics__chart-label {
+.id-analytics__chart-value {
+  margin: 4px 0 6px;
+.id-analytics__chart-bar {
+.id-analytics__chart-bar span {
+  border-radius: inherit;
+.id-analytics__insight-grid {
+.id-analytics__insight {
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+.id-analytics__insight.active {
+.id-analytics__insight-label {
+.id-analytics__insight-detail {
+.id-analytics__insight-selected {
+.id-analytics__route-row {
+.id-analytics__route-btn {
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+.id-analytics__disclaimer {
+.id-threeloops__analytics-entry {
+  border: 0.5px solid rgba(200, 168, 75, 0.22);
+.id-threeloops__analytics-entry-icon {
+.id-threeloops__analytics-entry-title {
+.id-threeloops__analytics-entry-sub {
+.id-threeloops__analytics-entry-text {
+.id-threeloops__analytics-entry-cta {
+
+/* ── Remote Control / Accessibility ───────────────────────────────────────── */
+.id-remote {
+  background: var(--surface-deep);
+.id-remote__scroll {
+  padding: 14px 14px 28px;
+.id-remote__back {
+  padding: 4px 0 12px;
+.id-remote__back:hover { color: var(--text-primary); }
+.id-remote__back-icon {
+.id-remote__title {
+.id-remote__sub {
+.id-remote__panel-title {
+.id-remote__control {
+  margin: 16px 0;
+.id-remote__control-frame {
+  aspect-ratio: 1 / 1.05;
+  background: linear-gradient(165deg, rgba(12, 14, 22, 0.95) 0%, rgba(6, 8, 14, 0.98) 100%);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+.id-remote__control-grid {
+.id-remote__target {
+  width: 28%;
+  min-height: 52px;
+  padding: 8px 6px;
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+.id-remote__target.active {
+  border-color: rgba(93, 202, 165, 0.55);
+  box-shadow: 0 0 0 1px rgba(93, 202, 165, 0.15);
+.id-remote__target-label {
+.id-remote__target-sub {
+.id-remote__dwell-ring {
+  inset: -2px;
+  border: 2px solid transparent;
+  background: conic-gradient(
+    rgba(93, 202, 165, 0.85) var(--dwell),
+    rgba(255, 255, 255, 0.08) var(--dwell)
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  animation: id-remote-dwell-pulse 1.2s ease-in-out infinite;
+@keyframes id-remote-dwell-pulse {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
+.id-remote__gaze {
+  transition: left 0.06s linear, top 0.06s linear;
+.id-remote__gaze-core {
+  inset: 10px;
+  background: rgba(93, 202, 165, 0.95);
+  box-shadow: 0 0 12px rgba(93, 202, 165, 0.6);
+.id-remote__gaze-ring {
+  border: 1.5px solid rgba(93, 202, 165, 0.45);
+  animation: id-remote-gaze-ring 1.6s ease-out infinite;
+@keyframes id-remote-gaze-ring {
+  0% { transform: scale(0.6); opacity: 0.9; }
+  100% { transform: scale(1.8); opacity: 0; }
+.id-remote__modes {
+.id-remote__mode-row {
+.id-remote__mode-btn {
+  padding: 8px 6px;
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+.id-remote__mode-btn.active {
+  border-color: rgba(93, 202, 165, 0.45);
+.id-remote__mode-label {
+.id-remote__mode-sub {
+.id-remote__signals {
+.id-remote__signal-grid {
+.id-remote__signal {
+.id-remote__signal-key {
+.id-remote__signal-val {
+  color: var(--accent-mint);
+.id-remote__signal-sub {
+.id-remote__timeline {
+.id-remote__timeline-empty {
+.id-remote__timeline-list {
+.id-remote__timeline-item {
+.id-remote__timeline-time {
+.id-remote__timeline-msg {
+.id-remote__controls {
+.id-remote__btn {
+  padding: 11px 14px;
+  background: rgba(255, 255, 255, 0.05);
+.id-remote__btn--primary {
+  background: linear-gradient(135deg, rgba(29, 158, 117, 0.35) 0%, rgba(29, 158, 117, 0.2) 100%);
+  border-color: rgba(93, 202, 165, 0.35);
+.id-remote__btn--accent {
+  border-color: rgba(255, 255, 255, 0.18);
+.id-remote__disclaimer {
+.id-poplive__remote-entry,
+.id-threeloops__remote-entry {
+  background: rgba(93, 202, 165, 0.06);
+  border: 0.5px solid rgba(93, 202, 165, 0.22);
+.id-poplive__remote-entry-icon,
+.id-threeloops__remote-entry-icon {
+  opacity: 0.85;
+.id-poplive__remote-entry-title,
+.id-threeloops__remote-entry-title {
+.id-poplive__remote-entry-sub,
+.id-threeloops__remote-entry-sub {
+.id-poplive__remote-entry-text,
+.id-threeloops__remote-entry-text {
+.id-poplive__remote-entry-cta,
+.id-threeloops__remote-entry-cta {
+  color: var(--accent-mint);
+.id-threeloops__remote-entry {
+
+.id-presenter__system-tools {
+  border-top: 0.5px solid rgba(255, 255, 255, 0.08);
+.id-presenter__system-btn {
+  border: 0.5px solid rgba(147, 112, 219, 0.3);
+  background: rgba(147, 112, 219, 0.08);
+.id-presenter__system-btn:hover {
+  border-color: rgba(147, 112, 219, 0.5);
+  background: rgba(147, 112, 219, 0.12);
+.id-presenter__system-title {
+.id-presenter__system-sub {
+.id-feed__elo-entry {
+  top: 108px;
+  border: 0.5px solid rgba(147, 112, 219, 0.35);
+.id-feed__elo-entry:hover {
+  border-color: rgba(147, 112, 219, 0.55);
+.id-feed__elo-entry-icon {
+  background: rgba(147, 112, 219, 0.14);
+  border: 0.5px solid rgba(147, 112, 219, 0.4);
+  color: #b794f6;
+  box-shadow: 0 0 16px rgba(147, 112, 219, 0.2);
+.id-feed__elo-entry-text {
+.id-feed__elo-entry-title {
+.id-feed__elo-entry-sub {
+.id-feed__elo-entry-cta {
+  color: #b794f6;
+/* ── ELO Assistant Overlay ────────────────────────────────────────────────── */
+.id-elo {
+  background: var(--surface-deep);
+.id-elo__scroll {
+  padding: 14px 14px 28px;
+.id-elo__back {
+  padding: 4px 0 12px;
+.id-elo__back-icon {
+.id-elo__header {
+.id-elo__membrane {
+.id-elo__membrane-glow {
+  inset: -8px;
+  background: radial-gradient(circle, rgba(147, 112, 219, 0.35) 0%, transparent 70%);
+  animation: id-elo-glow 3s ease-in-out infinite;
+@keyframes id-elo-glow {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+.id-elo__membrane-face {
+  inset: 8px;
+  border-radius: 50% 50% 46% 46%;
+  background: linear-gradient(165deg, rgba(147, 112, 219, 0.25) 0%, rgba(93, 202, 165, 0.12) 100%);
+  backdrop-filter: blur(8px);
+.id-elo__membrane-face::before,
+.id-elo__membrane-face::after {
+  top: 38%;
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 0 8px rgba(147, 112, 219, 0.5);
+.id-elo__membrane-face::before { left: 28%; }
+.id-elo__membrane-face::after { right: 28%; }
+.id-elo__membrane-ring {
+  border: 1px solid rgba(147, 112, 219, 0.35);
+  animation: id-elo-ring 2.4s ease-out infinite;
+@keyframes id-elo-ring {
+  0% { transform: scale(0.85); opacity: 0.8; }
+  100% { transform: scale(1.25); opacity: 0; }
+.id-elo__title {
+.id-elo__sub {
+.id-elo__panel-title {
+.id-elo__modes {
+.id-elo__mode-row {
+.id-elo__mode-btn {
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+.id-elo__mode-btn.active {
+  border-color: rgba(147, 112, 219, 0.45);
+  background: rgba(147, 112, 219, 0.12);
+.id-elo__mode-label {
+.id-elo__mode-sub {
+.id-elo__prompts {
+.id-elo__prompt-grid {
+.id-elo__prompt-card {
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+.id-elo__prompt-card.active {
+  border-color: rgba(147, 112, 219, 0.45);
+  background: rgba(147, 112, 219, 0.1);
+  box-shadow: 0 0 20px rgba(147, 112, 219, 0.08);
+.id-elo__prompt-label {
+.id-elo__prompt-sub {
+.id-elo__conversation {
+.id-elo__response-card {
+  background: rgba(7, 7, 9, 0.6);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+.id-elo__response-head {
+.id-elo__response-badge {
+  color: #b794f6;
+  background: rgba(147, 112, 219, 0.14);
+  border: 0.5px solid rgba(147, 112, 219, 0.3);
+.id-elo__response-mode {
+.id-elo__response-title {
+.id-elo__response-body {
+.id-elo__response-bullets {
+.id-elo__response-tags {
+.id-elo__tag {
+  padding: 3px 7px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+.id-elo__context {
+.id-elo__context-grid {
+.id-elo__context-card {
+.id-elo__context-label {
+.id-elo__context-sub {
+.id-elo__routes {
+.id-elo__route-row {
+.id-elo__route-btn {
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+.id-elo__disclaimer {
+
+.id-splash__cta--secondary {
+  border: 0.5px solid rgba(255, 255, 255, 0.18);
+.id-splash__link {
+  color: rgba(255, 255, 255, 0.45);
+.id-splash__link:hover {
+  color: rgba(255, 255, 255, 0.7);
+/* ── Onboarding / Account setup ───────────────────────────────────────────── */
+.id-onboarding {
+  background: var(--surface-deep);
+.id-onboarding__scroll {
+  padding: 14px 14px 28px;
+.id-onboarding__back {
+.id-onboarding__back-icon {
+.id-onboarding__progress {
+.id-onboarding__progress-dot {
+.id-onboarding__progress-dot.on {
+  background: linear-gradient(90deg, var(--accent-mint), #5dcaa5);
+.id-onboarding__step-label {
+.id-onboarding__panel {
+.id-onboarding__hero-logo {
+.id-onboarding__hero-logo span {
+.id-onboarding__title {
+.id-onboarding__sub {
+.id-onboarding__body {
+.id-onboarding__mode-grid {
+.id-onboarding__mode-card {
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+.id-onboarding__mode-card.active {
+  border-color: rgba(93, 202, 165, 0.45);
+.id-onboarding__mode-label {
+.id-onboarding__mode-sub {
+.id-onboarding__wallet-card {
+  background: rgba(7, 7, 9, 0.65);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+.id-onboarding__wallet-badge {
+  color: var(--accent-mint);
+.id-onboarding__wallet-id {
+  margin: 8px 0 12px;
+  word-break: break-all;
+.id-onboarding__wallet-balances {
+.id-onboarding__wallet-key {
+.id-onboarding__wallet-val {
+.id-onboarding__wallet-note {
+.id-onboarding__platform-grid {
+.id-onboarding__platform-card {
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+.id-onboarding__platform-card.active {
+  border-color: rgba(93, 202, 165, 0.4);
+.id-onboarding__platform-icon {
+.id-onboarding__platform-label {
+.id-onboarding__platform-state {
+.id-onboarding__interest-grid {
+.id-onboarding__interest-chip {
+  padding: 8px 12px;
+.id-onboarding__interest-chip.active {
+  border-color: rgba(93, 202, 165, 0.45);
+.id-onboarding__finish-card {
+  background: rgba(7, 7, 9, 0.6);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+.id-onboarding__finish-mode {
+  color: var(--accent-mint);
+.id-onboarding__finish-copy {
+  margin: 10px 0 14px;
+.id-onboarding__finish-routes {
+.id-onboarding__route-btn {
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+.id-onboarding__nav {
+.id-onboarding__btn {
+  padding: 11px 14px;
+  background: rgba(255, 255, 255, 0.05);
+.id-onboarding__btn--primary {
+  background: linear-gradient(135deg, rgba(29, 158, 117, 0.35) 0%, rgba(29, 158, 117, 0.2) 100%);
+  border-color: rgba(93, 202, 165, 0.35);
+.id-onboarding__disclaimer {

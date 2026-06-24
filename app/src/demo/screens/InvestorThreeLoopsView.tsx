@@ -18,6 +18,8 @@ export function InvestorThreeLoopsView() {
     openUnifiedProfile,
     openPOPLive,
     openACoins,
+    openAttentionAnalytics,
+    openRemoteControl,
   } = useInvestorDemo()
 
   const { selectedLoopId } = state
@@ -217,6 +219,26 @@ export function InvestorThreeLoopsView() {
             </button>
           </div>
         </section>
+
+        <button type="button" className="id-threeloops__analytics-entry" onClick={openAttentionAnalytics}>
+          <span className="id-threeloops__analytics-entry-icon" aria-hidden>◆</span>
+          <span className="id-threeloops__analytics-entry-text">
+            <span className="id-threeloops__analytics-entry-title">Attention Analytics</span>
+            <span className="id-threeloops__analytics-entry-sub">
+              Measure verified attention across the ecosystem
+            </span>
+          </span>
+          <span className="id-threeloops__analytics-entry-cta">Open dashboard</span>
+        </button>
+
+        <button type="button" className="id-threeloops__remote-entry" onClick={openRemoteControl}>
+          <span className="id-threeloops__remote-entry-icon" aria-hidden>◎</span>
+          <span className="id-threeloops__remote-entry-text">
+            <span className="id-threeloops__remote-entry-title">Remote Control</span>
+            <span className="id-threeloops__remote-entry-sub">Hands-free navigation preview</span>
+          </span>
+          <span className="id-threeloops__remote-entry-cta">Open accessibility layer</span>
+        </button>
 
         <p className="id-threeloops__disclaimer">
           System overview uses simulated flows. No real financial movement, GPS, or external

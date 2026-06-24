@@ -34,6 +34,13 @@ import { InvestorThreeLoopsView } from '../demo/screens/InvestorThreeLoopsView'
 import { InvestorCreatorDashboardView } from '../demo/screens/InvestorCreatorDashboardView'
 import { InvestorBrandDashboardView } from '../demo/screens/InvestorBrandDashboardView'
 import { InvestorMoneyMapView } from '../demo/screens/InvestorMoneyMapView'
+import { InvestorReceiptView } from '../demo/screens/InvestorReceiptView'
+import { InvestorClickEarnView } from '../demo/screens/InvestorClickEarnView'
+import { InvestorRemoteControlView } from '../demo/screens/InvestorRemoteControlView'
+import { InvestorEloOverlayView } from '../demo/screens/InvestorEloOverlayView'
+import { InvestorProductMapView } from '../demo/screens/InvestorProductMapView'
+import { InvestorOnboardingView } from '../demo/screens/InvestorOnboardingView'
+import { InvestorAttentionAnalyticsView } from '../demo/screens/InvestorAttentionAnalyticsView'
 import type { InvestorView } from '../demo/investorDemoData'
 
 // ─── View router (reads from context) ─────────────────────────────────────
@@ -85,6 +92,20 @@ function ViewSwitch({ view }: { view: InvestorView }) {
       return <InvestorBrandDashboardView />
     case 'moneyMap':
       return <InvestorMoneyMapView />
+    case 'receipt':
+      return <InvestorReceiptView />
+    case 'clickEarn':
+      return <InvestorClickEarnView />
+    case 'remoteControl':
+      return <InvestorRemoteControlView />
+    case 'eloOverlay':
+      return <InvestorEloOverlayView />
+    case 'productMap':
+      return <InvestorProductMapView />
+    case 'onboarding':
+      return <InvestorOnboardingView />
+    case 'attentionAnalytics':
+      return <InvestorAttentionAnalyticsView />
     case 'splash':
     default:
       return <InvestorSplashView />

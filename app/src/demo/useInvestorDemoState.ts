@@ -68,6 +68,43 @@ import {
   type CreatorPlatformFilter,
   type BrandDashboardTab,
   type MoneyMapTab,
+  baselineWalletTab,
+  type WalletTab,
+  baselineClickEarnMode,
+  baselineClickEarnAmount,
+  clampClickEarnAmount,
+  type ClickEarnMode,
+  baselineProductMapNode,
+  type ProductMapNodeId,
+  baselineDemoMode,
+  demoModeToastLabel,
+  type DemoMode,
+  baselineAnalyticsView,
+  baselineAnalyticsRange,
+  type AnalyticsView,
+  type AnalyticsRange,
+  type AnalyticsInsightId,
+  baselineRemoteMode,
+  baselineRemoteTarget,
+  baselineRemoteCursor,
+  remoteTargetView,
+  type RemoteMode,
+  type RemoteTargetId,
+  type RemoteCursorPosition,
+  type RemoteCommandLogEntry,
+  baselineEloMode,
+  baselineEloPrompt,
+  buildEloResponse,
+  type EloMode,
+  type EloPromptId,
+  baselineOnboardingStep,
+  baselineOnboardingMode,
+  baselineOnboardingPlatforms,
+  baselineOnboardingInterests,
+  type OnboardingMode,
+  type OnboardingPlatformId,
+  type OnboardingInterestId,
+  type OnboardingFinishDestination,
 } from './investorDemoData'
 
 // ─── State shape ───────────────────────────────────────────────────────────
@@ -147,6 +184,42 @@ export interface InvestorDemoState {
   selectedBrandCta: CampaignAction
   moneyMapTab: MoneyMapTab
   selectedMoneyNode: string
+  // ─── Wallet tabs
+  walletTab: WalletTab
+  // ─── Receipt
+  selectedReceiptId: string | null
+  receiptReturnView: InvestorView
+  // ─── Click-and-Earn
+  clickEarnMode: ClickEarnMode
+  clickEarnAmount: number
+  clickEarnHolding: boolean
+  clickEarnMeter: number
+  clickEarnMessage: string
+  clickEarnSession: number
+  // ─── Product Map
+  selectedProductMapNode: ProductMapNodeId
+  // ─── Demo Mode
+  activeDemoMode: DemoMode
+  // ─── Attention Analytics
+  analyticsView: AnalyticsView
+  analyticsRange: AnalyticsRange
+  selectedAnalyticsInsight: AnalyticsInsightId | null
+  // ─── Remote Control
+  remoteRunning: boolean
+  remoteMode: RemoteMode
+  selectedRemoteTarget: RemoteTargetId
+  remoteCursorPosition: RemoteCursorPosition
+  remoteActivationProgress: number
+  remoteCommandLog: RemoteCommandLogEntry[]
+  // ─── ELO
+  eloMode: EloMode
+  selectedEloPrompt: EloPromptId
+  eloResponseId: string
+  // ─── Onboarding
+  onboardingStep: number
+  onboardingMode: OnboardingMode
+  onboardingConnectedPlatforms: OnboardingPlatformId[]
+  onboardingInterests: OnboardingInterestId[]
   likedContentIds: string[]
   savedContentIds: string[]
   toast: string | null
@@ -243,6 +316,51 @@ type Action =
   | { type: 'OPEN_MONEY_MAP' }
   | { type: 'SET_MONEY_MAP_TAB'; tab: MoneyMapTab }
   | { type: 'SELECT_MONEY_NODE'; nodeId: string }
+  // ─── Wallet tabs
+  | { type: 'SET_WALLET_TAB'; tab: WalletTab }
+  // ─── Receipt
+  | { type: 'OPEN_RECEIPT'; receiptId: string; returnView?: InvestorView }
+  | { type: 'SET_SELECTED_RECEIPT'; receiptId: string | null }
+  | { type: 'RETURN_FROM_RECEIPT' }
+  // ─── Click-and-Earn
+  | { type: 'OPEN_CLICK_EARN' }
+  | { type: 'TAP_CLICK_EARN_LIKE' }
+  | { type: 'START_CLICK_EARN_HOLD' }
+  | { type: 'UPDATE_CLICK_EARN_AMOUNT'; amount: number; meter: number }
+  | { type: 'RELEASE_CLICK_EARN' }
+  | { type: 'CONFIRM_CLICK_EARN' }
+  | { type: 'CANCEL_CLICK_EARN' }
+  | { type: 'RESET_CLICK_EARN' }
+  // ─── Product Map
+  | { type: 'OPEN_PRODUCT_MAP' }
+  | { type: 'SELECT_PRODUCT_MAP_NODE'; nodeId: ProductMapNodeId }
+  // ─── Demo Mode
+  | { type: 'SET_DEMO_MODE'; mode: DemoMode }
+  // ─── Attention Analytics
+  | { type: 'OPEN_ATTENTION_ANALYTICS' }
+  | { type: 'SET_ANALYTICS_VIEW'; view: AnalyticsView }
+  | { type: 'SET_ANALYTICS_RANGE'; range: AnalyticsRange }
+  | { type: 'SELECT_ANALYTICS_INSIGHT'; insightId: AnalyticsInsightId | null }
+  // ─── Remote Control
+  | { type: 'OPEN_REMOTE_CONTROL' }
+  | { type: 'START_REMOTE_SIM' }
+  | { type: 'PAUSE_REMOTE_SIM' }
+  | { type: 'RESET_REMOTE_SIM' }
+  | { type: 'SET_REMOTE_MODE'; mode: RemoteMode }
+  | { type: 'SELECT_REMOTE_TARGET'; targetId: RemoteTargetId }
+  | { type: 'UPDATE_REMOTE_FRAME'; cursor: RemoteCursorPosition; activationProgress: number; selectedTarget?: RemoteTargetId; logEntry?: RemoteCommandLogEntry }
+  | { type: 'OPEN_REMOTE_TARGET' }
+  // ─── ELO
+  | { type: 'OPEN_ELO' }
+  | { type: 'SET_ELO_MODE'; mode: EloMode }
+  | { type: 'SELECT_ELO_PROMPT'; promptId: EloPromptId }
+  // ─── Onboarding
+  | { type: 'OPEN_ONBOARDING' }
+  | { type: 'SET_ONBOARDING_STEP'; step: number }
+  | { type: 'SET_ONBOARDING_MODE'; mode: OnboardingMode }
+  | { type: 'TOGGLE_ONBOARDING_PLATFORM'; platformId: OnboardingPlatformId }
+  | { type: 'TOGGLE_ONBOARDING_INTEREST'; interestId: OnboardingInterestId }
+  | { type: 'FINISH_ONBOARDING'; destination: OnboardingFinishDestination }
   | { type: 'RESET' }
 
 function cloneSeedTransactions(): InvestorTransaction[] {
@@ -344,6 +462,42 @@ function createBaselineState(): InvestorDemoState {
     selectedBrandCta: baselineBrandCta(),
     moneyMapTab: baselineMoneyMapTab(),
     selectedMoneyNode: baselineMoneyNode(),
+    // ─── Wallet tabs
+    walletTab: baselineWalletTab(),
+    // ─── Receipt
+    selectedReceiptId: null,
+    receiptReturnView: 'wallet' as InvestorView,
+    // ─── Click-and-Earn
+    clickEarnMode: baselineClickEarnMode(),
+    clickEarnAmount: baselineClickEarnAmount(),
+    clickEarnHolding: false,
+    clickEarnMeter: 0,
+    clickEarnMessage: '',
+    clickEarnSession: 0,
+    // ─── Product Map
+    selectedProductMapNode: baselineProductMapNode(),
+    // ─── Demo Mode
+    activeDemoMode: baselineDemoMode(),
+    // ─── Attention Analytics
+    analyticsView: baselineAnalyticsView(),
+    analyticsRange: baselineAnalyticsRange(),
+    selectedAnalyticsInsight: null,
+    // ─── Remote Control
+    remoteRunning: false,
+    remoteMode: baselineRemoteMode(),
+    selectedRemoteTarget: baselineRemoteTarget(),
+    remoteCursorPosition: baselineRemoteCursor(),
+    remoteActivationProgress: 0,
+    remoteCommandLog: [],
+    // ─── ELO
+    eloMode: baselineEloMode(),
+    selectedEloPrompt: baselineEloPrompt(),
+    eloResponseId: buildEloResponse(baselineEloPrompt(), baselineEloMode(), BASELINE_WALLET.walletBalance, BASELINE_WALLET.usableBalance).id,
+    // ─── Onboarding
+    onboardingStep: baselineOnboardingStep(),
+    onboardingMode: baselineOnboardingMode(),
+    onboardingConnectedPlatforms: baselineOnboardingPlatforms(),
+    onboardingInterests: baselineOnboardingInterests(),
     likedContentIds: [],
     savedContentIds: [],
     toast: null,
@@ -1006,6 +1160,303 @@ function reducer(state: InvestorDemoState, action: Action): InvestorDemoState {
     case 'SELECT_MONEY_NODE':
       return { ...state, selectedMoneyNode: action.nodeId }
 
+    case 'SET_WALLET_TAB':
+      return { ...state, walletTab: action.tab }
+
+    case 'OPEN_RECEIPT':
+      return {
+        ...state,
+        currentView: 'receipt',
+        selectedReceiptId: action.receiptId,
+        receiptReturnView: action.returnView ?? state.currentView,
+      }
+
+    case 'SET_SELECTED_RECEIPT':
+      return { ...state, selectedReceiptId: action.receiptId }
+
+    case 'RETURN_FROM_RECEIPT':
+      return {
+        ...state,
+        currentView: state.receiptReturnView,
+        selectedReceiptId: null,
+      }
+
+    case 'OPEN_CLICK_EARN':
+      return {
+        ...state,
+        currentView: 'clickEarn',
+        clickEarnMode: 'idle',
+        clickEarnAmount: baselineClickEarnAmount(),
+        clickEarnHolding: false,
+        clickEarnMeter: 0,
+        clickEarnMessage: '',
+      }
+
+    case 'TAP_CLICK_EARN_LIKE':
+      return {
+        ...state,
+        clickEarnMode: 'liked',
+        clickEarnHolding: false,
+        clickEarnMessage: 'Liked · no value moved',
+      }
+
+    case 'START_CLICK_EARN_HOLD':
+      return {
+        ...state,
+        clickEarnMode: 'holding',
+        clickEarnHolding: true,
+        clickEarnMessage: '',
+        clickEarnAmount: baselineClickEarnAmount(),
+        clickEarnMeter: 8,
+      }
+
+    case 'UPDATE_CLICK_EARN_AMOUNT':
+      return {
+        ...state,
+        clickEarnAmount: clampClickEarnAmount(action.amount),
+        clickEarnMeter: Math.min(100, Math.max(0, action.meter)),
+      }
+
+    case 'RELEASE_CLICK_EARN':
+      return {
+        ...state,
+        clickEarnHolding: false,
+        clickEarnMode: state.clickEarnAmount > 0 ? 'preview' : 'idle',
+      }
+
+    case 'CONFIRM_CLICK_EARN': {
+      if (state.clickEarnMode !== 'preview') return state
+      const amount = clampClickEarnAmount(state.clickEarnAmount)
+      const debited = debitSpendable(state.usableBalance, state.walletBalance, amount)
+      if (!debited) return state
+
+      const newTx: InvestorTransaction = {
+        id: `tx-clickearn-${state.clickEarnSession + 1}`,
+        source: 'Hold-to-value creator offer · Simulated',
+        timeLabel: 'Just now',
+        amountDisplay: `−${amount.toFixed(2)} iC`,
+        kind: 'negative',
+        txType: 'clickEarn',
+      }
+      return {
+        ...state,
+        clickEarnMode: 'confirmed',
+        clickEarnSession: state.clickEarnSession + 1,
+        usableBalance: debited.usableBalance,
+        walletBalance: debited.walletBalance,
+        transactions: [newTx, ...state.transactions],
+        clickEarnMessage: 'Simulated creator value action · preview complete',
+      }
+    }
+
+    case 'CANCEL_CLICK_EARN':
+
+    case 'RESET_CLICK_EARN':
+      return {
+        ...state,
+        clickEarnMode: 'idle',
+        clickEarnAmount: baselineClickEarnAmount(),
+        clickEarnHolding: false,
+        clickEarnMeter: 0,
+        clickEarnMessage: '',
+      }
+
+    case 'OPEN_PRODUCT_MAP':
+      return { ...state, currentView: 'productMap' }
+
+    case 'SELECT_PRODUCT_MAP_NODE':
+      return { ...state, selectedProductMapNode: action.nodeId }
+
+    case 'SET_DEMO_MODE':
+      return { ...state, activeDemoMode: action.mode }
+
+    case 'OPEN_ATTENTION_ANALYTICS':
+      return { ...state, currentView: 'attentionAnalytics' }
+
+    case 'SET_ANALYTICS_VIEW':
+      return { ...state, analyticsView: action.view }
+
+    case 'SET_ANALYTICS_RANGE':
+      return { ...state, analyticsRange: action.range }
+
+    case 'SELECT_ANALYTICS_INSIGHT':
+      return { ...state, selectedAnalyticsInsight: action.insightId }
+
+    case 'OPEN_REMOTE_CONTROL':
+      return { ...state, currentView: 'remoteControl' }
+
+    case 'START_REMOTE_SIM':
+      return { ...state, remoteRunning: true }
+
+    case 'PAUSE_REMOTE_SIM':
+      return { ...state, remoteRunning: false }
+
+    case 'RESET_REMOTE_SIM':
+      return {
+        ...state,
+        remoteRunning: false,
+        remoteMode: baselineRemoteMode(),
+        selectedRemoteTarget: baselineRemoteTarget(),
+        remoteCursorPosition: baselineRemoteCursor(),
+        remoteActivationProgress: 0,
+        remoteCommandLog: [],
+      }
+
+    case 'SET_REMOTE_MODE':
+      return {
+        ...state,
+        remoteMode: action.mode,
+        remoteActivationProgress: 0,
+      }
+
+    case 'SELECT_REMOTE_TARGET':
+      return {
+        ...state,
+        selectedRemoteTarget: action.targetId,
+        remoteActivationProgress: 0,
+        remoteCommandLog: [
+          {
+            id: `remote-manual-${action.targetId}-${Date.now()}`,
+            timeLabel: 'Now',
+            message: `Manual select · ${action.targetId} target highlighted`,
+          },
+          ...state.remoteCommandLog,
+        ].slice(0, 12),
+      }
+
+    case 'UPDATE_REMOTE_FRAME': {
+      const nextLog = action.logEntry
+        ? [action.logEntry, ...state.remoteCommandLog].slice(0, 12)
+        : state.remoteCommandLog
+      return {
+        ...state,
+        remoteCursorPosition: action.cursor,
+        remoteActivationProgress: action.activationProgress,
+        selectedRemoteTarget: action.selectedTarget ?? state.selectedRemoteTarget,
+        remoteCommandLog: nextLog,
+      }
+    }
+
+    case 'OPEN_REMOTE_TARGET':
+      return {
+        ...state,
+        currentView: remoteTargetView(state.selectedRemoteTarget),
+        remoteRunning: false,
+      }
+
+    case 'OPEN_ELO':
+      return { ...state, currentView: 'eloOverlay' }
+
+    case 'SET_ELO_MODE': {
+      const response = buildEloResponse(
+        state.selectedEloPrompt,
+        action.mode,
+        state.walletBalance,
+        state.usableBalance,
+      )
+      return {
+        ...state,
+        eloMode: action.mode,
+        eloResponseId: response.id,
+      }
+    }
+
+    case 'SELECT_ELO_PROMPT': {
+      const response = buildEloResponse(
+        action.promptId,
+        state.eloMode,
+        state.walletBalance,
+        state.usableBalance,
+      )
+      return {
+        ...state,
+        selectedEloPrompt: action.promptId,
+        eloResponseId: response.id,
+      }
+    }
+
+    case 'OPEN_ONBOARDING':
+      return {
+        ...state,
+        currentView: 'onboarding',
+        onboardingStep: baselineOnboardingStep(),
+      }
+
+    case 'SET_ONBOARDING_STEP':
+      return {
+        ...state,
+        onboardingStep: Math.min(Math.max(action.step, 1), 6),
+      }
+
+    case 'SET_ONBOARDING_MODE':
+      return { ...state, onboardingMode: action.mode }
+
+    case 'TOGGLE_ONBOARDING_PLATFORM': {
+      const connected = state.onboardingConnectedPlatforms.includes(action.platformId)
+      return {
+        ...state,
+        onboardingConnectedPlatforms: connected
+          ? state.onboardingConnectedPlatforms.filter((id) => id !== action.platformId)
+          : [...state.onboardingConnectedPlatforms, action.platformId],
+      }
+    }
+
+    case 'TOGGLE_ONBOARDING_INTEREST': {
+      const selected = state.onboardingInterests.includes(action.interestId)
+      return {
+        ...state,
+        onboardingInterests: selected
+          ? state.onboardingInterests.filter((id) => id !== action.interestId)
+          : [...state.onboardingInterests, action.interestId],
+      }
+    }
+
+    case 'FINISH_ONBOARDING': {
+      const platformConnections = state.platformConnections.map((platform) => {
+        if (!state.onboardingConnectedPlatforms.includes(platform.id as OnboardingPlatformId)) {
+          return platform
+        }
+        return {
+          ...platform,
+          connected: true,
+          handle: platform.handle ?? connectPlatformHandle(platform.id),
+          contentCount: platform.contentCount > 0 ? platform.contentCount : 12,
+        }
+      })
+
+      if (action.destination === 'offer') {
+        return {
+          ...state,
+          platformConnections,
+          currentView: 'offerDetail',
+          selectedOfferId: DEFAULT_DEMO_OFFER_ID,
+          presenterStepIndex: 2,
+        }
+      }
+      if (action.destination === 'wallet') {
+        return {
+          ...state,
+          platformConnections,
+          currentView: 'wallet',
+          presenterStepIndex: 5,
+        }
+      }
+      if (action.destination === 'connect') {
+        return {
+          ...state,
+          platformConnections,
+          currentView: 'connectPlatforms',
+          presenterStepIndex: 4,
+        }
+      }
+      return {
+        ...state,
+        platformConnections,
+        currentView: 'feed',
+        presenterStepIndex: 1,
+      }
+    }
+
     case 'RESET':
       return createBaselineState()
 
@@ -1392,6 +1843,177 @@ export function useInvestorDemoState() {
     goPresenterStep(prevIndex)
   }, [state.presenterStepIndex, goPresenterStep])
 
+  const setWalletTab = useCallback((tab: WalletTab) => {
+    dispatch({ type: 'SET_WALLET_TAB', tab })
+  }, [])
+
+  const openReceipt = useCallback((receiptId: string, returnView?: InvestorView) => {
+    dispatch({ type: 'OPEN_RECEIPT', receiptId, returnView })
+  }, [])
+
+  const setSelectedReceipt = useCallback((receiptId: string | null) => {
+    dispatch({ type: 'SET_SELECTED_RECEIPT', receiptId })
+  }, [])
+
+  const returnFromReceipt = useCallback(() => {
+    dispatch({ type: 'RETURN_FROM_RECEIPT' })
+  }, [])
+
+  const openClickEarn = useCallback(() => {
+    dispatch({ type: 'OPEN_CLICK_EARN' })
+  }, [])
+
+  const tapClickEarnLike = useCallback(() => {
+    dispatch({ type: 'TAP_CLICK_EARN_LIKE' })
+  }, [])
+
+  const startClickEarnHold = useCallback(() => {
+    dispatch({ type: 'START_CLICK_EARN_HOLD' })
+  }, [])
+
+  const updateClickEarnAmount = useCallback((amount: number, meter: number) => {
+    dispatch({ type: 'UPDATE_CLICK_EARN_AMOUNT', amount, meter })
+  }, [])
+
+  const releaseClickEarn = useCallback(() => {
+    dispatch({ type: 'RELEASE_CLICK_EARN' })
+  }, [])
+
+  const confirmClickEarn = useCallback(() => {
+    dispatch({ type: 'CONFIRM_CLICK_EARN' })
+  }, [])
+
+  const cancelClickEarn = useCallback(() => {
+    dispatch({ type: 'CANCEL_CLICK_EARN' })
+  }, [])
+
+  const resetClickEarn = useCallback(() => {
+    dispatch({ type: 'RESET_CLICK_EARN' })
+  }, [])
+
+  const openProductMap = useCallback(() => {
+    dispatch({ type: 'OPEN_PRODUCT_MAP' })
+  }, [])
+
+  const selectProductMapNode = useCallback((nodeId: ProductMapNodeId) => {
+    dispatch({ type: 'SELECT_PRODUCT_MAP_NODE', nodeId })
+  }, [])
+
+  const setDemoMode = useCallback(
+    (mode: DemoMode) => {
+      dispatch({ type: 'SET_DEMO_MODE', mode })
+      dispatch({ type: 'SHOW_TOAST', message: demoModeToastLabel(mode) })
+
+      if (mode === 'user') {
+        dispatch({ type: 'SET_PRESENTER_STEP', index: 1 })
+        dispatch({ type: 'GO_VIEW', view: 'feed' })
+        return
+      }
+      if (mode === 'creator') {
+        dispatch({ type: 'OPEN_CREATOR_DASHBOARD' })
+        return
+      }
+      if (mode === 'brand') {
+        dispatch({ type: 'OPEN_BRAND_DASHBOARD' })
+        return
+      }
+      dispatch({ type: 'OPEN_PROMO' })
+    },
+    [],
+  )
+
+  const openAttentionAnalytics = useCallback(() => {
+    dispatch({ type: 'OPEN_ATTENTION_ANALYTICS' })
+  }, [])
+
+  const setAnalyticsView = useCallback((view: AnalyticsView) => {
+    dispatch({ type: 'SET_ANALYTICS_VIEW', view })
+  }, [])
+
+  const setAnalyticsRange = useCallback((range: AnalyticsRange) => {
+    dispatch({ type: 'SET_ANALYTICS_RANGE', range })
+  }, [])
+
+  const selectAnalyticsInsight = useCallback((insightId: AnalyticsInsightId | null) => {
+    dispatch({ type: 'SELECT_ANALYTICS_INSIGHT', insightId })
+  }, [])
+
+  const openRemoteControl = useCallback(() => {
+    dispatch({ type: 'OPEN_REMOTE_CONTROL' })
+  }, [])
+
+  const startRemoteSim = useCallback(() => {
+    dispatch({ type: 'START_REMOTE_SIM' })
+  }, [])
+
+  const pauseRemoteSim = useCallback(() => {
+    dispatch({ type: 'PAUSE_REMOTE_SIM' })
+  }, [])
+
+  const resetRemoteSim = useCallback(() => {
+    dispatch({ type: 'RESET_REMOTE_SIM' })
+  }, [])
+
+  const setRemoteMode = useCallback((mode: RemoteMode) => {
+    dispatch({ type: 'SET_REMOTE_MODE', mode })
+  }, [])
+
+  const selectRemoteTarget = useCallback((targetId: RemoteTargetId) => {
+    dispatch({ type: 'SELECT_REMOTE_TARGET', targetId })
+  }, [])
+
+  const updateRemoteFrame = useCallback(
+    (payload: {
+      cursor: RemoteCursorPosition
+      activationProgress: number
+      selectedTarget?: RemoteTargetId
+      logEntry?: RemoteCommandLogEntry
+    }) => {
+      dispatch({ type: 'UPDATE_REMOTE_FRAME', ...payload })
+    },
+    [],
+  )
+
+  const openRemoteTarget = useCallback(() => {
+    dispatch({ type: 'OPEN_REMOTE_TARGET' })
+  }, [])
+
+  const openElo = useCallback(() => {
+    dispatch({ type: 'OPEN_ELO' })
+  }, [])
+
+  const setEloMode = useCallback((mode: EloMode) => {
+    dispatch({ type: 'SET_ELO_MODE', mode })
+  }, [])
+
+  const selectEloPrompt = useCallback((promptId: EloPromptId) => {
+    dispatch({ type: 'SELECT_ELO_PROMPT', promptId })
+  }, [])
+
+  const openOnboarding = useCallback(() => {
+    dispatch({ type: 'OPEN_ONBOARDING' })
+  }, [])
+
+  const setOnboardingStep = useCallback((step: number) => {
+    dispatch({ type: 'SET_ONBOARDING_STEP', step })
+  }, [])
+
+  const setOnboardingMode = useCallback((mode: OnboardingMode) => {
+    dispatch({ type: 'SET_ONBOARDING_MODE', mode })
+  }, [])
+
+  const toggleOnboardingPlatform = useCallback((platformId: OnboardingPlatformId) => {
+    dispatch({ type: 'TOGGLE_ONBOARDING_PLATFORM', platformId })
+  }, [])
+
+  const toggleOnboardingInterest = useCallback((interestId: OnboardingInterestId) => {
+    dispatch({ type: 'TOGGLE_ONBOARDING_INTEREST', interestId })
+  }, [])
+
+  const finishOnboarding = useCallback((destination: OnboardingFinishDestination) => {
+    dispatch({ type: 'FINISH_ONBOARDING', destination })
+  }, [])
+
   return {
     state,
     goView,
@@ -1472,6 +2094,42 @@ export function useInvestorDemoState() {
     openMoneyMap,
     setMoneyMapTab,
     selectMoneyNode,
+    setWalletTab,
+    openReceipt,
+    setSelectedReceipt,
+    returnFromReceipt,
+    openClickEarn,
+    tapClickEarnLike,
+    startClickEarnHold,
+    updateClickEarnAmount,
+    releaseClickEarn,
+    confirmClickEarn,
+    cancelClickEarn,
+    resetClickEarn,
+    openProductMap,
+    selectProductMapNode,
+    setDemoMode,
+    openAttentionAnalytics,
+    setAnalyticsView,
+    setAnalyticsRange,
+    selectAnalyticsInsight,
+    openRemoteControl,
+    startRemoteSim,
+    pauseRemoteSim,
+    resetRemoteSim,
+    setRemoteMode,
+    selectRemoteTarget,
+    updateRemoteFrame,
+    openRemoteTarget,
+    openElo,
+    setEloMode,
+    selectEloPrompt,
+    openOnboarding,
+    setOnboardingStep,
+    setOnboardingMode,
+    toggleOnboardingPlatform,
+    toggleOnboardingInterest,
+    finishOnboarding,
   }
 }
 

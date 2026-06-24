@@ -1,8 +1,9 @@
 import { PRESENTER_STEPS } from '../investorDemoData'
 import { useInvestorDemo } from '../useInvestorDemoState'
+import { InvestorModeSwitch } from './InvestorModeSwitch'
 
 export function InvestorPresenterPanel() {
-  const { state, presenterNext, presenterBack, goPresenterStep, reset, showToast } =
+  const { state, presenterNext, presenterBack, goPresenterStep, reset, showToast, openElo, openProductMap } =
     useInvestorDemo()
 
   const { presenterStepIndex } = state
@@ -47,6 +48,8 @@ export function InvestorPresenterPanel() {
           ))}
         </ul>
 
+        <InvestorModeSwitch />
+
         <div className="id-presenter__controls">
           <button
             type="button"
@@ -74,6 +77,16 @@ export function InvestorPresenterPanel() {
             title="Reset to start"
           >
             ↺
+          </button>
+        </div>
+        <div className="id-presenter__system-tools">
+          <button type="button" className="id-presenter__system-btn" onClick={openElo}>
+            <span className="id-presenter__system-title">ELO</span>
+            <span className="id-presenter__system-sub">Open assistant preview</span>
+          </button>
+          <button type="button" className="id-presenter__system-btn" onClick={openProductMap}>
+            <span className="id-presenter__system-title">Product Map</span>
+            <span className="id-presenter__system-sub">Show ecosystem</span>
           </button>
         </div>
       </div>

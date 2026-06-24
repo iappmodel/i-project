@@ -6,7 +6,7 @@ const BAR_DELAYS = [0, 0.12, 0.24, 0.36, 0.18, 0.06, 0.3, 0.42, 0.15]
 const BAR_COLORS = ['#1D9E75', '#5DCAA5', '#1D9E75', '#1D9E75', '#5DCAA5', '#1D9E75', '#1D9E75', '#5DCAA5', '#1D9E75']
 
 export function InvestorFeedView() {
-  const { state, setFeedIndex, selectOffer, goView, showToast, setPresenterStep, openThreeLoops } =
+  const { state, setFeedIndex, selectOffer, goView, showToast, setPresenterStep, openThreeLoops, openClickEarn, openElo, openProductMap } =
     useInvestorDemo()
 
   const { currentFeedIndex, walletBalance } = state
@@ -122,6 +122,15 @@ export function InvestorFeedView() {
         )}
       </div>
 
+      <button type="button" className="id-feed__map-entry" onClick={openProductMap}>
+        <span className="id-feed__map-entry-icon" aria-hidden>◇</span>
+        <span className="id-feed__map-entry-text">
+          <span className="id-feed__map-entry-title">Investor Product Map</span>
+          <span className="id-feed__map-entry-sub">See the full [ i ] ecosystem</span>
+        </span>
+        <span className="id-feed__map-entry-cta">Show ecosystem</span>
+      </button>
+
       <button type="button" className="id-feed__loops-entry" onClick={openThreeLoops}>
         <span className="id-feed__loops-entry-icon" aria-hidden>∞</span>
         <span className="id-feed__loops-entry-text">
@@ -131,6 +140,24 @@ export function InvestorFeedView() {
           </span>
         </span>
         <span className="id-feed__loops-entry-cta">View system</span>
+      </button>
+
+      <button type="button" className="id-feed__elo-entry" onClick={openElo}>
+        <span className="id-feed__elo-entry-icon" aria-hidden>◉</span>
+        <span className="id-feed__elo-entry-text">
+          <span className="id-feed__elo-entry-title">ELO</span>
+          <span className="id-feed__elo-entry-sub">Intelligent layer for [ i ]</span>
+        </span>
+        <span className="id-feed__elo-entry-cta">Open assistant preview</span>
+      </button>
+
+      <button type="button" className="id-feed__clickearn-entry" onClick={openClickEarn}>
+        <span className="id-feed__clickearn-entry-icon" aria-hidden>♥</span>
+        <span className="id-feed__clickearn-entry-text">
+          <span className="id-feed__clickearn-entry-title">Click-and-Earn</span>
+          <span className="id-feed__clickearn-entry-sub">Hold the love button to send value</span>
+        </span>
+        <span className="id-feed__clickearn-entry-cta">Try interaction</span>
       </button>
 
       {/* Nav arrows */}
