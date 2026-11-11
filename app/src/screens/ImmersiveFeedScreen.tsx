@@ -213,7 +213,7 @@ export function ImmersiveFeedScreen() {
               setActiveTab('earn')
               setScreen('immersive-promo')
             }}
-            onCreate={() => flash('Create · Studio (coming soon)')}
+            onCreate={() => setScreen('creator-economics')}
             onWallet={() => setWalletSheetOpen(true)}
             onProfile={() => setProfileSheetOpen(true)}
           />

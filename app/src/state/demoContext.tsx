@@ -20,7 +20,7 @@ import { useDeepLinkProofSession } from './useDeepLinkProofSession'
 import { useLiveWalletSync } from './useLiveWalletSync'
 import { useProofEvents, type ProofSealedEvent } from './useProofEvents'
 import { useSupabaseAuth } from './useSupabaseAuth'
-import { PRODUCT_HOME_SCREEN } from '../lib/productEntryScreen'
+import { homeScreenForAppMode, PRODUCT_HOME_SCREEN, screenForTab } from '../lib/productEntryScreen'
 import type {
   DemoContextValue,
   DemoScreenId,
@@ -29,13 +29,6 @@ import type {
   ProductTabId,
   Transaction,
 } from './types'
-
-const TAB_SCREENS: Record<ProductTabId, DemoScreenId> = {
-  feed: 'feed',
-  earn: 'earn',
-  wallet: 'wallet',
-  profile: 'profile',
-}
 
 function tabForScreen(screen: DemoScreenId): ProductTabId | null {
   if (screen === 'feed' || screen === 'earn' || screen === 'wallet' || screen === 'profile') {
@@ -136,11 +129,22 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   }, [liveWallet.popHolds, liveWallet.applyHoldSync, liveWallet.walletBackend])
 
   const setActiveTab = useCallback((tab: ProductTabId) => {
+    setState((prev) => {
+      const mode = prev.appMode === 'presenter' ? 'presenter' : 'product'
+      return {
+        ...prev,
+        appMode: mode === 'presenter' ? 'presenter' : 'product',
+        activeTab: tab,
+        currentScreen: screenForTab(tab, mode),
+      }
+    })
+  }, [])
+
+  const navigateHome = useCallback(() => {
     setState((prev) => ({
       ...prev,
-      appMode: 'product',
-      activeTab: tab,
-      currentScreen: TAB_SCREENS[tab],
+      activeTab: 'feed',
+      currentScreen: homeScreenForAppMode(prev.appMode),
     }))
   }, [])
 
@@ -426,6 +430,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       exitPresenter,
       enterProduct,
       resetDemo,
+      navigateHome,
       jumpFeed: () => setActiveTab('feed'),
       jumpEarn: () => setActiveTab('earn'),
       jumpWallet: () => setActiveTab('wallet'),
@@ -471,6 +476,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       exitPresenter,
       enterProduct,
       resetDemo,
+      navigateHome,
       selectOffer,
       beginImmersiveWatch,
       startWatchFlow,

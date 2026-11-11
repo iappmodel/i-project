@@ -53,12 +53,6 @@ export function ImmersivePromoScreen() {
   const [walletSheetOpen, setWalletSheetOpen] = useState(false)
   const [profileSheetOpen, setProfileSheetOpen] = useState(false)
   const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [toast, setToast] = useState<string | null>(null)
-
-  const flash = useCallback((msg: string) => {
-    setToast(msg)
-    window.setTimeout(() => setToast(null), 2200)
-  }, [])
 
   const handleSelect = useCallback(
     (offer: PromoOffer) => {
@@ -99,7 +93,7 @@ export function ImmersivePromoScreen() {
               setScreen('immersive-feed')
             }}
             onPromo={() => setScreen('immersive-promo')}
-            onCreate={() => flash('Create · Studio (coming soon)')}
+            onCreate={() => setScreen('creator-economics')}
             onWallet={() => setWalletSheetOpen(true)}
             onProfile={() => setProfileSheetOpen(true)}
           />
@@ -131,8 +125,6 @@ export function ImmersivePromoScreen() {
                 : undefined
             }
           />
-
-          {toast ? <div className="immersive-toast">{toast}</div> : null}
 
           {selectedId ? (
             <p className="immersive-promo__toast mono" aria-live="polite">

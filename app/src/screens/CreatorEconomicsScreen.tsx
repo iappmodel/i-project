@@ -7,13 +7,16 @@ import { formatCoinLabel } from '../lib/format'
 import { useDemo } from '../state/useDemo'
 
 export function CreatorEconomicsScreen() {
-  const { setScreen } = useDemo()
+  const { setScreen, navigateHome, appMode } = useDemo()
 
   return (
     <PhoneFrame scroll>
       <BackRow label="Wallet" onBack={() => setScreen('wallet')} />
       <h1 className="screen-title">Creator economics</h1>
-      <p className="screen-sub">Attention marketplace · canonical 60 / 30 / 10 split</p>
+      <p className="screen-sub">
+        Attention marketplace · canonical 60 / 30 / 10 split
+        {appMode === 'product' ? ' · iStudio preview (demo — no publishing)' : ''}
+      </p>
 
       <article className="eco-card neu-surface">
         <header className="eco-hdr">
@@ -52,7 +55,7 @@ export function CreatorEconomicsScreen() {
       </p>
 
       <Button onClick={() => setScreen('proof-layer')}>View proof layer</Button>
-      <Button variant="ghost" style={{ marginTop: 8 }} onClick={() => setScreen('feed')}>
+      <Button variant="ghost" style={{ marginTop: 8 }} onClick={() => navigateHome()}>
         Back to feed
       </Button>
       <SourceEvidence

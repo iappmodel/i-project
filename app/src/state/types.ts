@@ -118,6 +118,7 @@ export interface DemoContextValue extends DemoState {
   exitPresenter: () => void
   enterProduct: () => void
   resetDemo: () => void
+  navigateHome: () => void
   jumpFeed: () => void
   jumpEarn: () => void
   jumpWallet: () => void
