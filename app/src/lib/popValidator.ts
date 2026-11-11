@@ -1,4 +1,4 @@
-import { DEMO_LOCAL_USER_REF, getPopValidatorBaseUrl, resolveDemoUserId } from './settlementConfig'
+import { DEMO_LOCAL_USER_REF, getPopValidatorBaseUrl } from './settlementConfig'
 import type { ProofPacketV0Json } from './demoProofPacket'
 
 export interface PopPendingHold {
@@ -72,25 +72,14 @@ function mapHold(row: Record<string, unknown>): PopPendingHold {
   }
 }
 
+/** M5 rollout HOLD: client generated packets cannot establish proof authority.
+ * This applies regardless of metadata, local feature flags, or validator URL.
+ */
 export async function submitProofPacket(
-  packet: ProofPacketV0Json,
-  artifactId?: string,
+  _packet: ProofPacketV0Json,
+  _artifactId?: string,
 ): Promise<ValidateProofResponse> {
-  // Investor/demo-generated proof is not authenticated POP V10 evidence.
-  // Fail closed before any network operation, even when a validator URL is configured.
-  if (packet.appVersion.startsWith('web-demo@') || packet.deviceIdHash === 'sha256:demo-web-shell') {
-    throw new Error('demo_proof_not_authorized_for_validator')
-  }
-  const res = await fetch(`${baseUrl()}/v1/proof-packets/validate`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ packet, mode: 'pending', artifactId }),
-  })
-  const body = (await res.json()) as ValidateProofResponse & { error?: string }
-  if (!res.ok) {
-    throw new Error(body.error ?? `validate failed (${res.status})`)
-  }
-  return body
+  throw new Error('pop_m5_proof_submission_disabled')
 }
 
 export async function fetchPendingHolds(
@@ -128,35 +117,12 @@ export async function fetchValidatorHealth(): Promise<ValidatorHealth | null> {
   }
 }
 
+/** M5 rollout HOLD: no browser/client settlement route is authorized. */
 export async function settlePendingHold(
-  sessionId: string,
-  authUserId?: string | null,
+  _sessionId: string,
+  _authUserId?: string | null,
 ): Promise<SettleHoldResponse> {
-  const health = await fetchValidatorHealth()
-  const useSupabase = health?.supabaseEnabled === true
-
-  if (useSupabase) {
-    const res = await fetch(`${baseUrl()}/v1/pending-holds/${encodeURIComponent(sessionId)}/settle`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ userId: resolveDemoUserId(authUserId) }),
-    })
-    const body = (await res.json()) as SettleHoldResponse & { error?: string }
-    if (!res.ok) {
-      throw new Error(body.error ?? `settle failed (${res.status})`)
-    }
-    return body
-  }
-
-  const res = await fetch(
-    `${baseUrl()}/v1/pending-holds/${encodeURIComponent(sessionId)}/settle-demo`,
-    { method: 'POST' },
-  )
-  const body = (await res.json()) as SettleHoldResponse & { error?: string }
-  if (!res.ok) {
-    throw new Error(body.error ?? `settle-demo failed (${res.status})`)
-  }
-  return body
+  throw new Error('pop_m5_settlement_disabled')
 }
 
 export async function checkValidatorHealth(): Promise<boolean> {

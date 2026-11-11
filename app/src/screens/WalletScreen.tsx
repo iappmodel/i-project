@@ -25,9 +25,7 @@ export function WalletScreen() {
     popHolds,
     walletSyncError,
     walletSyncing,
-    settlingSessionId,
     refreshPendingHolds,
-    settlePopHold,
     setScreen,
     jumpEarn,
     proofFlash,
@@ -75,7 +73,7 @@ export function WalletScreen() {
         <div className="wallet-live-banner" style={{ marginBottom: 12 }}>
           <span className="ps-dot" aria-hidden />
           <span className="ps-text">
-            Live POP settlement
+            POP validator configured · settlement disabled (M5 HOLD)
             {settlementMode ? ` · ${settlementMode}` : ''}
             {walletSyncing ? ' · syncing…' : ''}
           </span>
@@ -174,11 +172,12 @@ export function WalletScreen() {
               <button
                 type="button"
                 className="sec-link-wu"
-                disabled={settlingSessionId === h.sessionId}
-                onClick={() => void settlePopHold(h.sessionId)}
+                disabled
+                aria-label="Settlement unavailable while POP M5 validation is on hold"
+                title="Settlement unavailable: POP M5 rollout HOLD"
                 style={{ fontSize: 11, whiteSpace: 'nowrap' }}
               >
-                {settlingSessionId === h.sessionId ? 'Settling…' : 'Settle'}
+                On HOLD
               </button>
             </div>
           ))}
