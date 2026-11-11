@@ -76,6 +76,11 @@ export async function submitProofPacket(
   packet: ProofPacketV0Json,
   artifactId?: string,
 ): Promise<ValidateProofResponse> {
+  // Investor/demo-generated proof is not authenticated POP V10 evidence.
+  // Fail closed before any network operation, even when a validator URL is configured.
+  if (packet.appVersion.startsWith('web-demo@') || packet.deviceIdHash === 'sha256:demo-web-shell') {
+    throw new Error('demo_proof_not_authorized_for_validator')
+  }
   const res = await fetch(`${baseUrl()}/v1/proof-packets/validate`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },

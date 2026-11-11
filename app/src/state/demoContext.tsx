@@ -326,35 +326,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       }
     })
 
-    window.setTimeout(() => {
-      setState((prev) => {
-        if (prev.attentionSession?.status !== 'redeemed') return prev
-        const pendingTx = prev.transactions.find(
-          (t) => t.kind === 'pending' && t.timeLabel === 'Settling…',
-        )
-        if (!pendingTx) return prev
-        const match = pendingTx.amountDisplay.match(/\+([\d.]+)/)
-        const add = match ? parseFloat(match[1]) : 0
-        if (add <= 0) return prev
-        return {
-          ...prev,
-          iCoins: prev.iCoins + add,
-          iCoinsPending: Math.max(0, prev.iCoinsPending - add),
-          walletBalance: prev.walletBalance + add * 0.11,
-          attentionSession: null,
-          transactions: prev.transactions.map((t) =>
-            t.id === pendingTx.id
-              ? {
-                  ...t,
-                  timeLabel: 'Just now',
-                  amountDisplay: t.amountDisplay.replace(' pending', ''),
-                  kind: 'positive' as const,
-                }
-              : t,
-          ),
-        }
-      })
-    }, 1200)
+
   }, [])
 
   const finishRewardToWallet = useCallback(() => {
