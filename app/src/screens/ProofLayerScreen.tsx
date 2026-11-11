@@ -3,6 +3,7 @@ import { Button } from '../components/Button'
 import { PhoneFrame } from '../components/PhoneFrame'
 import { SourceEvidence } from '../components/SourceEvidence'
 import { PROOF_LAYER_STATUS } from '../data/demoData'
+import { summarizeProofPacket } from '../lib/popPacketSummary'
 import { useDemo } from '../state/useDemo'
 
 export function ProofLayerScreen() {
@@ -14,8 +15,11 @@ export function ProofLayerScreen() {
     isNativeShell,
     nativePlatform,
     lastProofEvent,
+    lastProofPacket,
+    walletSyncError,
   } = useDemo()
   const status = PROOF_LAYER_STATUS
+  const packetSummary = lastProofPacket ? summarizeProofPacket(lastProofPacket) : null
 
   return (
     <PhoneFrame scroll>
@@ -26,6 +30,30 @@ export function ProofLayerScreen() {
       <span className="proof-status-pill proof-status-pill--mock mono">
         Demo mode: {status.demoMode}
       </span>
+
+      <div className="proof-layer-card">
+        <p className="proof-layer-card__title">Last local proof packet (session)</p>
+        <p className="proof-layer-card__body">
+          {packetSummary ? (
+            <>
+              Session <span className="mono">{packetSummary.sessionId.slice(0, 16)}…</span> · review{' '}
+              <span className="mono">{packetSummary.reviewStatus}</span> · eligibility{' '}
+              {packetSummary.rewardEligibility.toFixed(2)} · integrity{' '}
+              {packetSummary.signalIntegrity.toFixed(2)}
+              <br />
+              Runtime <span className="mono">{packetSummary.runtime}</span> — derived metrics only;
+              no camera frames uploaded.
+            </>
+          ) : (
+            'Complete Loop 1 (watch → verify → reward) to assemble a pending Proof Packet v0 in mock mode.'
+          )}
+        </p>
+        {walletSyncError ? (
+          <p className="wallet-sync-error" style={{ color: 'var(--accent-rose)', fontSize: 12, marginTop: 8 }}>
+            {walletSyncError}
+          </p>
+        ) : null}
+      </div>
 
       <div className="proof-layer-card">
         <p className="proof-layer-card__title">Signal path (documented)</p>

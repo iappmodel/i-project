@@ -5,6 +5,7 @@ import {
   WALLET_INITIAL,
 } from '../data/demoData'
 import { buildDemoProofPacket } from '../lib/demoProofPacket'
+import { proofJsonPassesPrivacyGate } from '../lib/popPrivacyGate'
 import { capacitorPlatform, isCapacitorNative } from '../lib/capacitorShell'
 import { isAutoSettleEnabled } from '../lib/settlementConfig'
 import { submitProofPacket } from '../lib/popValidator'
@@ -82,6 +83,7 @@ const defaultState = (): DemoState => ({
   settlingSessionId: null,
   proofSubmitting: false,
   proofFlash: null,
+  lastProofPacket: null,
 })
 
 export const DemoContext = createContext<DemoContextValue | null>(null)
@@ -282,9 +284,23 @@ export function DemoProvider({ children }: { children: ReactNode }) {
         return prev
       }
 
-      const add =
-        prev.selectedOffer?.rewardICoins ?? DEFAULT_SPONSORED_OFFER.rewardICoins
-      const brand = prev.selectedOffer?.brand ?? 'Campaign'
+      const offer = prev.selectedOffer ?? DEFAULT_SPONSORED_OFFER
+      const session = prev.attentionSession
+      const packet = buildDemoProofPacket({ session, offer })
+      if (!proofJsonPassesPrivacyGate(packet as unknown as Record<string, unknown>)) {
+        return {
+          ...prev,
+          walletSyncError: 'Proof packet blocked privacy gate — pending reward not issued',
+        }
+      }
+      emitPopTelemetry('proof_packet_built', {
+        sessionId: session.id,
+        mode: 'mock',
+        reviewPending: true,
+      })
+
+      const add = offer.rewardICoins
+      const brand = offer.brand
       const tx: Transaction = {
         id: `tx-${Date.now()}`,
         source: brand === 'Nike Running' ? 'Nike campaign' : `${brand}`,
@@ -299,8 +315,11 @@ export function DemoProvider({ children }: { children: ReactNode }) {
         verificationStatus: 'idle',
         currentScreen: 'wallet',
         activeTab: 'wallet',
+        walletSyncError: null,
+        lastProofPacket: packet,
+        proofFlash: `Mock POP · pending review · ${session.id.slice(0, 8)}…`,
         attentionSession: {
-          ...prev.attentionSession,
+          ...session,
           status: 'redeemed',
           redeemedAt: Date.now(),
         },
@@ -363,6 +382,10 @@ export function DemoProvider({ children }: { children: ReactNode }) {
         setState((inner) => ({ ...inner, proofSubmitting: true }))
         try {
           const packet = buildDemoProofPacket({ session, offer })
+          if (!proofJsonPassesPrivacyGate(packet as unknown as Record<string, unknown>)) {
+            throw new Error('Proof packet blocked privacy gate')
+          }
+          setState((inner) => ({ ...inner, lastProofPacket: packet }))
           emitPopTelemetry('proof_submitted', {
             sessionId: session.id,
             acsScore: session.acsScore,

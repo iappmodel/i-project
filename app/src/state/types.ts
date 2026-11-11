@@ -1,4 +1,5 @@
 import type { AttentionSession } from './attentionSession'
+import type { ProofPacketV0Json } from '../lib/demoProofPacket'
 import type { PopPendingHold } from '../lib/popValidator'
 import type { ProofSealedEvent } from './useProofEvents'
 
@@ -109,6 +110,8 @@ export interface DemoState {
   settlingSessionId: string | null
   proofSubmitting: boolean
   proofFlash: string | null
+  /** Last locally assembled Proof Packet v0 (mock or live submit path). */
+  lastProofPacket: ProofPacketV0Json | null
 }
 
 export interface DemoContextValue extends DemoState {
