@@ -25,3 +25,9 @@ All PASS (2026-11-11): typecheck, vitest 16/16, vite build.
 ## Next task
 
 Browser-verify Loop 1 end-to-end; map immersive nav ghost/toast controls; draft POP V10 integration contract (no lab merge).
+## Increment 2 — `9c4a40b`
+
+- Product `setActiveTab`: feed → `immersive-feed`, earn → `immersive-promo`
+- `navigateHome()` + Create tab → `creator-economics` (studio preview copy)
+- Tests: 19/19 PASS; typecheck + build PASS
+- Next: manual Loop 1 in `npm run dev`; finish-reward → pending wallet copy audit
