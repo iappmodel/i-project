@@ -20,6 +20,7 @@ import { useDeepLinkProofSession } from './useDeepLinkProofSession'
 import { useLiveWalletSync } from './useLiveWalletSync'
 import { useProofEvents, type ProofSealedEvent } from './useProofEvents'
 import { useSupabaseAuth } from './useSupabaseAuth'
+import { PRODUCT_HOME_SCREEN } from '../lib/productEntryScreen'
 import type {
   DemoContextValue,
   DemoScreenId,
@@ -157,7 +158,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       ...prev,
       appMode: 'product',
       activeTab: 'feed',
-      currentScreen: 'feed',
+      currentScreen: PRODUCT_HOME_SCREEN,
     }))
   }, [])
 
@@ -166,7 +167,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       ...prev,
       appMode: 'product',
       activeTab: 'feed',
-      currentScreen: 'immersive-feed',
+      currentScreen: PRODUCT_HOME_SCREEN,
     }))
   }, [])
 
