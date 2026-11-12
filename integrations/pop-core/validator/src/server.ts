@@ -188,6 +188,10 @@ const server = createServer(async (req, res) => {
     sendJson(res, 404, { error: "Not found" });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";
+    if (message === "pop_m5_full_settlement_disabled") {
+      sendJson(res, 403, { error: message });
+      return;
+    }
     sendJson(res, 500, { error: message });
   }
 });

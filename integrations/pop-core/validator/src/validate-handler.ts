@@ -6,8 +6,6 @@ import {
   InMemoryPendingHoldStore,
   createPendingHoldFromReview,
   createAppealHoldFromReview,
-  createDefaultPopValueFlowStores,
-  runPopValueFlow,
   resolveTrustTier,
   type PopValueFlowResult,
   type PopTrustTier,
@@ -35,6 +33,14 @@ import {
 import { syncPopsSessionToSupabase, type PopsSessionSyncResult } from "./pops-session-sync.js";
 
 export const VALIDATOR_VERSION = "POP_VALIDATOR_STUB_V1" as const;
+
+/** M5 HOLD: mode "full" would credit a wallet from client scores and fixed adapter defaults. */
+export class PopFullSettlementDisabledError extends Error {
+  constructor() {
+    super("pop_m5_full_settlement_disabled");
+    this.name = "PopFullSettlementDisabledError";
+  }
+}
 
 export type ValidateMode = "pending" | "full";
 
@@ -133,31 +139,7 @@ export async function validateProofPacket(
   const submittedAt = body.submittedAt ?? new Date().toISOString();
 
   if (mode === "full") {
-    const flowStores = createDefaultPopValueFlowStores();
-    flowStores.reviewStore = stores.reviewStore;
-    flowStores.holdStore = stores.holdStore;
-
-    const result = runPopValueFlow(body.packet, {
-      stores: flowStores,
-      artifactId: body.artifactId,
-      submittedAt
-    });
-
-    const supabaseSync = supabase
-      ? await persistPendingHold(result.hold, supabase, settlementStore)
-      : undefined;
-
-    return {
-      validatorVersion: VALIDATOR_VERSION,
-      mode: "full",
-      sessionId: result.sessionId,
-      reviewStatus: result.review.review.status,
-      holdAmount: result.hold.amount ?? 0,
-      walletCreditAmount: result.walletCredit.amount,
-      availableMinor: result.balance.availableMinor,
-      outcomes: result.outcomes,
-      supabase: supabaseSync
-    };
+    throw new PopFullSettlementDisabledError();
   }
 
   const policy = readServerSettlementPolicy();

@@ -115,28 +115,24 @@ describe("validateProofPacket", () => {
     expect(second.holdOutcome).toBe("existing");
   });
 
-  it("full mode runs golden-path value flow", async () => {
+  it("full mode cannot turn a client packet into a wallet credit", async () => {
     dataDir = mkdtempSync(join(tmpdir(), "pop-validator-"));
     const stores = createValidatorStores(dataDir);
     const packet = structuredClone(pp000001) as typeof pp000001;
     packet.sessionId = "sess_full_mode_golden_path";
 
-    const result = await validateProofPacket(
-      {
-        packet,
-        mode: "full",
-        artifactId: "PP-FULL-001",
-        submittedAt: "2026-05-23T12:00:00.000Z"
-      },
-      { stores, supabase: createSupabaseSettlementClient(null) }
-    );
+    await expect(
+      validateProofPacket(
+        {
+          packet,
+          mode: "full",
+          artifactId: "PP-FULL-001",
+          submittedAt: "2026-05-23T12:00:00.000Z"
+        },
+        { stores, supabase: createSupabaseSettlementClient(null) }
+      )
+    ).rejects.toThrow("pop_m5_full_settlement_disabled");
 
-    expect(result.mode).toBe("full");
-    if (result.mode !== "full") return;
-
-    expect(result.reviewStatus).toBe("approved");
-    expect(result.holdAmount).toBe(100);
-    expect(result.walletCreditAmount).toBe(100);
-    expect(result.availableMinor).toBe(100);
+    expect(stores.reviewStore.getBySessionId(packet.sessionId)).toBeNull();
   });
 });
