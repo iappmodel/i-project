@@ -152,7 +152,7 @@ async function applyTaskXpReward(
 
 // Reward amounts by type — VICOIN for usage & engagement (platform rewards user for beneficial actions).
 // Promo rewards are NOT in this map: they come only from campaign_id → promo_campaigns in redeem_attention_reward RPC.
-const REWARD_AMOUNTS: Record<string, { amount?: number; min?: number; max?: number; coinType: 'vicoin' | 'icoin' }> = {
+const REWARD_AMOUNTS = {
   task_complete: { min: 3, max: 20, coinType: 'icoin' },
   // Server-verified promo actions (check-in/review/watch/return-visit); amount/type resolved from PROMO_ACTION_REWARDS.
   promo_action_complete: { amount: 0, coinType: 'icoin' },
@@ -173,7 +173,7 @@ const REWARD_AMOUNTS: Record<string, { amount?: number; min?: number; max?: numb
   post: { amount: 5, coinType: 'vicoin' },
   save: { amount: 1, coinType: 'vicoin' },
   comment: { amount: 1, coinType: 'vicoin' },
-};
+} satisfies Record<string, { amount?: number; min?: number; max?: number; coinType: 'vicoin' | 'icoin' }>;
 
 // Per-type daily caps (count of rewards of this type per user per day; prevents gaming by rotating contentId)
 const DAILY_REWARD_TYPE_CAPS: Record<string, number> = {
@@ -190,7 +190,7 @@ const DAILY_REWARD_TYPE_CAPS: Record<string, number> = {
   comment: 20,
 };
 
-const VALID_REWARD_TYPES = Object.keys(REWARD_AMOUNTS) as [string, ...string[]];
+const VALID_REWARD_TYPES = Object.keys(REWARD_AMOUNTS) as [keyof typeof REWARD_AMOUNTS, ...(keyof typeof REWARD_AMOUNTS)[]];
 
 // Promo rewards: client sends only attentionSessionId (from validate-attention) + mediaId. Single-use per session id.
 // Amount, currency, duration, and rules are NEVER from client: server resolves session.campaign_id → promo_campaigns (reward_amount, currency); RPC computes final amount.
@@ -201,7 +201,7 @@ const PromoViewSchema = z.object({
 }).strict();
 // Other rewards: client sends only rewardType + contentId. amount/coinType are SERVER-ONLY (REWARD_AMOUNTS); reject if client sends.
 const OtherRewardSchema = z.object({
-  rewardType: z.enum(VALID_REWARD_TYPES as [string, ...string[]]),
+  rewardType: z.enum(VALID_REWARD_TYPES),
   contentId: z.string().min(1, 'Content ID is required').max(256, 'Content ID too long'),
 }).strict();
 const IssueRewardSchema = z.union([PromoViewSchema, OtherRewardSchema]);
@@ -424,7 +424,9 @@ export async function handleIssueReward(
       console.log('[IssueReward] Request:', { userId: user.id, rewardType, contentId });
 
       // Amount and coinType from server config only (client cannot send them; forbidden keys rejected above).
-      const rewardConfig = REWARD_AMOUNTS[rewardType as keyof typeof REWARD_AMOUNTS];
+      const rewardConfig = REWARD_AMOUNTS[rewardType as keyof typeof REWARD_AMOUNTS] as
+        | { amount?: number; min?: number; max?: number; coinType: 'vicoin' | 'icoin' }
+        | undefined;
       if (!rewardConfig) {
         return new Response(
           JSON.stringify({ error: 'Invalid reward type', code: 'invalid_reward_type' }),
@@ -1031,7 +1033,7 @@ export async function handleIssueReward(
             .eq('user_id', userId)
             .then(
               () => {},
-              (rollbackError) => console.warn('[IssueReward] Failed to rollback achievement_unlock session claim:', rollbackError),
+              (rollbackError: unknown) => console.warn('[IssueReward] Failed to rollback achievement_unlock session claim:', rollbackError),
             );
           throw achievementXpError;
         }
@@ -1094,7 +1096,7 @@ export async function handleIssueReward(
             .update({ reward_claimed: false })
             .eq('id', contentId)
             .eq('user_id', user.id)
-            .then(() => {}, (rollbackError) => console.warn('[IssueReward] Failed to rollback XP-only task claim:', rollbackError));
+            .then(() => {}, (rollbackError: unknown) => console.warn('[IssueReward] Failed to rollback XP-only task claim:', rollbackError));
           throw xpError;
         }
 
@@ -1280,7 +1282,7 @@ export async function handleIssueReward(
           .update({ reward_claimed: true })
           .eq('id', contentId)
           .eq('user_id', user.id)
-          .then(() => {}, (e) => console.warn('[IssueReward] Failed to sync user_task reward_claimed:', e));
+          .then(() => {}, (e: unknown) => console.warn('[IssueReward] Failed to sync user_task reward_claimed:', e));
       }
       if (idempotencyKey) await setCachedResponse(supabase, idempotencyKey, user.id, 'issue_reward', 200, successBody);
       return new Response(
