@@ -20,6 +20,8 @@ export interface SupabaseSettlementClient {
   listPendingHolds(localUserRef: string): Promise<Record<string, unknown>[]>;
   upsertPopsSession(row: PopsSessionRow): Promise<{ outcome: "created" | "existing" }>;
   recordFraudEvent(event: Record<string, unknown>): Promise<void>;
+  /** The user id an access token belongs to, as verified by the auth service; null if it is not valid. */
+  verifyAccessToken(token: string): Promise<string | null>;
 }
 
 function createSupabaseClient(config: SupabaseSettlementConfig): SupabaseClient {
@@ -49,7 +51,10 @@ export function createSupabaseSettlementClient(
       async upsertPopsSession() {
         return { outcome: "existing" as const };
       },
-      async recordFraudEvent() {}
+      async recordFraudEvent() {},
+      async verifyAccessToken() {
+        return null;
+      }
     };
   }
 
@@ -143,6 +148,14 @@ export function createSupabaseSettlementClient(
       if (error) {
         throw new Error(`pop_fraud_events insert failed: ${error.message}`);
       }
+    },
+
+    async verifyAccessToken(token: string) {
+      const { data, error } = await client.auth.getUser(token);
+      if (error || !data?.user?.id) {
+        return null;
+      }
+      return data.user.id;
     }
   };
 }

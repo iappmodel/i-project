@@ -45,6 +45,9 @@ function mockClient(overrides: Partial<SupabaseSettlementClient>): SupabaseSettl
     async settlePendingHold() {
       throw new Error("not used");
     },
+    async verifyAccessToken() {
+      return null;
+    },
     async getPendingHold() {
       return null;
     },

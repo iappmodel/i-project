@@ -46,11 +46,26 @@ Client `VITE_AUTO_SETTLE` is demo-only; production settlement is server-gated.
 
 ### Settle request (Supabase)
 
-```json
-{ "userId": "00000000-0000-4000-8000-000000000001" }
-```
+Ledger settlement is **off by default**. To use it on a local stack:
 
-Calls RPC `settle_pop_pending_hold` → `ledger_append` (idempotent on `pop_hold_{sessionId}`).
+- set `POP_LEDGER_SETTLE_ENABLED=true` on the validator;
+- send `Authorization: Bearer <Supabase access token>` on both the validate request and the settle request.
+
+The validator takes the user from the verified token. A `userId` in the body is optional and must match the
+token's user. The hold must have been created by a validate request carrying the same user's token; a hold
+created without a token is bound to no one and cannot be settled to the ledger. Someone else's hold and a
+missing hold both return `404 hold_not_found`.
+
+| Response | Meaning |
+|----------|---------|
+| `403 ledger_settle_disabled` | `POP_LEDGER_SETTLE_ENABLED` is not `true` |
+| `401 auth_required` / `invalid_token` | no usable bearer token |
+| `403 user_mismatch` | body `userId` differs from the token's user |
+| `409 hold_not_bound_to_user` | the hold was created without an authenticated user |
+| `404 hold_not_found` | no such hold, or it belongs to another user |
+
+Calls RPC `settle_pop_pending_hold` → `ledger_append` (idempotent on `pop_hold_{sessionId}`). The rules are in
+`src/settle-authority.ts`, tested in `tests/settle-authority.test.ts`.
 
 ### Dev settle (no Supabase)
 
@@ -59,6 +74,10 @@ curl -X POST http://127.0.0.1:8787/v1/pending-holds/SESSION_ID/settle-demo
 ```
 
 Or `POST .../settle` with empty body when Supabase is disabled — uses local-json demo settlement.
+
+Demo settlement writes local JSON only. It is refused when Supabase is configured, and from any address that
+is not the local machine unless `POP_VALIDATOR_DEMO_SETTLE_ALLOW_REMOTE=true` (for a container network).
+`POP_VALIDATOR_ALLOW_DEMO_SETTLE=false` turns it off.
 
 ## Smoke test
 
@@ -99,4 +118,4 @@ flutter run --dart-define=POP_VALIDATOR_URL=http://10.0.2.2:8787
 1. `supabase start && supabase db reset` in `app/supabase`
 2. `npm start` in validator with Supabase env
 3. Flutter Seal Proof → validate response includes `supabase.outcome: "created"`
-4. `POST /v1/pending-holds/{sessionId}/settle` with test user UUID → ledger credit
+4. With `POP_LEDGER_SETTLE_ENABLED=true`: `POST /v1/pending-holds/{sessionId}/settle` with the test user's bearer token → ledger credit

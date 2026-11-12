@@ -10,10 +10,9 @@ import {
 import { createSupabaseSettlementClient } from "./supabase-settlement-client.js";
 import {
   getPendingHoldBySessionId,
-  listPendingHoldsForUser,
-  settlePendingHold
+  listPendingHoldsForUser
 } from "./hold-query.js";
-import type { SettleHoldRequestBody } from "./settle-handler.js";
+import { authenticatedUserId, bindPacketUser, handleSettleRequest } from "./settle-authority.js";
 import { readSupabaseSettlementConfig } from "./supabase-settlement.js";
 import { readSettlementStoreMode } from "./settlement-store-mode.js";
 import { applyCors } from "./cors.js";
@@ -52,9 +51,6 @@ function sendJson(res: ServerResponse, status: number, body: unknown): void {
   });
   res.end(payload);
 }
-
-const UUID_RE =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 const server = createServer(async (req, res) => {
   try {
@@ -96,6 +92,10 @@ const server = createServer(async (req, res) => {
         return;
       }
 
+      // A hold is bound to the authenticated user or to no one; the packet's own userId is client input.
+      const authedUser = await authenticatedUserId(req.headers.authorization, supabase);
+      body.packet = bindPacketUser(body.packet, authedUser, supabase.isEnabled);
+
       const result = await validateProofPacket(body, { stores, supabase });
       const mode = result.mode;
       broadcastProofSealed({
@@ -112,53 +112,22 @@ const server = createServer(async (req, res) => {
       return;
     }
 
-    const settleDemoMatch = url.pathname.match(
-      /^\/v1\/pending-holds\/([^/]+)\/settle-demo$/
-    );
-    if (req.method === "POST" && settleDemoMatch) {
-      const sessionId = decodeURIComponent(settleDemoMatch[1] ?? "");
-      const result = await settlePendingHold(
-        DATA_DIR,
-        sessionId,
-        null,
-        supabase,
-        "demo"
-      );
-      sendJson(res, 200, result);
-      return;
-    }
-
     const settleMatch = url.pathname.match(
-      /^\/v1\/pending-holds\/([^/]+)\/settle$/
+      /^\/v1\/pending-holds\/([^/]+)\/(settle|settle-demo)$/
     );
     if (req.method === "POST" && settleMatch) {
-      const sessionId = decodeURIComponent(settleMatch[1] ?? "");
-      const body = (await readJsonBody(req)) as SettleHoldRequestBody;
-
-      if (supabase.isEnabled) {
-        if (!body?.userId || !UUID_RE.test(body.userId)) {
-          sendJson(res, 400, { error: "userId must be a valid UUID" });
-          return;
-        }
-        const result = await settlePendingHold(
-          DATA_DIR,
-          sessionId,
-          body.userId,
-          supabase,
-          "production"
-        );
-        sendJson(res, 200, result);
-        return;
-      }
-
-      const result = await settlePendingHold(
-        DATA_DIR,
-        sessionId,
-        null,
-        supabase,
-        "demo"
+      // All authority checks live in settle-authority.ts; this route only passes the request through.
+      const result = await handleSettleRequest(
+        {
+          route: settleMatch[2] === "settle-demo" ? "settle-demo" : "settle",
+          sessionId: decodeURIComponent(settleMatch[1] ?? ""),
+          authorization: req.headers.authorization,
+          body: await readJsonBody(req),
+          remoteAddress: req.socket.remoteAddress ?? null
+        },
+        { dataDir: DATA_DIR, supabase, env: process.env }
       );
-      sendJson(res, 200, result);
+      sendJson(res, result.status, result.body);
       return;
     }
 
