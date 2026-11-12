@@ -1,4 +1,5 @@
-import { DEMO_LOCAL_USER_REF, getPopValidatorBaseUrl, resolveDemoUserId } from './settlementConfig'
+import { DEMO_LOCAL_USER_REF, getPopValidatorBaseUrl } from './settlementConfig'
+import { getSupabaseClient } from './supabaseClient'
 import type { ProofPacketV0Json } from './demoProofPacket'
 
 export interface PopPendingHold {
@@ -44,6 +45,19 @@ export interface ValidateProofResponse {
   supabase?: { enabled: boolean; outcome?: string; error?: string }
 }
 
+/**
+ * The signed-in user's access token, if there is one. The validator decides who a hold belongs to and who may
+ * settle it from this token; it ignores any user id the app writes into a request.
+ */
+async function authHeaders(): Promise<Record<string, string>> {
+  try {
+    const session = (await getSupabaseClient()?.auth.getSession())?.data.session
+    return session?.access_token ? { authorization: `Bearer ${session.access_token}` } : {}
+  } catch {
+    return {}
+  }
+}
+
 function baseUrl(): string {
   const url = getPopValidatorBaseUrl()
   if (!url) throw new Error('VITE_POP_VALIDATOR_URL is not configured')
@@ -78,7 +92,7 @@ export async function submitProofPacket(
 ): Promise<ValidateProofResponse> {
   const res = await fetch(`${baseUrl()}/v1/proof-packets/validate`, {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: { 'content-type': 'application/json', ...(await authHeaders()) },
     body: JSON.stringify({ packet, mode: 'pending', artifactId }),
   })
   const body = (await res.json()) as ValidateProofResponse & { error?: string }
@@ -133,8 +147,9 @@ export async function settlePendingHold(
   if (useSupabase) {
     const res = await fetch(`${baseUrl()}/v1/pending-holds/${encodeURIComponent(sessionId)}/settle`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ userId: resolveDemoUserId(authUserId) }),
+      // No fallback demo user: the validator credits the token's user, and refuses a request without one.
+      headers: { 'content-type': 'application/json', ...(await authHeaders()) },
+      body: JSON.stringify(authUserId ? { userId: authUserId } : {}),
     })
     const body = (await res.json()) as SettleHoldResponse & { error?: string }
     if (!res.ok) {
